@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart'; // Додаємо цей імпорт
+import 'screens/home_screen.dart'; // <--- 1. Імпортуємо файл
+import 'screens/conditions_screen.dart'; // <--- 1. Імпортуємо файл
+import 'screens/tables_screen.dart'; // <--- 1. Імпортуємо файл
+import 'screens/convertor_screen.dart'; // <--- 1. Імпортуємо файл
+import 'screens/settings_screen.dart'; // <--- 1. Імпортуємо файл
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,7 +15,7 @@ void main() async {
   WindowOptions windowOptions = const WindowOptions(
     size: Size(375, 812), // Розмір екрана iPhone 13 mini в логічних пікселях
     center: true,
-    title: "Мій Мобільний Додаток",
+    title: "eBallistica",
   );
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -17,7 +23,7 @@ void main() async {
     await windowManager.focus();
   });
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,26 +33,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+
+      // 2. Темна тема
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+      ),
+
+      // 3. Режим роботи: система сама каже, яку тему брати
+      themeMode: ThemeMode.system,
+
+      home: const MyHomePage(title: 'eBallistica'),
     );
   }
 }
@@ -76,9 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
   // 2. Список віджетів (екранів), між якими ми перемикаємось
   // Ви можете винести їх в окремі файли пізніше
   static const List<Widget> _pages = <Widget>[
-    Center(child: Text('Головний екран', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Екран налаштувань', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Ваша C++ Логіка', style: TextStyle(fontSize: 24))),
+    HomeScreen(), // <--- Ось ваш окремий віджет
+    ConditionsScreen(),
+    TablesScreen(),
+    ConvertorScreen(),
+    SettingsScreen(),
   ];
 
   // 3. Функція, що змінює індекс при натисканні
@@ -91,28 +100,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Мій Flutter Додаток'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-
       // 4. Тіло екрана змінюється динамічно залежно від індексу
-      body: _pages[_selectedIndex],
+      body: SafeArea(child: _pages[_selectedIndex]),
 
       // 5. Сам BottomNavigationBar
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.home), label: 'Головна'),
+          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.cloud), label: 'Conditions'),
+          NavigationDestination(icon: Icon(Icons.table_view), label: 'Tables'),
           NavigationDestination(
-            icon: Icon(Icons.settings),
-            label: 'Налаштування',
+            icon: Icon(Icons.calculate),
+            label: 'Convertors',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.terminal),
-            label: 'C++ Engine',
-          ),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );
