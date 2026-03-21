@@ -56,6 +56,53 @@ enum Unit {
   final String symbol;
 }
 
+extension UnitCallable on Unit {
+  dynamic call(Object value) {
+    if (value is Dimension) {
+      return value.to(this);
+    }
+
+    final double val = (value as num).toDouble();
+
+    if (id >= 0 && id < 10) return Angular(val, this);
+    if (id >= 10 && id < 20) return Distance(val, this);
+    if (id >= 30 && id < 40) return Energy(val, this);
+    if (id >= 40 && id < 50) return Pressure(val, this);
+    if (id >= 50 && id < 60) return Temperature(val, this);
+    if (id >= 60 && id < 70) return Velocity(val, this);
+    if (id >= 70 && id < 80) return Weight(val, this);
+    if (id >= 80 && id < 90) return Time(val, this);
+
+    throw Exception('Unit ID $id is not supported for casting');
+  }
+}
+
+extension UnitParser on Unit {
+  static dynamic parse(String input, [Unit? preferred]) {
+    final cleanInput = input.trim().toLowerCase().replaceAll(' ', '');
+
+    final match = RegExp(r"^(-?\d+\.?\d*)(.*)$").firstMatch(cleanInput);
+
+    if (match != null) {
+      final value = double.parse(match.group(1)!);
+      final alias = match.group(2)!;
+
+      if (alias.isEmpty) {
+        if (preferred != null) return preferred(value);
+        throw Exception("No unit alias found and no preferred unit provided");
+      }
+
+      final unit = Unit.values.firstWhere(
+        (u) => u.symbol.toLowerCase() == alias || u.name.toLowerCase() == alias,
+        orElse: () => throw Exception("Unknown unit alias: $alias"),
+      );
+
+      return unit(value);
+    }
+    throw Exception("Could not parse: $input");
+  }
+}
+
 abstract interface class Measurable<T extends Measurable<T>> {
   T create(double value, Unit unit);
   T createFromRaw(double value, Unit unit);
@@ -386,4 +433,122 @@ class Weight extends Dimension<Weight> {
 
   @override
   Weight create(double value, Unit unit) => Weight(value, unit);
+}
+
+abstract final class PreferredUnits {
+  PreferredUnits._();
+
+  static Unit angular = Unit.degree;
+  static Unit distance = Unit.yard;
+  static Unit velocity = Unit.fps;
+  static Unit pressure = Unit.inHg;
+  static Unit temperature = Unit.fahrenheit;
+  static Unit diameter = Unit.inch;
+  static Unit length = Unit.inch;
+  static Unit weight = Unit.grain;
+  static Unit adjustment = Unit.mRad;
+  static Unit drop = Unit.inch;
+  static Unit energy = Unit.footPound;
+  static Unit ogw = Unit.pound;
+  static Unit sightHeight = Unit.inch;
+  static Unit targetHeight = Unit.inch;
+  static Unit twist = Unit.inch;
+  static Unit time = Unit.second;
+
+  static void restoreDefaults() {
+    angular = Unit.degree;
+    distance = Unit.yard;
+    velocity = Unit.fps;
+    pressure = Unit.inHg;
+    temperature = Unit.fahrenheit;
+    diameter = Unit.inch;
+    length = Unit.inch;
+    weight = Unit.grain;
+    adjustment = Unit.mRad;
+    drop = Unit.inch;
+    energy = Unit.footPound;
+    ogw = Unit.pound;
+    sightHeight = Unit.inch;
+    targetHeight = Unit.inch;
+    twist = Unit.inch;
+    time = Unit.second;
+  }
+
+  static void set(Map<String, dynamic> settings) {
+    settings.forEach((key, value) {
+      final Unit? unitToSet = _parseValue(value);
+      if (unitToSet == null) return;
+
+      switch (key) {
+        case 'angular':
+          angular = unitToSet;
+        case 'distance':
+          distance = unitToSet;
+        case 'velocity':
+          velocity = unitToSet;
+        case 'pressure':
+          pressure = unitToSet;
+        case 'temperature':
+          temperature = unitToSet;
+        case 'diameter':
+          diameter = unitToSet;
+        case 'length':
+          length = unitToSet;
+        case 'weight':
+          weight = unitToSet;
+        case 'adjustment':
+          adjustment = unitToSet;
+        case 'drop':
+          drop = unitToSet;
+        case 'energy':
+          energy = unitToSet;
+        case 'ogw':
+          ogw = unitToSet;
+        case 'sightHeight':
+          sightHeight = unitToSet;
+        case 'targetHeight':
+          targetHeight = unitToSet;
+        case 'twist':
+          twist = unitToSet;
+        case 'time':
+          time = unitToSet;
+        default:
+          throw Exception('Warning: PreferredUnits has no field named "$key"');
+      }
+    });
+  }
+
+  static Unit? _parseValue(dynamic value) {
+    if (value is Unit) return value;
+    if (value is String) {
+      return Unit.values.cast<Unit?>().firstWhere(
+        (u) =>
+            u!.label.toLowerCase() == value.toLowerCase() ||
+            u.name.toLowerCase() == value.toLowerCase(),
+        orElse: () => null,
+      );
+    }
+    return null;
+  }
+
+  static String get info {
+    return [
+      'angular: ${angular.label} (${angular.symbol})',
+      'distance: ${distance.label} (${distance.symbol})',
+      'velocity: ${velocity.label} (${velocity.symbol})',
+      'pressure: ${pressure.label} (${pressure.symbol})',
+      'temperature: ${temperature.label} (${temperature.symbol})',
+      'diameter: ${diameter.label}',
+      'length: ${length.label}',
+      'weight: ${weight.label}',
+      'adjustment: ${adjustment.label}',
+      'drop: ${drop.label}',
+      'energy: ${energy.label}',
+      'ogw: ${ogw.label}',
+      'sightHeight: ${sightHeight.label}',
+      'targetHeight: ${targetHeight.label}',
+      'twist: ${twist.label}',
+      'time: ${time.label}',
+    ].join('\n');
+  }
 }
