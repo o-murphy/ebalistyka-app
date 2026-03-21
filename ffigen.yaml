@@ -1,0 +1,30 @@
+name: BcLibCBindings
+description: 'Auto-generated Dart FFI bindings for the bclibc ballistics engine C API.'
+output: 'lib/src/ffi/bclibc_bindings.g.dart'
+
+headers:
+  entry-points:
+    - 'native/bclibc_ffi.h'
+  include-directives:
+    - '**bclibc_ffi.h'
+
+functions:
+  include:
+    - 'bcffi_.*'
+
+structs:
+  include:
+    - 'BC.*'
+
+enums:
+  include:
+    - 'BC.*'
+
+preamble: |
+  // AUTO-GENERATED – do not edit.
+  // Run: dart run ffigen --config ffigen.yaml
+  //
+  // ignore_for_file: type=lint
+  // ignore_for_file: return_of_invalid_type
+  // ignore_for_file: unnecessary_non_null_assertion
+  // ignore_for_file: unused_element

@@ -326,7 +326,6 @@ class Coriolis {
   ) {
     if (isFull3d) return (0.0, 0.0);
 
-    // Горизонтальне відхилення (справа в північній півкулі, зліва в південній)
     final horizontal =
         BallisticConstants.cEarthAngularVelocityRadS *
         distanceFt *
@@ -348,7 +347,6 @@ class Coriolis {
     return (vertical, horizontal);
   }
 
-  /// Коригує вектор положення, якщо використовується наближення flat-fire.
   Vector adjustPosition(double time, Vector position) {
     if (isFull3d) return position;
 

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FFI Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/ffi_test.dart",
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/build/native"
+      }
+    },
+    {
+      "name": "Unit Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/unit_test.dart"
+    }
+  ]
+}
