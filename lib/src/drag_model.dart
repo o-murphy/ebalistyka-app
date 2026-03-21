@@ -4,24 +4,23 @@ import 'package:test_app/src/constants.dart';
 import 'package:test_app/src/drag_tables.dart';
 import 'package:test_app/src/unit.dart';
 
+/// Точка балістичного коефіцієнта (BC) для конкретного числа Маха або швидкості
 class BCPoint {
   final double bc;
   final double mach;
   final Velocity? v;
 
   BCPoint({required this.bc, double? mach, Object? v})
-    : mach = _calculateMach(mach, v),
-      v = v != null ? PreferredUnits.velocity(v) : null {
+    : v = v != null ? PreferredUnits.velocity(v) : null,
+      mach = _calculateMach(mach, v) {
     if (bc <= 0) {
       throw ArgumentError("Ballistic coefficient must be positive");
     }
-
     if (mach != null && v != null) {
       throw ArgumentError(
         "You cannot specify both 'mach' and 'v' at the same time",
       );
     }
-
     if (mach == null && v == null) {
       throw ArgumentError("One of 'mach' and 'v' must be specified");
     }
@@ -42,11 +41,9 @@ class BCPoint {
         ) *
         BallisticConstants.cSpeedOfSoundMetric;
   }
-
-  @override
-  String toString() => 'BCPoint(BC: $bc, Mach: ${mach.toStringAsFixed(3)})';
 }
 
+/// Основна модель опору
 class DragModel {
   final double bc;
   final List<DragDataPoint> dragTable;
@@ -54,13 +51,12 @@ class DragModel {
   final Distance diameter;
   final Distance length;
 
-  late final double _sectionalDensity;
-  late final double _formFactor;
+  late final double sectionalDensity;
+  late final double formFactor;
 
   DragModel({
     required this.bc,
-    required List<dynamic>
-    dragTable, // Може бути списком BCPoint або сирих даних
+    required List<dynamic> dragTable,
     Object? weight,
     Object? diameter,
     Object? length,
@@ -76,64 +72,56 @@ class DragModel {
     }
 
     if (this.weight.rawValue > 0 && this.diameter.rawValue > 0) {
-      _sectionalDensity = _getSectionalDensity();
-      _formFactor = _getFormFactor(bc);
+      sectionalDensity = _getSectionalDensity();
+      formFactor = _getFormFactor(bc);
     } else {
-      _sectionalDensity = 0.0;
-      _formFactor = 0.0;
+      sectionalDensity = 0.0;
+      formFactor = 0.0;
     }
   }
 
   double _getSectionalDensity() {
-    // Get weight in grains and diameter in inches
     final w = weight.in_(Unit.grain);
     final d = diameter.in_(Unit.inch);
-    // Call the sectionalDensity function to calculate and return the result
-    return sectionalDensity(w, d);
+    return calculateSectionalDensity(w, d);
   }
 
   double _getFormFactor(double bcValue) {
-    return _sectionalDensity / bc;
+    return sectionalDensity / bcValue;
   }
 }
 
+/// Конвертація вхідних даних у List точок (Records)
 List<DragDataPoint> makeDataPoints(List<dynamic> table) {
   return table.map((point) {
     return switch (point) {
       DragDataPoint p => p,
-
-      Map<String, dynamic> m
-          when m.containsKey('mach') && m.containsKey('cd') =>
-        (mach: (m['mach'] as num).toDouble(), cd: (m['cd'] as num).toDouble()),
-
-      Map<String, dynamic> m
-          when m.containsKey('Mach') && m.containsKey('CD') =>
-        (mach: (m['Mach'] as num).toDouble(), cd: (m['CD'] as num).toDouble()),
-
+      Map m
+          when (m['mach'] ?? m['Mach']) != null &&
+              (m['cd'] ?? m['CD']) != null =>
+        (
+          mach: ((m['mach'] ?? m['Mach']) as num).toDouble(),
+          cd: ((m['cd'] ?? m['CD']) as num).toDouble(),
+        ),
       _ => throw TypeError(),
     };
   }).toList();
 }
 
-double sectionalDensity(double weight, diameter) {
+/// Розрахунок SD (lb/in²)
+double calculateSectionalDensity(double weight, double diameter) {
   return weight / pow(diameter, 2) / 7000;
 }
 
+/// Лінійна інтерполяція
 List<double> linearInterpolation(
   List<double> x,
   List<double> xp,
   List<double> yp,
 ) {
-  if (xp.length != yp.length) {
-    throw ArgumentError("xp and yp lists must have the same length");
-  }
-  if (xp.isEmpty) {
-    return x.isEmpty
-        ? []
-        : throw ArgumentError(
-            "Cannot interpolate with empty reference points.",
-          );
-  }
+  if (xp.length != yp.length) throw ArgumentError("xp/yp length mismatch");
+  if (xp.isEmpty)
+    return x.isEmpty ? [] : throw ArgumentError("Empty reference points");
 
   return x.map((xi) {
     if (xi <= xp.first) return yp.first;
@@ -150,54 +138,50 @@ List<double> linearInterpolation(
       }
     }
 
-    final double dx = xp[right] - xp[left];
-    final double dy = yp[right] - yp[left];
-    final double slope = dy / dx;
-
+    final double slope = (yp[right] - yp[left]) / (xp[right] - xp[left]);
     return yp[left] + slope * (xi - xp[left]);
   }).toList();
 }
 
+/// Фабрика для створення DragModel на основі кількох BC точок
 DragModel createDragModelMultiBC({
   required List<BCPoint> bcPoints,
-  required List<dynamic> dragTable,
+  required dynamic dragTable, // Може бути DragTable або List<DragDataPoint>
   Object? weight,
   Object? diameter,
   Object? length,
 }) {
-  final Weight wObj = PreferredUnits.weight(weight ?? 0);
-  final Distance dObj = PreferredUnits.diameter(diameter ?? 0);
+  final wObj = PreferredUnits.weight(weight ?? 0);
+  final dObj = PreferredUnits.diameter(diameter ?? 0);
 
-  double baseBc;
-  if (wObj.rawValue > 0 && dObj.rawValue > 0) {
-    baseBc = sectionalDensity(wObj.in_(Unit.grain), dObj.in_(Unit.inch));
-  } else {
-    baseBc = 1.0;
-  }
+  final double bc = (wObj.rawValue > 0 && dObj.rawValue > 0)
+      ? calculateSectionalDensity(wObj.in_(Unit.grain), dObj.in_(Unit.inch))
+      : 1.0;
 
-  final List<DragDataPoint> sourceTable = makeDataPoints(dragTable);
-  final List<BCPoint> sortedBC = List.from(bcPoints)
+  // Витягуємо точки з інтерфейсу DragTable або використовуємо список напряму
+  final List<DragDataPoint> sourcePoints = (dragTable is DragTable)
+      ? dragTable.points
+      : makeDataPoints(dragTable as List);
+
+  final sortedBCPoints = List<BCPoint>.from(bcPoints)
     ..sort((a, b) => a.mach.compareTo(b.mach));
 
-  final List<double> bcFactors = linearInterpolation(
-    sourceTable.map((p) => p.mach).toList(),
-    sortedBC.map((p) => p.mach).toList(),
-    sortedBC.map((p) => p.bc / baseBc).toList(),
+  final bcFactors = linearInterpolation(
+    sourcePoints.map((p) => p.mach).toList(),
+    sortedBCPoints.map((p) => p.mach).toList(),
+    sortedBCPoints.map((p) => p.bc / bc).toList(),
   );
 
-  final List<DragDataPoint> adjustedTable = [];
-  for (int i = 0; i < sourceTable.length; i++) {
-    final double factor = bcFactors[i];
-
-    final double finalCd = (factor > 0 && !factor.isNaN)
-        ? sourceTable[i].cd / factor
-        : sourceTable[i].cd;
-
-    adjustedTable.add((mach: sourceTable[i].mach, cd: finalCd));
-  }
+  final adjustedTable = List<DragDataPoint>.generate(sourcePoints.length, (i) {
+    final factor = bcFactors[i];
+    return (
+      mach: sourcePoints[i].mach,
+      cd: (factor > 0) ? sourcePoints[i].cd / factor : sourcePoints[i].cd,
+    );
+  });
 
   return DragModel(
-    bc: baseBc,
+    bc: bc,
     dragTable: adjustedTable,
     weight: wObj,
     diameter: dObj,
