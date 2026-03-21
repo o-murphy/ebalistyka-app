@@ -58,26 +58,43 @@ enum Unit {
 
 abstract interface class Measurable<T extends Measurable<T>> {
   T create(double value, Unit unit);
+  T createFromRaw(double value, Unit unit);
+
   double in_(Unit unit);
   T to(Unit unit);
+
   double toRaw(double value, Unit unit);
   double fromRaw(double value, Unit unit);
+
   double get rawValue;
   Unit get units;
+
   Map<Unit, double> get conversionFactors;
+
+  String get debugDetails;
+  double toDouble();
+
+  dynamic operator *(Object other);
+  dynamic operator /(Object other);
+  dynamic operator +(Object other);
+  dynamic operator -(Object other);
 }
 
 abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
+  late double _rawValue;
+  final Unit _definedUnits;
+
   Dimension(double value, this._definedUnits) {
     _rawValue = toRaw(value, _definedUnits);
   }
 
-  Map<Unit, double> get conversionFactors;
+  @override
+  Map<Unit, double> get conversionFactors => <Unit, double>{};
 
-  late double _rawValue;
-  final Unit _definedUnits;
-
+  @override
   double get rawValue => _rawValue;
+
+  @override
   Unit get units => _definedUnits;
 
   @override
@@ -88,37 +105,109 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
   }
 
   @override
-  double in_(Unit unit) {
-    return fromRaw(_rawValue, unit);
-  }
-
-  @override
   T create(double value, Unit unit);
 
   @override
-  T to(Unit unit) {
-    return create(in_(unit), unit);
+  T createFromRaw(double value, Unit unit) =>
+      create(fromRaw(value, unit), unit);
+
+  double _getFactor(Unit unit) {
+    final factor = conversionFactors[unit];
+    if (factor == null) {
+      throw Exception('$runtimeType: unit ${unit.label} is not supported');
+    }
+    return factor;
   }
 
   @override
-  double toRaw(double value, Unit unit) {
-    final factor = conversionFactors[unit];
-    if (factor == null) throw Exception('$runtimeType: $unit is not supported');
-    return value * factor;
+  double in_(Unit unit) => fromRaw(_rawValue, unit);
+
+  @override
+  T to(Unit unit) => create(in_(unit), unit);
+
+  @override
+  double toRaw(double value, Unit unit) => value * _getFactor(unit);
+
+  @override
+  double fromRaw(double rawValue, Unit unit) => rawValue / _getFactor(unit);
+
+  @override
+  String get debugDetails =>
+      '$runtimeType(rawValue: $_rawValue, units: ${_definedUnits.label})';
+
+  @override
+  double toDouble() => fromRaw(_rawValue, _definedUnits);
+
+  double get _unitsToRawDelta {
+    if (conversionFactors.isEmpty) return 0.0; // Для Temperature
+    return _getFactor(_definedUnits);
   }
 
   @override
-  double fromRaw(double value, Unit unit) {
-    final factor = conversionFactors[unit];
-    if (factor == null) throw Exception('$runtimeType: $unit is not supported');
-    return value / factor;
+  dynamic operator *(Object other) {
+    if (other is num) {
+      // self._value * other
+      return createFromRaw(_rawValue * other.toDouble(), _definedUnits);
+    }
+    throw ArgumentError('Multiplication is only supported for numbers');
+  }
+
+  @override
+  dynamic operator /(Object other) {
+    if (other is num) {
+      if (other == 0) throw ArgumentError('Division by zero');
+      // self._value / other
+      return createFromRaw(_rawValue / other.toDouble(), _definedUnits);
+    }
+    if (other is T) {
+      if (other.rawValue == 0) throw ArgumentError('Division by zero');
+      // float(self._value) / float(other.raw_value)
+      return _rawValue / other.rawValue;
+    }
+    throw ArgumentError(
+      'Division is only supported for numbers or same Dimension',
+    );
+  }
+
+  @override
+  dynamic operator +(Object other) {
+    if (other is num) {
+      // self._value + float(other) * self._units_to_raw_delta()
+      return createFromRaw(
+        _rawValue + (other.toDouble() * _unitsToRawDelta),
+        _definedUnits,
+      );
+    }
+    if (other is T) {
+      // self._value + other._value
+      return createFromRaw(_rawValue + other.rawValue, _definedUnits);
+    }
+    throw ArgumentError(
+      'Addition is only supported for numbers or same Dimension',
+    );
+  }
+
+  @override
+  dynamic operator -(Object other) {
+    if (other is num) {
+      return createFromRaw(
+        _rawValue - (other.toDouble() * _unitsToRawDelta),
+        _definedUnits,
+      );
+    }
+    if (other is T) {
+      return createFromRaw(_rawValue - other.rawValue, _definedUnits);
+    }
+    throw ArgumentError(
+      'Subtraction is only supported for numbers or same Dimension',
+    );
   }
 }
 
 class Angular extends Dimension<Angular> {
-  Angular(double value, Unit unit) : super(value, unit);
+  Angular(super.value, super.unit);
 
-  static final _factors = <Unit, double>{
+  static final _conversionFactors = <Unit, double>{
     Unit.radian: 1.0,
     Unit.degree: pi / 180,
     Unit.moa: pi / (60 * 180),
@@ -131,15 +220,170 @@ class Angular extends Dimension<Angular> {
   };
 
   @override
-  Map<Unit, double> get conversionFactors => _factors;
+  Map<Unit, double> get conversionFactors => _conversionFactors;
 
   @override
   Angular create(double value, Unit unit) => Angular(value, unit);
 
   @override
   double toRaw(double value, Unit unit) {
+    // Note: The logic here remains the same,
+    // ensuring the result is normalized between (-pi, pi]
     final radians = super.toRaw(value, unit);
     final r = (radians + pi) % (2.0 * pi) - pi;
     return r > -pi ? r : pi;
   }
+}
+
+class Energy extends Dimension<Energy> {
+  Energy(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.footPound: 1.0,
+    Unit.joule: 1 / 1.3558179483314,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Energy create(double value, Unit unit) => Energy(value, unit);
+}
+
+class Distance extends Dimension<Distance> {
+  Distance(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.inch: 1.0,
+    Unit.foot: 12.0,
+    Unit.yard: 36.0,
+    Unit.mile: 63_360.0,
+    Unit.nauticalMile: 72_913.3858,
+    Unit.line: 0.1,
+    Unit.millimeter: 1.0 / 25.4,
+    Unit.centimeter: 10.0 / 25.4,
+    Unit.meter: 1_000.0 / 25.4,
+    Unit.kilometer: 1_000_000.0 / 25.4,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Distance create(double value, Unit unit) => Distance(value, unit);
+}
+
+class Pressure extends Dimension<Pressure> {
+  Pressure(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.mmHg: 1.0,
+    Unit.inHg: 25.4,
+    Unit.bar: 750.061683,
+    Unit.hPa: 750.061683 / 1_000,
+    Unit.psi: 51.714924102396,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Pressure create(double value, Unit unit) => Pressure(value, unit);
+}
+
+class Temperature extends Dimension<Temperature> {
+  Temperature(super.value, super.unit);
+
+  @override
+  Map<Unit, double> get conversionFactors => const {};
+
+  @override
+  Temperature create(double value, Unit unit) => Temperature(value, unit);
+
+  @override
+  double toRaw(double value, Unit unit) {
+    return switch (unit) {
+      Unit.fahrenheit => value,
+      Unit.rankin => value - 459.67,
+      Unit.celsius => value * 9.0 / 5 + 32,
+      Unit.kelvin => (value - 273.15) * 9.0 / 5 + 32,
+      _ => throw Exception('Temperature does not support $unit'),
+    };
+  }
+
+  @override
+  double fromRaw(double value, Unit unit) {
+    return switch (unit) {
+      Unit.fahrenheit => value,
+      Unit.rankin => value + 459.67,
+      Unit.celsius => (value - 32) * 5.0 / 9,
+      Unit.kelvin => (value - 32) * 5.0 / 9 + 273.15,
+      _ => throw Exception('Temperature does not support $unit'),
+    };
+  }
+
+  @override
+  double get _unitsToRawDelta {
+    return switch (units) {
+      Unit.fahrenheit || Unit.rankin => 1.0,
+      Unit.celsius || Unit.kelvin => 9.0 / 5.0,
+      _ => 1.0,
+    };
+  }
+}
+
+class Time extends Dimension<Time> {
+  Time(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.second: 1.0,
+    Unit.minute: 60.0,
+    Unit.millisecond: 1.0 / 1_000,
+    Unit.microsecond: 1.0 / 1_000_000,
+    Unit.nanosecond: 1.0 / 1_000_000_000,
+    Unit.picosecond: 1.0 / 1_000_000_000_000,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Time create(double value, Unit unit) => Time(value, unit);
+}
+
+class Velocity extends Dimension<Velocity> {
+  Velocity(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.mps: 1.0,
+    Unit.kmh: 1.0 / 3.6,
+    Unit.fps: 1.0 / 3.2808399,
+    Unit.mph: 1.0 / 2.23693629,
+    Unit.kt: 1.0 / 1.94384449,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Velocity create(double value, Unit unit) => Velocity(value, unit);
+}
+
+class Weight extends Dimension<Weight> {
+  Weight(super.value, super.unit);
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.grain: 1.0,
+    Unit.ounce: 437.5,
+    Unit.gram: 15.4323584,
+    Unit.pound: 7_000.0,
+    Unit.kilogram: 15_432.3584,
+    Unit.newton: 1_573.662597,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Weight create(double value, Unit unit) => Weight(value, unit);
 }
