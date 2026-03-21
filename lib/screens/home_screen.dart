@@ -5,8 +5,7 @@ import '../widgets/wind_indicator.dart';
 class SideControlBlock extends StatelessWidget {
   final IconData topIcon;
   final IconData bottomIcon;
-  final String label;
-  final String value;
+  final List<(IconData, String)> infoRows;
   final VoidCallback onTopPressed;
   final VoidCallback onBottomPressed;
 
@@ -14,72 +13,62 @@ class SideControlBlock extends StatelessWidget {
     super.key,
     required this.topIcon,
     required this.bottomIcon,
-    required this.label,
-    required this.value,
+    required this.infoRows,
     required this.onTopPressed,
     required this.onBottomPressed,
   });
 
+  Widget _fab(BuildContext context, IconData icon, VoidCallback onPressed) {
+    final cs = Theme.of(context).colorScheme;
+    return FloatingActionButton(
+      heroTag: null,
+      backgroundColor: cs.surfaceContainerHighest,
+      foregroundColor: cs.onSurface,
+      onPressed: onPressed,
+      child: Icon(icon, size: 24),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.all(4),
       child: Column(
         children: [
-          // Кнопка зверху
+          _fab(context, topIcon, onTopPressed),
           Expanded(
-            flex: 1,
-            child: IconButton(
-              onPressed: onTopPressed,
-              icon: Icon(topIcon, size: 28),
-              // Оновлено: .withValues замість .withOpacity
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.8),
-              padding: EdgeInsets.zero,
-            ),
-          ),
-
-          // Інформаційний текст по центру
-          Expanded(
-            flex: 2,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w300,
-                    // Оновлено: .withValues замість .withOpacity
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ],
+              mainAxisSize: MainAxisSize.min,
+              children: infoRows.map((row) {
+                final (icon, value) = row;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 18,
+                      color: cs.onSurface.withValues(alpha: 0.65),
+                    ),
+                    if (value.isNotEmpty) ...[
+                      const SizedBox(width: 4),
+                      Text(
+                        value,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: cs.onSurface.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              }).toList(),
             ),
           ),
-
-          // Кнопка знизу
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              onPressed: onBottomPressed,
-              icon: Icon(bottomIcon, size: 24),
-              // Якщо захочеш додати колір і сюди:
-              // color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              padding: EdgeInsets.zero,
-            ),
-          ),
+          _fab(context, bottomIcon, onBottomPressed),
         ],
       ),
     );
@@ -91,11 +80,11 @@ class QuickActionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double outerMargin = 12.0;
+    const double outerMargin = 16.0;
     const double spacing = 8.0;
 
     return Container(
-      height: 64,
+      height: 80,
       margin: const EdgeInsets.only(
         left: outerMargin,
         right: outerMargin,
@@ -104,35 +93,89 @@ class QuickActionsPanel extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildAction(context, Icons.settings, () => print("Settings")),
+          _buildAction(
+            context,
+            Icons.air_outlined,
+            '5.4 m/s',
+            'Wind speed',
+            () => print("Wind speed"),
+          ),
           const SizedBox(width: spacing),
-          _buildAction(context, Icons.straighten, () => print("Rangefinder")),
+          _buildAction(
+            context,
+            Icons.square_foot,
+            '0°',
+            'Look angle',
+            () => print("Look angle"),
+          ),
           const SizedBox(width: spacing),
-          _buildAction(context, Icons.gps_fixed, () => print("Target")),
+          _buildAction(
+            context,
+            Icons.flag_outlined,
+            '420 m',
+            'Target range',
+            () => print("Target range"),
+          ),
           const SizedBox(width: spacing),
-          _buildAction(context, Icons.balance, () => print("Stability")),
+          _buildAction(
+            context,
+            Icons.av_timer,
+            '00:00',
+            'Metronome',
+            () => print("Metronome"),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildAction(BuildContext context, IconData icon, VoidCallback onTap) {
+  Widget _buildAction(
+    BuildContext context,
+    IconData icon,
+    String value,
+    String label,
+    VoidCallback onTap,
+  ) {
+    final cs = Theme.of(context).colorScheme;
     return Expanded(
-      child: SizedBox(
-        height: double.infinity,
-        child: IconButton(
-          onPressed: onTap,
-          icon: Icon(icon, size: 24),
-          style: IconButton.styleFrom(
-            // ЗАМІНА ТУТ:
-            backgroundColor: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.08),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+      child: Column(
+        children: [
+          Expanded(
+            child: SizedBox.expand(
+              child: FloatingActionButton(
+                heroTag: null,
+                onPressed: onTap,
+                backgroundColor: cs.surfaceContainerHighest,
+                foregroundColor: cs.onSurface,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(icon, size: 22),
+                    if (value.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: cs.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -147,8 +190,8 @@ class HomeScreen extends StatelessWidget {
       builder: (context, constraints) {
         double width = constraints.maxWidth;
         // Обмежуємо висоту: квадрат або половина екрана
-        double maxHeight = constraints.maxHeight * 0.5;
-        double height = min(width, maxHeight);
+        double maxHeight = constraints.maxHeight * 0.55;
+        double height = maxHeight; //min(width, maxHeight);
 
         return Column(
           children: [
@@ -156,6 +199,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               height: height,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: const BorderRadius.only(
@@ -168,6 +212,28 @@ class HomeScreen extends StatelessWidget {
                 // використовуємо внутрішній Column
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.tonal(
+                              onPressed: () {},
+                              child: const Text(
+                                '.338 Lapua Mag 300gr SMK',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            onPressed: () {},
+                            icon: const Icon(Icons.rocket_launch_outlined),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     // 1. Верхня частина: Блоки + Колесо
                     Expanded(
                       child: Row(
@@ -176,27 +242,25 @@ class HomeScreen extends StatelessWidget {
                           Expanded(
                             flex: 1,
                             child: SideControlBlock(
-                              topIcon: Icons.add,
-                              bottomIcon: Icons.remove,
-                              label: "WIND",
-                              value: "5.4",
-                              onTopPressed: () => print("Wind +"),
-                              onBottomPressed: () => print("Wind -"),
+                              topIcon: Icons.info_outline,
+                              bottomIcon: Icons.note_add_outlined,
+                              infoRows: const [
+                                (Icons.thunderstorm_outlined, ''),
+                                (Icons.device_thermostat_outlined, '23°C'),
+                                (Icons.terrain_outlined, '150 m'),
+                              ],
+                              onTopPressed: () => print("Info pressed"),
+                              onBottomPressed: () => print("Notes pressed"),
                             ),
                           ),
 
                           // Центр: Колесо
                           Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                              ),
-                              child: WindIndicator(
-                                onAngleChanged: (degrees, clockFormat) {
-                                  print("Напрямок: $degrees°");
-                                },
-                              ),
+                            flex: 2,
+                            child: WindIndicator(
+                              onAngleChanged: (degrees, clockFormat) {
+                                print("Напрямок: $degrees°");
+                              },
                             ),
                           ),
 
@@ -204,12 +268,15 @@ class HomeScreen extends StatelessWidget {
                           Expanded(
                             flex: 1,
                             child: SideControlBlock(
-                              topIcon: Icons.keyboard_arrow_up,
-                              bottomIcon: Icons.keyboard_arrow_down,
-                              label: "TEMP",
-                              value: "15°",
-                              onTopPressed: () => print("Temp +"),
-                              onBottomPressed: () => print("Temp -"),
+                              topIcon: Icons.question_mark_outlined,
+                              bottomIcon: Icons.more_horiz_outlined,
+                              infoRows: const [
+                                (Icons.thunderstorm_outlined, ''),
+                                (Icons.water_drop_outlined, '29%'),
+                                (Icons.speed_outlined, '992 hPa'),
+                              ],
+                              onTopPressed: () => print("Help pressed"),
+                              onBottomPressed: () => print("Tools pressed"),
                             ),
                           ),
                         ],

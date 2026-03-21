@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart'; // Додаємо цей імпорт
+import 'package:window_manager/window_manager.dart';
 import 'screens/home_screen.dart'; // <--- 1. Імпортуємо файл
 import 'screens/conditions_screen.dart'; // <--- 1. Імпортуємо файл
 import 'screens/tables_screen.dart'; // <--- 1. Імпортуємо файл
@@ -9,19 +10,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Обов'язково ініціалізуємо менеджер вікон
-  await windowManager.ensureInitialized();
 
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(375, 812), // Розмір екрана iPhone 13 mini в логічних пікселях
-    center: true,
-    title: "eBallistica",
-  );
-
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
+  if (!kIsWeb) {
+    await windowManager.ensureInitialized();
+    const windowOptions = WindowOptions(
+      size: Size(375, 812),
+      center: true,
+      title: "eBallistica",
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -108,14 +109,23 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.cloud), label: 'Conditions'),
-          NavigationDestination(icon: Icon(Icons.table_view), label: 'Tables'),
+          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
           NavigationDestination(
-            icon: Icon(Icons.calculate),
+            icon: Icon(Icons.thunderstorm_outlined),
+            label: 'Conditions',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.table_view_outlined),
+            label: 'Tables',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calculate_outlined),
             label: 'Convertors',
           ),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            label: 'Settings',
+          ),
         ],
       ),
     );

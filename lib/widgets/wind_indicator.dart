@@ -49,10 +49,13 @@ class _WindIndicatorState extends State<WindIndicator> {
       angle = snappedAngle;
     });
 
-    // Розрахунок годин для колбеку (тепер на основі snappedDegrees)
-    int hour = ((snappedDegrees / 30).round() % 12);
+    // Розрахунок год:хв (360° = 720 хв)
+    final totalMin = (snappedDegrees * 2).round();
+    int hour = (totalMin ~/ 60) % 12;
     if (hour == 0) hour = 12;
-    String clockFormat = "${hour.toString().padLeft(2, '0')}:00";
+    final minute = totalMin % 60;
+    String clockFormat =
+        "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
 
     widget.onAngleChanged(snappedDegrees, clockFormat);
   }
@@ -66,12 +69,12 @@ class _WindIndicatorState extends State<WindIndicator> {
           onPanUpdate: (details) => _handleGesture(details.localPosition, size),
           onTapDown: (details) => _handleGesture(details.localPosition, size),
           child: CustomPaint(
-            size: Size.infinite,
             painter: WindPainter(
               angle: angle,
               color: Theme.of(context).colorScheme.onSurface,
               primaryColor: Theme.of(context).colorScheme.primary,
             ),
+            child: const SizedBox.expand(),
           ),
         );
       },
@@ -93,7 +96,7 @@ class WindPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = min(size.width, size.height) * 0.45;
+    final radius = min(size.width, size.height) * 0.5;
     final innerRadius = radius * 0.8;
 
     final ringPaint = Paint()
@@ -131,7 +134,8 @@ class WindPainter extends CustomPainter {
           ..strokeWidth = 2,
       );
 
-      // Цифри
+      // Цифри тільки на 12, 3, 6, 9
+      if (i % 3 != 0) continue;
       textPainter.text = TextSpan(
         text: '$i',
         style: TextStyle(
@@ -150,35 +154,109 @@ class WindPainter extends CustomPainter {
       textPainter.paint(canvas, textPos);
     }
 
-    // 3. Малюємо стрілку-трикутник (указує "звідки")
-    final arrowPath = Path();
-    double arrowSize = 15;
-
-    // Координати вершин трикутника на зовнішньому колі
-    Offset tip = Offset(
-      center.dx + radius * cos(angle),
-      center.dy + radius * sin(angle),
-    );
-    Offset base1 = Offset(
-      center.dx + (radius + arrowSize) * cos(angle - 0.2),
-      center.dy + (radius + arrowSize) * sin(angle - 0.2),
-    );
-    Offset base2 = Offset(
-      center.dx + (radius + arrowSize) * cos(angle + 0.2),
-      center.dy + (radius + arrowSize) * sin(angle + 0.2),
+    // 3. Маркер + стрілка
+    const markerR = 16.0;
+    const markerOver = 6.0; // виступ за radius
+    final markerCenter = Offset(
+      center.dx + (radius - markerR + markerOver) * cos(angle),
+      center.dy + (radius - markerR + markerOver) * sin(angle),
     );
 
-    arrowPath.moveTo(tip.dx, tip.dy);
-    arrowPath.lineTo(base1.dx, base1.dy);
-    arrowPath.lineTo(base2.dx, base2.dy);
-    arrowPath.close();
+    // Вектори напрямку
+    final fx = -cos(angle); // до центру
+    final fy = -sin(angle);
+    final rx = -sin(angle); // перпендикуляр
+    final ry = cos(angle);
 
-    canvas.drawPath(arrowPath, Paint()..color = Colors.white);
+    // --- Стрілка (малюємо ПЕРШОЮ, кружечок перекриє основу) ---
+    const stemW = 4.0;
+    const headW = 11.0;
+    const totalL = 45.0;
+    const headL = 14.0;
 
-    // 4. Текст у центрі (Градуси)
+    // Основа стрілки = центр кружечка
+    final bx = markerCenter.dx;
+    final by = markerCenter.dy;
+    final mx = bx + fx * (totalL - headL);
+    final my = by + fy * (totalL - headL);
+    final tx = bx + fx * totalL;
+    final ty = by + fy * totalL;
+
+    final arrowPath = Path()
+      ..moveTo(bx + rx * stemW, by + ry * stemW)
+      ..lineTo(mx + rx * stemW, my + ry * stemW)
+      ..lineTo(mx + rx * headW, my + ry * headW)
+      ..lineTo(tx, ty)
+      ..lineTo(mx - rx * headW, my - ry * headW)
+      ..lineTo(mx - rx * stemW, my - ry * stemW)
+      ..lineTo(bx - rx * stemW, by - ry * stemW)
+      ..close();
+
+    canvas.drawPath(
+      arrowPath,
+      Paint()
+        ..color = primaryColor
+        ..style = PaintingStyle.fill,
+    );
+
+    // --- Кружечок (поверх основи стрілки) ---
+    // Тінь
+    canvas.drawCircle(
+      markerCenter,
+      markerR + 1,
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.25)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+    // Заливка
+    canvas.drawCircle(markerCenter, markerR, Paint()..color = primaryColor);
+
+    // Fingerprint іконка
+    final iconTp = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(Icons.fingerprint.codePoint),
+        style: TextStyle(
+          fontFamily: Icons.fingerprint.fontFamily,
+          fontSize: markerR * 1.2,
+          color: Colors.white,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    iconTp.paint(
+      canvas,
+      Offset(
+        markerCenter.dx - iconTp.width / 2,
+        markerCenter.dy - iconTp.height / 2,
+      ),
+    );
+
+    // 4. Текст у центрі
     double degrees = (angle * 180 / pi + 90) % 360;
     if (degrees < 0) degrees += 360;
 
+    final totalMin = (degrees * 2).round();
+    int hour = (totalMin ~/ 60) % 12;
+    if (hour == 0) hour = 12;
+    final minute = totalMin % 60;
+    final clockStr =
+        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+
+    // Мітка "Wind direction"
+    textPainter.text = TextSpan(
+      text: 'Wind direction',
+      style: TextStyle(color: color.withValues(alpha: 0.55), fontSize: 11),
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(
+        center.dx - textPainter.width / 2,
+        center.dy - textPainter.height / 2 - 28,
+      ),
+    );
+
+    // Градуси (великий текст)
     textPainter.text = TextSpan(
       text: '${degrees.toStringAsFixed(0)}°',
       style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.bold),
@@ -189,6 +267,20 @@ class WindPainter extends CustomPainter {
       Offset(
         center.dx - textPainter.width / 2,
         center.dy - textPainter.height / 2,
+      ),
+    );
+
+    // Годинний формат
+    textPainter.text = TextSpan(
+      text: clockStr,
+      style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 13),
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(
+        center.dx - textPainter.width / 2,
+        center.dy - textPainter.height / 2 + 28,
       ),
     );
   }
