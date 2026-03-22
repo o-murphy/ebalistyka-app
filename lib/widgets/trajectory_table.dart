@@ -10,11 +10,15 @@ const _ftLbToJ = 1.35582;
 class TrajectoryTable extends StatelessWidget {
   final List<TrajectoryData> traj;
   final double availableWidth;
+  /// Zero distance in metres (e.g. 100.0). Used to pick the correct
+  /// zero-crossing row to highlight in the table.
+  final double zeroDistanceM;
 
   const TrajectoryTable({
     super.key,
     required this.traj,
     required this.availableWidth,
+    this.zeroDistanceM = 100.0,
   });
 
   @override
@@ -22,12 +26,13 @@ class TrajectoryTable extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    // Highlight the row closest to zero height
-    int zeroIdx = 0;
-    double minAbs = 1e9;
+    // Highlight the row whose distance is closest to the zero distance.
+    int? zeroIdx;
+    double minDelta = double.infinity;
     for (var i = 0; i < traj.length; i++) {
-      final a = traj[i].slantHeight.in_(Unit.foot).abs();
-      if (a < minAbs) { minAbs = a; zeroIdx = i; }
+      final distM = traj[i].distance.in_(Unit.foot) * _ftToM;
+      final delta = (distM - zeroDistanceM).abs();
+      if (delta < minDelta) { minDelta = delta; zeroIdx = i; }
     }
 
     final hdr      = theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: cs.onSurface);

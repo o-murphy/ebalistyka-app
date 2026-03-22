@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/calculation_provider.dart';
 import '../providers/shot_profile_provider.dart';
 import '../router.dart';
+import '../src/solver/conditions.dart' as solver;
+import '../src/solver/unit.dart' as solver;
 import '../widgets/trajectory_chart.dart';
 import '../widgets/wind_indicator.dart';
 import '../widgets/side_control_block.dart';
@@ -110,8 +112,14 @@ class HomeScreen extends ConsumerWidget {
                             flex: 2,
                             child: WindIndicator(
                               onAngleChanged: (degrees, _) {
-                                ref.read(shotProfileProvider.notifier)
-                                    .updateLookAngle(degrees);
+                                final existing = ref.read(shotProfileProvider).value?.winds ?? [];
+                                final wind = solver.Wind(
+                                  velocity: existing.isNotEmpty
+                                      ? existing.first.velocity
+                                      : solver.Velocity(0, solver.Unit.mps),
+                                  directionFrom: solver.Angular(degrees, solver.Unit.degree),
+                                );
+                                ref.read(shotProfileProvider.notifier).updateWinds([wind]);
                               },
                             ),
                           ),

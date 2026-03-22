@@ -726,7 +726,6 @@ Isar may be added later as an alternative implementation behind the same interfa
 | 3 | Reticle screen — static display or interactive? | ⏳ TBD |
 | 4 | Full list of switches in Settings | ⏳ TBD |
 | 5 | Localizations: UK + EN only or more? | ⏳ TBD |
-| 6 | Metronome in QuickActionsPanel — what is it, how does it work? | ⏳ TBD |
 
 ---
 
@@ -940,11 +939,21 @@ Connect to `ShotProfileNotifier.updateConditions()`. All fields — keyboard inp
 
 ### Phase 8 — Tables Screen
 
-- Connect to `calculationProvider` (remove hardcoded calculation)
-- Add spoiler with shot profile details
-- Add zero crossing table
-- Wire Configure button → `/tables/configure`
-- Wire Export button → share sheet (PDF or HTML, TBD)
+**Done:**
+- Connected to `calculationProvider` (hardcoded calculation removed)
+- Topbar: back→Home, centered title, Configure + Export buttons
+- Spinner while recalculating
+- `TrajectoryTable` using `List<TrajectoryData>` (domain types)
+
+**Pending (table UI):**
+- 8.1 **Frozen header**: column name + unit rows should stay fixed while content scrolls vertically (only content rows scroll)
+- 8.2 **Zero crossing rows**: 2 extra rows separated by a double divider — shows the zero-crossing point. Toggled via table settings. Or as a separate widget.
+- 8.3 **Row tap → detail dialog**: tapping a table row opens a dialog with full details for that point
+- 8.4 **Details spoiler**: collapsible widget above the table showing shot profile details (rifle, cartridge, conditions summary)
+- 8.5 **Zero highlighting bug**: currently highlights the row with minimum `|slantHeight|`; verify zero crossing is correctly identified after `setWeaponZero` integration
+- 8.6 Wire Configure → `TableConfigScreen`
+- 8.7 Wire Export → share sheet (PDF or HTML, TBD)
+- 8.8 `zeroDistance` field on `ShotProfile` (currently hardcoded 100 m in `_runCalculation`)
 
 ---
 

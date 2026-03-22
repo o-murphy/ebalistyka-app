@@ -12,8 +12,15 @@ import 'storage_provider.dart';
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   @override
   Future<ShotProfile> build() async {
-    return await ref.read(appStorageProvider).loadCurrentProfile()
+    final loaded = await ref.read(appStorageProvider).loadCurrentProfile()
         ?? seedShotProfile;
+    // Clamp look angle to ±45° — corrupted values (e.g. from old wind-wheel
+    // bug that wrote wind direction into lookAngle) cause zero-finding to fail.
+    final laDeg = (loaded.lookAngle as Angular).in_(Unit.degree);
+    if (laDeg.abs() > 45) {
+      return loaded.copyWith(lookAngle: Angular(0.0, Unit.degree));
+    }
+    return loaded;
   }
 
   Future<void> selectRifle(Rifle r) =>

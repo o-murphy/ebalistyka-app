@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/calculation_provider.dart';
+import 'providers/shot_profile_provider.dart';
 
 import 'screens/home_screen.dart';
 import 'screens/home_sub_screens.dart';
@@ -169,6 +170,19 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
 
   @override
   Widget build(BuildContext context) {
+    // Mark calculation dirty whenever the shot profile changes.
+    // Done here (not inside CalculationNotifier.build) to avoid
+    // accidentally re-running the notifier's build and resetting state.
+    ref.listen(shotProfileProvider, (_, next) {
+      if (next.hasValue) {
+        final notifier = ref.read(calculationProvider.notifier);
+        notifier.markDirty();
+        if (_calcTabs.contains(widget.shell.currentIndex)) {
+          notifier.recalculateIfNeeded();
+        }
+      }
+    });
+
     return Scaffold(
       body: SafeArea(child: widget.shell),
       bottomNavigationBar: NavigationBar(
