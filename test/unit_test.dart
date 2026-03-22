@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:test_app/src/unit.dart';
+import 'package:test_app/src/solver/unit.dart';
 
 void main() {
   group('Angular normalization', () {

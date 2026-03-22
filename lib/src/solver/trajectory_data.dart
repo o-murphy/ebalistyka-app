@@ -1,5 +1,5 @@
-import 'package:test_app/src/unit.dart';
-import 'package:test_app/src/shot.dart';
+import 'package:test_app/src/solver/unit.dart';
+import 'package:test_app/src/solver/shot.dart';
 
 enum TrajFlag {
   none(0),

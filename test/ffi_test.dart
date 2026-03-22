@@ -8,8 +8,8 @@
 //   BCLIBC_FFI_PATH=/path/to/libbclibc_ffi.so dart test test/ffi_test.dart
 
 import 'package:test/test.dart';
-import 'package:test_app/src/ffi/bclibc_ffi.dart';
-import 'package:test_app/src/ffi/bclibc_bindings.g.dart';
+import 'package:test_app/src/solver/ffi/bclibc_ffi.dart';
+import 'package:test_app/src/solver/ffi/bclibc_bindings.g.dart';
 
 // ---------------------------------------------------------------------------
 // Minimal G7 drag table (same points as the WASM test fixture)
@@ -42,7 +42,7 @@ final _g7Table = [
   BcDragPoint(0.925, 0.1660),
   BcDragPoint(0.95, 0.2054),
   BcDragPoint(0.975, 0.2993),
-  BcDragPoint(1.0,  0.3803),
+  BcDragPoint(1.0, 0.3803),
   BcDragPoint(1.025, 0.4015),
   BcDragPoint(1.05, 0.4043),
   BcDragPoint(1.075, 0.4034),
@@ -67,10 +67,10 @@ final _g7Table = [
 // ---------------------------------------------------------------------------
 
 const _atmo = BcAtmosphere(
-  t0: 15.0,          // °C
-  a0: 0.0,           // ft (sea level)
-  p0: 1013.25,       // hPa
-  mach: 1126.0,      // fps (~340 m/s at 15 °C)
+  t0: 15.0, // °C
+  a0: 0.0, // ft (sea level)
+  p0: 1013.25, // hPa
+  mach: 1126.0, // fps (~340 m/s at 15 °C)
   densityRatio: 1.0,
   cLowestTempC: -89.2,
 );
@@ -84,24 +84,23 @@ const _coriolis = BcCoriolis(); // no coriolis
 BcShotProps _makeShotProps({
   double barrelElevationRad = 0.0,
   int method = BCIntegrationMethod.BC_INTEGRATION_RK4,
-}) =>
-    BcShotProps(
-      bc:                  0.279,    // G7 BC
-      lookAngleRad:        0.0,
-      twistInch:           10.0,
-      lengthInch:          1.3,
-      diameterInch:        0.338,
-      weightGrain:         300.0,
-      barrelElevationRad:  barrelElevationRad,
-      barrelAzimuthRad:    0.0,
-      sightHeightFt:       0.21 / 3.28084, // 21 cm in feet
-      cantAngleRad:        0.0,
-      alt0Ft:              0.0,
-      muzzleVelocityFps:   2750.0,
-      atmo:                _atmo,
-      coriolis:            _coriolis,
-      dragTable:           _g7Table,
-    );
+}) => BcShotProps(
+  bc: 0.279, // G7 BC
+  lookAngleRad: 0.0,
+  twistInch: 10.0,
+  lengthInch: 1.3,
+  diameterInch: 0.338,
+  weightGrain: 300.0,
+  barrelElevationRad: barrelElevationRad,
+  barrelAzimuthRad: 0.0,
+  sightHeightFt: 0.21 / 3.28084, // 21 cm in feet
+  cantAngleRad: 0.0,
+  alt0Ft: 0.0,
+  muzzleVelocityFps: 2750.0,
+  atmo: _atmo,
+  coriolis: _coriolis,
+  dragTable: _g7Table,
+);
 
 void main() {
   late BcLibC bc;
@@ -157,10 +156,10 @@ void main() {
 
     test('zero angle increases with distance', () {
       final props = _makeShotProps();
-      final a100  = bc.findZeroAngle(props, 100.0  * 3.28084);
-      final a500  = bc.findZeroAngle(props, 500.0  * 3.28084);
+      final a100 = bc.findZeroAngle(props, 100.0 * 3.28084);
+      final a500 = bc.findZeroAngle(props, 500.0 * 3.28084);
       final a1000 = bc.findZeroAngle(props, 1000.0 * 3.28084);
-      expect(a500,  greaterThan(a100));
+      expect(a500, greaterThan(a100));
       expect(a1000, greaterThan(a500));
     });
   });
@@ -181,11 +180,11 @@ void main() {
 
   group('integrate', () {
     test('returns trajectory records with RANGE flag', () {
-      final props   = _makeShotProps();
+      final props = _makeShotProps();
       final request = BcTrajectoryRequest(
         rangeLimitFt: 1000.0 * 3.28084, // 1 km
-        rangeStepFt:  100.0  * 3.28084, // every 100 m
-        filterFlags:  BCTrajFlag.BC_TRAJ_FLAG_RANGE,
+        rangeStepFt: 100.0 * 3.28084, // every 100 m
+        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE,
       );
       final result = bc.integrate(props, request);
       expect(result.trajectory, isNotEmpty);
@@ -196,11 +195,11 @@ void main() {
     });
 
     test('velocity decreases monotonically', () {
-      final props   = _makeShotProps();
+      final props = _makeShotProps();
       final request = BcTrajectoryRequest(
         rangeLimitFt: 1000.0 * 3.28084,
-        rangeStepFt:  50.0   * 3.28084,
-        filterFlags:  BCTrajFlag.BC_TRAJ_FLAG_RANGE,
+        rangeStepFt: 50.0 * 3.28084,
+        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE,
       );
       final result = bc.integrate(props, request);
       expect(result.trajectory.length, greaterThan(1));
@@ -214,11 +213,11 @@ void main() {
     });
 
     test('distance increases monotonically', () {
-      final props   = _makeShotProps();
+      final props = _makeShotProps();
       final request = BcTrajectoryRequest(
         rangeLimitFt: 500.0 * 3.28084,
-        rangeStepFt:  50.0  * 3.28084,
-        filterFlags:  BCTrajFlag.BC_TRAJ_FLAG_RANGE,
+        rangeStepFt: 50.0 * 3.28084,
+        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE,
       );
       final result = bc.integrate(props, request);
 
@@ -231,11 +230,13 @@ void main() {
     });
 
     test('EULER method also produces a trajectory', () {
-      final props   = _makeShotProps(method: BCIntegrationMethod.BC_INTEGRATION_EULER);
+      final props = _makeShotProps(
+        method: BCIntegrationMethod.BC_INTEGRATION_EULER,
+      );
       final request = BcTrajectoryRequest(
         rangeLimitFt: 500.0 * 3.28084,
-        rangeStepFt:  100.0 * 3.28084,
-        filterFlags:  BCTrajFlag.BC_TRAJ_FLAG_RANGE,
+        rangeStepFt: 100.0 * 3.28084,
+        filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE,
       );
       final result = bc.integrate(props, request);
       expect(result.trajectory, isNotEmpty);
@@ -246,9 +247,9 @@ void main() {
 
   group('integrateAt', () {
     test('returns interception at a specific distance', () {
-      final props      = _makeShotProps();
-      final targetFt   = 500.0 * 3.28084;
-      final intercept  = bc.integrateAt(
+      final props = _makeShotProps();
+      final targetFt = 500.0 * 3.28084;
+      final intercept = bc.integrateAt(
         props,
         BCBaseTrajInterpKey.BC_INTERP_KEY_POS_X, // POS_X = down-range distance
         targetFt,

@@ -11,7 +11,7 @@ ffigen:
 
 # Run all tests (native must be built first)
 test: native
-	LD_LIBRARY_PATH=$(PWD)/build/native dart test test/ffi_test.dart
+	dart test test/ffi_test.dart
 
 # Run only unit tests (no native dependency)
 unit:

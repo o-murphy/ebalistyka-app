@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:test_app/src/ffi/bclibc_ffi.dart';
+import 'package:test_app/src/solver/ffi/bclibc_ffi.dart';
 
 const _ftToM   = 1.0 / 3.28084;
 const _ftToCm  = 30.48;

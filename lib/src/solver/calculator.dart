@@ -11,13 +11,13 @@
 
 import 'dart:math' as math;
 
-import 'package:test_app/src/conditions.dart';
-import 'package:test_app/src/constants.dart';
-import 'package:test_app/src/ffi/bclibc_bindings.g.dart';
-import 'package:test_app/src/ffi/bclibc_ffi.dart';
-import 'package:test_app/src/shot.dart';
-import 'package:test_app/src/trajectory_data.dart';
-import 'package:test_app/src/unit.dart';
+import 'package:test_app/src/solver/conditions.dart';
+import 'package:test_app/src/solver/constants.dart';
+import 'package:test_app/src/solver/ffi/bclibc_bindings.g.dart';
+import 'package:test_app/src/solver/ffi/bclibc_ffi.dart';
+import 'package:test_app/src/solver/shot.dart';
+import 'package:test_app/src/solver/trajectory_data.dart';
+import 'package:test_app/src/solver/unit.dart';
 
 // ---------------------------------------------------------------------------
 // Default config constants (mirror TS DEFAULT_CONFIG)
@@ -63,7 +63,7 @@ class Calculator {
 
   /// Returns the barrel elevation (relative to look-angle) needed to hit
   /// a target at [targetDistance].
-  Angular barrelElevationForTarget(Shot shot, Object targetDistance) {
+  Angular barrelElevationForTarget(Shot shot, Distance targetDistance) {
     final distFt    = _toFeet(targetDistance);
     final props     = _toBcShotProps(shot);
     final totalRad  = _engine.findZeroAngle(props, distFt);
@@ -76,7 +76,7 @@ class Calculator {
   /// Because [Weapon.zeroElevation] is immutable, this sets [shot.relativeAngle]
   /// via the [Shot.barrelElevation] setter (functionally identical when
   /// relativeAngle starts at 0).
-  Angular setWeaponZero(Shot shot, Object zeroDistance) {
+  Angular setWeaponZero(Shot shot, Distance zeroDistance) {
     final elev = barrelElevationForTarget(shot, zeroDistance);
     shot.barrelElevation = elev;
     return elev;
@@ -88,8 +88,8 @@ class Calculator {
   /// a raw number in the preferred distance unit.
   HitResult fire({
     required Shot   shot,
-    required Object trajectoryRange,
-    Object?         trajectoryStep,
+    required Distance trajectoryRange,
+    Distance?         trajectoryStep,
     double          timeStep        = 0.0,
     int             filterFlags     = BCTrajFlag.BC_TRAJ_FLAG_RANGE,
     bool            raiseRangeError = true,
@@ -118,11 +118,7 @@ class Calculator {
 
   // ── Conversion helpers ─────────────────────────────────────────────────────
 
-  static double _toFeet(Object d) {
-    if (d is Distance) return d.in_(Unit.foot);
-    if (d is num)      return PreferredUnits.distance(d).in_(Unit.foot);
-    throw ArgumentError('Expected Distance or num, got $d');
-  }
+  static double _toFeet(Distance d) => d.in_(Unit.foot);
 
   /// Converts [Shot] + calculator settings to the flat C struct expected by BcLibC.
   BcShotProps _toBcShotProps(Shot shot) {

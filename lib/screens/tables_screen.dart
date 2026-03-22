@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'package:test_app/src/conditions.dart';
-import 'package:test_app/src/unit.dart';
-import 'package:test_app/src/ffi/bclibc_ffi.dart';
-import 'package:test_app/src/ffi/bclibc_bindings.g.dart' show BCTrajFlag;
+import 'package:test_app/src/solver/conditions.dart';
+import 'package:test_app/src/solver/unit.dart';
+import 'package:test_app/src/solver/ffi/bclibc_ffi.dart';
+import 'package:test_app/src/solver/ffi/bclibc_bindings.g.dart' show BCTrajFlag;
 import '../widgets/trajectory_chart.dart';
 import '../widgets/trajectory_table.dart';
 
