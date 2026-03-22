@@ -1,0 +1,161 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import 'screens/home_screen.dart';
+import 'screens/home_sub_screens.dart';
+import 'screens/conditions_screen.dart';
+import 'screens/tables_screen.dart';
+import 'screens/tables_sub_screens.dart';
+import 'screens/convertor_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/settings_sub_screens.dart';
+
+// ─── Route paths ─────────────────────────────────────────────────────────────
+
+abstract final class Routes {
+  // Primary
+  static const home              = '/home';
+  static const conditions        = '/conditions';
+  static const tables            = '/tables';
+  static const convertors        = '/convertors';
+  static const settings          = '/settings';
+
+  // Home stack
+  static const rifleSelect       = '/home/rifle-select';
+  static const rifleEdit         = '/home/rifle-select/rifle-edit';
+  static const sightSelect       = '/home/rifle-select/sight-select';
+  static const cartridge         = '/home/rifle-select/cartridge';
+  static const cartridgeEdit     = '/home/rifle-select/cartridge/edit';
+  static const projectileSelect  = '/home/projectile-select';
+  static const projectileEdit    = '/home/projectile-select/edit';
+  static const shotDetails       = '/home/shot-details';
+
+  // Tables stack
+  static const tableConfig       = '/tables/configure';
+
+  // Convertors stack
+  static const convertor         = '/convertors/:type';  // push individual convertor
+  static String convertorOf(String type) => '/convertors/$type';
+
+  // Settings stack
+  static const settingsUnits     = '/settings/units';
+}
+
+// ─── Router ──────────────────────────────────────────────────────────────────
+
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+final appRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: Routes.home,
+  routes: [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) => _ScaffoldWithNav(shell: shell),
+      branches: [
+
+        // ── Home branch ──────────────────────────────────────────────────────
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: Routes.home,
+            builder: (_, _) => const HomeScreen(),
+            routes: [
+              GoRoute(
+                path: 'rifle-select',
+                builder: (_, _) => const RifleSelectScreen(),
+                routes: [
+                  GoRoute(path: 'rifle-edit',   builder: (_, _) => const RifleEditScreen()),
+                  GoRoute(path: 'sight-select',  builder: (_, _) => const SightSelectScreen()),
+                  GoRoute(
+                    path: 'cartridge',
+                    builder: (_, _) => const CartridgeScreen(),
+                    routes: [
+                      GoRoute(path: 'edit', builder: (_, _) => const CartridgeEditScreen()),
+                    ],
+                  ),
+                ],
+              ),
+              GoRoute(
+                path: 'projectile-select',
+                builder: (_, _) => const ProjectileSelectScreen(),
+                routes: [
+                  GoRoute(path: 'edit', builder: (_, _) => const ProjectileEditScreen()),
+                ],
+              ),
+              GoRoute(path: 'shot-details', builder: (_, _) => const ShotDetailsScreen()),
+            ],
+          ),
+        ]),
+
+        // ── Conditions branch ────────────────────────────────────────────────
+        StatefulShellBranch(routes: [
+          GoRoute(path: Routes.conditions, builder: (_, _) => const ConditionsScreen()),
+        ]),
+
+        // ── Tables branch ────────────────────────────────────────────────────
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: Routes.tables,
+            builder: (_, _) => const TablesScreen(),
+            routes: [
+              GoRoute(path: 'configure', builder: (_, _) => const TableConfigScreen()),
+            ],
+          ),
+        ]),
+
+        // ── Convertors branch ────────────────────────────────────────────────
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: Routes.convertors,
+            builder: (_, _) => const ConvertorScreen(),
+            routes: [
+              GoRoute(
+                path: ':type',
+                builder: (_, state) => ConvertorScreen(key: ValueKey(state.pathParameters['type'])),
+              ),
+            ],
+          ),
+        ]),
+
+        // ── Settings branch ──────────────────────────────────────────────────
+        StatefulShellBranch(routes: [
+          GoRoute(
+            path: Routes.settings,
+            builder: (_, _) => const SettingsScreen(),
+            routes: [
+              GoRoute(path: 'units', builder: (_, _) => const UnitsScreen()),
+            ],
+          ),
+        ]),
+
+      ],
+    ),
+  ],
+);
+
+// ─── Shell with persistent bottom nav ────────────────────────────────────────
+
+class _ScaffoldWithNav extends StatelessWidget {
+  const _ScaffoldWithNav({required this.shell});
+  final StatefulNavigationShell shell;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(child: shell),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: shell.currentIndex,
+        onDestinationSelected: (i) => shell.goBranch(
+          i,
+          initialLocation: i == shell.currentIndex,
+        ),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined),        label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.thunderstorm_outlined), label: 'Conditions'),
+          NavigationDestination(icon: Icon(Icons.table_view_outlined),   label: 'Tables'),
+          NavigationDestination(icon: Icon(Icons.calculate_outlined),    label: 'Convertors'),
+          NavigationDestination(icon: Icon(Icons.settings_outlined),     label: 'Settings'),
+        ],
+      ),
+    );
+  }
+}

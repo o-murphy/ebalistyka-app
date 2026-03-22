@@ -736,36 +736,55 @@ Isar may be added later as an alternative implementation behind the same interfa
 
 | File | Contents |
 |------|----------|
-| `src/unit.dart` | Full unit system: `Unit` enum, `Dimension`, all typed classes (`Angular`, `Distance`, `Velocity`, `Pressure`, `Temperature`, `Weight`, `Energy`, `Time`), `PreferredUnits` **(to be removed in Phase 2)** |
-| `src/conditions.dart` | `Atmo`, `Vacuum`, `Wind`, `Coriolis` |
-| `src/munition.dart` | `Weapon`, `Ammo` (no id/name yet) |
-| `src/drag_model.dart` | `DragModel`, `BCPoint`, `createDragModelMultiBC` |
-| `src/drag_tables.dart` | Standard tables G1, G7, G2, G5, G6, G8, GI, GS, RA4 |
-| `src/shot.dart` | `Shot` with full ballistic geometry |
-| `src/trajectory_data.dart` | `TrajectoryData`, `HitResult`, `TrajFlag` |
-| `src/calculator.dart` | `Calculator` — maps `Shot` → `BcShotProps` → FFI → `HitResult` |
-| `src/constants.dart` | `BallisticConstants` |
-| `src/vector.dart` | `Vector` |
-| `src/ffi/bclibc_ffi.dart` | Dart wrapper over C FFI: `BcLibC`, all value types |
-| `src/ffi/bclibc_bindings.g.dart` | Auto-generated FFI bindings |
-| `screens/home_screen.dart` | Top block (stateless), bottom block — stubs |
-| `screens/tables_screen.dart` | Working calculation and display (hardcoded params) |
+| `src/solver/unit.dart` | Full unit system: `Unit` enum, `Dimension`, all typed classes. `PreferredUnits` **removed** |
+| `src/solver/conditions.dart` | `Atmo`, `Vacuum`, `Wind`, `Coriolis` — explicit `Dimension` params |
+| `src/solver/munition.dart` | `Weapon`, `Ammo` — explicit `Dimension` params |
+| `src/solver/drag_model.dart` | `DragModel`, `BCPoint`, `createDragModelMultiBC` — explicit params |
+| `src/solver/drag_tables.dart` | Standard tables G1, G7, G2, G5, G6, G8, GI, GS, RA4 |
+| `src/solver/shot.dart` | `Shot` with full ballistic geometry |
+| `src/solver/trajectory_data.dart` | `TrajectoryData`, `HitResult`, `TrajFlag` |
+| `src/solver/calculator.dart` | `Calculator` — maps `Shot` → FFI → `HitResult` |
+| `src/solver/constants.dart` | `BallisticConstants` |
+| `src/solver/vector.dart` | `Vector` |
+| `src/solver/ffi/bclibc_ffi.dart` | Dart wrapper over C FFI: `BcLibC`, all value types |
+| `src/solver/ffi/bclibc_bindings.g.dart` | Auto-generated FFI bindings |
+| `src/models/unit_settings.dart` | `UnitSettings` — immutable, `copyWith`, serialization |
+| `src/models/app_settings.dart` | `AppSettings` — all switches, serialization |
+| `src/models/rifle.dart` | `Rifle` — id, name, `Weapon`, serialization |
+| `src/models/sight.dart` | `Sight` — id, name, `Angular`/`Distance`, serialization |
+| `src/models/projectile.dart` | `Projectile` — id, name, `DragModel`, serialization |
+| `src/models/cartridge.dart` | `Cartridge` — `toAmmo()`, serialization |
+| `src/models/shot_profile.dart` | `ShotProfile` — `toShot()`, serialization |
+| `src/models/seed_data.dart` | `.338LM` seed profiles (4 cartridges) |
+| `src/a7p/` | a7p file parser + validator (protobuf-based) |
+| `storage/app_storage.dart` | `AppStorage` interface |
+| `storage/json_file_storage.dart` | `JsonFileStorage` — JSON files in app documents dir |
+| `providers/settings_provider.dart` | `SettingsNotifier`, `unitSettingsProvider`, `themeModeProvider` |
+| `providers/shot_profile_provider.dart` | `ShotProfileNotifier` — load/save/update |
+| `providers/library_provider.dart` | `RifleLibraryNotifier`, `CartridgeLibraryNotifier`, `SightLibraryNotifier` |
+| `providers/calculation_provider.dart` | `calculationProvider` — reactive, runs in isolate |
+| `providers/storage_provider.dart` | `appStorageProvider` |
+| `main.dart` | `ProviderScope`, `MaterialApp.router`, `window_manager`, `themeModeProvider` |
+| `router.dart` | GoRouter: `StatefulShellRoute`, all routes + sub-routes, `_ScaffoldWithNav` |
+| `screens/home_screen.dart` | Top block connected to providers + navigation; bottom block — page stubs |
+| `screens/tables_screen.dart` | Working chart + table (hardcoded params — Phase 8) |
+| `screens/_stub_screen.dart` | Reusable stub with back button header |
+| `screens/home_sub_screens.dart` | Stubs: RifleSelect, RifleEdit, SightSelect, Cartridge, CartridgeEdit, ProjectileSelect, ProjectileEdit, ShotDetails |
+| `screens/tables_sub_screens.dart` | Stub: TableConfig |
+| `screens/settings_sub_screens.dart` | Stub: Units |
 | `widgets/wind_indicator.dart` | `WindIndicator` — interactive wind direction wheel |
 | `widgets/side_control_block.dart` | `SideControlBlock` |
 | `widgets/quick_actions_panel.dart` | `QuickActionsPanel` |
 | `widgets/trajectory_chart.dart` | `TrajectoryChart` (CustomPainter) |
 | `widgets/trajectory_table.dart` | `TrajectoryTable` |
-| `main.dart` | `ProviderScope`, bottom nav (index setState — to be replaced), `window_manager` |
 
 ### 8.2 Issues to Resolve ⚠️
 
 | Issue | Where | Impact |
 |-------|-------|--------|
-| `PreferredUnits` — global static mutable | `unit.dart` | Not reactive — **removed entirely in Phase 2** |
-| `Weapon`/`Ammo` without id/name | `munition.dart` | Cannot store in library |
-| Hardcoded calculation parameters | `tables_screen.dart` | Temporary — replace with provider |
-| Navigation via `setState` index | `main.dart` | No stack support — replace with GoRouter |
-| No persistence | — | Storage not connected |
+| Hardcoded calculation parameters | `tables_screen.dart` | Replace with `calculationProvider` in Phase 8 |
+| Home bottom block — page stubs | `home_screen.dart` | Implement in Phase 6 after Phase 7/9 |
+| Sub-screens — all stubs | `home_sub_screens.dart` etc. | Implement in Phase 11 |
 
 ---
 
