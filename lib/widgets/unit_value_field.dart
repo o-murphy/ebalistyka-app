@@ -56,7 +56,7 @@ class UnitValueField extends StatelessWidget {
 
   void _showDialog(BuildContext context) {
     double editRaw = rawValue;
-    final inputAcc = displayUnit.accuracy;
+    final inputAcc = _accuracy; // constraints.accuracy — precision per role
     final controller = TextEditingController(
       text: _displayValue.toStringAsFixed(inputAcc),
     );

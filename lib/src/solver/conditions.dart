@@ -35,7 +35,7 @@ class Atmo {
     _altitude = altitude ?? Distance(0, Unit.meter);
     _temperature = temperature ?? Atmo.standardTemperature(_altitude);
     _pressure = pressure ?? Atmo.standardPressure(_altitude);
-    _powderTemp = temperature ?? Atmo.standardTemperature(_altitude);
+    _powderTemp = powderTemperature ?? temperature ?? Atmo.standardTemperature(_altitude);
 
     _t0 = _temperature.in_(Unit.celsius);
     _p0 = _pressure.in_(Unit.hPa);

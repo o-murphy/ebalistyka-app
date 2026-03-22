@@ -126,14 +126,7 @@ class ConditionsScreen extends ConsumerWidget {
                 onChanged: (v) => updateAtmo(pressHPa: v),
               ),
               const Divider(height: 24),
-
               // ── Switches ──────────────────────────────────────────────────
-              _SwitchTile(
-                label: 'Coriolis effect',
-                icon: Icons.rotate_right_outlined,
-                value: settings?.enableCoriolis ?? false,
-                onChanged: (v) => notifier.setSwitch('coriolis', v),
-              ),
               _SwitchTile(
                 label: 'Powder temperature sensitivity',
                 icon: Icons.local_fire_department_outlined,
@@ -150,12 +143,12 @@ class ConditionsScreen extends ConsumerWidget {
                 ),
                 if (useDiffPowderTemp)
                   UnitValueField(
-                    label:       'Powder temperature',
-                    icon:        Icons.local_fire_department_outlined,
-                    rawValue:    powderTempRaw,
+                    label: 'Powder temperature',
+                    icon: Icons.local_fire_department_outlined,
+                    rawValue: powderTempRaw,
                     constraints: FC.temperature,
                     displayUnit: units.temperature,
-                    onChanged:   (v) => updateAtmo(powderTempC: v),
+                    onChanged: (v) => updateAtmo(powderTempC: v),
                   ),
                 _InfoTile(
                   label: 'Muzzle velocity at powder temp',
@@ -168,6 +161,13 @@ class ConditionsScreen extends ConsumerWidget {
                   icon: Icons.show_chart_outlined,
                 ),
               ],
+              const Divider(height: 1),
+              _SwitchTile(
+                label: 'Coriolis effect',
+                icon: Icons.rotate_right_outlined,
+                value: settings?.enableCoriolis ?? false,
+                onChanged: (v) => notifier.setSwitch('coriolis', v),
+              ),
               _SwitchTile(
                 label: 'Spin drift (derivation)',
                 icon: Icons.rotate_left_outlined,
@@ -257,7 +257,7 @@ class _TempControl extends StatelessWidget {
 
   void _showDialog(BuildContext context) {
     final sym = displayUnit.symbol;
-    final inputAcc = displayUnit.accuracy;
+    final inputAcc = _fc.accuracy;
     final dispMin = _toDisplay(_fc.minRaw);
     final dispMax = _toDisplay(_fc.maxRaw);
     double editRaw = rawValue;
@@ -406,18 +406,18 @@ class _InfoTile extends StatelessWidget {
     required this.icon,
   });
 
-  final String   label;
-  final String   value;
+  final String label;
+  final String value;
   final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs    = theme.colorScheme;
+    final cs = theme.colorScheme;
     return ListTile(
-      dense:    true,
-      leading:  Icon(icon, color: cs.onSurfaceVariant),
-      title:    Text(label, style: const TextStyle(fontSize: 14)),
+      dense: true,
+      leading: Icon(icon, color: cs.onSurfaceVariant),
+      title: Text(label, style: const TextStyle(fontSize: 14)),
       trailing: Text(
         value,
         style: theme.textTheme.bodyMedium?.copyWith(

@@ -38,15 +38,15 @@ class SideControlBlock extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              for (final (icon, value) in infoRows) ...[
-                Icon(icon, size: 20, color: cs.onSurface.withValues(alpha: 0.65)),
-                if (value.isNotEmpty)
+              for (int i = 0; i < infoRows.length; i++) ...[
+                Icon(infoRows[i].$1, size: 18, color: cs.onSurface.withValues(alpha: 0.65)),
+                if (infoRows[i].$2.isNotEmpty)
                   Text(
-                    value,
+                    infoRows[i].$2,
                     style: TextStyle(fontSize: 11, color: cs.onSurface.withValues(alpha: 0.85)),
                     textAlign: TextAlign.center,
                   ),
-                const SizedBox(height: 6),
+                if (i < infoRows.length - 1) const SizedBox(height: 4),
               ],
             ],
           ),

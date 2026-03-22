@@ -244,10 +244,15 @@ Layout per field: `[−]  value  unit  [+]` — the +/− buttons are adjacent t
 | Switch | Note |
 |--------|------|
 | Coriolis effect | |
-| Powder temperature sensitivity | |
+| Powder temperature sensitivity | When ON — reveals sub-switch + readonly fields (see below) |
+| ↳ Use different powder temperature | Sub-switch; when ON — shows editable `Powder temperature` field |
+| ↳ *(readonly)* Muzzle velocity at powder temp | Calculated via `Ammo.getVelocityForTemp(currentPowderTemp)` |
+| ↳ *(readonly)* Powder sensitivity | `Cartridge.tempModifier` formatted as `%/15°C` |
 | Derivation | |
 | Aerodynamic jump | Always ON, control disabled (engine limitation) |
 | Pressure depends on altitude | Always ON, control disabled (engine limitation) |
+
+Powder temperature field appears in the **switch section** (not atmospheric fields), below the sub-switch, only when `useDifferentPowderTemperature` is ON.
 
 ---
 
@@ -540,7 +545,8 @@ class AppSettings {
   final double     chartDistanceStep;
   final bool       showSubsonicTransition;
   final bool       enableCoriolis;
-  final bool       enablePowderSensitivity;
+  final bool       enablePowderSensitivity;         // UI toggle — show/use powder sens
+  final bool       useDifferentPowderTemperature;   // Use separate powder temp vs atmo temp
   final bool       enableDerivation;
   final bool       enableAerodynamicJump;
   final bool       pressureDependsOnAltitude;
@@ -554,6 +560,22 @@ class AppSettings {
 }
 ```
 
+#### `Cartridge` — `lib/src/models/cartridge.dart`
+
+Stores ammunition + powder sensitivity data:
+
+```dart
+class Cartridge {
+  final dynamic mv;                   // Velocity — reference MV (at powderTemp)
+  final dynamic powderTemp;           // Temperature — reference powder temp for mv
+  final double  tempModifier;         // Powder sensitivity coefficient (%/15°C)
+  final bool    usePowderSensitivity; // Whether engine uses powder sensitivity
+  // ...
+}
+```
+
+`mv` is always the MV measured at `powderTemp`. To get MV at another temperature, use `Ammo.getVelocityForTemp(currentTemp)`.
+
 #### `ShotProfile` — `lib/src/models/shot_profile.dart`
 
 ```dart
@@ -563,16 +585,19 @@ class ShotProfile {
   final Rifle      rifle;
   final Sight      sight;
   final Cartridge  cartridge;
-  final Atmo       conditions;
+  final Atmo       zeroConditions;  // ← Atmo at time of zeroing (air temp, pressure, humidity)
+  final Distance   zeroDistance;    // ← Distance at which zero was set (⚠ currently hardcoded 100 m)
+  final Atmo       conditions;      // Current atmospheric conditions
   final List<Wind> winds;
   final Angular    lookAngle;
-  final Distance   zeroDistance;   // ← needed (currently hardcoded 100 m)
   final double?    latitudeDeg;
   final double?    azimuthDeg;
 
   Shot toShot();
 }
 ```
+
+> **Note:** `zeroConditions` and `zeroDistance` are not yet in the model. The calculator currently uses `conditions` for both zero and shot, and hardcodes 100 m zero distance. Adding these is Phase 8.8.
 
 ### 6.4 Riverpod Providers
 
@@ -589,6 +614,26 @@ class ShotProfile {
 | `appStorageProvider` | `Provider<AppStorage>` | Storage singleton |
 
 **Calculation architecture:** `CalculationNotifier` is lazy with `_dirty` flag. `build()` returns null immediately. `markDirty()` called from `_ScaffoldWithNavState` via `ref.listen(shotProfileProvider)`. `recalculateIfNeeded()` triggered only on Home (tab 0) and Tables (tab 2) tab activation. Runs in isolate via `compute()`.
+
+**Two-phase calculation flow** (matches reference JS app):
+
+```
+Phase 1 — Zero
+  zeroShot = Shot(weapon, baseAmmo, lookAngle, zeroConditions, winds=[])
+  calc.setWeaponZero(zeroShot, zeroDistance)   → stores zeroElevation in calc
+
+Phase 2 — Shot (uses same calc instance)
+  if (usePowderSens && usePowderSensitivity):
+    currentTemp = useDiffPowderTemp ? conditions.powderTemp : conditions.temperature
+    shotMv = ammo.getVelocityForTemp(currentTemp)
+    shotAmmo = Ammo(dm, mv=shotMv, ...)
+  else:
+    shotAmmo = baseAmmo
+  shot = Shot(weapon, shotAmmo, lookAngle, currentConditions, winds)
+  hitResult = calc.fire(shot, trajectoryRange, trajectoryStep)
+```
+
+> ⚠ Until `zeroConditions` / `zeroDistance` are added to the model, Phase 1 uses `conditions` and hardcoded 100 m.
 
 ### 6.5 Storage
 
@@ -640,6 +685,12 @@ eballistica_backup.zip
 | **Settings → Adjustment Display** | `screens/settings_sub_screens.dart` | Format SegmentedButton + 5 switches, wired ✅ |
 | **`AppSettings`** | `src/models/app_settings.dart` | `AdjustmentFormat` enum + 6 adjustment display fields ✅ |
 | **Wind indicator** | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; commits on gesture end |
+| **Conditions screen** | `screens/conditions_screen.dart` | All fields connected to `ShotProfileNotifier`; `UnitValueField` for alt/humid/press; switches → `SettingsNotifier`; powder sens flow ✅ |
+| **`UnitValueField`** | `widgets/unit_value_field.dart` | `[icon label  value ✎]` tappable row; dialog with `[−] field [+]`; raw↔display conversion via `Unit.call().in_()` ✅ |
+| **`FieldConstraints` / `FC`** | `src/models/field_constraints.dart` | Per-role constraints (rawUnit, min, max, step, accuracy) for all physical quantities ✅ |
+| **`AppSettings.useDifferentPowderTemperature`** | `src/models/app_settings.dart` | New field + serialization ✅ |
+| **Powder sensitivity in calc** | `providers/calculation_provider.dart` | MV adjusted via `getVelocityForTemp()` based on settings ✅ |
+| **`Atmo.powderTemp` bug fix** | `src/solver/conditions.dart` | `powderTemperature` param was ignored; now correctly stored ✅ |
 
 ### 8.2 Pending ⚠️
 
@@ -648,19 +699,8 @@ eballistica_backup.zip
 | Area | Status | Phase |
 |------|--------|-------|
 | Units in UI | All screens hardcode units (`°C`, `m`, `hPa`) — `unitSettingsProvider` not used in UI | global |
-| `ShotProfile.zeroDistance` | Hardcoded 100 m in `_runCalculation` | 8.8 |
+| `ShotProfile.zeroDistance` + `zeroConditions` | Hardcoded 100 m, no separate zero atmo | 8.8 |
 | Quick Actions Panel | Wind speed / Look angle / Target distance buttons do nothing | 5.5 / 6 |
-
-#### 🟡 Conditions Screen
-
-| Area | Status | Phase |
-|------|--------|-------|
-| Temperature | Local state only, not saved to `ShotProfileNotifier` | 7 |
-| Altitude / Humidity / Pressure | Stub buttons, not connected | 7 |
-| `[−] value unit [+]` layout | Not implemented | 7 |
-| Tap value → keyboard dialog | Not implemented | 7 |
-| Switches → `SettingsNotifier` | Not connected | 7 |
-| Aerodynamic jump + Pressure from alt | Should be always-ON / disabled | 7 |
 
 #### 🟡 Home Screen — Bottom Block
 
@@ -764,9 +804,9 @@ Reusable input components used across multiple screens.
 
 ---
 
-### Phase 7 — Conditions Screen
+### Phase 7 — Conditions Screen ✅
 
-Connect all fields to `ShotProfileNotifier.updateConditions()`. Units from `unitSettingsProvider`. Switches from `SettingsNotifier`. Aerodynamic jump and pressure-from-altitude: always ON, controls visible but disabled.
+All fields connected to `ShotProfileNotifier.updateConditions()`. `UnitValueField` used for alt/humidity/pressure. `_TempControl` for temperature (big centered widget with `[−][+]` + dialog). Switches connected to `SettingsNotifier`. Powder sensitivity full flow implemented. Aerodynamic jump + Pressure from altitude: always ON, controls visible but disabled.
 
 ---
 
@@ -781,7 +821,7 @@ Connect all fields to `ShotProfileNotifier.updateConditions()`. Units from `unit
 - **8.4** Details spoiler (rifle, cartridge, conditions summary)
 - **8.6** Wire Configure button
 - **8.7** Wire Export button
-- **8.8** Add `zeroDistance` to `ShotProfile`, remove hardcoded 100 m
+- **8.8** Add `zeroDistance` + `zeroConditions` (separate Atmo) to `ShotProfile`; remove hardcoded 100 m from calculator
 
 ---
 
@@ -857,11 +897,11 @@ intl: ^0.19.0
 ```
 Phase 1–5   ✅  Foundation (domain, storage, providers, navigation)
 Phase 10    ✅  Settings (language, units, adjustment display)
-Phase 8.8       ShotProfile.zeroDistance field (remove hardcoded 100 m)
-Phase 7         Conditions Screen (connect to providers, unit-aware inputs)
-Phase 5.5       Value input widgets (RulerSelector + SpinBoxSelector)
-Phase 8         Tables Screen (frozen header, zero table, spoiler, configure, export)
+Phase 7     ✅  Conditions Screen (all fields, switches, powder sensitivity flow)
+Phase 8.8       ShotProfile.zeroDistance + zeroConditions (remove hardcoded 100 m)
+Phase 5.5       Value input widgets (RulerSelector for wind/angle/distance)
 Phase 6         Home Screen bottom block (pages 1 & 2, info grid, tap-select)
+Phase 8         Tables Screen (frozen header, zero table, spoiler, configure, export)
 Phase 9         Convertors Screen (grid + individual converters)
 Phase 11        Rifle / Cartridge / Sight Selection screens
 Phase 12        Additional Screens (Info, Reticle, TableConfig, Help, Tools)
