@@ -585,9 +585,10 @@ class ShotProfile {
   final Rifle      rifle;
   final Sight      sight;
   final Cartridge  cartridge;
-  final Atmo       zeroConditions;  // ← Atmo at time of zeroing (air temp, pressure, humidity)
-  final Distance   zeroDistance;    // ← Distance at which zero was set (⚠ currently hardcoded 100 m)
   final Atmo       conditions;      // Current atmospheric conditions
+  final Atmo?      zeroConditions;  // Atmo at time of zeroing; null → use conditions
+  final Distance   zeroDistance;    // Distance at which zero was set (default 100 m)
+  final Distance   targetDistance;  // Current target range (used by QuickActionsPanel)
   final List<Wind> winds;
   final Angular    lookAngle;
   final double?    latitudeDeg;
@@ -597,7 +598,7 @@ class ShotProfile {
 }
 ```
 
-> **Note:** `zeroConditions` and `zeroDistance` are not yet in the model. The calculator currently uses `conditions` for both zero and shot, and hardcodes 100 m zero distance. Adding these is Phase 8.8.
+`zeroConditions` is optional (null = use current `conditions`). `zeroDistance` is used by `calculation_provider.dart` instead of the previous hardcoded 100 m. `targetDistance` is the quick-action target range (default 300 m).
 
 ### 6.4 Riverpod Providers
 
@@ -619,8 +620,9 @@ class ShotProfile {
 
 ```
 Phase 1 — Zero
-  zeroShot = Shot(weapon, baseAmmo, lookAngle, zeroConditions, winds=[])
-  calc.setWeaponZero(zeroShot, zeroDistance)   → stores zeroElevation in calc
+  atmo     = profile.zeroConditions ?? profile.conditions
+  zeroShot = Shot(weapon, baseAmmo, lookAngle, atmo, winds=[])
+  calc.setWeaponZero(zeroShot, profile.zeroDistance)   → stores zeroElevation in calc
 
 Phase 2 — Shot (uses same calc instance)
   if (usePowderSens && usePowderSensitivity):
@@ -633,7 +635,7 @@ Phase 2 — Shot (uses same calc instance)
   hitResult = calc.fire(shot, trajectoryRange, trajectoryStep)
 ```
 
-> ⚠ Until `zeroConditions` / `zeroDistance` are added to the model, Phase 1 uses `conditions` and hardcoded 100 m.
+> Note: `zeroConditions` defaults to null in the seed (= use `conditions`). A dedicated Zero Conditions UI screen is pending (Phase 8.8 follow-up).
 
 ### 6.5 Storage
 
@@ -686,11 +688,17 @@ eballistica_backup.zip
 | **`AppSettings`** | `src/models/app_settings.dart` | `AdjustmentFormat` enum + 6 adjustment display fields ✅ |
 | **Wind indicator** | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; commits on gesture end |
 | **Conditions screen** | `screens/conditions_screen.dart` | All fields connected to `ShotProfileNotifier`; `UnitValueField` for alt/humid/press; switches → `SettingsNotifier`; powder sens flow ✅ |
-| **`UnitValueField`** | `widgets/unit_value_field.dart` | `[icon label  value ✎]` tappable row; dialog with `[−] field [+]`; raw↔display conversion via `Unit.call().in_()` ✅ |
+| **`UnitValueField`** | `widgets/unit_value_field.dart` | `[icon label  value ✎]` tappable row; dialog delegated to `showUnitEditDialog()`; raw↔display via `Unit.call().in_()` ✅ |
+| **`showUnitEditDialog()`** | `widgets/unit_value_field.dart` | Top-level function — reusable `[−] field [+]` dialog; used by `UnitValueField` and `QuickActionsPanel` ✅ |
 | **`FieldConstraints` / `FC`** | `src/models/field_constraints.dart` | Per-role constraints (rawUnit, min, max, step, accuracy) for all physical quantities ✅ |
 | **`AppSettings.useDifferentPowderTemperature`** | `src/models/app_settings.dart` | New field + serialization ✅ |
 | **Powder sensitivity in calc** | `providers/calculation_provider.dart` | MV adjusted via `getVelocityForTemp()` based on settings ✅ |
 | **`Atmo.powderTemp` bug fix** | `src/solver/conditions.dart` | `powderTemperature` param was ignored; now correctly stored ✅ |
+| **Phase 8.8 — `ShotProfile` zero fields** | `src/models/shot_profile.dart` | Added `zeroDistance`, `zeroConditions?`, `targetDistance`; full `copyWith`/`toJson`/`fromJson` ✅ |
+| **Hardcoded 100 m removed** | `providers/calculation_provider.dart` | `setWeaponZero` now uses `profile.zeroDistance` ✅ |
+| **`ShotProfileNotifier` — new methods** | `providers/shot_profile_provider.dart` | `updateZeroDistance`, `updateZeroConditions`, `updateTargetDistance` (fixed), `updateWindSpeed` ✅ |
+| **Phase 5.5 MVP — QuickActionsPanel** | `widgets/quick_actions_panel.dart` | `ConsumerWidget`; reads wind speed, look angle, target distance from providers; tap → `showUnitEditDialog()` ✅ |
+| **Hardcoded units — Home screen** | `screens/home_screen.dart` | temp/alt/press use `unitSettingsProvider` + dynamic symbol ✅ |
 
 ### 8.2 Pending ⚠️
 
@@ -698,9 +706,7 @@ eballistica_backup.zip
 
 | Area | Status | Phase |
 |------|--------|-------|
-| Units in UI | All screens hardcode units (`°C`, `m`, `hPa`) — `unitSettingsProvider` not used in UI | global |
-| `ShotProfile.zeroDistance` + `zeroConditions` | Hardcoded 100 m, no separate zero atmo | 8.8 |
-| Quick Actions Panel | Wind speed / Look angle / Target distance buttons do nothing | 5.5 / 6 |
+| Zero Conditions UI | `zeroConditions` field exists in model but no screen to edit it yet | 8.8 follow-up |
 
 #### 🟡 Home Screen — Bottom Block
 
@@ -711,7 +717,6 @@ eballistica_backup.zip
 | Page 2 — Compact adjustment tables | Not implemented | 6 |
 | Page 3 — Info grid above chart | Not implemented | 6 |
 | Page 3 — Tap-to-select point on chart | Not implemented | 6 |
-| Conditions indicators (temp/alt/humid/press) | Shown but hardcoded units | global |
 
 #### 🟡 Tables Screen
 
@@ -728,7 +733,7 @@ eballistica_backup.zip
 
 | Area | Status | Phase |
 |------|--------|-------|
-| `RulerSelector` | Not created | 5.5 |
+| `RulerSelector` | Not created (QuickActionsPanel uses `showUnitEditDialog` as MVP) | 5.5 |
 | `SpinBoxSelector` | Not created | 5.5 |
 
 #### 🟠 Convertors Screen
@@ -782,14 +787,17 @@ Domain models, storage, providers, navigation. **Done.**
 
 ### Phase 5.5 — Value Input Widgets
 
-Reusable input components used across multiple screens.
+**MVP ✅:** `showUnitEditDialog()` in `unit_value_field.dart` — reusable `[−] field [+]` dialog used by both `UnitValueField` rows and `QuickActionsPanel` buttons. Quick Actions Panel is fully wired.
 
-**Ruler Selector:**
+**Remaining:**
+
+**Ruler Selector** (`lib/widgets/ruler_selector.dart`):
 - Modal with vertical ruler (touch drag)
 - POS-terminal digit input
 - Reference: `ruler.tsx`, `valueDialog.tsx`, `numericField.tsx`
+- Will replace `showUnitEditDialog` in QuickActionsPanel when implemented
 
-**Spin Box Selector:**
+**Spin Box Selector** (`lib/widgets/spin_box_selector.dart`):
 - Modal with up/down step buttons + POS-terminal input
 - Reference: `doubleSpinBox.tsx`
 
@@ -814,6 +822,8 @@ All fields connected to `ShotProfileNotifier.updateConditions()`. `UnitValueFiel
 
 **Done:** calculationProvider connected, topbar, spinner, domain types, zero-row highlight.
 
+**8.8 ✅** `zeroDistance` + `zeroConditions?` + `targetDistance` added to `ShotProfile`. Hardcoded 100 m removed from calculator. `ShotProfileNotifier` has `updateZeroDistance`, `updateZeroConditions`, `updateTargetDistance`, `updateWindSpeed`.
+
 **Pending:**
 - **8.1** Frozen header (column/unit rows fixed, only data rows scroll)
 - **8.2** Zero crossing table above main table (from `HitResult.zeros`)
@@ -821,7 +831,7 @@ All fields connected to `ShotProfileNotifier.updateConditions()`. `UnitValueFiel
 - **8.4** Details spoiler (rifle, cartridge, conditions summary)
 - **8.6** Wire Configure button
 - **8.7** Wire Export button
-- **8.8** Add `zeroDistance` + `zeroConditions` (separate Atmo) to `ShotProfile`; remove hardcoded 100 m from calculator
+- **8.8 follow-up** Zero Conditions UI (screen to edit `zeroConditions` separately from current `conditions`)
 
 ---
 
@@ -898,9 +908,11 @@ intl: ^0.19.0
 Phase 1–5   ✅  Foundation (domain, storage, providers, navigation)
 Phase 10    ✅  Settings (language, units, adjustment display)
 Phase 7     ✅  Conditions Screen (all fields, switches, powder sensitivity flow)
-Phase 8.8       ShotProfile.zeroDistance + zeroConditions (remove hardcoded 100 m)
-Phase 5.5       Value input widgets (RulerSelector for wind/angle/distance)
-Phase 6         Home Screen bottom block (pages 1 & 2, info grid, tap-select)
+Phase 8.8   ✅  ShotProfile.zeroDistance + zeroConditions + targetDistance; hardcoded 100 m removed
+Phase 5.5   ✅  QuickActionsPanel MVP (showUnitEditDialog; wind speed, look angle, target range wired)
+            ✅  Hardcoded units removed from Home screen (unitSettingsProvider used for temp/alt/press)
+            ⏳  RulerSelector widget (replaces dialog MVP in QuickActionsPanel — lower priority)
+Phase 6         Home Screen bottom block (pages 1 & 2, info grid, tap-select on chart)
 Phase 8         Tables Screen (frozen header, zero table, spoiler, configure, export)
 Phase 9         Convertors Screen (grid + individual converters)
 Phase 11        Rifle / Cartridge / Sight Selection screens

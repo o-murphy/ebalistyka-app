@@ -150,18 +150,23 @@ final seedCartridges = [
 
 // ── Default Shot Profile ──────────────────────────────────────────────────────
 
+// Conditions extracted from the .a7p profile — these are the ZERO conditions
+// (altitude, temperature, pressure, humidity at time of zeroing).
+final _seedZeroConditions = Atmo(
+  altitude:    Distance(0.0,    Unit.meter),
+  temperature: Temperature(15.0, Unit.celsius),
+  pressure:    Pressure(1000.0,  Unit.hPa),
+  humidity:    0.50,
+);
+
 final seedShotProfile = ShotProfile(
   id: 'seed-profile-default',
   name: '.338LM UKROP 250GR SMK',
-  rifle:     seedRifle,
-  sight:     seedSight,
-  cartridge: seedCartridgeUkrop250,
-  conditions: Atmo(
-    altitude:    Distance(0.0,    Unit.meter),
-    temperature: Temperature(15.0, Unit.celsius),
-    pressure:    Pressure(1000.0,  Unit.hPa),
-    humidity:    0.50,
-  ),
+  rifle:          seedRifle,
+  sight:          seedSight,
+  cartridge:      seedCartridgeUkrop250,
+  zeroConditions: _seedZeroConditions,  // from a7p — conditions at time of zeroing
+  conditions:     _seedZeroConditions,  // current conditions start equal; user adjusts via Conditions screen
   winds: [],
   lookAngle: Angular(0.0, Unit.degree),
 );

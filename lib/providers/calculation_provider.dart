@@ -21,13 +21,15 @@ HitResult? _runCalculation(_CalcArgs args) {
     // Base ammo — reference MV from cartridge, used for zeroing.
     final baseAmmo = profile.cartridge.toAmmo();
 
+    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+
     Shot zeroShot;
     try {
       zeroShot = Shot(
         weapon:     profile.rifle.weapon,
         ammo:       baseAmmo,
         lookAngle:  profile.lookAngle,
-        atmo:       profile.conditions,
+        atmo:       zeroAtmo,
         winds:      const [],
       );
       calc.setWeaponZero(zeroShot, profile.zeroDistance);
@@ -36,7 +38,7 @@ HitResult? _runCalculation(_CalcArgs args) {
         weapon:    profile.rifle.weapon,
         ammo:      baseAmmo,
         lookAngle: Angular(0.0, Unit.radian),
-        atmo:      profile.conditions,
+        atmo:      zeroAtmo,
         winds:     const [],
       );
       calc.setWeaponZero(zeroShot, profile.zeroDistance);
