@@ -31,7 +31,7 @@ class _ConditionsScreenState extends State<ConditionsScreen> {
             children: [
               // ── Temperature ─────────────────────────────────────────────────
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 child: _TempControl(
                   value: _temperature,
                   onDown: () => _stepTemp(-1),
@@ -41,35 +41,38 @@ class _ConditionsScreenState extends State<ConditionsScreen> {
                   },
                 ),
               ),
-              const Divider(height: 24),
 
               // ── Altitude / Humidity / Pressure ───────────────────────────────
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: IconValueButtonRow(
-                  items: [
-                    IconValueButton(
-                      icon: Icons.terrain_outlined,
-                      value: '150 m',
-                      label: 'Altitude',
-                      onTap: () {},
-                      heroTag: 'cond-alt',
-                    ),
-                    IconValueButton(
-                      icon: Icons.water_drop_outlined,
-                      value: '50%',
-                      label: 'Humidity',
-                      onTap: () {},
-                      heroTag: 'cond-hum',
-                    ),
-                    IconValueButton(
-                      icon: Icons.speed_outlined,
-                      value: '1000 hPa',
-                      label: 'Pressure',
-                      onTap: () {},
-                      heroTag: 'cond-pres',
-                    ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+
+                child: SizedBox(
+                  height: 80,
+                  child: IconValueButtonRow(
+                    items: [
+                      IconValueButton(
+                        icon: Icons.terrain_outlined,
+                        value: '150 m',
+                        label: 'Altitude',
+                        onTap: () {},
+                        heroTag: 'cond-alt',
+                      ),
+                      IconValueButton(
+                        icon: Icons.water_drop_outlined,
+                        value: '50%',
+                        label: 'Humidity',
+                        onTap: () {},
+                        heroTag: 'cond-hum',
+                      ),
+                      IconValueButton(
+                        icon: Icons.speed_outlined,
+                        value: '1000 hPa',
+                        label: 'Pressure',
+                        onTap: () {},
+                        heroTag: 'cond-pres',
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const Divider(height: 24),
@@ -160,33 +163,34 @@ class _TempControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton.filledTonal(
           icon: const Icon(Icons.remove),
           onPressed: onDown,
         ),
-        Expanded(
-          child: GestureDetector(
-            onTap: onTap,
-            child: Column(
-              children: [
-                Icon(Icons.device_thermostat_outlined, color: cs.primary),
-                const SizedBox(height: 4),
-                Text(
-                  '${value.toStringAsFixed(1)} °C',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
+        const SizedBox(width: 32),
+        GestureDetector(
+          onTap: onTap,
+          child: Column(
+            children: [
+              Icon(Icons.device_thermostat_outlined, color: cs.primary),
+              const SizedBox(height: 4),
+              Text(
+                '${value.toStringAsFixed(1)} °C',
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                'Temperature',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: cs.onSurface.withValues(alpha: 0.55),
                 ),
-                Text(
-                  'Temperature',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: cs.onSurface.withValues(alpha: 0.55),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+        const SizedBox(width: 32),
         IconButton.filledTonal(icon: const Icon(Icons.add), onPressed: onUp),
       ],
     );
