@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../src/models/field_constraints.dart';
 import '../src/solver/unit.dart';
@@ -49,8 +51,17 @@ class UnitValueField extends StatelessWidget {
   }
 
   double get _displayValue => _toDisplay(rawValue);
-  int    get _accuracy     => constraints.accuracy;
   String get _sym          => symbol ?? displayUnit.symbol;
+
+  /// Decimal places needed to represent [_stepRaw] in [displayUnit].
+  /// Uses step-delta so temperature offset conversions work correctly.
+  int get _accuracy {
+    if (_rawUnit == displayUnit) return constraints.accuracy;
+    final stepDisplay = (_toDisplay(_minRaw + _stepRaw) - _toDisplay(_minRaw)).abs();
+    if (stepDisplay <= 0) return constraints.accuracy;
+    final digits = (-log(stepDisplay) / ln10).ceil();
+    return digits < 0 ? 0 : digits;
+  }
 
   // ── Dialog ──────────────────────────────────────────────────────────────────
 

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -255,9 +257,17 @@ class _TempControl extends StatelessWidget {
     return (displayUnit(display) as dynamic).in_(_fc.rawUnit) as double;
   }
 
+  int get _accuracy {
+    if (_fc.rawUnit == displayUnit) return _fc.accuracy;
+    final stepDisplay = (_toDisplay(_fc.minRaw + _fc.stepRaw) - _toDisplay(_fc.minRaw)).abs();
+    if (stepDisplay <= 0) return _fc.accuracy;
+    final digits = (-log(stepDisplay) / ln10).ceil();
+    return digits < 0 ? 0 : digits;
+  }
+
   void _showDialog(BuildContext context) {
     final sym = displayUnit.symbol;
-    final inputAcc = _fc.accuracy;
+    final inputAcc = _accuracy;
     final dispMin = _toDisplay(_fc.minRaw);
     final dispMax = _toDisplay(_fc.maxRaw);
     double editRaw = rawValue;
