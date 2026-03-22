@@ -75,7 +75,8 @@ class _WindIndicatorState extends State<WindIndicator> {
               angle: angle,
               color: Theme.of(context).colorScheme.onSurface,
               primaryColor: Theme.of(context).colorScheme.primary,
-              onPrimaryColor: Theme.of(context).colorScheme.onPrimary,
+              markerFillColor: Theme.of(context).colorScheme.primaryContainer,
+              markerIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             child: const SizedBox.expand(),
           ),
@@ -89,13 +90,15 @@ class WindPainter extends CustomPainter {
   final double angle;
   final Color color;
   final Color primaryColor;
-  final Color onPrimaryColor;
+  final Color markerFillColor;
+  final Color markerIconColor;
 
   WindPainter({
     required this.angle,
     required this.color,
     required this.primaryColor,
-    required this.onPrimaryColor,
+    required this.markerFillColor,
+    required this.markerIconColor,
   });
 
   @override
@@ -191,8 +194,15 @@ class WindPainter extends CustomPainter {
     canvas.drawPath(
       arrowPath,
       Paint()
-        ..color = primaryColor
+        ..color = markerFillColor
         ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(
+      arrowPath,
+      Paint()
+        ..color = primaryColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
     );
 
     canvas.drawCircle(
@@ -203,7 +213,15 @@ class WindPainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
 
-    canvas.drawCircle(markerCenter, markerR, Paint()..color = primaryColor);
+    canvas.drawCircle(markerCenter, markerR, Paint()..color = markerFillColor);
+    canvas.drawCircle(
+      markerCenter,
+      markerR,
+      Paint()
+        ..color = primaryColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
 
     final iconTp = TextPainter(
       text: TextSpan(
@@ -211,7 +229,7 @@ class WindPainter extends CustomPainter {
         style: TextStyle(
           fontFamily: Icons.fingerprint.fontFamily,
           fontSize: markerR * 1.2,
-          color: onPrimaryColor,
+          color: markerIconColor,
         ),
       ),
       textDirection: TextDirection.ltr,
