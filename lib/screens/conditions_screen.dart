@@ -13,11 +13,11 @@ class ConditionsScreen extends StatefulWidget {
 
 class _ConditionsScreenState extends State<ConditionsScreen> {
   double _temperature = 15.0;
-  bool _coriolis           = false;
-  bool _powderSensitivity  = false;
-  bool _derivation         = false;
-  bool _aeroJump           = false;
-  bool _pressureFromAlt    = false;
+  bool _coriolis = false;
+  bool _powderSensitivity = false;
+  bool _derivation = false;
+  bool _aeroJump = false;
+  bool _pressureFromAlt = false;
 
   void _stepTemp(int dir) => setState(() => _temperature += dir.toDouble());
 
@@ -35,28 +35,76 @@ class _ConditionsScreenState extends State<ConditionsScreen> {
                 child: _TempControl(
                   value: _temperature,
                   onDown: () => _stepTemp(-1),
-                  onUp:   () => _stepTemp(1),
-                  onTap:  () {/* TODO: input dialog */},
+                  onUp: () => _stepTemp(1),
+                  onTap: () {
+                    /* TODO: input dialog */
+                  },
                 ),
               ),
               const Divider(height: 24),
 
               // ── Altitude / Humidity / Pressure ───────────────────────────────
-              IconValueButtonRow(
-                items: [
-                  IconValueButton(icon: Icons.terrain_outlined,       value: '150 m',    label: 'Altitude', onTap: () {}, heroTag: 'cond-alt'),
-                  IconValueButton(icon: Icons.water_drop_outlined,    value: '50%',      label: 'Humidity', onTap: () {}, heroTag: 'cond-hum'),
-                  IconValueButton(icon: Icons.speed_outlined,         value: '1000 hPa', label: 'Pressure', onTap: () {}, heroTag: 'cond-pres'),
-                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: IconValueButtonRow(
+                  items: [
+                    IconValueButton(
+                      icon: Icons.terrain_outlined,
+                      value: '150 m',
+                      label: 'Altitude',
+                      onTap: () {},
+                      heroTag: 'cond-alt',
+                    ),
+                    IconValueButton(
+                      icon: Icons.water_drop_outlined,
+                      value: '50%',
+                      label: 'Humidity',
+                      onTap: () {},
+                      heroTag: 'cond-hum',
+                    ),
+                    IconValueButton(
+                      icon: Icons.speed_outlined,
+                      value: '1000 hPa',
+                      label: 'Pressure',
+                      onTap: () {},
+                      heroTag: 'cond-pres',
+                    ),
+                  ],
+                ),
               ),
               const Divider(height: 24),
 
               // ── Switches ─────────────────────────────────────────────────────
-              _SwitchTile(label: 'Coriolis effect',                icon: Icons.rotate_right_outlined,            value: _coriolis,          onChanged: (v) => setState(() => _coriolis = v)),
-              _SwitchTile(label: 'Powder temperature sensitivity', icon: Icons.local_fire_department_outlined,   value: _powderSensitivity, onChanged: (v) => setState(() => _powderSensitivity = v)),
-              _SwitchTile(label: 'Spin drift (derivation)',        icon: Icons.rotate_left_outlined,             value: _derivation,        onChanged: (v) => setState(() => _derivation = v)),
-              _SwitchTile(label: 'Aerodynamic jump',               icon: Icons.air_outlined,                     value: _aeroJump,          onChanged: (v) => setState(() => _aeroJump = v)),
-              _SwitchTile(label: 'Pressure depends on altitude',   icon: Icons.compress_outlined,                value: _pressureFromAlt,   onChanged: (v) => setState(() => _pressureFromAlt = v)),
+              _SwitchTile(
+                label: 'Coriolis effect',
+                icon: Icons.rotate_right_outlined,
+                value: _coriolis,
+                onChanged: (v) => setState(() => _coriolis = v),
+              ),
+              _SwitchTile(
+                label: 'Powder temperature sensitivity',
+                icon: Icons.local_fire_department_outlined,
+                value: _powderSensitivity,
+                onChanged: (v) => setState(() => _powderSensitivity = v),
+              ),
+              _SwitchTile(
+                label: 'Spin drift (derivation)',
+                icon: Icons.rotate_left_outlined,
+                value: _derivation,
+                onChanged: (v) => setState(() => _derivation = v),
+              ),
+              _SwitchTile(
+                label: 'Aerodynamic jump',
+                icon: Icons.air_outlined,
+                value: _aeroJump,
+                onChanged: (v) => setState(() => _aeroJump = v),
+              ),
+              _SwitchTile(
+                label: 'Pressure depends on altitude',
+                icon: Icons.compress_outlined,
+                value: _pressureFromAlt,
+                onChanged: (v) => setState(() => _pressureFromAlt = v),
+              ),
               const SizedBox(height: 16),
             ],
           ),
@@ -103,7 +151,7 @@ class _TempControl extends StatelessWidget {
     required this.onTap,
   });
 
-  final double       value;
+  final double value;
   final VoidCallback onDown;
   final VoidCallback onUp;
   final VoidCallback onTap;
@@ -132,17 +180,14 @@ class _TempControl extends StatelessWidget {
                 Text(
                   'Temperature',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: cs.onSurface.withValues(alpha: 0.55),
-                      ),
+                    color: cs.onSurface.withValues(alpha: 0.55),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        IconButton.filledTonal(
-          icon: const Icon(Icons.add),
-          onPressed: onUp,
-        ),
+        IconButton.filledTonal(icon: const Icon(Icons.add), onPressed: onUp),
       ],
     );
   }
@@ -158,9 +203,9 @@ class _SwitchTile extends StatelessWidget {
     required this.onChanged,
   });
 
-  final String   label;
+  final String label;
   final IconData icon;
-  final bool     value;
+  final bool value;
   final ValueChanged<bool> onChanged;
 
   @override

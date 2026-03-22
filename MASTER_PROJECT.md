@@ -295,10 +295,10 @@ Layout (top to bottom):
 
 | Section | Element | Status |
 |---------|---------|--------|
-| **Language** | Tap → dialog to select language | ⏳ dialog pending |
+| **Language** | Tap → AlertDialog radio uk/en, calls `setLanguage()` | ✅ |
 | **Appearance** | Theme — SegmentedButton (System/Light/Dark) | ✅ |
-| **Appearance** | Units of Measurement → `/settings/units` | ⏳ screen pending |
-| **Ballistics** | Adjustment Display → `/settings/adjustment` | ⏳ screen pending |
+| **Appearance** | Units of Measurement → `/settings/units` | ✅ |
+| **Ballistics** | Adjustment Display → `/settings/adjustment` | ✅ |
 | **Ballistics** | Subsonic transition switch | ✅ |
 | **Ballistics** | Table distance step (dialog) | ✅ |
 | **Ballistics** | Chart distance step (dialog) | ✅ |
@@ -628,36 +628,105 @@ eballistica_backup.zip
 | **Domain models** | `src/models/` | Rifle, Sight, Projectile, Cartridge, ShotProfile, AppSettings, UnitSettings, seed data |
 | **Storage** | `storage/` | AppStorage interface + JsonFileStorage |
 | **Providers** | `providers/` | Settings, ShotProfile, Library, Calculation, Storage |
-| **Navigation** | `router.dart` | GoRouter with StatefulShellRoute, all routes, _ScaffoldWithNav |
+| **Navigation** | `router.dart` | GoRouter with StatefulShellRoute, all routes; tab switch resets branch stack |
 | **Main** | `main.dart` | ProviderScope, MaterialApp.router, static ThemeData, themeModeProvider |
-| **Home screen** | `screens/home_screen.dart` | Top block connected; bottom block: Page 3 (chart) ✅, Pages 1–2 stubs |
-| **Tables screen** | `screens/tables_screen.dart` | Connected to calculationProvider, spinner, topbar |
-| **TrajectoryTable** | `widgets/trajectory_table.dart` | Domain types, zero-row highlighting by distance |
+| **Home screen — top block** | `screens/home_screen.dart` | FAB selectors, wind wheel, SideControlBlock, QuickActionsPanel (stubs) |
+| **Home screen — Page 3** | `screens/home_screen.dart` | Chart connected to `calculationProvider` ✅ |
+| **Tables screen** | `screens/tables_screen.dart` | Connected to `calculationProvider`, spinner, topbar, zero-row highlight |
+| **TrajectoryTable** | `widgets/trajectory_table.dart` | Domain types, zero-row highlight by distance |
 | **TrajectoryChart** | `widgets/trajectory_chart.dart` | CustomPainter, domain types |
-| **Settings screen** | `screens/settings_screen.dart` | Theme ✅, subsonic switch ✅, distance steps ✅, links ✅; language/units/adjustment — stubs |
-| **Wind indicator** | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; commits only on gesture end |
+| **Settings screen** | `screens/settings_screen.dart` | Theme, subsonic switch, distance steps, language dialog ✅ |
+| **Settings → Units** | `screens/settings_sub_screens.dart` | All 10 categories, dialog picker, wired to `SettingsNotifier` ✅ |
+| **Settings → Adjustment Display** | `screens/settings_sub_screens.dart` | Format SegmentedButton + 5 switches, wired ✅ |
+| **`AppSettings`** | `src/models/app_settings.dart` | `AdjustmentFormat` enum + 6 adjustment display fields ✅ |
+| **Wind indicator** | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; commits on gesture end |
 
-### 8.2 Partially Done / Pending ⚠️
+### 8.2 Pending ⚠️
+
+#### 🔴 Critical
 
 | Area | Status | Phase |
 |------|--------|-------|
-| Settings → Language dialog | Stub tile | 10 |
-| Settings → Units screen | Stub screen | 10 |
-| Settings → Adjustment Display screen | Stub screen | 10 |
-| Adjustment display fields in `AppSettings` | Not added | 10 |
-| `ShotProfile.zeroDistance` field | Hardcoded 100 m | 8.8 |
-| Tables — frozen header | Not implemented | 8.1 |
-| Tables — zero crossing table | Not implemented | 8.2 |
-| Tables — row tap detail dialog | Not implemented | 8.3 |
-| Tables — details spoiler | Not implemented | 8.4 |
-| Tables — Configure wired | Stub | 8.6 |
-| Tables — Export wired | Stub | 8.7 |
-| Home — Page 1 (reticle + adjustments) | Stub | 6 |
-| Home — Page 2 (adjustment tables) | Stub | 6 |
-| Home — Page 3 (details and interactivity)
-| Conditions screen | Stub | 7 |
-| Convertors screen | Grid stub | 9 |
-| Rifle/Cartridge/Sight selection | Stubs | 11 |
+| Units in UI | All screens hardcode units (`°C`, `m`, `hPa`) — `unitSettingsProvider` not used in UI | global |
+| `ShotProfile.zeroDistance` | Hardcoded 100 m in `_runCalculation` | 8.8 |
+| Quick Actions Panel | Wind speed / Look angle / Target distance buttons do nothing | 5.5 / 6 |
+
+#### 🟡 Conditions Screen
+
+| Area | Status | Phase |
+|------|--------|-------|
+| Temperature | Local state only, not saved to `ShotProfileNotifier` | 7 |
+| Altitude / Humidity / Pressure | Stub buttons, not connected | 7 |
+| `[−] value unit [+]` layout | Not implemented | 7 |
+| Tap value → keyboard dialog | Not implemented | 7 |
+| Switches → `SettingsNotifier` | Not connected | 7 |
+| Aerodynamic jump + Pressure from alt | Should be always-ON / disabled | 7 |
+
+#### 🟡 Home Screen — Bottom Block
+
+| Area | Status | Phase |
+|------|--------|-------|
+| Page 1 — Reticle placeholder | Stub text | 6 |
+| Page 1 — Drop/Windage values | Not implemented (needs `calculationProvider` + adjustment settings) | 6 |
+| Page 2 — Compact adjustment tables | Not implemented | 6 |
+| Page 3 — Info grid above chart | Not implemented | 6 |
+| Page 3 — Tap-to-select point on chart | Not implemented | 6 |
+| Conditions indicators (temp/alt/humid/press) | Shown but hardcoded units | global |
+
+#### 🟡 Tables Screen
+
+| Area | Status | Phase |
+|------|--------|-------|
+| Frozen header | Not implemented | 8.1 |
+| Zero crossing table | Not implemented | 8.2 |
+| Row tap → detail dialog | Not implemented | 8.3 |
+| Details spoiler | Not implemented | 8.4 |
+| Configure button | Stub | 8.6 |
+| Export button | Stub | 8.7 |
+
+#### 🟠 Value Input Widgets
+
+| Area | Status | Phase |
+|------|--------|-------|
+| `RulerSelector` | Not created | 5.5 |
+| `SpinBoxSelector` | Not created | 5.5 |
+
+#### 🟠 Convertors Screen
+
+| Area | Status | Phase |
+|------|--------|-------|
+| 8-tile grid | Stub | 9 |
+| Individual converter screens | Not implemented | 9 |
+
+#### 🔵 Rifle / Cartridge / Sight Selection
+
+| Area | Status | Phase |
+|------|--------|-------|
+| `RifleSelectionScreen` | Stub | 11 |
+| `RifleEditScreen` | Stub | 11 |
+| `SightSelectionScreen` | Stub | 11 |
+| `CartridgeScreen` | Stub | 11 |
+| `ProjectileSelectionScreen` | Stub | 11 |
+| `CartridgeEditScreen` | Stub | 11 |
+
+#### 🔵 Additional Screens
+
+| Area | Status | Phase |
+|------|--------|-------|
+| `InfoScreen` | Stub | 12 |
+| `ReticleScreen` | TBD | 12 |
+| `TableConfigScreen` | Stub | 12 |
+| Help Overlay | Not implemented | 12 |
+| Tools Screen | Not implemented | 12 |
+
+#### ⚪ Polish & Export
+
+| Area | Status | Phase |
+|------|--------|-------|
+| Localization uk/en (ARB + flutter_localizations) | Not implemented | 13 |
+| Table export (PDF/HTML + share sheet) | Not implemented | 13 |
+| Profile import (`file_picker`) | Not implemented | 13 |
+| iOS C++ bundling | Not implemented | 13 |
 
 ---
 
@@ -722,19 +791,9 @@ Grid of 8 tiles → each pushes `/convertors/:type` placeholder. Individual conv
 
 ---
 
-### Phase 10 — Settings Screen (completion)
+### Phase 10 — Settings Screen ✅
 
-**Done:** theme, subsonic switch, distance steps, links/about.
-
-**Pending:**
-- **10.1** Language tile → `AlertDialog` with radio list (uk/en), calls `SettingsNotifier.setLanguage()`
-- **10.2** Units Screen — implement `/settings/units`:
-  - Each category: label + chip group or dropdown → calls `SettingsNotifier.setUnit(key, unit)`
-  - Categories per §5.6
-- **10.3** Adjustment Display Screen — implement `/settings/adjustment`:
-  - Format selector (arrows/signs/letters)
-  - Toggles for MRAD, MOA, MIL, cm/100m, in/100yd
-  - Add `adjustmentFormat`, `showMrad/Moa/Mil/CmPer100m/InPer100yd` flat fields to `AppSettings`, wire to `SettingsNotifier`
+**Done:** theme, subsonic switch, distance steps, links/about, language dialog, Units screen (10 categories), Adjustment Display screen (format + 5 toggles), `AppSettings` adjustment fields, `SettingsNotifier` methods.
 
 ---
 
@@ -797,15 +856,16 @@ intl: ^0.19.0
 
 ```
 Phase 1–5   ✅  Foundation (domain, storage, providers, navigation)
-Phase 10       Settings completion (language dialog, units screen, adjustment screen)
-Phase 7        Conditions Screen
-Phase 8        Tables Screen (frozen header, zero table, spoiler, zeroDistance)
-Phase 6        Home Screen bottom block (pages 1 & 2)
-Phase 5.5      Value input widgets (ruler + spin box)
-Phase 9        Convertors Screen
-Phase 11       Rifle / Cartridge / Sight Selection
-Phase 12       Additional Screens
-Phase 13       Polish & Export
+Phase 10    ✅  Settings (language, units, adjustment display)
+Phase 8.8       ShotProfile.zeroDistance field (remove hardcoded 100 m)
+Phase 7         Conditions Screen (connect to providers, unit-aware inputs)
+Phase 5.5       Value input widgets (RulerSelector + SpinBoxSelector)
+Phase 8         Tables Screen (frozen header, zero table, spoiler, configure, export)
+Phase 6         Home Screen bottom block (pages 1 & 2, info grid, tap-select)
+Phase 9         Convertors Screen (grid + individual converters)
+Phase 11        Rifle / Cartridge / Sight Selection screens
+Phase 12        Additional Screens (Info, Reticle, TableConfig, Help, Tools)
+Phase 13        Polish & Export (l10n, PDF export, profile import, iOS build)
 ```
 
 ---
