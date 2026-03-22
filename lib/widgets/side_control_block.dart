@@ -19,6 +19,7 @@ class SideControlBlock extends StatelessWidget {
   Widget _fab(BuildContext context, IconData icon, VoidCallback onPressed) {
     final cs = Theme.of(context).colorScheme;
     return FloatingActionButton(
+      elevation: 1,
       heroTag: null,
       backgroundColor: cs.surfaceContainerHighest,
       foregroundColor: cs.onSurface,

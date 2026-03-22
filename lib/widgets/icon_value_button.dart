@@ -12,11 +12,11 @@ class IconValueButton extends StatelessWidget {
     this.heroTag,
   });
 
-  final IconData     icon;
-  final String       value;
-  final String       label;
+  final IconData icon;
+  final String value;
+  final String label;
   final VoidCallback onTap;
-  final Object?      heroTag;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class IconValueButton extends StatelessWidget {
               onPressed: onTap,
               backgroundColor: cs.surfaceContainerHighest,
               foregroundColor: cs.onSurface,
-              elevation: 0,
+              elevation: 1,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -74,9 +74,9 @@ class IconValueButtonRow extends StatelessWidget {
   });
 
   final List<IconValueButton> items;
-  final double     height;
+  final double height;
   final EdgeInsets padding;
-  final double     spacing;
+  final double spacing;
 
   @override
   Widget build(BuildContext context) {
