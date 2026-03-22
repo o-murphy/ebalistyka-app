@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'unit_settings.dart';
 
+enum AdjustmentFormat { arrows, signs, letters }
+
 class AppSettings {
   final UnitSettings units;
   final String languageCode;
@@ -14,6 +16,12 @@ class AppSettings {
   final bool enableDerivation;
   final bool enableAerodynamicJump;
   final bool pressureDependsOnAltitude;
+  final AdjustmentFormat adjustmentFormat;
+  final bool showMrad;
+  final bool showMoa;
+  final bool showMil;
+  final bool showCmPer100m;
+  final bool showInPer100yd;
 
   const AppSettings({
     this.units                    = const UnitSettings(),
@@ -27,6 +35,12 @@ class AppSettings {
     this.enableDerivation         = false,
     this.enableAerodynamicJump    = false,
     this.pressureDependsOnAltitude = false,
+    this.adjustmentFormat          = AdjustmentFormat.arrows,
+    this.showMrad                  = true,
+    this.showMoa                   = false,
+    this.showMil                   = false,
+    this.showCmPer100m             = false,
+    this.showInPer100yd            = false,
   });
 
   AppSettings copyWith({
@@ -41,6 +55,12 @@ class AppSettings {
     bool? enableDerivation,
     bool? enableAerodynamicJump,
     bool? pressureDependsOnAltitude,
+    AdjustmentFormat? adjustmentFormat,
+    bool? showMrad,
+    bool? showMoa,
+    bool? showMil,
+    bool? showCmPer100m,
+    bool? showInPer100yd,
   }) => AppSettings(
     units:                      units                     ?? this.units,
     languageCode:               languageCode              ?? this.languageCode,
@@ -53,7 +73,24 @@ class AppSettings {
     enableDerivation:           enableDerivation          ?? this.enableDerivation,
     enableAerodynamicJump:      enableAerodynamicJump     ?? this.enableAerodynamicJump,
     pressureDependsOnAltitude:  pressureDependsOnAltitude ?? this.pressureDependsOnAltitude,
+    adjustmentFormat:           adjustmentFormat          ?? this.adjustmentFormat,
+    showMrad:                   showMrad                  ?? this.showMrad,
+    showMoa:                    showMoa                   ?? this.showMoa,
+    showMil:                    showMil                   ?? this.showMil,
+    showCmPer100m:              showCmPer100m             ?? this.showCmPer100m,
+    showInPer100yd:             showInPer100yd            ?? this.showInPer100yd,
   );
+
+  static const _adjustmentFormatNames = {
+    AdjustmentFormat.arrows:  'arrows',
+    AdjustmentFormat.signs:   'signs',
+    AdjustmentFormat.letters: 'letters',
+  };
+  static const _adjustmentFormatByName = {
+    'arrows':  AdjustmentFormat.arrows,
+    'signs':   AdjustmentFormat.signs,
+    'letters': AdjustmentFormat.letters,
+  };
 
   static const _themeModeNames = {
     ThemeMode.system: 'system',
@@ -78,6 +115,12 @@ class AppSettings {
     'enableDerivation':           enableDerivation,
     'enableAerodynamicJump':      enableAerodynamicJump,
     'pressureDependsOnAltitude':  pressureDependsOnAltitude,
+    'adjustmentFormat':           _adjustmentFormatNames[adjustmentFormat],
+    'showMrad':                   showMrad,
+    'showMoa':                    showMoa,
+    'showMil':                    showMil,
+    'showCmPer100m':              showCmPer100m,
+    'showInPer100yd':             showInPer100yd,
   };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -92,5 +135,11 @@ class AppSettings {
     enableDerivation:           json['enableDerivation'] as bool? ?? false,
     enableAerodynamicJump:      json['enableAerodynamicJump'] as bool? ?? false,
     pressureDependsOnAltitude:  json['pressureDependsOnAltitude'] as bool? ?? false,
+    adjustmentFormat:           _adjustmentFormatByName[json['adjustmentFormat']] ?? AdjustmentFormat.arrows,
+    showMrad:                   json['showMrad']        as bool? ?? true,
+    showMoa:                    json['showMoa']         as bool? ?? false,
+    showMil:                    json['showMil']         as bool? ?? false,
+    showCmPer100m:              json['showCmPer100m']   as bool? ?? false,
+    showInPer100yd:             json['showInPer100yd']  as bool? ?? false,
   );
 }

@@ -1,7 +1,7 @@
 # eBallistica — Master Project Document
 
-**Version:** 1.0  
-**Status:** Working Document  
+**Version:** 1.1
+**Status:** Working Document
 **Stack:** Flutter · Dart · Riverpod · FFI (bclibc C++)
 
 ---
@@ -41,13 +41,14 @@ All value displays and input fields use the units selected by the user in **Sett
 | Input type | Method |
 |------------|--------|
 | Ruler selectors (wind speed, look angle, target distance) | Touch drag **and** keyboard (both) |
-| All other value selectors | Keyboard only |
+| All other value selectors | Keyboard only via dialog |
 
 ### 2.3 Screen Headers
 
 All screens **except Home** have a top header with:
 - Screen title centered
 - Back button (←) on the left
+- Optional action buttons on the right
 
 **Home** has no header.
 
@@ -83,6 +84,7 @@ Each primary screen has its **own independent navigation stack**. Sub-screens ar
 | **Home** | → Projectile Selection → (Library / Create) |
 | **Home** | → Shot Details (Info screen) |
 | **Settings** | → Units of Measurement |
+| **Settings** | → Adjustment Display |
 | **Tables** | → Table Configuration |
 | **Convertors** | → Convertor Screen (individual converter) |
 
@@ -113,7 +115,8 @@ Each primary screen has its **own independent navigation stack**. Sub-screens ar
 ├── /convertors
 │   └── /convertors/:type
 └── /settings
-    └── /settings/units
+    ├── /settings/units
+    └── /settings/adjustment
 ```
 
 ---
@@ -152,9 +155,9 @@ Control panel for shot parameters.
 | Element | Action |
 |---------|--------|
 | Shot details button | Pushes Info screen |
-| New note button | Creates a note for the shot |
-| Help button | Shows all-in-one help overlay |
-| More button | Pushes Tools screen |
+| New note button | Creates a note for the shot (stub → Phase 12) |
+| Help button | Shows all-in-one help overlay (stub → Phase 12) |
+| More button | Pushes Tools screen (stub → Phase 12) |
 
 **Read-only indicators** (values from Conditions screen):
 
@@ -165,7 +168,7 @@ Control panel for shot parameters.
 | Humidity sign | Current humidity |
 | Pressure sign | Current pressure |
 
-**Wind Direction Wheel:** Interactive element for selecting wind direction. Displays the current set direction.
+**Wind Direction Wheel:** Interactive element for selecting wind direction. Displays current direction. Double-tap resets to 0°.
 
 **Quick action buttons** (each opens a ruler-like selector overlay):
 
@@ -177,37 +180,47 @@ Control panel for shot parameters.
 
 #### 4.1.2 Block: Current Shot Data — 3 Pages
 
-Switched by swipe or tabs.
+Switched by swipe.
 
 **Page 1: Reticle + Adjustments**
 
 ```
-┌─────────────────────────────┐
-│  [small reticle preview]    │  → tap → full Reticle screen
-│                             │
-│  ↑ 2.34 MIL   → 0.12 MIL   │
-│  (multiple units shown)     │
-└─────────────────────────────┘
+┌──────────────────────────────────────┐
+│  [reticle placeholder]  │  ↑ 2.34   │
+│                         │  MIL      │
+│                         │  0.98 MOA │
+│                         │  ─────────│
+│                         │  → 0.12   │
+│                         │  MIL      │
+└──────────────────────────────────────┘
 ```
 
-Data source: `calculationProvider` → `HitResult.getAtDistance(targetDistance)` → `dropAngle`, `windageAngle` converted to selected adjustment units.
+- Left half: rounded square placeholder for future reticle widget
+- Right half: two rows (drop / windage), each showing adjustment value in multiple units (cm/100m, in/100yd, MOA, MIL, MRAD) based on Adjustment Display settings
+- Data source: `calculationProvider` → `HitResult.getAtDistance(targetDistance)` → `dropAngle`, `windageAngle`
 
-**Page 2: Table of Adjustments**
+**Page 2: Adjustment Tables**
 
-Table for distances closest to the target distance (±3 rows).
+Vertically scrollable set of compact tables. Each table: header row with distances (target ± 2 steps), value row. Tables:
 
-| Column | Content |
-|--------|---------|
-| Distance | Range |
-| Drop | Bullet drop |
-| Adjustment | Scope correction |
-| Velocity | Bullet speed |
-| Time of flight | Flight time |
-| Energy | Kinetic energy |
+| Table | Unit |
+|-------|------|
+| Height | `units.drop` |
+| Slant Height | `units.drop` |
+| Drop angle | `units.adjustment` |
+| Windage angle | `units.adjustment` |
+| Velocity | `units.velocity` |
+| Energy | `units.energy` |
+| Time | seconds |
 
 **Page 3: Trajectory Chart**
 
-Vertical trajectory curve. Tap/drag on curve shows details for the selected point.
+- Above chart: info grid with currently selected point values
+  - Left column: Trajectory label, Velocity, Energy, Time
+  - Right column: Height, Drop, Windage, Distance
+- Chart: trajectory curve + velocity curve only (no barrel/sight lines)
+- Default selected point: start of trajectory
+- Tap on chart → highlights nearest point, updates info grid above
 
 ---
 
@@ -215,24 +228,26 @@ Vertical trajectory curve. Tap/drag on curve shows details for the selected poin
 
 > **Purpose:** Input and editing of environmental parameters.
 
-**Input fields** (keyboard input, units from Settings):
+**Input fields** (units from `unitSettingsProvider`):
 
-| Parameter | Type |
+Layout per field: `[−]  value  unit  [+]` — the +/− buttons are adjacent to the value, not at the edges of the row. Tapping the value itself opens a keyboard dialog for direct numeric entry.
+
+| Parameter | Unit |
 |-----------|------|
-| Temperature | Numeric input with units |
-| Altitude | Numeric input with units |
-| Humidity | Numeric input, % |
-| Pressure | Numeric input with units |
+| Temperature | `units.temperature` |
+| Altitude | `units.distance` |
+| Humidity | % |
+| Pressure | `units.pressure` |
 
-**Switches:**
+**Switches** (read/write `AppSettings` via `SettingsNotifier`):
 
-| Switch | Description |
-|--------|-------------|
-| Coriolis effect | Account for Coriolis effect |
-| Powder temperature sensitivity | Charge temperature dependency |
-| Derivation | Bullet spin drift |
-| Aerodynamic jump | Aerodynamic jump effect |
-| Pressure depends on altitude | Auto-calculate pressure from altitude |
+| Switch | Note |
+|--------|------|
+| Coriolis effect | |
+| Powder temperature sensitivity | |
+| Derivation | |
+| Aerodynamic jump | Always ON, control disabled (engine limitation) |
+| Pressure depends on altitude | Always ON, control disabled (engine limitation) |
 
 ---
 
@@ -240,37 +255,37 @@ Vertical trajectory curve. Tap/drag on curve shows details for the selected poin
 
 > **Purpose:** Full trajectory table for the current shot.
 
+Layout (top to bottom):
+
 | Element | Description |
 |---------|-------------|
-| **Spoiler / accordion** | Collapsible panel with details: rifle, bullet, sight, atmospheric conditions |
-| **Zero crossing table** | Table of zero crossing points |
-| **Full trajectory table** | Complete trajectory table for all distances |
-| **Configure button** | Pushes Table Configuration screen |
+| **Header** | Back button, "Tables" title, Configure + Export buttons |
+| **Spoiler / accordion** | Collapsible panel: rifle, cartridge, sight, atmospheric conditions summary |
+| **Zero crossing table** | Small table showing zero-crossing points (from `HitResult.zeros`) |
+| **Full trajectory table** | Complete trajectory for all distances; zero-distance row highlighted |
+| **Configure button** | Pushes `/tables/configure` |
 | **Export / Share button** | Exports table via share sheet (PDF or HTML, TBD) |
 
 ---
 
 ### 4.4 Convertors Screen
 
-> **Purpose:** Collection of unit converters.
+> **Purpose:** Collection of unit converters. Sub-screens are placeholders for now.
 
-**Layout:** 2-column scrollable grid. Each tile — square card with rounded corners:
-- Large icon centered
-- Converter name below
-- Tap → pushes Convertor Screen onto Convertors stack
+**Layout:** 2-column scrollable grid. Each tile — square card with rounded corners, large icon, name below.
 
 **Converters (8 total):**
 
-| # | route type | Name | Icon |
-|---|------------|------|------|
-| 1 | `target-distance` | Target Distance | — |
-| 2 | `velocity` | Velocity | — |
-| 3 | `length` | Length | Ruler |
-| 4 | `weight` | Weight | Scales |
-| 5 | `pressure` | Pressure | Gauge |
-| 6 | `temperature` | Temperature | Thermometer |
-| 7 | `mil-moa` | MIL and MOA at Distance | MIL/MOA text + ruler |
-| 8 | `torque` | Torque | Screwdriver |
+| # | Route type | Name |
+|---|------------|------|
+| 1 | `target-distance` | Target Distance |
+| 2 | `velocity` | Velocity |
+| 3 | `length` | Length |
+| 4 | `weight` | Weight |
+| 5 | `pressure` | Pressure |
+| 6 | `temperature` | Temperature |
+| 7 | `mil-moa` | MIL / MOA at Distance |
+| 8 | `torque` | Torque |
 
 ---
 
@@ -278,16 +293,17 @@ Vertical trajectory curve. Tap/drag on curve shows details for the selected poin
 
 > **Purpose:** Global app settings.
 
-| Section | Content |
-|---------|---------|
-| **Language** | Interface language |
-| **Units** | Pushes Units screen (list of categories with selectors) |
-| **Theme** | Light / Dark / System |
-| **Adjustment units** | Display units for scope corrections (MOA, MIL, click, etc.) |
-| **Table step** | Distance step for trajectory tables |
-| **Switches** | Additional options (full list TBD) |
-| **Data** | Import / Export app state and config (local backup, ZIP archive — no cloud) |
-| **About** | Version, license, external links |
+| Section | Element | Status |
+|---------|---------|--------|
+| **Language** | Tap → dialog to select language | ⏳ dialog pending |
+| **Appearance** | Theme — SegmentedButton (System/Light/Dark) | ✅ |
+| **Appearance** | Units of Measurement → `/settings/units` | ⏳ screen pending |
+| **Ballistics** | Adjustment Display → `/settings/adjustment` | ⏳ screen pending |
+| **Ballistics** | Subsonic transition switch | ✅ |
+| **Ballistics** | Table distance step (dialog) | ✅ |
+| **Ballistics** | Chart distance step (dialog) | ✅ |
+| **Data** | Export / Import buttons | ⏳ stub |
+| **About** | Version, links (GitHub, Privacy, Terms, Changelog) | ✅ (links stub) |
 
 ---
 
@@ -315,7 +331,7 @@ Full-screen display of the scope reticle with calculated adjustments overlaid. D
 
 > Opened from **More** button on Home.
 
-Additional shot setup tools. Contains at minimum three ruler-like selectors:
+Contains at minimum three ruler-like selectors:
 
 | Tool | Description |
 |------|-------------|
@@ -335,29 +351,72 @@ Implementation: `Stack` + positioned coach mark widgets over `HomeScreen`.
 
 ---
 
-### 5.5 Ruler-like Selector (reusable component)
+### 5.5 Value Input Widgets (reusable)
 
-`lib/widgets/ruler_selector.dart` — reusable overlay component for numeric value selection.
+Two reusable input patterns:
 
-Used for: wind speed, look angle, target distance.
+**Ruler Selector** (`lib/widgets/ruler_selector.dart`):
+- Modal dialog/popup with vertical layout
+- Float/int input field with POS-terminal-style behavior (digits enter from right)
+- Touchable vertical ruler with tick marks; center tick = selected value
+- Touch drag + keyboard input
 
-- Displayed as a **vertical** ruler (touch scroll)
-- Two input methods: **touch drag** on the ruler and **direct keyboard input**
-- Shows current value and units
+**Spin Box Selector** (`lib/widgets/spin_box_selector.dart`):
+- Modal dialog/popup
+- Float/int input with POS-terminal-style behavior
+- Up/Down buttons flanking the input field, change value by configured step
+
+Reference implementations (TypeScript originals):
+- `doubleSpinBox.tsx`, `valueDialog.tsx`, `ruler.tsx`, `numericField.tsx` in `ebalistyka-web`
+
+Input accuracy logic follows the referenced components.
+
+Used for: wind speed, look angle, target distance, conditions fields.
 
 ---
 
-### 5.6 Units Screen
+### 5.6 Units Screen (`/settings/units`)
 
-> Opened from **Settings → Units**.
+> Opened from **Settings → Units of Measurement**.
 
-List of unit categories. Each category has an inline selector (radio / segmented control) for choosing the specific unit.
+List of unit categories, each with an inline chip/dropdown selector.
 
-Categories: distance, velocity, weight, temperature, pressure, angular adjustment units, energy, time, etc.
+| Category | Options |
+|----------|---------|
+| Velocity | fps / m/s |
+| Distance | meters / yards / feet |
+| Sight height | inches / cm |
+| Pressure | mmHg / inHg / hPa / PSI |
+| Temperature | Celsius / Fahrenheit |
+| Drop / Windage | meters / feet / cm / inches |
+| Drop / Windage angle | MIL / MOA / MRAD / cm/100m / in/100yd |
+| Energy | joules / foot-pounds |
+| Bullet weight | grams / grains |
+| OGW | pounds / kg |
+| Bullet length | mm / cm / inches |
 
 ---
 
-### 5.7 Rifle Selection Screen
+### 5.7 Adjustment Display Screen (`/settings/adjustment`)
+
+> Opened from **Settings → Adjustment Display**.
+
+| Setting | Options |
+|---------|---------|
+| Adjustment format | Arrows ↑↓ / Signs +− / Letters UD |
+| Show MRAD | switch |
+| Show MOA | switch |
+| Show MIL | switch |
+| Show cm/100m | switch |
+| Show in/100yd | switch |
+| Table distance step | (later) |
+| Chart distance step | (later) |
+
+Stored as flat fields directly in `AppSettings` (no nested model).
+
+---
+
+### 5.8 Rifle Selection Screen
 
 > Opened from **Rifle selection** button on Home.
 
@@ -365,17 +424,12 @@ Categories: distance, velocity, weight, temperature, pressure, angular adjustmen
 |---------|-------------|
 | Library list | Select existing rifle |
 | Create manually button | Pushes Rifle Edit screen |
-
-After selecting a rifle, also available in the same flow:
-
-| Element | Description |
-|---------|-------------|
 | Sight selection | Select or create a sight for the rifle |
 | Cartridge button | Pushes Cartridge screen |
 
 ---
 
-### 5.8 Projectile Selection Screen
+### 5.9 Projectile Selection Screen
 
 > Opened from **Projectile selection** button on Home.
 
@@ -386,9 +440,7 @@ After selecting a rifle, also available in the same flow:
 
 ---
 
-### 5.9 Cartridge Screen
-
-> Opened from the cartridge button inside Rifle Selection Screen.
+### 5.10 Cartridge Screen
 
 Three actions on one screen:
 
@@ -396,11 +448,11 @@ Three actions on one screen:
 |---------|-------------|
 | Select from library | Replace current cartridge |
 | Create manually | Push Cartridge Edit screen |
-| Current cartridge settings | Edit parameters of the already selected cartridge |
+| Current cartridge settings | Edit parameters of already selected cartridge |
 
 ---
 
-### 5.10 Table Configuration Screen
+### 5.11 Table Configuration Screen (`/tables/configure`)
 
 > Opened from **Configure** button on Tables screen.
 
@@ -408,7 +460,7 @@ Configure visible columns and distance step for the trajectory table. Saved in `
 
 ---
 
-### 5.11 Convertor Screen
+### 5.12 Convertor Screen (`/convertors/:type`)
 
 > Opened from any tile on Convertors screen.
 
@@ -444,131 +496,61 @@ Two input fields with keyboard + unit labels. Real-time recalculation using the 
 └─────────────────────────────────────────┘
 ```
 
-### 6.2 Unit System Approach
+### 6.2 Unit System
 
-**`PreferredUnits` (existing static class) is removed entirely from the domain.**
-
-Domain classes (`Weapon`, `Ammo`, `Atmo`, `Wind`) receive **explicit `Unit` parameters** in their constructors. No global unit state in the domain layer.
-
-`UnitSettings` is a UI-only immutable value class, managed by `SettingsNotifier` and accessed via `unitSettingsProvider`. The domain never sees it.
+`PreferredUnits` removed from domain. Domain classes use explicit `Unit` parameters. UI reads units via `unitSettingsProvider`.
 
 ### 6.3 Domain Models
 
 #### `UnitSettings` — `lib/src/models/unit_settings.dart`
 
-UI-only immutable class, replaces `PreferredUnits`:
-
 ```dart
 class UnitSettings {
-  final Unit angular;
-  final Unit distance;
-  final Unit velocity;
-  final Unit pressure;
-  final Unit temperature;
-  final Unit diameter;
-  final Unit length;
-  final Unit weight;
-  final Unit adjustment;
-  final Unit drop;
-  final Unit energy;
-  final Unit ogw;
-  final Unit sightHeight;
-  final Unit twist;
-  final Unit time;
-
-  const UnitSettings({ /* all fields with metric defaults */ });
-
-  UnitSettings copyWith({...});
-  Map<String, dynamic> toJson();
-  factory UnitSettings.fromJson(Map<String, dynamic> json);
+  final Unit velocity;      // fps / mps
+  final Unit distance;      // meter / yard / foot
+  final Unit sightHeight;   // inch / centimeter
+  final Unit pressure;      // mmHg / inHg / hPa / psi
+  final Unit temperature;   // celsius / fahrenheit
+  final Unit drop;          // meter / foot / centimeter / inch
+  final Unit adjustment;    // mil / moa / mrad / cmPer100m / inPer100yd
+  final Unit energy;        // joule / footPound
+  final Unit weight;        // gram / grain
+  final Unit ogw;           // pound / kilogram
+  final Unit length;        // millimeter / centimeter / inch
+  // internal / less-visible
+  final Unit angular;       // degree / radian / mil / moa
+  final Unit diameter;      // inch
+  final Unit twist;         // inch
+  final Unit time;          // second
 }
 ```
 
 #### `AppSettings` — `lib/src/models/app_settings.dart`
 
+Adjustment display fields added directly (no nested model):
+
 ```dart
+enum AdjustmentFormat { arrows, signs, letters }
+
 class AppSettings {
   final UnitSettings units;
-  final String       languageCode;            // 'uk', 'en'
-  final ThemeMode    themeMode;               // system / light / dark
-  final double       tableDistanceStep;       // in units.distance
-  final bool         enableCoriolis;
-  final bool         enablePowderSensitivity;
-  final bool         enableDerivation;
-  final bool         enableAerodynamicJump;
-  final bool         pressureDependsOnAltitude;
-
-  const AppSettings({ /* defaults */ });
-  AppSettings copyWith({...});
-  Map<String, dynamic> toJson();
-  factory AppSettings.fromJson(Map<String, dynamic> json);
-}
-```
-
-#### `Rifle` — `lib/src/models/rifle.dart`
-
-```dart
-class Rifle {
-  final String   id;           // UUID
-  final String   name;
-  final String?  description;
-  final Weapon   weapon;       // existing class — sight height, twist, zeroElevation
-  final String?  notes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
-  Map<String, dynamic> toJson();
-  factory Rifle.fromJson(Map<String, dynamic> json);
-}
-```
-
-#### `Sight` — `lib/src/models/sight.dart`
-
-```dart
-class Sight {
-  final String    id;
-  final String    name;
-  final String?   manufacturer;
-  final Angular   zeroElevation;
-  final Distance  sightHeight;
-  final String?   notes;
-
-  Map<String, dynamic> toJson();
-  factory Sight.fromJson(Map<String, dynamic> json);
-}
-```
-
-#### `Projectile` — `lib/src/models/projectile.dart`
-
-```dart
-class Projectile {
-  final String    id;
-  final String    name;
-  final String?   manufacturer;
-  final DragModel dm;
-  final String?   notes;
-
-  Map<String, dynamic> toJson();
-  factory Projectile.fromJson(Map<String, dynamic> json);
-}
-```
-
-#### `Cartridge` — `lib/src/models/cartridge.dart`
-
-```dart
-class Cartridge {
-  final String      id;
-  final String      name;
-  final Projectile  projectile;
-  final Velocity    mv;
-  final Temperature powderTemp;
-  final double      tempModifier;
-  final bool        usePowderSensitivity;
-  final String?     notes;
-
-  Ammo toAmmo();   // converts to existing Ammo for Calculator
-  Map<String, dynamic> toJson();
-  factory Cartridge.fromJson(Map<String, dynamic> json);
+  final String     languageCode;
+  final ThemeMode  themeMode;
+  final double     tableDistanceStep;
+  final double     chartDistanceStep;
+  final bool       showSubsonicTransition;
+  final bool       enableCoriolis;
+  final bool       enablePowderSensitivity;
+  final bool       enableDerivation;
+  final bool       enableAerodynamicJump;
+  final bool       pressureDependsOnAltitude;
+  // Adjustment display (Phase 10.3)
+  final AdjustmentFormat adjustmentFormat;  // ↑↓ / +− / UD
+  final bool showMrad;
+  final bool showMoa;
+  final bool showMil;
+  final bool showCmPer100m;
+  final bool showInPer100yd;
 }
 ```
 
@@ -584,126 +566,36 @@ class ShotProfile {
   final Atmo       conditions;
   final List<Wind> winds;
   final Angular    lookAngle;
+  final Distance   zeroDistance;   // ← needed (currently hardcoded 100 m)
   final double?    latitudeDeg;
   final double?    azimuthDeg;
 
-  Shot toShot();   // converts to existing Shot for Calculator
-  Map<String, dynamic> toJson();
-  factory ShotProfile.fromJson(Map<String, dynamic> json);
+  Shot toShot();
 }
 ```
-
-**Serialization rule for `Dimension` types:** store as `{"value": 9.0, "unit": "inch"}`.
 
 ### 6.4 Riverpod Providers
 
-#### `lib/providers/settings_provider.dart`
+| Provider | Type | Purpose |
+|----------|------|---------|
+| `settingsProvider` | `AsyncNotifierProvider<SettingsNotifier, AppSettings>` | All app settings |
+| `unitSettingsProvider` | `Provider<UnitSettings>` | Sync unit access |
+| `themeModeProvider` | `Provider<ThemeMode>` | Sync theme access |
+| `shotProfileProvider` | `AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>` | Current shot profile |
+| `calculationProvider` | `AsyncNotifierProvider<CalculationNotifier, HitResult?>` | Lazy ballistic calculation |
+| `rifleLibraryProvider` | `AsyncNotifierProvider` | Rifle CRUD |
+| `cartridgeLibraryProvider` | `AsyncNotifierProvider` | Cartridge CRUD |
+| `sightLibraryProvider` | `AsyncNotifierProvider` | Sight CRUD |
+| `appStorageProvider` | `Provider<AppStorage>` | Storage singleton |
 
-```dart
-class SettingsNotifier extends AsyncNotifier<AppSettings> {
-  @override
-  Future<AppSettings> build() async {
-    return await ref.read(appStorageProvider).loadSettings()
-        ?? const AppSettings();
-  }
-
-  Future<void> setUnit(String key, Unit unit) async { ... }
-  Future<void> setThemeMode(ThemeMode mode) async { ... }
-  Future<void> setLanguage(String code) async { ... }
-  Future<void> setSwitch(String key, bool value) async { ... }
-}
-
-final settingsProvider =
-    AsyncNotifierProvider<SettingsNotifier, AppSettings>(SettingsNotifier.new);
-
-// Synchronous access — returns defaults while loading
-final unitSettingsProvider = Provider<UnitSettings>((ref) {
-  return ref.watch(settingsProvider).valueOrNull?.units
-      ?? const UnitSettings();
-});
-
-final themeModeProvider = Provider<ThemeMode>((ref) {
-  return ref.watch(settingsProvider).valueOrNull?.themeMode
-      ?? ThemeMode.system;
-});
-```
-
-#### `lib/providers/shot_profile_provider.dart`
-
-```dart
-class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
-  @override
-  Future<ShotProfile> build(); // loads from storage
-
-  Future<void> selectRifle(Rifle r);
-  Future<void> selectSight(Sight s);
-  Future<void> selectCartridge(Cartridge c);
-  Future<void> updateConditions(Atmo atmo);
-  Future<void> updateWinds(List<Wind> winds);
-  Future<void> updateLookAngle(Angular angle);
-  Future<void> updateTargetDistance(Distance d);
-  Future<void> loadFromFile(String path);   // import individual profile
-}
-
-final shotProfileProvider =
-    AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>(ShotProfileNotifier.new);
-```
-
-#### `lib/providers/library_provider.dart`
-
-```dart
-final rifleLibraryProvider =
-    AsyncNotifierProvider<RifleLibraryNotifier, List<Rifle>>(...);
-final cartridgeLibraryProvider = ...;
-final sightLibraryProvider = ...;
-```
-
-#### `lib/providers/calculation_provider.dart`
-
-```dart
-// Reactive calculation — recalculates only when profile changes
-// Runs Calculator in an isolate via compute()
-// Caches the last HitResult
-final calculationProvider = FutureProvider<HitResult?>((ref) async {
-  final profile = ref.watch(shotProfileProvider).valueOrNull;
-  if (profile == null) return null;
-  return compute(_runCalculation, profile);
-});
-```
+**Calculation architecture:** `CalculationNotifier` is lazy with `_dirty` flag. `build()` returns null immediately. `markDirty()` called from `_ScaffoldWithNavState` via `ref.listen(shotProfileProvider)`. `recalculateIfNeeded()` triggered only on Home (tab 0) and Tables (tab 2) tab activation. Runs in isolate via `compute()`.
 
 ### 6.5 Storage
 
-#### Interface — `lib/storage/app_storage.dart`
+**Interface:** `lib/storage/app_storage.dart`
+**Implementation:** `JsonFileStorage` — JSON files in app documents directory.
 
-```dart
-abstract interface class AppStorage {
-  Future<AppSettings?> loadSettings();
-  Future<void> saveSettings(AppSettings s);
-
-  Future<ShotProfile?> loadCurrentProfile();
-  Future<void> saveCurrentProfile(ShotProfile p);
-
-  Future<List<Rifle>> loadRifles();
-  Future<void> saveRifle(Rifle r);
-  Future<void> deleteRifle(String id);
-
-  Future<List<Cartridge>> loadCartridges();
-  Future<void> saveCartridge(Cartridge c);
-  Future<void> deleteCartridge(String id);
-
-  Future<List<Sight>> loadSights();
-  Future<void> saveSight(Sight s);
-  Future<void> deleteSight(String id);
-
-  Future<Map<String, dynamic>> exportAll();
-  Future<void> importAll(Map<String, dynamic> data);
-}
-```
-
-#### First implementation — `JsonFileStorage`
-
-Simple implementation using `dart:io` + JSON files in app documents directory. Export archive structure:
-
+Export archive:
 ```
 eballistica_backup.zip
 ├── settings.json
@@ -713,78 +605,58 @@ eballistica_backup.zip
 └── sights.json
 ```
 
-Isar may be added later as an alternative implementation behind the same interface — no domain changes required.
-
 ---
 
 ## 7. Open Questions
 
 | # | Question | Status |
 |---|----------|--------|
-| 1 | Storage engine: Isar / Hive / JSON files? | ⏳ JSON first, Isar later maybe |
-| 2 | Table export format: PDF or HTML? | ⏳ TBD |
-| 3 | Reticle screen — static display or interactive? | ⏳ TBD |
-| 4 | Full list of switches in Settings | ⏳ TBD |
-| 5 | Localizations: UK + EN only or more? | ⏳ TBD |
+| 1 | Table export format: PDF or HTML? | ⏳ TBD |
+| 2 | Reticle screen — static or interactive? | ⏳ TBD |
+| 3 | Localizations: UK + EN only or more? | ⏳ UK + EN for now |
+| 4 | cm/100m and in/100yd — are these `Unit` enum values or computed? | ⏳ TBD |
 
 ---
 
 ## 8. Current Codebase Status
 
-### 8.1 Already Implemented ✅
+### 8.1 Implemented ✅
 
-| File | Contents |
-|------|----------|
-| `src/solver/unit.dart` | Full unit system: `Unit` enum, `Dimension`, all typed classes. `PreferredUnits` **removed** |
-| `src/solver/conditions.dart` | `Atmo`, `Vacuum`, `Wind`, `Coriolis` — explicit `Dimension` params |
-| `src/solver/munition.dart` | `Weapon`, `Ammo` — explicit `Dimension` params |
-| `src/solver/drag_model.dart` | `DragModel`, `BCPoint`, `createDragModelMultiBC` — explicit params |
-| `src/solver/drag_tables.dart` | Standard tables G1, G7, G2, G5, G6, G8, GI, GS, RA4 |
-| `src/solver/shot.dart` | `Shot` with full ballistic geometry |
-| `src/solver/trajectory_data.dart` | `TrajectoryData`, `HitResult`, `TrajFlag` |
-| `src/solver/calculator.dart` | `Calculator` — maps `Shot` → FFI → `HitResult` |
-| `src/solver/constants.dart` | `BallisticConstants` |
-| `src/solver/vector.dart` | `Vector` |
-| `src/solver/ffi/bclibc_ffi.dart` | Dart wrapper over C FFI: `BcLibC`, all value types |
-| `src/solver/ffi/bclibc_bindings.g.dart` | Auto-generated FFI bindings |
-| `src/models/unit_settings.dart` | `UnitSettings` — immutable, `copyWith`, serialization |
-| `src/models/app_settings.dart` | `AppSettings` — all switches, serialization |
-| `src/models/rifle.dart` | `Rifle` — id, name, `Weapon`, serialization |
-| `src/models/sight.dart` | `Sight` — id, name, `Angular`/`Distance`, serialization |
-| `src/models/projectile.dart` | `Projectile` — id, name, `DragModel`, serialization |
-| `src/models/cartridge.dart` | `Cartridge` — `toAmmo()`, serialization |
-| `src/models/shot_profile.dart` | `ShotProfile` — `toShot()`, serialization |
-| `src/models/seed_data.dart` | `.338LM` seed profiles (4 cartridges) |
-| `src/a7p/` | a7p file parser + validator (protobuf-based) |
-| `storage/app_storage.dart` | `AppStorage` interface |
-| `storage/json_file_storage.dart` | `JsonFileStorage` — JSON files in app documents dir |
-| `providers/settings_provider.dart` | `SettingsNotifier`, `unitSettingsProvider`, `themeModeProvider` |
-| `providers/shot_profile_provider.dart` | `ShotProfileNotifier` — load/save/update |
-| `providers/library_provider.dart` | `RifleLibraryNotifier`, `CartridgeLibraryNotifier`, `SightLibraryNotifier` |
-| `providers/calculation_provider.dart` | `calculationProvider` — reactive, runs in isolate |
-| `providers/storage_provider.dart` | `appStorageProvider` |
-| `main.dart` | `ProviderScope`, `MaterialApp.router`, `window_manager`, `themeModeProvider` |
-| `router.dart` | GoRouter: `StatefulShellRoute`, all routes + sub-routes, `_ScaffoldWithNav` |
-| `screens/home_screen.dart` | Top block connected to providers + navigation; bottom block — page stubs |
-| `screens/tables_screen.dart` | Working chart + table (hardcoded params — Phase 8) |
-| `screens/_stub_screen.dart` | Reusable stub with back button header |
-| `screens/home_sub_screens.dart` | Stubs: RifleSelect, RifleEdit, SightSelect, Cartridge, CartridgeEdit, ProjectileSelect, ProjectileEdit, ShotDetails |
-| `screens/tables_sub_screens.dart` | Stub: TableConfig |
-| `screens/settings_screen.dart` | Full Settings screen — language, units nav, theme selector, ballistics switches, distance steps, export/import, links, about |
-| `screens/settings_sub_screens.dart` | Stubs: UnitsScreen, AdjustmentDisplayScreen |
-| `widgets/wind_indicator.dart` | `WindIndicator` — interactive wind direction wheel |
-| `widgets/side_control_block.dart` | `SideControlBlock` |
-| `widgets/quick_actions_panel.dart` | `QuickActionsPanel` |
-| `widgets/trajectory_chart.dart` | `TrajectoryChart` (CustomPainter) |
-| `widgets/trajectory_table.dart` | `TrajectoryTable` |
+| Area | File(s) | Notes |
+|------|---------|-------|
+| **Solver** | `src/solver/` | Full unit system, conditions, munition, drag tables, shot, trajectory, calculator, FFI |
+| **Domain models** | `src/models/` | Rifle, Sight, Projectile, Cartridge, ShotProfile, AppSettings, UnitSettings, seed data |
+| **Storage** | `storage/` | AppStorage interface + JsonFileStorage |
+| **Providers** | `providers/` | Settings, ShotProfile, Library, Calculation, Storage |
+| **Navigation** | `router.dart` | GoRouter with StatefulShellRoute, all routes, _ScaffoldWithNav |
+| **Main** | `main.dart` | ProviderScope, MaterialApp.router, static ThemeData, themeModeProvider |
+| **Home screen** | `screens/home_screen.dart` | Top block connected; bottom block: Page 3 (chart) ✅, Pages 1–2 stubs |
+| **Tables screen** | `screens/tables_screen.dart` | Connected to calculationProvider, spinner, topbar |
+| **TrajectoryTable** | `widgets/trajectory_table.dart` | Domain types, zero-row highlighting by distance |
+| **TrajectoryChart** | `widgets/trajectory_chart.dart` | CustomPainter, domain types |
+| **Settings screen** | `screens/settings_screen.dart` | Theme ✅, subsonic switch ✅, distance steps ✅, links ✅; language/units/adjustment — stubs |
+| **Wind indicator** | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; commits only on gesture end |
 
-### 8.2 Issues to Resolve ⚠️
+### 8.2 Partially Done / Pending ⚠️
 
-| Issue | Where | Impact |
-|-------|-------|--------|
-| Hardcoded calculation parameters | `tables_screen.dart` | Replace with `calculationProvider` in Phase 8 |
-| Home bottom block — page stubs | `home_screen.dart` | Implement in Phase 6 after Phase 7/9 |
-| Sub-screens — all stubs | `home_sub_screens.dart` etc. | Implement in Phase 11 |
+| Area | Status | Phase |
+|------|--------|-------|
+| Settings → Language dialog | Stub tile | 10 |
+| Settings → Units screen | Stub screen | 10 |
+| Settings → Adjustment Display screen | Stub screen | 10 |
+| Adjustment display fields in `AppSettings` | Not added | 10 |
+| `ShotProfile.zeroDistance` field | Hardcoded 100 m | 8.8 |
+| Tables — frozen header | Not implemented | 8.1 |
+| Tables — zero crossing table | Not implemented | 8.2 |
+| Tables — row tap detail dialog | Not implemented | 8.3 |
+| Tables — details spoiler | Not implemented | 8.4 |
+| Tables — Configure wired | Stub | 8.6 |
+| Tables — Export wired | Stub | 8.7 |
+| Home — Page 1 (reticle + adjustments) | Stub | 6 |
+| Home — Page 2 (adjustment tables) | Stub | 6 |
+| Conditions screen | Stub | 7 |
+| Convertors screen | Grid stub | 9 |
+| Rifle/Cartridge/Sight selection | Stubs | 11 |
 
 ---
 
@@ -792,256 +664,130 @@ Isar may be added later as an alternative implementation behind the same interfa
 
 ---
 
-### Phase 1 — Library Domain Models
+### Phase 1–5 ✅ — Foundation
 
-> **Goal:** Add named library entities on top of existing ballistic classes.  
-> **Do not touch:** `Weapon`, `Ammo`, `Shot`, `Calculator` — only add wrappers.
-
-**Tasks:**
-1. Create `lib/src/models/rifle.dart` — `Rifle` with id, name, `Weapon`, serialization
-2. Create `lib/src/models/sight.dart` — `Sight` with id, name, `Angular`/`Distance`, serialization
-3. Create `lib/src/models/projectile.dart` — `Projectile` with id, name, `DragModel`, serialization
-4. Create `lib/src/models/cartridge.dart` — `Cartridge` with `toAmmo()`, serialization
-5. Create `lib/src/models/shot_profile.dart` — `ShotProfile` with `toShot()`, serialization
-6. Serialization convention for `Dimension` types: `{"value": 9.0, "unit": "inch"}`
+Domain models, storage, providers, navigation. **Done.**
 
 ---
 
-### Phase 2 — Remove `PreferredUnits`, Add Reactive `UnitSettings`
+### Phase 5.5 — Value Input Widgets
 
-> **Goal:** Completely remove `PreferredUnits` from the domain. Domain receives explicit `Unit` everywhere. UI reads units via Riverpod.  
-> **Approach C:** `PreferredUnits` is a UI-only concept. Domain classes have zero dependency on any global unit state.
+Reusable input components used across multiple screens.
 
-**2.1 What to remove from `unit.dart`:**
-- Delete `abstract final class PreferredUnits` entirely — all static fields, setters, `restoreDefaults()`, `set()`, `info`
-- Keep: `Unit` enum, `Dimension`, all typed dimension classes — they are clean
+**Ruler Selector:**
+- Modal with vertical ruler (touch drag)
+- POS-terminal digit input
+- Reference: `ruler.tsx`, `valueDialog.tsx`, `numericField.tsx`
 
-**2.2 Refactor domain constructors:**
-
-```dart
-// Before — implicit dependency on global state
-class Weapon {
-  Weapon({Object? sightHeight})
-    : sightHeight = PreferredUnits.sightHeight(sightHeight ?? 0);
-}
-
-// After — explicit Unit, no global state
-class Weapon {
-  final Distance sightHeight;
-  final Distance twist;
-  final Angular  zeroElevation;
-
-  Weapon({
-    double sightHeight       = 0.0,
-    Unit   sightHeightUnit   = Unit.inch,
-    double twist             = 0.0,
-    Unit   twistUnit         = Unit.inch,
-    double zeroElevation     = 0.0,
-    Unit   zeroElevationUnit = Unit.radian,
-  })  : sightHeight   = Distance(sightHeight, sightHeightUnit),
-        twist         = Distance(twist, twistUnit),
-        zeroElevation = Angular(zeroElevation, zeroElevationUnit);
-}
-```
-
-Same for `Ammo`, `Atmo`, `Wind`. Typed objects (`Distance`, `Velocity` etc.) are still accepted directly.
-
-**2.3 Tasks:**
-1. Write `UnitSettings` — `copyWith`, `toJson`, `fromJson`
-2. Write `AppSettings` — serialization, all switches
-3. Refactor `Weapon` — explicit Unit params, remove `PreferredUnits`
-4. Refactor `Ammo` — same
-5. Refactor `Atmo` — same
-6. Refactor `Wind` — same
-7. Delete `PreferredUnits` from `unit.dart`
-8. Write `SettingsNotifier`, `unitSettingsProvider`, `themeModeProvider`
-9. Wire theme in `MyApp` via `themeModeProvider`
-10. Verify `tables_screen.dart` and `calculator.dart` still compile
-
-**2.4 Usage in UI:**
-
-```dart
-class ConditionsScreen extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final units = ref.watch(unitSettingsProvider);
-
-    // Format for display — domain stores rawValue, UI converts
-    final tempStr = atmo.temperature
-        .in_(units.temperature)
-        .toStringAsFixed(units.temperature.accuracy);
-
-    // Create domain object — explicit units from UI state
-    final newAtmo = Atmo(
-      altitude:        altValue,
-      altitudeUnit:    units.distance,
-      temperature:     tempValue,
-      temperatureUnit: units.temperature,
-    );
-  }
-}
-```
-
-**2.5 `Calculator` — no changes needed.** It receives a ready `Shot` from `ShotProfileNotifier` where all values are already typed. The FFI mapper calls `.in_(Unit.foot)` / `.in_(Unit.fps)` explicitly — already the case.
+**Spin Box Selector:**
+- Modal with up/down step buttons + POS-terminal input
+- Reference: `doubleSpinBox.tsx`
 
 ---
 
-### Phase 3 — Storage
+### Phase 6 — Home Screen Bottom Block
 
-> **Goal:** Single local storage. Start with JSON files. Isar can be swapped in later without touching the interface or domain.
-
-**Tasks:**
-1. Define `AppStorage` interface (`lib/storage/app_storage.dart`)
-2. Implement `JsonFileStorage` using `dart:io` + `path_provider`
-3. Register `appStorageProvider` in Riverpod
-4. Export archive as ZIP with 5 JSON files via `archive` package
-
----
-
-### Phase 4 — Riverpod Providers
-
-**Tasks:**
-1. `RifleLibraryNotifier` — CRUD over `AppStorage`
-2. `CartridgeLibraryNotifier` — same
-3. `SightLibraryNotifier` — same
-4. `ShotProfileNotifier` — load/save, all `select*` and `update*` methods, `loadFromFile`
-5. `calculationProvider` — reactive `FutureProvider`, runs `Calculator` in isolate via `compute()`, caches last `HitResult`
-
----
-
-### Phase 5 — Navigation (GoRouter)
-
-**Tasks:**
-1. Add `go_router` dependency
-2. Implement `ScaffoldWithNavBar` shell — bottom nav always visible
-3. Define all routes per section 3.5
-4. Implement nav bar tap behavior: `go()` to switch tabs (clears stack), `push()` for sub-screens
-5. Replace current `setState` index navigation in `main.dart`
-6. Wire `MaterialApp.router` with `themeModeProvider`
-
----
-
-### Phase 6 — Home Screen (bottom block)
-
-**Tasks:**
-1. Connect top block to providers: rifle name, cartridge name, conditions indicators, wind, quick actions
-2. **Page 1:** Reticle preview widget + adjustments in selected units from `calculationProvider`
-3. **Page 2:** Adjustments table — ±3 distances around target distance
-4. **Page 3:** Connect existing `TrajectoryChart` to `calculationProvider`, add tap-to-select-point
+1. **Page 1:** Left — reticle placeholder (rounded square). Right — drop/windage in multiple units from `adjustmentDisplay` settings.
+2. **Page 2:** Scrollable set of compact tables (Height, Slant Height, Drop angle, Windage angle, Velocity, Energy, Time), each ±2 steps around target distance.
+3. **Page 3:** Chart connected to `calculationProvider` ✅ + tap-to-select-point.
+4. Also: placeholder sub-screens for New Note and More buttons.
 
 ---
 
 ### Phase 7 — Conditions Screen
 
-Connect to `ShotProfileNotifier.updateConditions()`. All fields — keyboard input in units from `unitSettingsProvider`. Switches — read/write `AppSettings` via `SettingsNotifier`.
+Connect all fields to `ShotProfileNotifier.updateConditions()`. Units from `unitSettingsProvider`. Switches from `SettingsNotifier`. Aerodynamic jump and pressure-from-altitude: always ON, controls visible but disabled.
 
 ---
 
 ### Phase 8 — Tables Screen
 
-**Done:**
-- Connected to `calculationProvider` (hardcoded calculation removed)
-- Topbar: back→Home, centered title, Configure + Export buttons
-- Spinner while recalculating
-- `TrajectoryTable` using `List<TrajectoryData>` (domain types)
+**Done:** calculationProvider connected, topbar, spinner, domain types, zero-row highlight.
 
-**Pending (table UI):**
-- 8.1 **Frozen header**: column name + unit rows should stay fixed while content scrolls vertically (only content rows scroll)
-- 8.2 **Zero crossing rows**: 2 extra rows separated by a double divider — shows the zero-crossing point. Toggled via table settings. Or as a separate widget.
-- 8.3 **Row tap → detail dialog**: tapping a table row opens a dialog with full details for that point
-- 8.4 **Details spoiler**: collapsible widget above the table showing shot profile details (rifle, cartridge, conditions summary)
-- 8.5 **Zero highlighting bug**: currently highlights the row with minimum `|slantHeight|`; verify zero crossing is correctly identified after `setWeaponZero` integration
-- 8.6 Wire Configure → `TableConfigScreen`
-- 8.7 Wire Export → share sheet (PDF or HTML, TBD)
-- 8.8 `zeroDistance` field on `ShotProfile` (currently hardcoded 100 m in `_runCalculation`)
+**Pending:**
+- **8.1** Frozen header (column/unit rows fixed, only data rows scroll)
+- **8.2** Zero crossing table above main table (from `HitResult.zeros`)
+- **8.3** Row tap → detail dialog
+- **8.4** Details spoiler (rifle, cartridge, conditions summary)
+- **8.6** Wire Configure button
+- **8.7** Wire Export button
+- **8.8** Add `zeroDistance` to `ShotProfile`, remove hardcoded 100 m
 
 ---
 
 ### Phase 9 — Convertors Screen
 
-- Grid of 8 tiles, each pushes `/convertors/:type`
-- Individual `ConvertorScreen`: two keyboard input fields, real-time conversion using `Unit`/`Dimension`
+Grid of 8 tiles → each pushes `/convertors/:type` placeholder. Individual converter screen: two input fields, real-time conversion via `Unit`/`Dimension`.
 
 ---
 
-### Phase 10 — Settings Screen ✅
+### Phase 10 — Settings Screen (completion)
 
-Implemented as a full scrollable `ConsumerWidget`:
-- Language (English only, placeholder)
-- Units of Measurement → `/settings/units` (stub)
-- Theme selector — `SegmentedButton` (System / Light / Dark) → `themeModeProvider`
-- Adjustment Display → `/settings/adjustment` (stub)
-- Switch: Show subsonic transition → `AppSettings.showSubsonicTransition`
-- Table distance step — tap to enter via dialog → `AppSettings.tableDistanceStep`
-- Chart distance step — tap to enter via dialog → `AppSettings.chartDistanceStep`
-- Export / Import profile buttons (stubs)
-- GitHub / Privacy Policy / Terms of Use links (stubs)
-- Version (hardcoded 1.0.0) + Changelog link (stub)
+**Done:** theme, subsonic switch, distance steps, links/about.
 
-`AppSettings` extended with `chartDistanceStep` + `showSubsonicTransition`.
-`SettingsNotifier` extended with `setChartDistanceStep` + `subsonicTransition` switch key.
+**Pending:**
+- **10.1** Language tile → `AlertDialog` with radio list (uk/en), calls `SettingsNotifier.setLanguage()`
+- **10.2** Units Screen — implement `/settings/units`:
+  - Each category: label + chip group or dropdown → calls `SettingsNotifier.setUnit(key, unit)`
+  - Categories per §5.6
+- **10.3** Adjustment Display Screen — implement `/settings/adjustment`:
+  - Format selector (arrows/signs/letters)
+  - Toggles for MRAD, MOA, MIL, cm/100m, in/100yd
+  - Add `adjustmentFormat`, `showMrad/Moa/Mil/CmPer100m/InPer100yd` flat fields to `AppSettings`, wire to `SettingsNotifier`
 
 ---
 
-### Phase 11 — Rifle / Cartridge / Sight Selection Screens
+### Phase 11 — Rifle / Cartridge / Sight Selection
 
-- `RifleSelectionScreen` — searchable list from `rifleLibraryProvider`, FAB to create, tap to select + show sight/cartridge flow
-- `RifleEditScreen` — form: name, sight height, twist, zero elevation, notes
+- `RifleSelectionScreen` — list from `rifleLibraryProvider`, FAB to create
+- `RifleEditScreen` — form: name, sight height, twist, zero elevation
 - `SightSelectionScreen` — list from `sightLibraryProvider`
-- `CartridgeScreen` — three sections: select / create / edit current
+- `CartridgeScreen` — select / create / edit current
 - `ProjectileSelectionScreen` — list from `cartridgeLibraryProvider`
-- `CartridgeEditScreen` — full projectile + ammo parameters form
+- `CartridgeEditScreen` — full projectile + ammo form
 
 ---
 
 ### Phase 12 — Additional Screens
 
-- `InfoScreen` — read-only full `ShotProfile` display
-- `ReticleScreen` — full-screen reticle with adjustments (details TBD)
-- `TableConfigScreen` — column visibility + distance step, saved to `AppSettings`
-- **Help Overlay** — `Stack` + positioned coach mark widgets, all-in-one
-- **Ruler Selector** (`lib/widgets/ruler_selector.dart`) — vertical ruler overlay, touch drag + keyboard
+- `InfoScreen` — read-only ShotProfile display
+- `ReticleScreen` — full-screen reticle (TBD)
+- `TableConfigScreen` — column visibility + step
+- **Help Overlay** — all-in-one coach marks
+- **Tools Screen** — ruler selectors for wind/angle/distance
 
 ---
 
 ### Phase 13 — Polish & Export
 
-- Dark/light theme — basic already in `main.dart`
-- Localization (ARB files, `flutter_localizations`)
-- Table export — PDF or HTML via share sheet (TBD)
-- Profile import from file via `file_picker`
-- iOS bundling of C++ library
+- Localization (ARB, flutter_localizations, uk + en)
+- Table export — PDF or HTML via share sheet
+- Profile import via `file_picker`
+- iOS C++ library bundling
 
 ---
 
 ## 10. Dependencies
 
-### Currently in use
+### In use
 
 ```yaml
-flutter_riverpod: # existing
-window_manager:   # existing
-ffi:              # existing
+flutter_riverpod:
+go_router:
+ffi:
+uuid:
+path_provider:
+window_manager:
 ```
 
 ### To add
 
 ```yaml
-go_router: ^14.0.0           # navigation
-uuid: ^4.0.0                 # ID generation
-path_provider: ^2.0.0        # app documents directory
-archive: ^3.0.0              # ZIP for export
-file_picker: ^8.0.0          # file import
-share_plus: ^9.0.0           # share sheet for table export
-flutter_localizations: sdk   # localization
-intl: ^0.19.0                # formatting
-```
-
-### Optional (storage upgrade)
-
-```yaml
-isar: ^3.0.0                 # if Isar is chosen later
-isar_flutter_libs: ^3.0.0
+archive: ^3.0.0          # ZIP export
+file_picker: ^8.0.0      # profile import
+share_plus: ^9.0.0       # table export share sheet
+flutter_localizations: sdk
+intl: ^0.19.0
 ```
 
 ---
@@ -1049,21 +795,18 @@ isar_flutter_libs: ^3.0.0
 ## 11. Execution Order
 
 ```
-Phase 1  → Domain models (Rifle, Sight, Cartridge, ShotProfile + serialization)
-Phase 2  → Remove PreferredUnits, add UnitSettings + SettingsNotifier
-Phase 3  → JsonFileStorage
-Phase 4  → All Riverpod providers (library, profile, calculation)
-Phase 5  → GoRouter (navigation skeleton)
-Phase 6  → Home Screen bottom block
-Phase 7  → Conditions Screen
-Phase 8  → Tables Screen (refactor)
-Phase 9  → Convertors Screen
-Phase 10 → Settings Screen + Units Screen
-Phase 11 → Rifle / Cartridge / Sight Selection Screens
-Phase 12 → Additional screens (Info, Reticle, Config, Help, Ruler)
-Phase 13 → Polish, localization, export
+Phase 1–5   ✅  Foundation (domain, storage, providers, navigation)
+Phase 10       Settings completion (language dialog, units screen, adjustment screen)
+Phase 7        Conditions Screen
+Phase 8        Tables Screen (frozen header, zero table, spoiler, zeroDistance)
+Phase 6        Home Screen bottom block (pages 1 & 2)
+Phase 5.5      Value input widgets (ruler + spin box)
+Phase 9        Convertors Screen
+Phase 11       Rifle / Cartridge / Sight Selection
+Phase 12       Additional Screens
+Phase 13       Polish & Export
 ```
 
 ---
 
-*Document is updated as implementation progresses.*
+*Document updated as implementation progresses.*

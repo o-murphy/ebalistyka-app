@@ -27,7 +27,10 @@ class _WindIndicatorState extends State<WindIndicator> {
   // Updates local visual state only — does NOT notify parent.
   void _updateAngle(Offset localPosition, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final rawAngle = atan2(localPosition.dy - center.dy, localPosition.dx - center.dx);
+    final rawAngle = atan2(
+      localPosition.dy - center.dy,
+      localPosition.dx - center.dx,
+    );
     double degrees = (rawAngle * 180 / pi + 90) % 360;
     if (degrees < 0) degrees += 360;
     setState(() {
@@ -49,7 +52,8 @@ class _WindIndicatorState extends State<WindIndicator> {
     int hour = (totalMin ~/ 60) % 12;
     if (hour == 0) hour = 12;
     final minute = totalMin % 60;
-    final clockFormat = '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+    final clockFormat =
+        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
     widget.onAngleChanged(degrees, clockFormat);
   }
 
@@ -61,13 +65,17 @@ class _WindIndicatorState extends State<WindIndicator> {
         return GestureDetector(
           onDoubleTap: _reset,
           onPanUpdate: (details) => _updateAngle(details.localPosition, size),
-          onPanEnd:    (_)       => _commit(),
-          onTapDown:   (details) { _updateAngle(details.localPosition, size); _commit(); },
+          onPanEnd: (_) => _commit(),
+          onTapDown: (details) {
+            _updateAngle(details.localPosition, size);
+            _commit();
+          },
           child: CustomPaint(
             painter: WindPainter(
               angle: angle,
               color: Theme.of(context).colorScheme.onSurface,
               primaryColor: Theme.of(context).colorScheme.primary,
+              onPrimaryColor: Theme.of(context).colorScheme.onPrimary,
             ),
             child: const SizedBox.expand(),
           ),
@@ -81,11 +89,13 @@ class WindPainter extends CustomPainter {
   final double angle;
   final Color color;
   final Color primaryColor;
+  final Color onPrimaryColor;
 
   WindPainter({
     required this.angle,
     required this.color,
     required this.primaryColor,
+    required this.onPrimaryColor,
   });
 
   @override
@@ -102,7 +112,7 @@ class WindPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       innerRadius,
-      Paint()..color = color.withOpacity(0.05),
+      Paint()..color = color.withValues(alpha: 0.05),
     );
 
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
@@ -201,7 +211,7 @@ class WindPainter extends CustomPainter {
         style: TextStyle(
           fontFamily: Icons.fingerprint.fontFamily,
           fontSize: markerR * 1.2,
-          color: Colors.white,
+          color: onPrimaryColor,
         ),
       ),
       textDirection: TextDirection.ltr,
