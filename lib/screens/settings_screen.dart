@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/settings_provider.dart';
 import '../router.dart';
 import '../src/models/app_settings.dart';
+import '../src/models/field_constraints.dart';
+import '../src/solver/unit.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -83,15 +85,13 @@ class SettingsScreen extends ConsumerWidget {
               _StepTile(
                 icon: Icons.table_rows_outlined,
                 label: 'Table distance step',
-                value: settings.tableDistanceStep,
-                unit: 'm',
+                valueM: settings.tableDistanceStep,
                 onConfirm: notifier.setTableDistanceStep,
               ),
               _StepTile(
                 icon: Icons.show_chart_outlined,
                 label: 'Chart distance step',
-                value: settings.chartDistanceStep,
-                unit: 'm',
+                valueM: settings.chartDistanceStep,
                 onConfirm: notifier.setChartDistanceStep,
               ),
               const Divider(height: 1),
@@ -293,37 +293,38 @@ class _ThemeSelector extends StatelessWidget {
 
 // ─── Distance step tile ───────────────────────────────────────────────────────
 
-class _StepTile extends StatelessWidget {
+class _StepTile extends ConsumerWidget {
   const _StepTile({
     required this.icon,
     required this.label,
-    required this.value,
-    required this.unit,
-    required this.onConfirm,
+    required this.valueM,   // stored in metres
+    required this.onConfirm, // receives metres
   });
 
-  final IconData icon;
-  final String label;
-  final double value;
-  final String unit;
+  final IconData    icon;
+  final String      label;
+  final double      valueM;
   final ValueChanged<double> onConfirm;
 
   @override
-  Widget build(BuildContext context) {
-    final display = value % 1 == 0 ? '${value.toInt()} $unit' : '$value $unit';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final distUnit = ref.watch(unitSettingsProvider).distance;
+    final acc      = FC.distance.accuracyFor(distUnit);
+    final dispVal  = (Unit.meter(valueM) as dynamic).in_(distUnit) as double;
+    final display  = '${dispVal.toStringAsFixed(acc)} ${distUnit.symbol}';
+
     return ListTile(
       leading: Icon(icon),
       title: Text(label, style: const TextStyle(fontSize: 14)),
       trailing: Text(display, style: Theme.of(context).textTheme.bodyMedium),
       dense: true,
-      onTap: () => _showDialog(context),
+      onTap: () => _showDialog(context, distUnit, acc),
     );
   }
 
-  void _showDialog(BuildContext context) {
-    final controller = TextEditingController(
-      text: value % 1 == 0 ? '${value.toInt()}' : '$value',
-    );
+  void _showDialog(BuildContext context, Unit distUnit, int acc) {
+    final dispVal    = (Unit.meter(valueM) as dynamic).in_(distUnit) as double;
+    final controller = TextEditingController(text: dispVal.toStringAsFixed(acc));
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -332,7 +333,7 @@ class _StepTile extends StatelessWidget {
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           autofocus: true,
-          decoration: InputDecoration(suffixText: unit),
+          decoration: InputDecoration(suffixText: distUnit.symbol),
         ),
         actions: [
           TextButton(
@@ -342,7 +343,11 @@ class _StepTile extends StatelessWidget {
           TextButton(
             onPressed: () {
               final v = double.tryParse(controller.text);
-              if (v != null && v > 0) onConfirm(v);
+              if (v != null && v > 0) {
+                // convert display unit → metres
+                final metres = (distUnit(v) as dynamic).in_(Unit.meter) as double;
+                onConfirm(metres);
+              }
               Navigator.pop(ctx);
             },
             child: const Text('OK'),

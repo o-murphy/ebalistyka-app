@@ -27,19 +27,25 @@ class ConvertorScreen extends StatelessWidget {
       children: [
         _Header(),
         Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1,
-            ),
-            itemCount: _convertors.length,
-            itemBuilder: (context, i) => _ConvertorTile(
-              type:  _convertors[i].type,
-              label: _convertors[i].label,
-              icon:  _convertors[i].icon,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 160,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1,
+                ),
+                itemCount: _convertors.length,
+                itemBuilder: (context, i) => _ConvertorTile(
+                  type:  _convertors[i].type,
+                  label: _convertors[i].label,
+                  icon:  _convertors[i].icon,
+                ),
+              ),
             ),
           ),
         ),
