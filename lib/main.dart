@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:test_app/helpers.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'providers/settings_provider.dart';
@@ -10,7 +10,7 @@ import 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb) {
+  if (isDesktop) {
     await windowManager.ensureInitialized();
     const windowOptions = WindowOptions(
       size: Size(375, 812),
