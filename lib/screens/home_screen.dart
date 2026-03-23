@@ -67,8 +67,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const minTopH = 300.0;
-        const minBotH = 200.0;
+        const minTopH = 350.0;
+        const minBotH = 300.0;
         final totalH       = math.max(constraints.maxHeight, minTopH + minBotH);
         final topBlockHeight = math.max(totalH * 0.55, minTopH);
         final botBlockHeight = totalH - topBlockHeight;
