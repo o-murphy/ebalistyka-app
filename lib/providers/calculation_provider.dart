@@ -11,20 +11,54 @@ import '../src/solver/unit.dart';
 import 'settings_provider.dart';
 import 'shot_profile_provider.dart';
 
-typedef _TableCalcArgs = (ShotProfile, double, bool);
-typedef _HomeCalcArgs  = (ShotProfile, double, double, bool); // targetDistM, chartStepM, usePowderSens
+// ── Zero fingerprint ─────────────────────────────────────────────────────────
+//
+// All inputs that affect setWeaponZero. Flat List<double> — equality via
+// listEquals, no hashCode overrides needed on domain objects.
+// bool → 1.0 / 0.0 for uniform storage.
+
+List<double> _buildZeroKey(ShotProfile profile, bool usePowderSens) {
+  final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+  final w  = profile.rifle.weapon;
+  final c  = profile.cartridge;
+  final dm = c.projectile.dm;
+  return [
+    w.sightHeight.in_(Unit.meter),
+    w.twist.in_(Unit.inch),
+    c.mv.in_(Unit.mps),
+    c.powderTemp.in_(Unit.celsius),
+    c.tempModifier,
+    c.usePowderSensitivity ? 1.0 : 0.0,
+    dm.bc,
+    dm.weight.in_(Unit.gram),
+    dm.diameter.in_(Unit.inch),
+    dm.length.in_(Unit.inch),
+    dm.dragTable.length.toDouble(),
+    zeroAtmo.altitude.in_(Unit.meter),
+    zeroAtmo.pressure.in_(Unit.hPa),
+    zeroAtmo.temperature.in_(Unit.celsius),
+    zeroAtmo.humidity,
+    zeroAtmo.powderTemp.in_(Unit.celsius),
+    profile.zeroDistance.in_(Unit.meter),
+    profile.lookAngle.in_(Unit.radian),
+    usePowderSens ? 1.0 : 0.0,
+  ];
+}
 
 // ── Table calculation — zeroed at zeroDistance, full 2000 m range ─────────────
 
-HitResult? _runTableCalculation(_TableCalcArgs args) {
-  final (profile, stepM, usePowderSens) = args;
+// (profile, stepM, usePowderSens, cachedZeroElevationRad?)
+typedef _TableCalcArgs = (ShotProfile, double, bool, double?);
+// (hitResult, freshZeroElevationRad?) — second is null when cache was reused
+typedef _TableCalcResult = (HitResult?, double?);
+
+_TableCalcResult _runTableCalculation(_TableCalcArgs args) {
+  final (profile, stepM, usePowderSens, cachedZeroElevRad) = args;
   try {
     final calc     = Calculator();
     final baseAmmo = profile.cartridge.toAmmo();
     final zeroAtmo = profile.zeroConditions ?? profile.conditions;
 
-    // Disable powder sensitivity in ammo if global setting is off.
-    // When enabled, the engine calls getVelocityForTemp(atmo.powderTemp) internally.
     final Ammo shotAmmo = (usePowderSens && baseAmmo.usePowderSensitivity)
         ? baseAmmo
         : Ammo(
@@ -35,29 +69,40 @@ HitResult? _runTableCalculation(_TableCalcArgs args) {
             usePowderSensitivity: false,
           );
 
-    Shot zeroShot;
-    try {
-      zeroShot = Shot(
-        weapon:    profile.rifle.weapon,
-        ammo:      shotAmmo,
-        lookAngle: profile.lookAngle,
-        atmo:      zeroAtmo,
-        winds:     const [],
-      );
-      calc.setWeaponZero(zeroShot, profile.zeroDistance);
-    } catch (_) {
-      zeroShot = Shot(
-        weapon:    profile.rifle.weapon,
-        ammo:      shotAmmo,
-        lookAngle: Angular(0.0, Unit.radian),
-        atmo:      zeroAtmo,
-        winds:     const [],
-      );
-      calc.setWeaponZero(zeroShot, profile.zeroDistance);
+    final weapon = profile.rifle.weapon;
+    double? freshZeroElevRad;
+
+    if (cachedZeroElevRad != null) {
+      // Zero conditions unchanged — reuse cached elevation, skip Phase 1.
+      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+    } else {
+      // Phase 1 — Zero with zero conditions.
+      Shot zeroShot;
+      try {
+        zeroShot = Shot(
+          weapon:    weapon,
+          ammo:      shotAmmo,
+          lookAngle: profile.lookAngle,
+          atmo:      zeroAtmo,
+          winds:     const [],
+        );
+        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+      } catch (_) {
+        zeroShot = Shot(
+          weapon:    weapon,
+          ammo:      shotAmmo,
+          lookAngle: Angular(0.0, Unit.radian),
+          atmo:      zeroAtmo,
+          winds:     const [],
+        );
+        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+      }
+      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
     }
 
+    // Phase 2 — Fire with current conditions.
     final shot = Shot(
-      weapon:      profile.rifle.weapon,
+      weapon:      weapon,
       ammo:        shotAmmo,
       lookAngle:   profile.lookAngle,
       atmo:        profile.conditions,
@@ -66,21 +111,24 @@ HitResult? _runTableCalculation(_TableCalcArgs args) {
       azimuthDeg:  profile.azimuthDeg,
     );
 
-    return calc.fire(
+    final result = calc.fire(
       shot:            shot,
       trajectoryRange: Distance(2000.0, Unit.meter),
       trajectoryStep:  Distance(stepM,  Unit.meter),
       filterFlags:     BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
     );
+    return (result, freshZeroElevRad);
   } catch (e, st) {
     // ignore: avoid_print
     print('_runTableCalculation error: $e\n$st');
-    return null;
+    return (null, null);
   }
 }
 
 class TableCalculationNotifier extends AsyncNotifier<HitResult?> {
   bool _dirty = true;
+  List<double>? _lastZeroKey;
+  double? _cachedZeroElevRad;
 
   @override
   Future<HitResult?> build() async => null;
@@ -89,35 +137,48 @@ class TableCalculationNotifier extends AsyncNotifier<HitResult?> {
 
   Future<void> recalculateIfNeeded() async {
     if (!_dirty) return;
-    final profile  = ref.read(shotProfileProvider).value;
+    final profile = ref.read(shotProfileProvider).value;
     if (profile == null) return;
     final settings      = ref.read(settingsProvider).value;
     final tableStep     = settings?.tableConfig.stepM ?? 100.0;
     final stepM         = tableStep < 1.0 ? tableStep : 1.0;
     final usePowderSens = settings?.enablePowderSensitivity ?? false;
+
+    final zeroKey    = _buildZeroKey(profile, usePowderSens);
+    final cachedElev = listEquals(zeroKey, _lastZeroKey) ? _cachedZeroElevRad : null;
+
     _dirty = false;
     state  = const AsyncLoading();
-    state  = AsyncData(
-      await compute(_runTableCalculation, (profile, stepM, usePowderSens)),
+    final (hitResult, freshZeroElev) = await compute(
+      _runTableCalculation,
+      (profile, stepM, usePowderSens, cachedElev),
     );
+    if (freshZeroElev != null) {
+      _lastZeroKey       = zeroKey;
+      _cachedZeroElevRad = freshZeroElev;
+    }
+    state = AsyncData(hitResult);
   }
 }
 
 final tableCalculationProvider =
     AsyncNotifierProvider<TableCalculationNotifier, HitResult?>(TableCalculationNotifier.new);
 
-// ── Home calculation — zeroed at targetDistance ───────────────────────────────
+// ── Home calculation — shootTheTarget pattern ─────────────────────────────────
 
-HitResult? _runHomeCalculation(_HomeCalcArgs args) {
-  final (profile, targetDistM, chartStepM, usePowderSens) = args;
+// (profile, targetDistM, chartStepM, usePowderSens, cachedZeroElevationRad?)
+typedef _HomeCalcArgs = (ShotProfile, double, double, bool, double?);
+// (hitResult, freshZeroElevationRad?)
+typedef _HomeCalcResult = (HitResult?, double?);
+
+_HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
+  final (profile, targetDistM, chartStepM, usePowderSens, cachedZeroElevRad) = args;
   final internalStepM = chartStepM < 1.0 ? chartStepM : 1.0;
   try {
     final calc     = Calculator();
     final baseAmmo = profile.cartridge.toAmmo();
     final zeroAtmo = profile.zeroConditions ?? profile.conditions;
 
-    // Disable powder sensitivity in ammo if global setting is off.
-    // When enabled, the engine calls getVelocityForTemp(atmo.powderTemp) internally.
     final Ammo shotAmmo = (usePowderSens && baseAmmo.usePowderSensitivity)
         ? baseAmmo
         : Ammo(
@@ -128,19 +189,28 @@ HitResult? _runHomeCalculation(_HomeCalcArgs args) {
             usePowderSensitivity: false,
           );
 
-    // 1. Zero the weapon at zeroDistance with zero conditions.
-    final zeroShot = Shot(
-      weapon:    profile.rifle.weapon,
-      ammo:      shotAmmo,
-      lookAngle: profile.lookAngle,
-      atmo:      zeroAtmo,
-      winds:     const [],
-    );
-    calc.setWeaponZero(zeroShot, profile.zeroDistance);
+    final weapon = profile.rifle.weapon;
+    double? freshZeroElevRad;
 
-    // 2. New shot with current conditions.
+    if (cachedZeroElevRad != null) {
+      // Zero conditions unchanged — reuse cached elevation, skip Phase 1.
+      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+    } else {
+      // Phase 1 — Zero with zero conditions.
+      final zeroShot = Shot(
+        weapon:    weapon,
+        ammo:      shotAmmo,
+        lookAngle: profile.lookAngle,
+        atmo:      zeroAtmo,
+        winds:     const [],
+      );
+      calc.setWeaponZero(zeroShot, profile.zeroDistance);
+      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
+    }
+
+    // Phase 2 — New shot with current conditions.
     final newShot = Shot(
-      weapon:      profile.rifle.weapon,
+      weapon:      weapon,
       ammo:        shotAmmo,
       lookAngle:   profile.lookAngle,
       atmo:        profile.conditions,
@@ -149,31 +219,33 @@ HitResult? _runHomeCalculation(_HomeCalcArgs args) {
       azimuthDeg:  profile.azimuthDeg,
     );
 
-    // 3. Compute the hold.
-    final zeroElev   = newShot.weapon.zeroElevation;
+    // Phase 3 — Compute hold.
     final targetElev = calc.barrelElevationForTarget(
       newShot,
       Distance(targetDistM, Unit.meter),
     );
-    final holdRad = targetElev.in_(Unit.radian) - zeroElev.in_(Unit.radian);
+    final holdRad = targetElev.in_(Unit.radian) - newShot.weapon.zeroElevation.in_(Unit.radian);
     newShot.relativeAngle = Angular(holdRad, Unit.radian);
 
-    // 4. Fire.
-    return calc.fire(
+    // Phase 4 — Fire.
+    final result = calc.fire(
       shot:            newShot,
       trajectoryRange: Distance(targetDistM, Unit.meter),
       trajectoryStep:  Distance(internalStepM, Unit.meter),
       filterFlags:     BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
     );
+    return (result, freshZeroElevRad);
   } catch (e, st) {
     // ignore: avoid_print
     print('_runHomeCalculation error: $e\n$st');
-    return null;
+    return (null, null);
   }
 }
 
 class HomeCalculationNotifier extends AsyncNotifier<HitResult?> {
   bool _dirty = true;
+  List<double>? _lastZeroKey;
+  double? _cachedZeroElevRad;
 
   @override
   Future<HitResult?> build() async => null;
@@ -182,20 +254,27 @@ class HomeCalculationNotifier extends AsyncNotifier<HitResult?> {
 
   Future<void> recalculateIfNeeded() async {
     if (!_dirty) return;
-    final profile  = ref.read(shotProfileProvider).value;
+    final profile = ref.read(shotProfileProvider).value;
     if (profile == null) return;
     final settings      = ref.read(settingsProvider).value;
     final targetDistM   = profile.targetDistance.in_(Unit.meter);
     final chartStepM    = settings?.chartDistanceStep ?? 100.0;
     final usePowderSens = settings?.enablePowderSensitivity ?? false;
+
+    final zeroKey    = _buildZeroKey(profile, usePowderSens);
+    final cachedElev = listEquals(zeroKey, _lastZeroKey) ? _cachedZeroElevRad : null;
+
     _dirty = false;
     state  = const AsyncLoading();
-    state  = AsyncData(
-      await compute(
-        _runHomeCalculation,
-        (profile, targetDistM, chartStepM, usePowderSens),
-      ),
+    final (hitResult, freshZeroElev) = await compute(
+      _runHomeCalculation,
+      (profile, targetDistM, chartStepM, usePowderSens, cachedElev),
     );
+    if (freshZeroElev != null) {
+      _lastZeroKey       = zeroKey;
+      _cachedZeroElevRad = freshZeroElev;
+    }
+    state = AsyncData(hitResult);
   }
 }
 

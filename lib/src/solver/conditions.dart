@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:test_app/src/solver/constants.dart';
-import 'package:test_app/src/solver/unit.dart';
-import 'package:test_app/src/solver/vector.dart';
+import 'package:eballistica/src/solver/constants.dart';
+import 'package:eballistica/src/solver/unit.dart';
+import 'package:eballistica/src/solver/vector.dart';
 
 class Atmo {
   late Distance _altitude;

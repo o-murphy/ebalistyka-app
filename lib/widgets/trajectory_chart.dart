@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:test_app/src/solver/trajectory_data.dart';
-import 'package:test_app/src/solver/unit.dart';
+import 'package:eballistica/src/solver/trajectory_data.dart';
+import 'package:eballistica/src/solver/unit.dart';
 
 const _ftToM = 1.0 / 3.28084;
 const _ftToCm = 30.48;

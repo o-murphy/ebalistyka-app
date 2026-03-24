@@ -11,13 +11,13 @@
 
 import 'dart:math' as math;
 
-import 'package:test_app/src/solver/conditions.dart';
-import 'package:test_app/src/solver/constants.dart';
-import 'package:test_app/src/solver/ffi/bclibc_bindings.g.dart';
-import 'package:test_app/src/solver/ffi/bclibc_ffi.dart';
-import 'package:test_app/src/solver/shot.dart';
-import 'package:test_app/src/solver/trajectory_data.dart';
-import 'package:test_app/src/solver/unit.dart';
+import 'package:eballistica/src/solver/conditions.dart';
+import 'package:eballistica/src/solver/constants.dart';
+import 'package:eballistica/src/solver/ffi/bclibc_bindings.g.dart';
+import 'package:eballistica/src/solver/ffi/bclibc_ffi.dart';
+import 'package:eballistica/src/solver/shot.dart';
+import 'package:eballistica/src/solver/trajectory_data.dart';
+import 'package:eballistica/src/solver/unit.dart';
 
 // ---------------------------------------------------------------------------
 // Default config constants (mirror TS DEFAULT_CONFIG)
