@@ -10,6 +10,18 @@ import '../src/models/shot_profile.dart';
 import '../src/models/sight.dart';
 import 'app_storage.dart';
 
+/// Custom exception for storage errors
+class StorageException implements Exception {
+  final String message;
+  final Object? originalError;
+  final StackTrace? stackTrace;
+
+  StorageException(this.message, [this.originalError, this.stackTrace]);
+
+  @override
+  String toString() => 'StorageException: $message${originalError != null ? ' (${originalError.runtimeType}: $originalError)' : ''}';
+}
+
 class JsonFileStorage implements AppStorage {
   JsonFileStorage._();
   static final JsonFileStorage instance = JsonFileStorage._();
@@ -26,24 +38,128 @@ class JsonFileStorage implements AppStorage {
 
   // ── Generic helpers ────────────────────────────────────────────────────────
 
+  /// Safely reads a JSON file and returns a map, or null if file doesn't exist.
+  /// Throws StorageException on JSON decode errors or IO failures.
   Future<Map<String, dynamic>?> _readMap(String name) async {
-    final f = await _file(name);
-    if (!await f.exists()) return null;
-    return jsonDecode(await f.readAsString()) as Map<String, dynamic>;
+    try {
+      final f = await _file(name);
+      if (!await f.exists()) return null;
+      
+      final content = await f.readAsString();
+      final decoded = jsonDecode(content);
+      
+      if (decoded is! Map<String, dynamic>) {
+        throw StorageException(
+          'Invalid JSON structure in $name: expected Map, got ${decoded.runtimeType}',
+        );
+      }
+      return decoded;
+    } on FileSystemException catch (e, st) {
+      throw StorageException(
+        'Failed to read file $name: ${e.message}',
+        e,
+        st,
+      );
+    } on FormatException catch (e, st) {
+      throw StorageException(
+        'Corrupted JSON in $name: ${e.message}',
+        e,
+        st,
+      );
+    } catch (e, st) {
+      throw StorageException(
+        'Unexpected error reading $name',
+        e,
+        st,
+      );
+    }
   }
 
+  /// Safely reads a JSON file and returns a list of maps.
+  /// Returns empty list if file doesn't exist. Throws StorageException on errors.
   Future<List<Map<String, dynamic>>> _readList(String name) async {
-    final f = await _file(name);
-    if (!await f.exists()) return [];
-    final raw = jsonDecode(await f.readAsString()) as List;
-    return raw.cast<Map<String, dynamic>>();
+    try {
+      final f = await _file(name);
+      if (!await f.exists()) return [];
+      
+      final content = await f.readAsString();
+      final decoded = jsonDecode(content);
+      
+      if (decoded is! List) {
+        throw StorageException(
+          'Invalid JSON structure in $name: expected List, got ${decoded.runtimeType}',
+        );
+      }
+      
+      // Validate each element is a map
+      final result = <Map<String, dynamic>>[];
+      for (int i = 0; i < decoded.length; i++) {
+        final item = decoded[i];
+        if (item is! Map<String, dynamic>) {
+          throw StorageException(
+            'Invalid item at index $i in $name: expected Map, got ${item.runtimeType}',
+          );
+        }
+        result.add(item);
+      }
+      return result;
+    } on FileSystemException catch (e, st) {
+      throw StorageException(
+        'Failed to read file $name: ${e.message}',
+        e,
+        st,
+      );
+    } on FormatException catch (e, st) {
+      throw StorageException(
+        'Corrupted JSON in $name: ${e.message}',
+        e,
+        st,
+      );
+    } catch (e, st) {
+      if (e is StorageException) rethrow;
+      throw StorageException(
+        'Unexpected error reading list from $name',
+        e,
+        st,
+      );
+    }
   }
 
-  Future<void> _writeMap(String name, Map<String, dynamic> data) async =>
-      (await _file(name)).writeAsString(jsonEncode(data));
+  Future<void> _writeMap(String name, Map<String, dynamic> data) async {
+    try {
+      await (await _file(name)).writeAsString(jsonEncode(data));
+    } on FileSystemException catch (e, st) {
+      throw StorageException(
+        'Failed to write file $name: ${e.message}',
+        e,
+        st,
+      );
+    } catch (e, st) {
+      throw StorageException(
+        'Unexpected error writing $name',
+        e,
+        st,
+      );
+    }
+  }
 
-  Future<void> _writeList(String name, List<Map<String, dynamic>> data) async =>
-      (await _file(name)).writeAsString(jsonEncode(data));
+  Future<void> _writeList(String name, List<Map<String, dynamic>> data) async {
+    try {
+      await (await _file(name)).writeAsString(jsonEncode(data));
+    } on FileSystemException catch (e, st) {
+      throw StorageException(
+        'Failed to write file $name: ${e.message}',
+        e,
+        st,
+      );
+    } catch (e, st) {
+      throw StorageException(
+        'Unexpected error writing list to $name',
+        e,
+        st,
+      );
+    }
+  }
 
   // ── Settings ───────────────────────────────────────────────────────────────
 
@@ -144,10 +260,74 @@ class JsonFileStorage implements AppStorage {
 
   @override
   Future<void> importAll(Map<String, dynamic> data) async {
-    if (data['settings']   case Map<String, dynamic> s) await _writeMap('settings', s);
-    if (data['profile']    case Map<String, dynamic> p) await _writeMap('profile', p);
-    if (data['rifles']     case List r) await _writeList('rifles', r.cast());
-    if (data['cartridges'] case List c) await _writeList('cartridges', c.cast());
-    if (data['sights']     case List s) await _writeList('sights', s.cast());
+    try {
+      // Validate and write each section with proper type checking
+      if (data.containsKey('settings')) {
+        final s = data['settings'];
+        if (s is! Map<String, dynamic>) {
+          throw StorageException('Invalid settings: expected Map, got ${s.runtimeType}');
+        }
+        await _writeMap('settings', s);
+      }
+
+      if (data.containsKey('profile')) {
+        final p = data['profile'];
+        if (p is! Map<String, dynamic>) {
+          throw StorageException('Invalid profile: expected Map, got ${p.runtimeType}');
+        }
+        await _writeMap('profile', p);
+      }
+
+      if (data.containsKey('rifles')) {
+        final r = data['rifles'];
+        if (r is! List) {
+          throw StorageException('Invalid rifles: expected List, got ${r.runtimeType}');
+        }
+        final rifles = <Map<String, dynamic>>[];
+        for (int i = 0; i < r.length; i++) {
+          final item = r[i];
+          if (item is! Map<String, dynamic>) {
+            throw StorageException('Invalid rifle at index $i: expected Map, got ${item.runtimeType}');
+          }
+          rifles.add(item);
+        }
+        await _writeList('rifles', rifles);
+      }
+
+      if (data.containsKey('cartridges')) {
+        final c = data['cartridges'];
+        if (c is! List) {
+          throw StorageException('Invalid cartridges: expected List, got ${c.runtimeType}');
+        }
+        final cartridges = <Map<String, dynamic>>[];
+        for (int i = 0; i < c.length; i++) {
+          final item = c[i];
+          if (item is! Map<String, dynamic>) {
+            throw StorageException('Invalid cartridge at index $i: expected Map, got ${item.runtimeType}');
+          }
+          cartridges.add(item);
+        }
+        await _writeList('cartridges', cartridges);
+      }
+
+      if (data.containsKey('sights')) {
+        final s = data['sights'];
+        if (s is! List) {
+          throw StorageException('Invalid sights: expected List, got ${s.runtimeType}');
+        }
+        final sights = <Map<String, dynamic>>[];
+        for (int i = 0; i < s.length; i++) {
+          final item = s[i];
+          if (item is! Map<String, dynamic>) {
+            throw StorageException('Invalid sight at index $i: expected Map, got ${item.runtimeType}');
+          }
+          sights.add(item);
+        }
+        await _writeList('sights', sights);
+      }
+    } catch (e, st) {
+      if (e is StorageException) rethrow;
+      throw StorageException('Failed to import data', e, st);
+    }
   }
 }

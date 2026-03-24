@@ -1,7 +1,7 @@
 /// Helper functions for type-safe dimension conversions.
 /// 
 /// Replaces unsafe `(dim as dynamic).in_(unit) as double` patterns throughout the app.
-/// All dimension classes (Distance, Temperature, Weight, etc.) inherit from Dimension<T>
+/// All dimension classes (Distance, Temperature, Weight, etc.) inherit from `Dimension<T>`
 /// and have `.in_()` methods. These helpers provide clean, safe conversion APIs.
 
 import '../src/solver/unit.dart';
