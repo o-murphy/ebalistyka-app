@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package profedit;
+
+// Stripped of buf/validate annotations for Dart codegen.
+// Source: https://github.com/o-murphy/a7p/blob/master/proto/profedit_validate.proto
+
+message Payload {
+  Profile profile = 1;
+}
+
+message CoefRow {
+  int32 bc_cd = 1;
+  int32 mv    = 2;
+}
+
+enum DType {
+  VALUE = 0;
+  INDEX = 1;
+}
+
+message SwPos {
+  int32  c_idx         = 1;
+  int32  reticle_idx   = 2;
+  int32  zoom          = 3;
+  int32  distance      = 4;
+  DType  distance_from = 5;
+}
+
+enum GType {
+  G1     = 0;
+  G7     = 1;
+  CUSTOM = 2;
+}
+
+enum TwistDir {
+  RIGHT = 0;
+  LEFT  = 1;
+}
+
+message Profile {
+  string   profile_name          = 1;
+  string   cartridge_name        = 2;
+  string   bullet_name           = 3;
+  string   short_name_top        = 4;
+  string   short_name_bot        = 5;
+  string   user_note             = 6;
+  int32    zero_x                = 7;   // h-clicks × -1000
+  int32    zero_y                = 8;   // v-clicks × 1000
+  int32    sc_height             = 9;   // mm (can be negative)
+  int32    r_twist               = 10;  // inch × 100
+  int32    c_muzzle_velocity     = 11;  // mps × 10
+  int32    c_zero_temperature    = 12;  // °C (powder temp at zero)
+  int32    c_t_coeff             = 13;  // %/15°C × 1000
+  int32    c_zero_distance_idx   = 14;  // index into distances[]
+  int32    c_zero_air_temperature= 15;  // °C (air temp at zero)
+  int32    c_zero_air_pressure   = 16;  // hPa × 10
+  int32    c_zero_air_humidity   = 17;  // %
+  int32    c_zero_w_pitch        = 18;  // degrees (zeroing look angle)
+  int32    c_zero_p_temperature  = 19;  // °C (powder temp at zero)
+  int32    b_diameter            = 20;  // inch × 1000
+  int32    b_weight              = 21;  // grain × 10
+  int32    b_length              = 22;  // inch × 1000
+  TwistDir twist_dir             = 23;
+  GType    bc_type               = 24;
+  repeated SwPos    switches     = 25;
+  repeated int32    distances    = 26;  // m × 100
+  repeated CoefRow  coef_rows    = 27;
+  string   caliber               = 28;
+  string   device_uuid           = 29;
+}

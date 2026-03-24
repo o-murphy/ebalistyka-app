@@ -997,11 +997,18 @@ sticky_headers:   # sticky section headers in trajectory table
 ### To add
 
 ```yaml
-archive: ^3.0.0          # ZIP export
-file_picker: ^8.0.0      # profile import
-share_plus: ^9.0.0       # table export share sheet
+file_picker: ^8.0.0      # .a7p import + profile import
+share_plus: ^9.0.0       # .a7p export + table export share sheet
+archive: ^3.0.0          # ZIP backup export
 flutter_localizations: sdk
 intl: ^0.19.0
+```
+
+### protoc toolchain (dev, not in pubspec)
+
+```bash
+dart pub global activate protoc_plugin
+# then: protoc --dart_out=lib/src/proto proto/profedit.proto
 ```
 
 ---
@@ -1031,8 +1038,10 @@ Phase 5.5   ✅  QuickActionsPanel MVP (showUnitEditDialog; wind speed, look ang
             ⏳  RulerSelector widget (replaces dialog MVP in QuickActionsPanel — lower priority)
 Phase 6         Home Screen bottom block (pages 1 & 2, info grid, tap-select on chart)
 Phase 8         Tables Screen (frozen header, zero table, spoiler, configure, export)
-Phase 9         Convertors Screen (grid + individual converters)
+A7P         🔴🔴 .a7p file support (proto gen, parser, writer, file picker, FC alignment)
+Zero Cond   🔴  Zero Conditions UI (edit zeroConditions separately from current conditions)
 Phase 11        Rifle / Cartridge / Sight Selection screens
+Phase 9         Convertors Screen (grid + individual converters)
 Phase 12        Additional Screens (Info ✅, Reticle, TableConfig, Help, Tools)
 Phase 13        Polish & Export (l10n, PDF export, profile import, iOS build)
 ```
@@ -1042,6 +1051,155 @@ Phase 13        Polish & Export (l10n, PDF export, profile import, iOS build)
 ---
 
 ## 12. Next Steps Plan
+
+### Priority 0 — .a7p Profile File Support (🔴🔴 Critical — blocks everything else)
+
+Without this, all selection screens are meaningless — the app can't import real shooter profiles.
+
+---
+
+#### A7P-1. Proto definition & Dart code generation
+
+The `.a7p` format is: **16-byte MD5 hash** (of the payload) + **serialized protobuf** `Payload`.
+
+Create `proto/profedit.proto` — simplified copy of the upstream proto without `buf/validate` annotations (Dart `protoc_plugin` doesn't need them):
+
+```protobuf
+syntax = "proto3";
+package profedit;
+
+message Payload  { Profile profile = 1; }
+message CoefRow  { float mv = 1; float bc_cd = 2; }
+message SwPos    { float zoom = 1; float distance = 2; float position = 3; }
+
+enum DType   { DISTANCE_VALUE = 0; DISTANCE_INDEX = 1; }
+enum GType   { G1 = 0; G7 = 1; CUSTOM = 2; }
+enum TwistDir{ RIGHT = 0; LEFT = 1; }
+
+message Profile {
+  string   profile_name        = 1;
+  string   cartridge_name      = 2;
+  string   bullet_name         = 3;
+  string   short_name_top      = 4;
+  string   short_name_bot      = 5;
+  string   short_name_mid      = 6;
+  string   caliber             = 7;
+  int32    zero_x              = 8;   // h-clicks × -1000
+  int32    zero_y              = 9;   // v-clicks × 1000
+  repeated int32  distances    = 10;  // metres × 100
+  repeated SwPos  switches     = 11;
+  int32    sc_height           = 12;  // mm
+  int32    r_twist             = 13;  // inch × 100
+  TwistDir twist_dir           = 14;
+  int32    c_muzzle_velocity   = 15;  // mps × 10
+  int32    c_zero_temperature  = 16;  // °C (powder temp at zero)
+  int32    c_t_coeff           = 17;  // %/15°C × 1000
+  int32    c_zero_air_pressure = 18;  // hPa × 10
+  int32    c_zero_air_humidity = 19;  // %
+  int32    b_diameter          = 20;  // inch × 1000
+  int32    b_weight            = 21;  // grain × 10
+  int32    b_length            = 22;  // inch × 1000
+  GType    bc_type             = 23;
+  repeated CoefRow coef_rows   = 24;
+  string   uuid                = 25;
+  DType    distance_from       = 26;
+  int32    c_zero_distance_idx = 27;  // index × 10 into distances table
+  int32    c_zero_air_temperature = 28;  // °C (air temp at zero)
+  int32    c_zero_p_temperature   = 29;  // °C (powder temp at zero, same as c_zero_temperature)
+  int32    c_zero_w_pitch         = 30;  // degrees (zeroing look angle)
+}
+```
+
+Generate Dart classes:
+```bash
+dart pub global activate protoc_plugin
+protoc --dart_out=lib/src/proto proto/profedit.proto
+```
+
+Check generated files into the repo (`profedit.pb.dart`, `profedit.pbenum.dart`, etc.).
+
+---
+
+#### A7P-2. Parser — `lib/src/a7p/a7p_parser.dart`
+
+```
+File bytes layout:
+  [0..15]  = MD5 of payload bytes
+  [16..]   = protobuf Payload.SerializeToString()
+```
+
+Steps:
+1. `md5(bytes.sublist(16)) == bytes.sublist(0, 16)` — verify checksum (`crypto` package already in pubspec)
+2. `Payload.fromBuffer(bytes.sublist(16))` — decode protobuf
+3. Convert raw integers → domain types using multipliers (see table below)
+4. Build and return `ShotProfile`
+
+**Multiplier table (raw → real value):**
+
+| Proto field              | Stored unit     | ÷ by   | Real unit  | Maps to                           |
+|--------------------------|-----------------|--------|------------|-----------------------------------|
+| `sc_height`              | mm              | 1      | mm         | `Rifle.weapon.sightHeight` (mm)   |
+| `r_twist`                | inch × 100      | 100    | inch       | `Rifle.weapon.twist` (inch)       |
+| `twist_dir`              | RIGHT/LEFT      | —      | —          | `Rifle.weapon.twistDir`           |
+| `c_muzzle_velocity`      | mps × 10        | 10     | mps        | `Cartridge.mv` (mps)              |
+| `c_zero_temperature`     | °C              | 1      | °C         | `Cartridge.powderTemp` (°C)       |
+| `c_t_coeff`              | %/15°C × 1000   | 1000   | %/15°C     | `Cartridge.tempModifier`          |
+| `c_zero_air_temperature` | °C              | 1      | °C         | `ShotProfile.zeroConditions.temp` |
+| `c_zero_air_pressure`    | hPa × 10        | 10     | hPa        | `ShotProfile.zeroConditions.pressure` |
+| `c_zero_air_humidity`    | %               | 1      | %          | `ShotProfile.zeroConditions.humidity` |
+| `c_zero_p_temperature`   | °C              | 1      | °C         | `ShotProfile.zeroConditions.powderTemp` |
+| `c_zero_w_pitch`         | deg             | 1      | deg        | `ShotProfile.lookAngle`           |
+| `b_diameter`             | inch × 1000     | 1000   | inch       | `Projectile.diameter` (inch)      |
+| `b_weight`               | grain × 10      | 10     | grain      | `Projectile.weight` (grain)       |
+| `b_length`               | inch × 1000     | 1000   | inch       | `Projectile.length` (inch)        |
+| `bc_type`                | G1/G7/CUSTOM    | —      | —          | `Projectile.dragModelType`        |
+| `coef_rows.bc_cd` (G1/G7)| BC × 10000      | 10000  | BC         | `DragTable` BC values             |
+| `coef_rows.mv` (G1/G7)   | mps × 10        | 10     | mps        | `DragTable` MV values             |
+| `coef_rows.bc_cd` (CUSTOM)| Cd × 10000     | 10000  | Cd         | `DragTable` Cd values             |
+| `coef_rows.mv` (CUSTOM)  | mach × 10       | 10     | mach       | `DragTable` mach values           |
+| `distances`              | m × 100         | 100    | m          | table `distances` array           |
+| `c_zero_distance_idx`    | index × 10      | 10     | index      | index into `distances[]` → `zeroDistance` |
+| `zero_x`                 | clicks × -1000  | -1000  | clicks     | `ShotProfile.zeroX` (h-click)     |
+| `zero_y`                 | clicks × 1000   | 1000   | clicks     | `ShotProfile.zeroY` (v-click)     |
+
+`zeroDistance = Unit.meter(distances[c_zero_distance_idx ~/ 10] / 100)`
+
+---
+
+#### A7P-3. Writer — `lib/src/a7p/a7p_writer.dart`
+
+Reverse of parser: `ShotProfile` → `Profile` → apply multipliers (× by each factor, round to int) → serialize → prepend MD5.
+
+---
+
+#### A7P-4. File picker integration
+
+Add to `pubspec.yaml`:
+```yaml
+file_picker: ^8.0.0
+```
+
+Entry points:
+- **Import** — Settings → Data → "Import .a7p profile": `FilePicker.platform.pickFiles(allowedExtensions: ['a7p'])`, parse, save to `ShotProfile` storage
+- **Export** — Settings → Data → "Export as .a7p": write current `ShotProfile` → `.a7p` file, share via `share_plus`
+
+---
+
+#### A7P-5. FieldConstraints alignment with yupy_schema
+
+Ranges to update after verifying against actual proto validation:
+
+| FC key              | Current min/max      | Yupy schema         | Action needed         |
+|---------------------|----------------------|---------------------|-----------------------|
+| `pressure`          | 300–1500 hPa         | 300–1050 hPa        | Lower max → 1050      |
+| `muzzleVelocity`    | 100–1800 mps         | verify raw range    | Verify & align        |
+| `bulletDiameter`    | 1–30 mm              | 0.1–100 inch×1000   | Verify real-unit range|
+| `bulletWeight`      | 1–800 grain          | 0.1–10000 grain×10  | Raise max if needed   |
+| `twistRate`         | 1–30 inch            | min 1 (×100)        | Verify                |
+
+⚠️ The yupy schema values may be for raw stored integers — verify against actual proto before changing FC.
+
+---
 
 ### Priority 1 — Zero Conditions UI (🔴 Critical, 8.8 follow-up)
 
