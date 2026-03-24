@@ -161,8 +161,8 @@ HitResult? _runHomeCalculation(_HomeCalcArgs args) {
     // 4. Fire.
     return calc.fire(
       shot:            newShot,
-      trajectoryRange: Distance(targetDistM + chartStepM, Unit.meter),
-      trajectoryStep:  Distance(internalStepM,            Unit.meter),
+      trajectoryRange: Distance(targetDistM, Unit.meter),
+      trajectoryStep:  Distance(internalStepM, Unit.meter),
       filterFlags:     BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
     );
   } catch (e, st) {

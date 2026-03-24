@@ -21,7 +21,7 @@ class TableConfigScreen extends ConsumerWidget {
 
     void save(TableConfig updated) => notifier.updateTableConfig(updated);
 
-    final distAcc = FC.distance.accuracyFor(units.distance);
+    final distAcc = FC.targetDistance.accuracyFor(units.distance);
     final stepOptions = _stepOptionsM(units.distance);
 
     String distStr(double m) {
@@ -43,7 +43,8 @@ class TableConfigScreen extends ConsumerWidget {
                 label: 'Start distance',
                 valueM: cfg.startM,
                 units: units.distance,
-                constraints: FC.distance,
+                constraints: FC.targetDistance,
+                maxValueM: cfg.endM,
                 onChanged: (v) => save(cfg.copyWith(startM: v)),
               ),
               _DistanceTile(
@@ -51,7 +52,8 @@ class TableConfigScreen extends ConsumerWidget {
                 label: 'End distance',
                 valueM: cfg.endM,
                 units: units.distance,
-                constraints: FC.distance,
+                constraints: FC.targetDistance,
+                minValueM: cfg.startM,
                 onChanged: (v) => save(cfg.copyWith(endM: v)),
               ),
 
@@ -463,6 +465,8 @@ class _DistanceTile extends StatelessWidget {
     required this.units,
     required this.constraints,
     required this.onChanged,
+    this.minValueM,
+    this.maxValueM,
   });
 
   final IconData icon;
@@ -471,6 +475,10 @@ class _DistanceTile extends StatelessWidget {
   final Unit units;
   final FieldConstraints constraints;
   final ValueChanged<double> onChanged;
+  /// Cross-field lower bound (metres). Overrides constraints.minRaw if set.
+  final double? minValueM;
+  /// Cross-field upper bound (metres). Overrides constraints.maxRaw if set.
+  final double? maxValueM;
 
   @override
   Widget build(BuildContext context) {
@@ -493,6 +501,16 @@ class _DistanceTile extends StatelessWidget {
 
   void _showDialog(BuildContext context, double currentDisp, int acc) {
     final ctrl = TextEditingController(text: currentDisp.toStringAsFixed(acc));
+    final effectiveMinM = (minValueM != null && minValueM! > constraints.minRaw)
+        ? minValueM!
+        : constraints.minRaw;
+    final effectiveMaxM = (maxValueM != null && maxValueM! < constraints.maxRaw)
+        ? maxValueM!
+        : constraints.maxRaw;
+    final minDisp = (Unit.meter(effectiveMinM) as dynamic).in_(units) as double;
+    final maxDisp = (Unit.meter(effectiveMaxM) as dynamic).in_(units) as double;
+    final rangeMsg = '${minDisp.toStringAsFixed(acc)}–${maxDisp.toStringAsFixed(acc)} ${units.symbol}';
+
     String? error;
     showDialog<void>(
       context: context,
@@ -509,9 +527,15 @@ class _DistanceTile extends StatelessWidget {
             ),
             onChanged: (t) {
               setState(() {
-                error = double.tryParse(t.replaceAll(',', '.')) == null
-                    ? 'Invalid number'
-                    : null;
+                final v = double.tryParse(t.replaceAll(',', '.'));
+                if (v == null) {
+                  error = 'Invalid number';
+                } else {
+                  final rawM = (units(v) as dynamic).in_(Unit.meter) as double;
+                  error = (rawM < effectiveMinM || rawM > effectiveMaxM)
+                      ? rangeMsg
+                      : null;
+                }
               });
             },
           ),
@@ -528,7 +552,7 @@ class _DistanceTile extends StatelessWidget {
                       if (v != null) {
                         final rawM =
                             (units(v) as dynamic).in_(Unit.meter) as double;
-                        onChanged(rawM);
+                        onChanged(rawM.clamp(effectiveMinM, effectiveMaxM));
                       }
                       Navigator.pop(ctx);
                     },

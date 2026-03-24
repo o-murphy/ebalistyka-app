@@ -46,7 +46,7 @@ class HomeTablePage extends ConsumerWidget {
         .map((d) => d < 0 ? null : hit.getAtDistance(Distance(d, Unit.meter)))
         .toList();
 
-    final distAcc    = FC.distance.accuracyFor(units.distance);
+    final distAcc    = FC.targetDistance.accuracyFor(units.distance);
     final distLabels = dists.map((m) {
       if (m < 0) return '—';
       final disp = (Unit.meter(m) as dynamic).in_(units.distance) as double;

@@ -801,6 +801,9 @@ eballistica_backup.zip
 | **Subsonic transition implemented**             | `widgets/trajectory_table.dart`, `widgets/trajectory_chart.dart`, `screens/settings_screen.dart` | Table: first mach<1 row highlighted with tertiaryContainer; chart: vertical dashed tertiary line; setting switch wired ✅                                                                                 |
 | **Powder sensitivity double-adjustment fix**    | `providers/calculation_provider.dart`                                                            | Removed pre-adjustment of MV; engine handles it via `getVelocityForTemp(atmo.powderTemp)` internally; pre-adjustment caused double correction ✅                                                          |
 | **`_AdjPanel` overflow fix**                    | `screens/home_screen.dart`                                                                       | Wrapped Column in `FittedBox(fit: BoxFit.scaleDown)` + `mainAxisSize: min` to prevent 3.5 px bottom overflow ✅                                                                                           |
+| **Home screen recalc spinner**                  | `screens/home_screen.dart`                                                                       | Dimmed overlay (`Colors.black α=90`) with centered `CircularProgressIndicator`; fades in → holds → fades out (~1 s) via `AnimationController` + `TweenSequence`; triggered by `ref.listen` on `homeCalculationProvider` loading→done transition; page position never reset ✅ |
+| **`FC.distance` removed**                       | `src/models/field_constraints.dart`, all consumers                                               | Redundant `FC.distance` (0–5000 m) deleted; all 6 usages replaced with `FC.targetDistance` (10–3000 m) ✅                                                                                                |
+| **TableConfig distance cross-validation**       | `screens/tables_sub_screens.dart`                                                                | Start distance capped at current `endM`; end distance floored at current `startM`; error message shows effective allowed range in display unit; both tiles use `FC.targetDistance` ✅                    |
 
 ### 8.2 Pending ⚠️
 
@@ -926,7 +929,7 @@ All fields connected to `ShotProfileNotifier.updateConditions()`. `UnitValueFiel
 
 **8.8 ✅** `zeroDistance` + `zeroConditions?` + `targetDistance` added to `ShotProfile`. Hardcoded 100 m removed from calculator. `ShotProfileNotifier` has `updateZeroDistance`, `updateZeroConditions`, `updateTargetDistance`, `updateWindSpeed`.
 
-**Done:** 8.1 sticky column header (StickyHeader + bidirectional h-scroll sync). 8.2 zero crossings table with ↑/↓ direction arrows. 8.3 row tap → detail dialog. 8.4 details spoiler (ExpansionTile: rifle/projectile/atmosphere, all spoilerShow* flags wired). 8.6 Configure button → TableConfigScreen (TableConfig: range, step, showZeros, showSubsonicTransition, spoiler switches, column visibility, dropUnit/adjUnit overrides). TableConfig start/end/step applied in filtering; dropUnit/adjUnit overrides applied in column display.
+**Done:** 8.1 sticky column header (StickyHeader + bidirectional h-scroll sync). 8.2 zero crossings table with ↑/↓ direction arrows. 8.3 row tap → detail dialog. 8.4 details spoiler (ExpansionTile: rifle/projectile/atmosphere, all spoilerShow* flags wired). 8.6 Configure button → TableConfigScreen (TableConfig: range, step, showZeros, showSubsonicTransition, spoiler switches, column visibility, dropUnit/adjUnit overrides). TableConfig start/end/step applied in filtering; dropUnit/adjUnit overrides applied in column display. TableConfig distance fields use `FC.targetDistance` with cross-field start < end validation.
 
 **Pending:**
 - **8.7** Wire Export button
@@ -988,6 +991,7 @@ ffi:
 uuid:
 path_provider:
 window_manager:
+sticky_headers:   # sticky section headers in trajectory table
 ```
 
 ### To add
@@ -1032,6 +1036,78 @@ Phase 11        Rifle / Cartridge / Sight Selection screens
 Phase 12        Additional Screens (Info ✅, Reticle, TableConfig, Help, Tools)
 Phase 13        Polish & Export (l10n, PDF export, profile import, iOS build)
 ```
+
+---
+
+---
+
+## 12. Next Steps Plan
+
+### Priority 1 — Zero Conditions UI (🔴 Critical, 8.8 follow-up)
+
+`zeroConditions` exists in `ShotProfile` but is always `null` (= use current conditions).
+Need a screen/panel to edit it independently.
+
+- Add `/home/shot-details/zero-conditions` route (or a dedicated sub-section in Shot Details screen)
+- Reuse `UnitValueField` + same layout as Conditions screen
+- Fields: temperature, altitude, humidity, pressure (same as Conditions but for zero scenario)
+- Save via `ShotProfileNotifier.updateZeroConditions()`
+- Clear button → sets `zeroConditions = null` (revert to "use current")
+
+---
+
+### Priority 2 — Phase 11: Rifle / Cartridge / Sight Selection
+
+Core app functionality — currently all screens are stubs; user works only with seed data.
+
+**Order:**
+
+1. **`RifleSelectionScreen`** (`/home/rifle-select`)
+   - List from `rifleLibraryProvider`; tap → select & pop
+   - FAB / button → push `RifleEditScreen` (create new)
+
+2. **`RifleEditScreen`** (`/home/rifle-select/rifle-edit`)
+   - Fields: name, caliber (sight height, twist rate, twist direction, zero elevation)
+   - Save via `rifleLibraryProvider` + auto-select
+
+3. **`SightSelectionScreen`** (`/home/rifle-select/sight-select`)
+   - List from `sightLibraryProvider`; tap → attach to rifle
+   - Create new inline
+
+4. **`CartridgeScreen`** (`/home/rifle-select/cartridge`)
+   - Sub-screen: select from library or edit current cartridge params
+   - Edit: MV, powder temp, powder sensitivity, `usePowderSensitivity`
+
+5. **`ProjectileSelectionScreen`** (`/home/projectile-select`)
+   - List from `cartridgeLibraryProvider`; tap → select
+   - `ProjectileEditScreen`: drag model, BC, weight, length, diameter
+
+6. **`CartridgeEditScreen`** (`/home/rifle-select/cartridge/edit`)
+   - Full form: projectile params + ammo params + sensitivity
+
+---
+
+### Priority 3 — Phase 9: Convertors Screen
+
+- 8-tile `SliverGrid` responsive layout
+- Each tile → `/convertors/:type` sub-screen
+- Sub-screen: two `UnitValueField`-style inputs, real-time conversion via `Unit`/`Dimension`
+- Types: target-distance, velocity, length, weight, pressure, temperature, mil-moa, torque
+
+---
+
+### Priority 4 — Phase 8.7: Export button
+
+- Share table as plain text (CSV or formatted text) via `share_plus`
+- PDF generation (TBD — use `printing` package or custom HTML)
+
+---
+
+### Priority 5 — Phase 13: Polish
+
+- Localization uk/en (ARB + `flutter_localizations`)
+- Profile import via `file_picker`
+- iOS C++ bundling
 
 ---
 

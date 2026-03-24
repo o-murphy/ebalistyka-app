@@ -287,7 +287,7 @@ class _StepTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final distUnit = ref.watch(unitSettingsProvider).distance;
-    final acc      = FC.distance.accuracyFor(distUnit);
+    final acc      = FC.targetDistance.accuracyFor(distUnit);
     final dispVal  = (Unit.meter(valueM) as dynamic).in_(distUnit) as double;
     final display  = '${dispVal.toStringAsFixed(acc)} ${distUnit.symbol}';
 

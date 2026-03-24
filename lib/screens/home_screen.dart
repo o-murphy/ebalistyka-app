@@ -27,18 +27,39 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final _pageController = PageController();
   int _currentPage = 0;
+
+  late final _calcDoneCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  );
+
+  // Fade in → hold briefly → fade out
+  late final _calcDoneAnim = TweenSequence<double>([
+    TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 10),
+    TweenSequenceItem(tween: ConstantTween(1.0),           weight: 30),
+    TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 60),
+  ]).animate(_calcDoneCtrl);
 
   @override
   void dispose() {
     _pageController.dispose();
+    _calcDoneCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Trigger "updated" badge animation when calculation finishes.
+    ref.listen<AsyncValue<Object?>>(homeCalculationProvider, (prev, next) {
+      if (!next.isLoading && (prev?.isLoading ?? false)) {
+        _calcDoneCtrl.forward(from: 0);
+      }
+    });
+
     final profile = ref.watch(shotProfileProvider).value;
     final units   = ref.watch(unitSettingsProvider);
 
@@ -226,8 +247,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ],
                       ),
-                      if (ref.watch(homeCalculationProvider).isLoading)
-                        const Center(child: CircularProgressIndicator()),
+                      // Brief spinner overlay — fades in then out after each recalc.
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: FadeTransition(
+                            opacity: _calcDoneAnim,
+                            child: Container(
+                              color: Colors.black.withAlpha(90),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

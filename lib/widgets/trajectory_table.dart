@@ -99,7 +99,7 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
       label: 'Range',
       symbol: (u) => u.distance.symbol,
       extract: (r, u) => _conv(r.distance, Unit.foot, u.distance),
-      accuracy: (u) => FC.distance.accuracyFor(u.distance),
+      accuracy: (u) => FC.targetDistance.accuracyFor(u.distance),
       alwaysVisible: true,
     ),
     _ColDef(
@@ -510,7 +510,7 @@ class _DetailsSpoiler extends ConsumerWidget {
 
     String fmtDist(dynamic dim, Unit raw, Unit disp) {
       final v = _conv(dim, raw, disp);
-      return '${v.toStringAsFixed(FC.distance.accuracyFor(disp))} ${disp.symbol}';
+      return '${v.toStringAsFixed(FC.targetDistance.accuracyFor(disp))} ${disp.symbol}';
     }
 
     // ── Build rows ────────────────────────────────────────────────────────
@@ -539,7 +539,7 @@ class _DetailsSpoiler extends ConsumerWidget {
       }
       if (cfg.spoilerShowTwist && twistInch > 0) {
         final tw = _conv(rifle.weapon.twist, Unit.inch, units.twist);
-        items.add(row('Twist', '1:${tw.toStringAsFixed(FC.distance.accuracyFor(units.twist))} ${units.twist.symbol}'));
+        items.add(row('Twist', '1:${tw.toStringAsFixed(FC.targetDistance.accuracyFor(units.twist))} ${units.twist.symbol}'));
       }
       // spoilerShowTwistDir — no twist direction field in the data model
     }

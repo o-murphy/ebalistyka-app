@@ -124,7 +124,7 @@ class ShotDetailsScreen extends ConsumerWidget {
     String fmtDist(dynamic dim) {
       if (dim == null) return '—';
       final v = conv(dim, Unit.foot, units.distance);
-      return '${v.toStringAsFixed(FC.distance.accuracyFor(units.distance))} ${units.distance.symbol}';
+      return '${v.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
     }
 
     String fmtDrop(dynamic dim) {
