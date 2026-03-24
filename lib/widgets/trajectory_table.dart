@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 import '../providers/settings_provider.dart';
+import '../providers/shot_profile_provider.dart';
 import '../src/models/field_constraints.dart';
 import '../src/models/unit_settings.dart';
 import '../src/solver/trajectory_data.dart';
@@ -33,15 +35,8 @@ class _ColDef {
 
 class TrajectoryTable extends ConsumerStatefulWidget {
   final List<TrajectoryData> traj;
-
-  /// Zero-flagged rows — shown as separate mini-table above main table
-  /// when TableConfig.showZeros is enabled.
   final List<TrajectoryData> zeros;
-
-  /// Display step in metres. Points between steps are skipped.
   final double displayStepM;
-
-  /// Whether to highlight the first row where mach < 1.
   final bool showSubsonicTransition;
 
   const TrajectoryTable({
@@ -57,44 +52,41 @@ class TrajectoryTable extends ConsumerStatefulWidget {
 }
 
 class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
-  // Each table has two separate scroll controllers so the header can be
-  // driven programmatically via a listener on the data controller.
-  final _zeroDataCtrl   = ScrollController();
-  final _zeroHeaderCtrl = ScrollController();
-  final _trajDataCtrl   = ScrollController();
-  final _trajHeaderCtrl = ScrollController();
+  final _trajHdrCtrl  = ScrollController();
+  final _trajDataCtrl = ScrollController();
+  bool _syncingH = false;
 
   @override
   void initState() {
     super.initState();
-    _zeroDataCtrl.addListener(_syncZeroHeader);
-    _trajDataCtrl.addListener(_syncTrajHeader);
+    _trajDataCtrl.addListener(_onDataScroll);
+    _trajHdrCtrl.addListener(_onHdrScroll);
   }
 
-  void _syncZeroHeader() {
-    if (_zeroHeaderCtrl.hasClients) {
-      _zeroHeaderCtrl.jumpTo(_zeroDataCtrl.offset);
-    }
+  void _onDataScroll() {
+    if (_syncingH || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients) return;
+    _syncingH = true;
+    _trajHdrCtrl.jumpTo(_trajDataCtrl.offset);
+    _syncingH = false;
   }
 
-  void _syncTrajHeader() {
-    if (_trajHeaderCtrl.hasClients) {
-      _trajHeaderCtrl.jumpTo(_trajDataCtrl.offset);
-    }
+  void _onHdrScroll() {
+    if (_syncingH || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients) return;
+    _syncingH = true;
+    _trajDataCtrl.jumpTo(_trajHdrCtrl.offset);
+    _syncingH = false;
   }
 
   @override
   void dispose() {
-    _zeroDataCtrl.removeListener(_syncZeroHeader);
-    _trajDataCtrl.removeListener(_syncTrajHeader);
-    _zeroDataCtrl.dispose();
-    _zeroHeaderCtrl.dispose();
+    _trajDataCtrl.removeListener(_onDataScroll);
+    _trajHdrCtrl.removeListener(_onHdrScroll);
     _trajDataCtrl.dispose();
-    _trajHeaderCtrl.dispose();
+    _trajHdrCtrl.dispose();
     super.dispose();
   }
 
-  // ── Column catalogue ────────────────────────────────────────────────────────
+  // ── Column catalogue ──────────────────────────────────────────────────────
 
   static double _conv(dynamic dim, Unit rawUnit, Unit dispUnit) {
     final v = (dim as dynamic).in_(rawUnit) as double;
@@ -178,71 +170,39 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
   List<_ColDef> _visibleCols(UnitSettings u, Set<String> hidden) =>
       _catalogue.where((c) => c.alwaysVisible || !hidden.contains(c.id)).toList();
 
-  // ── Filtering ───────────────────────────────────────────────────────────────
+  // ── Filtering (respects startM / endM / stepM from TableConfig) ───────────
 
-  List<TrajectoryData> _filtered() {
+  List<TrajectoryData> _filtered(double startM, double endM) {
     final step = widget.displayStepM;
-    if (step <= 1.0) return widget.traj;
     final result = <TrajectoryData>[];
-    double nextM = 0.0;
+    double nextM = startM;
     for (final p in widget.traj) {
       final d = (p.distance as dynamic).in_(Unit.meter) as double;
-      if (d >= nextM - 0.5) {
-        result.add(p);
-        nextM = ((d / step).round() + 1) * step;
-      }
+      if (d < startM - 0.5) continue;
+      if (d > endM   + 0.5) break;
+      if (step > 1.0 && d < nextM - 0.5) continue;
+      result.add(p);
+      if (step > 1.0) nextM = ((d / step).round() + 1) * step;
     }
     return result;
   }
 
-  // ── Row detail dialog ────────────────────────────────────────────────────────
-
-  void _showDetail(BuildContext ctx, TrajectoryData row,
-      List<_ColDef> cols, UnitSettings u) {
-    showDialog<void>(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        title: Text('Range: ${_fmt(cols.first, row, u)}  ${cols.first.symbol(u)}'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: cols.skip(1).map((c) {
-              final val = c.extract(row, u);
-              return ListTile(
-                dense: true,
-                title: Text('${c.label}  (${c.symbol(u)})'),
-                trailing: Text(
-                  val == null ? '—' : val.toStringAsFixed(c.accuracy(u)),
-                  style: const TextStyle(fontFamily: 'monospace'),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _fmt(_ColDef c, TrajectoryData r, UnitSettings u) {
-    final v = c.extract(r, u);
-    return v == null ? '—' : v.toStringAsFixed(c.accuracy(u));
-  }
-
-  // ── Build ────────────────────────────────────────────────────────────────────
+  // ── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    final cfg    = ref.watch(settingsProvider).value?.tableConfig;
-    final units  = ref.watch(unitSettingsProvider);
-    final hidden = cfg?.hiddenCols ?? {};
-    final cols   = _visibleCols(units, hidden);
-    final rows   = _filtered();
+    final cfg     = ref.watch(settingsProvider).value?.tableConfig;
+    final units   = ref.watch(unitSettingsProvider);
+    // Apply per-table drop / adjustment unit overrides from TableConfig
+    final effUnits = (cfg?.dropUnit != null || cfg?.adjUnit != null)
+        ? units.copyWith(drop: cfg?.dropUnit, adjustment: cfg?.adjUnit)
+        : units;
+
+    final hidden  = cfg?.hiddenCols ?? {};
+    final cols    = _visibleCols(effUnits, hidden);
+    final startM  = cfg?.startM  ?? 0.0;
+    final endM    = cfg?.endM    ?? 2000.0;
+    final rows    = _filtered(startM, endM);
 
     final theme = Theme.of(context);
     final cs    = theme.colorScheme;
@@ -262,16 +222,11 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
     final zeroBannerStyle = theme.textTheme.bodySmall?.copyWith(
         color: cs.primary, fontWeight: FontWeight.bold, fontFamily: 'monospace');
 
-    // Find zero / subsonic row indices in main table.
     int? zeroIdx;
     int? subsonicIdx;
     for (var i = 0; i < rows.length; i++) {
-      if (zeroIdx == null && (rows[i].flag & TrajFlag.zero.value) != 0) {
-        zeroIdx = i;
-      }
-      if (subsonicIdx == null &&
-          widget.showSubsonicTransition &&
-          rows[i].mach < 1.0) {
+      if (zeroIdx == null && (rows[i].flag & TrajFlag.zero.value) != 0) zeroIdx = i;
+      if (subsonicIdx == null && widget.showSubsonicTransition && rows[i].mach < 1.0) {
         subsonicIdx = i;
       }
     }
@@ -286,7 +241,7 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
       };
       final border = TableBorder.all(color: cs.outlineVariant, width: 0.5);
 
-      // ── Cell builders ────────────────────────────────────────────────────
+      // ── Helpers ───────────────────────────────────────────────────────────
 
       Widget hCell(String text, TextStyle? style) => Padding(
         padding: colPad,
@@ -298,13 +253,40 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
           GestureDetector(
             onTap: onTap,
             child: Container(
-              color: bg,
-              padding: colPad,
+              color: bg, padding: colPad,
               child: Text(text, style: style, textAlign: TextAlign.right),
             ),
           );
 
-      // ── Header rows (reused by both tables) ──────────────────────────────
+      void showDetail(TrajectoryData row) => showDialog<void>(
+        context: context,
+        builder: (dlgCtx) => AlertDialog(
+          title: Text(
+              'Range: ${_fmt(cols.first, row, effUnits)}  ${cols.first.symbol(effUnits)}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: cols.skip(1).map((c) {
+                final val = c.extract(row, effUnits);
+                return ListTile(
+                  dense: true,
+                  title: Text('${c.label}  (${c.symbol(effUnits)})'),
+                  trailing: Text(
+                    val == null ? '—' : val.toStringAsFixed(c.accuracy(effUnits)),
+                    style: const TextStyle(fontFamily: 'monospace'),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [TextButton(
+            onPressed: () => Navigator.pop(dlgCtx),
+            child: const Text('Close'),
+          )],
+        ),
+      );
+
+      // ── Header rows ───────────────────────────────────────────────────────
 
       final labelRow = TableRow(
         decoration: BoxDecoration(color: cs.surfaceContainerHighest),
@@ -312,73 +294,23 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
       );
       final symbolRow = TableRow(
         decoration: BoxDecoration(color: cs.surfaceContainerHigh),
-        children: cols.map((c) => hCell(c.symbol(units), subStyle)).toList(),
+        children: cols.map((c) => hCell(c.symbol(effUnits), subStyle)).toList(),
       );
 
-      // ── Helper: horizontal-scrollable table widget ───────────────────────
-
-      Widget hTable(List<TableRow> tableRows, ScrollController ctrl) =>
+      Widget hScroll(Widget table, {ScrollController? ctrl}) =>
           SingleChildScrollView(
-            controller: ctrl,
             scrollDirection: Axis.horizontal,
+            controller: ctrl,
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: minW),
-              child: Table(
-                columnWidths: colWidths,
-                border: border,
-                children: tableRows,
-              ),
+              child: table,
             ),
           );
 
-      // ── Build data rows for zero crossings table ─────────────────────────
-
-      final zeroDataRows = widget.zeros.map((r) {
-        final arrow = (r.flag & TrajFlag.zeroUp.value) != 0
-            ? ' ↑'
-            : (r.flag & TrajFlag.zeroDown.value) != 0
-                ? ' ↓'
-                : '';
-        return TableRow(
-          children: cols.map((c) {
-            final text = c.id == 'range'
-                ? '${_fmt(c, r, units)}$arrow'
-                : _fmt(c, r, units);
-            return dCell(text, zeroBannerStyle,
-                bg: cs.primaryContainer.withAlpha(60),
-                onTap: () => _showDetail(context, r, cols, units));
-          }).toList(),
-        );
-      }).toList();
-
-      // ── Build data rows for main trajectory table ────────────────────────
-
-      final trajDataRows = <TableRow>[];
-      for (var i = 0; i < rows.length; i++) {
-        final r = rows[i];
-        final isZ = i == zeroIdx;
-        final isS = i == subsonicIdx;
-        final bg = isZ
-            ? cs.errorContainer.withAlpha(80)
-            : isS
-                ? cs.tertiaryContainer.withAlpha(80)
-                : (i.isEven ? null : cs.surfaceContainerLowest);
-        final style = isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
-
-        trajDataRows.add(TableRow(
-          children: cols.map((c) => dCell(
-            _fmt(c, r, units),
-            style,
-            bg: bg,
-            onTap: () => _showDetail(context, r, cols, units),
-          )).toList(),
-        ));
-      }
-
-      // ── Section title ────────────────────────────────────────────────────
+      // ── Section title ─────────────────────────────────────────────────────
 
       Widget sectionTitle(String text) => Container(
-        color: cs.surfaceContainerHigh.withAlpha(80),
+        color: cs.surfaceContainerHigh,
         padding: const EdgeInsets.fromLTRB(10, 6, 10, 4),
         child: Text(
           text,
@@ -390,33 +322,315 @@ class _TrajectoryTableState extends ConsumerState<TrajectoryTable> {
         ),
       );
 
-      // ── Layout ───────────────────────────────────────────────────────────
+      // ── Zero crossings table ──────────────────────────────────────────────
 
-      return Column(
+      Widget zeroTableWidget() {
+        final zeroRows = widget.zeros.map((r) {
+          final arrow = (r.flag & TrajFlag.zeroUp.value) != 0
+              ? ' ↑'
+              : (r.flag & TrajFlag.zeroDown.value) != 0 ? ' ↓' : '';
+          return TableRow(
+            children: cols.map((c) {
+              final text = c.id == 'range'
+                  ? '${_fmt(c, r, effUnits)}$arrow'
+                  : _fmt(c, r, effUnits);
+              return dCell(text, zeroBannerStyle,
+                  bg: cs.primaryContainer.withAlpha(60),
+                  onTap: () => showDetail(r));
+            }).toList(),
+          );
+        }).toList();
+
+        return hScroll(Table(
+          columnWidths: colWidths,
+          border: border,
+          children: [labelRow, symbolRow, ...zeroRows],
+        ));
+      }
+
+      // ── Trajectory data ───────────────────────────────────────────────────
+
+      final trajHeaderWidget = hScroll(
+        Table(
+          columnWidths: colWidths,
+          border: TableBorder(
+            horizontalInside: BorderSide(color: cs.outlineVariant, width: 0.5),
+            bottom: BorderSide(color: cs.outlineVariant, width: 0.5),
+          ),
+          children: [labelRow, symbolRow],
+        ),
+        ctrl: _trajHdrCtrl,
+      );
+
+      final trajRows = <TableRow>[];
+      for (var i = 0; i < rows.length; i++) {
+        final r   = rows[i];
+        final isZ = i == zeroIdx;
+        final isS = i == subsonicIdx;
+        final bg  = isZ
+            ? cs.errorContainer.withAlpha(80)
+            : isS
+                ? cs.tertiaryContainer.withAlpha(80)
+                : (i.isEven ? null : cs.surfaceContainerLowest);
+        final style = isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
+        trajRows.add(TableRow(
+          children: cols.map((c) => dCell(
+            _fmt(c, r, effUnits), style,
+            bg: bg, onTap: () => showDetail(r),
+          )).toList(),
+        ));
+      }
+
+      final trajDataWidget = hScroll(
+        Table(columnWidths: colWidths, border: border, children: trajRows),
+        ctrl: _trajDataCtrl,
+      );
+
+      // ── Layout ────────────────────────────────────────────────────────────
+
+      return ListView(
         children: [
-          // 1. TODO 8.4: Details spoiler
+          // 1. Details spoiler
+          const _DetailsSpoiler(),
 
-          // 2. Zero crossings table (conditional)
+          // 2. Zero crossings (static)
           if (showZeros && widget.zeros.isNotEmpty) ...[
             sectionTitle('Zero Crossings'),
-            // Frozen header (follows _zeroDataCtrl via listener)
-            hTable([labelRow, symbolRow], _zeroHeaderCtrl),
-            // Data rows (drives the listener)
-            hTable(zeroDataRows, _zeroDataCtrl),
+            zeroTableWidget(),
           ],
 
-          // 3. Main trajectory table
-          sectionTitle('Trajectory'),
-          // Frozen header (follows _trajDataCtrl via listener)
-          hTable([labelRow, symbolRow], _trajHeaderCtrl),
-          // Scrollable data: vertical inside Expanded, horizontal via _trajDataCtrl
-          Expanded(
-            child: SingleChildScrollView(
-              child: hTable(trajDataRows, _trajDataCtrl),
+          // 3. Trajectory — section title scrolls with page; column header sticks.
+          StickyHeader(
+            header: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                sectionTitle('Trajectory'),
+                trajHeaderWidget,
+              ],
             ),
+            content: trajDataWidget,
           ),
         ],
       );
     });
+  }
+}
+
+String _fmt(_ColDef c, TrajectoryData r, UnitSettings u) {
+  final v = c.extract(r, u);
+  return v == null ? '—' : v.toStringAsFixed(c.accuracy(u));
+}
+
+// ─── Details spoiler ──────────────────────────────────────────────────────────
+
+class _DetailsSpoiler extends ConsumerWidget {
+  const _DetailsSpoiler();
+
+  static double _conv(dynamic dim, Unit raw, Unit disp) {
+    final v = (dim as dynamic).in_(raw) as double;
+    return (raw(v) as dynamic).in_(disp) as double;
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cfg      = ref.watch(settingsProvider).value?.tableConfig;
+    final units    = ref.watch(unitSettingsProvider);
+    final settings = ref.watch(settingsProvider).value;
+    final profile  = ref.watch(shotProfileProvider).value;
+
+    if (cfg == null || profile == null) return const SizedBox.shrink();
+
+    // Check if any section is enabled at all
+    final anyEnabled = cfg.spoilerShowRifle || cfg.spoilerShowProjectile || cfg.spoilerShowAtmo;
+    if (!anyEnabled) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final cs    = theme.colorScheme;
+    final labelStyle = theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant);
+    final valueStyle = theme.textTheme.bodySmall?.copyWith(
+        fontFamily: 'monospace', color: cs.onSurface);
+    final sectionStyle = theme.textTheme.labelSmall?.copyWith(
+        color: cs.primary, fontWeight: FontWeight.w700, letterSpacing: 0.6);
+
+    // ── Data extraction ──────────────────────────────────────────────────────
+
+    final rifle   = profile.rifle;
+    final cart    = profile.cartridge;
+    final proj    = cart.projectile;
+    final dm      = proj.dm;
+    final conds   = profile.conditions;
+    final winds   = profile.winds;
+
+    final twistInch  = (rifle.weapon.twist   as dynamic).in_(Unit.inch)  as double;
+    final weightGr   = (dm.weight             as dynamic).in_(Unit.grain) as double;
+    final diamInch   = (dm.diameter           as dynamic).in_(Unit.inch)  as double;
+    final lenInch    = (dm.length             as dynamic).in_(Unit.inch)  as double;
+
+    // Zero MV — direct from cartridge
+    final zeroMvMps = (cart.mv as dynamic).in_(Unit.mps) as double;
+
+    // Current MV — apply powder sensitivity if enabled
+    double currentMvMps = zeroMvMps;
+    final powderSensOn = (settings?.enablePowderSensitivity ?? false) &&
+        cart.usePowderSensitivity;
+    if (powderSensOn && cart.tempModifier != 0 && zeroMvMps > 0) {
+      final useDiff  = settings?.useDifferentPowderTemperature ?? false;
+      final zeroAtmo = profile.zeroConditions ?? conds;
+      final currTempC = useDiff
+          ? ((conds.powderTemp as dynamic).in_(Unit.celsius) as double)
+          : ((conds.temperature as dynamic).in_(Unit.celsius) as double);
+      final zeroPowderTempC = useDiff
+          ? ((zeroAtmo.powderTemp as dynamic).in_(Unit.celsius) as double)
+          : ((zeroAtmo.temperature as dynamic).in_(Unit.celsius) as double);
+      currentMvMps = (cart.tempModifier / 100.0 / (15 / zeroMvMps)) *
+          (currTempC - zeroPowderTempC) + zeroMvMps;
+    }
+
+    // Gyrostability (Miller)
+    double? sg;
+    if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
+      final lCal = lenInch / diamInch;
+      final nCal = twistInch / diamInch;
+      sg = (30.0 * weightGr) /
+          (nCal * nCal * diamInch * diamInch * diamInch * lCal * (1.0 + lCal * lCal));
+    }
+
+    // Sectional density + form factor
+    final sd = (weightGr > 0 && diamInch > 0)
+        ? (weightGr / 7000.0) / (diamInch * diamInch)
+        : null;
+    final ff = (sd != null && dm.bc > 0) ? sd / dm.bc : null;
+
+    // ── Format helpers ────────────────────────────────────────────────────
+
+    String fmtV(double mps) {
+      final disp = (Unit.mps(mps) as dynamic).in_(units.velocity) as double;
+      return '${disp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+    }
+
+    String fmtDist(dynamic dim, Unit raw, Unit disp) {
+      final v = _conv(dim, raw, disp);
+      return '${v.toStringAsFixed(FC.distance.accuracyFor(disp))} ${disp.symbol}';
+    }
+
+    // ── Build rows ────────────────────────────────────────────────────────
+
+    Widget row(String label, String value) => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      child: Row(children: [
+        Expanded(child: Text(label, style: labelStyle)),
+        Text(value, style: valueStyle),
+      ]),
+    );
+
+    Widget section(String title) => Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
+      child: Text(title.toUpperCase(), style: sectionStyle),
+    );
+
+    final items = <Widget>[];
+
+    // ── Rifle section ─────────────────────────────────────────────────────
+    if (cfg.spoilerShowRifle) {
+      items.add(section('Rifle'));
+      items.add(row('Name', rifle.name));
+      if (cfg.spoilerShowCaliber && diamInch > 0) {
+        items.add(row('Caliber', fmtDist(dm.diameter, Unit.inch, units.diameter)));
+      }
+      if (cfg.spoilerShowTwist && twistInch > 0) {
+        final tw = _conv(rifle.weapon.twist, Unit.inch, units.twist);
+        items.add(row('Twist', '1:${tw.toStringAsFixed(FC.distance.accuracyFor(units.twist))} ${units.twist.symbol}'));
+      }
+      // spoilerShowTwistDir — no twist direction field in the data model
+    }
+
+    // ── Projectile section ────────────────────────────────────────────────
+    if (cfg.spoilerShowProjectile) {
+      items.add(section('Projectile'));
+      items.add(row('Name', proj.name));
+      if (cfg.spoilerShowDragModel) {
+        final dmStr = switch (proj.dragType) {
+          _ when proj.dragType.name == 'g1'     => 'G1',
+          _ when proj.dragType.name == 'g7'     => 'G7',
+          _                                      => 'Custom',
+        };
+        items.add(row('Drag model', dmStr));
+      }
+      if (cfg.spoilerShowBc && dm.bc > 0) {
+        items.add(row('BC', dm.bc.toStringAsFixed(FC.ballisticCoefficient.accuracy)));
+      }
+      if (cfg.spoilerShowZeroMv) {
+        items.add(row('Zero MV', fmtV(zeroMvMps)));
+      }
+      if (cfg.spoilerShowCurrMv) {
+        items.add(row('Current MV', fmtV(currentMvMps)));
+      }
+      if (cfg.spoilerShowZeroDist) {
+        items.add(row('Zero distance', fmtDist(profile.zeroDistance, Unit.meter, units.distance)));
+      }
+      if (cfg.spoilerShowBulletLen && lenInch > 0) {
+        items.add(row('Length', fmtDist(dm.length, Unit.inch, units.length)));
+      }
+      if (cfg.spoilerShowBulletDiam && diamInch > 0) {
+        items.add(row('Diameter', fmtDist(dm.diameter, Unit.inch, units.diameter)));
+      }
+      if (cfg.spoilerShowBulletWeight && weightGr > 0) {
+        final wDisp = _conv(dm.weight, Unit.grain, units.weight);
+        items.add(row('Weight', '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weight))} ${units.weight.symbol}'));
+      }
+      if (cfg.spoilerShowFormFactor && ff != null) {
+        items.add(row('Form factor', ff.toStringAsFixed(3)));
+      }
+      if (cfg.spoilerShowSectionalDensity && sd != null) {
+        items.add(row('Sectional density', sd.toStringAsFixed(3)));
+      }
+      if (cfg.spoilerShowGyroStability && sg != null) {
+        items.add(row('Gyrostability (Sg)', sg.toStringAsFixed(2)));
+      }
+    }
+
+    // ── Atmosphere section ────────────────────────────────────────────────
+    if (cfg.spoilerShowAtmo) {
+      items.add(section('Atmosphere'));
+      if (cfg.spoilerShowTemp) {
+        final t = _conv(conds.temperature, Unit.celsius, units.temperature);
+        items.add(row('Temperature',
+            '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperature))} ${units.temperature.symbol}'));
+      }
+      if (cfg.spoilerShowHumidity) {
+        final h = (conds.humidity * 100).toStringAsFixed(0);
+        items.add(row('Humidity', '$h %'));
+      }
+      if (cfg.spoilerShowPressure) {
+        final p = _conv(conds.pressure, Unit.hPa, units.pressure);
+        items.add(row('Pressure',
+            '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}'));
+      }
+      if (cfg.spoilerShowWindSpeed && winds.isNotEmpty) {
+        final ws = _conv(winds.first.velocity, Unit.mps, units.velocity);
+        items.add(row('Wind speed',
+            '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}'));
+      }
+      if (cfg.spoilerShowWindDir && winds.isNotEmpty) {
+        final wd = (winds.first.directionFrom as dynamic).in_(Unit.degree) as double;
+        items.add(row('Wind direction', '${wd.toStringAsFixed(0)}°'));
+      }
+    }
+
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        title: Text('Shot details',
+            style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        childrenPadding: const EdgeInsets.only(bottom: 8),
+        backgroundColor: cs.surfaceContainerLowest,
+        collapsedBackgroundColor: cs.surfaceContainerLowest,
+        children: items,
+      ),
+    );
   }
 }

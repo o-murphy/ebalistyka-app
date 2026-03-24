@@ -824,11 +824,11 @@ eballistica_backup.zip
 
 | Area                    | Status          | Phase |
 | ----------------------- | --------------- | ----- |
-| Frozen header           | Not implemented | 8.1   |
-| Zero crossing table     | Not implemented | 8.2   |
-| Row tap → detail dialog | Not implemented | 8.3   |
-| Details spoiler         | Not implemented | 8.4   |
-| Configure button        | Stub            | 8.6   |
+| Frozen header           | ✅ Done         | 8.1   |
+| Zero crossing table     | ✅ Done         | 8.2   |
+| Row tap → detail dialog | ✅ Done         | 8.3   |
+| Details spoiler         | ✅ Done         | 8.4   |
+| Configure button        | ✅ Done         | 8.6   |
 | Export button           | Stub            | 8.7   |
 
 #### 🟠 Value Input Widgets
@@ -926,12 +926,9 @@ All fields connected to `ShotProfileNotifier.updateConditions()`. `UnitValueFiel
 
 **8.8 ✅** `zeroDistance` + `zeroConditions?` + `targetDistance` added to `ShotProfile`. Hardcoded 100 m removed from calculator. `ShotProfileNotifier` has `updateZeroDistance`, `updateZeroConditions`, `updateTargetDistance`, `updateWindSpeed`.
 
+**Done:** 8.1 sticky column header (StickyHeader + bidirectional h-scroll sync). 8.2 zero crossings table with ↑/↓ direction arrows. 8.3 row tap → detail dialog. 8.4 details spoiler (ExpansionTile: rifle/projectile/atmosphere, all spoilerShow* flags wired). 8.6 Configure button → TableConfigScreen (TableConfig: range, step, showZeros, showSubsonicTransition, spoiler switches, column visibility, dropUnit/adjUnit overrides). TableConfig start/end/step applied in filtering; dropUnit/adjUnit overrides applied in column display.
+
 **Pending:**
-- **8.1** Frozen header (column/unit rows fixed, only data rows scroll)
-- **8.2** Zero crossing table above main table (from `HitResult.zeros`)
-- **8.3** Row tap → detail dialog
-- **8.4** Details spoiler (rifle, cartridge, conditions summary)
-- **8.6** Wire Configure button
 - **8.7** Wire Export button
 - **8.8 follow-up** Zero Conditions UI (screen to edit `zeroConditions` separately from current `conditions`)
 

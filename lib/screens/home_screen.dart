@@ -205,27 +205,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 // ── Bottom block — 3 pages ───────────────────────────────────
                 SizedBox(
                   height: botBlockHeight,
-                  child: ref.watch(homeCalculationProvider).isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : Column(
-                          children: [
-                            Expanded(
-                              child: PageView(
-                                controller: _pageController,
-                                onPageChanged: (i) => setState(() => _currentPage = i),
-                                children: const [
-                                  HomeReticlePage(),
-                                  HomeTablePage(),
-                                  HomeChartPage(),
-                                ],
-                              ),
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: PageView(
+                              controller: _pageController,
+                              onPageChanged: (i) => setState(() => _currentPage = i),
+                              children: const [
+                                HomeReticlePage(),
+                                HomeTablePage(),
+                                HomeChartPage(),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: _PageDots(current: _currentPage, count: 3),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: _PageDots(current: _currentPage, count: 3),
+                          ),
+                        ],
+                      ),
+                      if (ref.watch(homeCalculationProvider).isLoading)
+                        const Center(child: CircularProgressIndicator()),
+                    ],
+                  ),
                 ),
               ],
             ),

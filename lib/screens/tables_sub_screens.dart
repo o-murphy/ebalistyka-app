@@ -15,13 +15,13 @@ class TableConfigScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).value ?? const AppSettings();
-    final cfg      = settings.tableConfig;
+    final cfg = settings.tableConfig;
     final notifier = ref.read(settingsProvider.notifier);
-    final units    = ref.watch(unitSettingsProvider);
+    final units = ref.watch(unitSettingsProvider);
 
     void save(TableConfig updated) => notifier.updateTableConfig(updated);
 
-    final distAcc  = FC.distance.accuracyFor(units.distance);
+    final distAcc = FC.distance.accuracyFor(units.distance);
     final stepOptions = _stepOptionsM(units.distance);
 
     String distStr(double m) {
@@ -35,7 +35,6 @@ class TableConfigScreen extends ConsumerWidget {
         Expanded(
           child: ListView(
             children: [
-
               // ── Range ──────────────────────────────────────────────────────
               const SettingsSectionLabel('Range'),
 
@@ -58,14 +57,26 @@ class TableConfigScreen extends ConsumerWidget {
 
               ListTile(
                 leading: const Icon(Icons.straighten_outlined),
-                title: const Text('Distance step', style: TextStyle(fontSize: 14)),
-                trailing: Text(distStr(cfg.stepM),
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w600)),
+                title: const Text(
+                  'Distance step',
+                  style: TextStyle(fontSize: 14),
+                ),
+                trailing: Text(
+                  distStr(cfg.stepM),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 dense: true,
-                onTap: () => _pickStep(context, cfg.stepM, stepOptions,
-                    units.distance, distAcc, (v) => save(cfg.copyWith(stepM: v))),
+                onTap: () => _pickStep(
+                  context,
+                  cfg.stepM,
+                  stepOptions,
+                  units.distance,
+                  distAcc,
+                  (v) => save(cfg.copyWith(stepM: v)),
+                ),
               ),
 
               const Divider(height: 1),
@@ -75,16 +86,20 @@ class TableConfigScreen extends ConsumerWidget {
 
               SwitchListTile(
                 secondary: const Icon(Icons.swap_vert_outlined),
-                title: const Text('Show zero crossings table',
-                    style: TextStyle(fontSize: 14)),
+                title: const Text(
+                  'Show zero crossings table',
+                  style: TextStyle(fontSize: 14),
+                ),
                 value: cfg.showZeros,
                 onChanged: (v) => save(cfg.copyWith(showZeros: v)),
                 dense: true,
               ),
               SwitchListTile(
                 secondary: const Icon(Icons.speed_outlined),
-                title: const Text('Show subsonic transition',
-                    style: TextStyle(fontSize: 14)),
+                title: const Text(
+                  'Show subsonic transition',
+                  style: TextStyle(fontSize: 14),
+                ),
                 value: cfg.showSubsonicTransition,
                 onChanged: (v) => save(cfg.copyWith(showSubsonicTransition: v)),
                 dense: true,
@@ -103,12 +118,28 @@ class TableConfigScreen extends ConsumerWidget {
                 onChanged: (v) => save(cfg.copyWith(spoilerShowRifle: v)),
                 dense: true,
               ),
-              _SubSwitch('Caliber', cfg.spoilerShowCaliber,
-                  cfg.spoilerShowRifle ? (v) => save(cfg.copyWith(spoilerShowCaliber: v)) : null),
-              _SubSwitch('Twist rate', cfg.spoilerShowTwist,
-                  cfg.spoilerShowRifle ? (v) => save(cfg.copyWith(spoilerShowTwist: v)) : null),
-              _SubSwitch('Twist direction', cfg.spoilerShowTwistDir,
-                  cfg.spoilerShowRifle ? (v) => save(cfg.copyWith(spoilerShowTwistDir: v)) : null),
+              _SubSwitch(
+                'Caliber',
+                cfg.spoilerShowCaliber,
+                cfg.spoilerShowRifle
+                    ? (v) => save(cfg.copyWith(spoilerShowCaliber: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Twist rate',
+                cfg.spoilerShowTwist,
+                cfg.spoilerShowRifle
+                    ? (v) => save(cfg.copyWith(spoilerShowTwist: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Twist direction',
+                cfg.spoilerShowTwistDir,
+                cfg.spoilerShowRifle
+                    ? (v) => save(cfg.copyWith(spoilerShowTwistDir: v))
+                    : null,
+              ),
+              Divider(height: 1),
 
               // Projectile
               SwitchListTile(
@@ -118,29 +149,84 @@ class TableConfigScreen extends ConsumerWidget {
                 onChanged: (v) => save(cfg.copyWith(spoilerShowProjectile: v)),
                 dense: true,
               ),
-              _SubSwitch('Drag model type', cfg.spoilerShowDragModel,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowDragModel: v)) : null),
-              _SubSwitch('BC', cfg.spoilerShowBc,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowBc: v)) : null),
-              _SubSwitch('Zero muzzle velocity', cfg.spoilerShowZeroMv,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowZeroMv: v)) : null),
-              _SubSwitch('Current muzzle velocity', cfg.spoilerShowCurrMv,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowCurrMv: v)) : null),
-              _SubSwitch('Zero distance', cfg.spoilerShowZeroDist,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowZeroDist: v)) : null),
-              _SubSwitch('Bullet length', cfg.spoilerShowBulletLen,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowBulletLen: v)) : null),
-              _SubSwitch('Bullet diameter', cfg.spoilerShowBulletDiam,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowBulletDiam: v)) : null),
-              _SubSwitch('Bullet weight', cfg.spoilerShowBulletWeight,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowBulletWeight: v)) : null),
-              _SubSwitch('Form factor (FF)', cfg.spoilerShowFormFactor,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowFormFactor: v)) : null),
-              _SubSwitch('Sectional density (SD)', cfg.spoilerShowSectionalDensity,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowSectionalDensity: v)) : null),
-              _SubSwitch('Gyroscopic stability factor (Sg)', cfg.spoilerShowGyroStability,
-                  cfg.spoilerShowProjectile ? (v) => save(cfg.copyWith(spoilerShowGyroStability: v)) : null),
-
+              _SubSwitch(
+                'Drag model type',
+                cfg.spoilerShowDragModel,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowDragModel: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'BC',
+                cfg.spoilerShowBc,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowBc: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Zero muzzle velocity',
+                cfg.spoilerShowZeroMv,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowZeroMv: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Current muzzle velocity',
+                cfg.spoilerShowCurrMv,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowCurrMv: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Zero distance',
+                cfg.spoilerShowZeroDist,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowZeroDist: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Bullet length',
+                cfg.spoilerShowBulletLen,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowBulletLen: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Bullet diameter',
+                cfg.spoilerShowBulletDiam,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowBulletDiam: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Bullet weight',
+                cfg.spoilerShowBulletWeight,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowBulletWeight: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Form factor',
+                cfg.spoilerShowFormFactor,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowFormFactor: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Sectional density',
+                cfg.spoilerShowSectionalDensity,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowSectionalDensity: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Gyroscopic stability factor',
+                cfg.spoilerShowGyroStability,
+                cfg.spoilerShowProjectile
+                    ? (v) => save(cfg.copyWith(spoilerShowGyroStability: v))
+                    : null,
+              ),
+              Divider(height: 1),
               // Atmosphere
               SwitchListTile(
                 secondary: const Icon(Icons.cloud_outlined),
@@ -149,16 +235,41 @@ class TableConfigScreen extends ConsumerWidget {
                 onChanged: (v) => save(cfg.copyWith(spoilerShowAtmo: v)),
                 dense: true,
               ),
-              _SubSwitch('Temperature', cfg.spoilerShowTemp,
-                  cfg.spoilerShowAtmo ? (v) => save(cfg.copyWith(spoilerShowTemp: v)) : null),
-              _SubSwitch('Humidity', cfg.spoilerShowHumidity,
-                  cfg.spoilerShowAtmo ? (v) => save(cfg.copyWith(spoilerShowHumidity: v)) : null),
-              _SubSwitch('Pressure', cfg.spoilerShowPressure,
-                  cfg.spoilerShowAtmo ? (v) => save(cfg.copyWith(spoilerShowPressure: v)) : null),
-              _SubSwitch('Wind speed', cfg.spoilerShowWindSpeed,
-                  cfg.spoilerShowAtmo ? (v) => save(cfg.copyWith(spoilerShowWindSpeed: v)) : null),
-              _SubSwitch('Wind direction', cfg.spoilerShowWindDir,
-                  cfg.spoilerShowAtmo ? (v) => save(cfg.copyWith(spoilerShowWindDir: v)) : null),
+              _SubSwitch(
+                'Temperature',
+                cfg.spoilerShowTemp,
+                cfg.spoilerShowAtmo
+                    ? (v) => save(cfg.copyWith(spoilerShowTemp: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Humidity',
+                cfg.spoilerShowHumidity,
+                cfg.spoilerShowAtmo
+                    ? (v) => save(cfg.copyWith(spoilerShowHumidity: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Pressure',
+                cfg.spoilerShowPressure,
+                cfg.spoilerShowAtmo
+                    ? (v) => save(cfg.copyWith(spoilerShowPressure: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Wind speed',
+                cfg.spoilerShowWindSpeed,
+                cfg.spoilerShowAtmo
+                    ? (v) => save(cfg.copyWith(spoilerShowWindSpeed: v))
+                    : null,
+              ),
+              _SubSwitch(
+                'Wind direction',
+                cfg.spoilerShowWindDir,
+                cfg.spoilerShowAtmo
+                    ? (v) => save(cfg.copyWith(spoilerShowWindDir: v))
+                    : null,
+              ),
 
               const Divider(height: 1),
 
@@ -171,18 +282,25 @@ class TableConfigScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Adjustment display',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                    Text(
+                      'Adjustment display',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     SizedBox(
                       width: double.infinity,
                       child: SegmentedButton<bool>(
                         segments: const [
                           ButtonSegment(
-                              value: false, label: Text('Current unit')),
+                            value: false,
+                            label: Text('Current unit'),
+                          ),
                           ButtonSegment(
-                              value: true, label: Text('All selected units')),
+                            value: true,
+                            label: Text('All selected units'),
+                          ),
                         ],
                         selected: {cfg.adjAllUnits},
                         onSelectionChanged: (s) =>
@@ -204,8 +322,11 @@ class TableConfigScreen extends ConsumerWidget {
                 current: cfg.dropUnit,
                 globalUnit: units.drop,
                 options: const [
-                  Unit.meter, Unit.centimeter, Unit.millimeter,
-                  Unit.inch, Unit.foot,
+                  Unit.meter,
+                  Unit.centimeter,
+                  Unit.millimeter,
+                  Unit.inch,
+                  Unit.foot,
                 ],
                 onChanged: (u) => save(cfg.copyWith(dropUnit: u)),
               ),
@@ -214,8 +335,11 @@ class TableConfigScreen extends ConsumerWidget {
                 current: cfg.adjUnit,
                 globalUnit: units.adjustment,
                 options: const [
-                  Unit.mil, Unit.moa, Unit.mRad,
-                  Unit.cmPer100m, Unit.inchesPer100Yd,
+                  Unit.mil,
+                  Unit.moa,
+                  Unit.mRad,
+                  Unit.cmPer100m,
+                  Unit.inchesPer100Yd,
                 ],
                 enabled: !cfg.adjAllUnits,
                 onChanged: (u) => save(cfg.copyWith(adjUnit: u)),
@@ -227,11 +351,18 @@ class TableConfigScreen extends ConsumerWidget {
               for (final col in _columnDefs)
                 if (!col.alwaysOn)
                   SwitchListTile(
-                    title: Text(col.label, style: const TextStyle(fontSize: 14)),
+                    title: Text(
+                      col.label,
+                      style: const TextStyle(fontSize: 14),
+                    ),
                     value: !cfg.hiddenCols.contains(col.id),
                     onChanged: (v) {
                       final hidden = Set<String>.from(cfg.hiddenCols);
-                      if (v) { hidden.remove(col.id); } else { hidden.add(col.id); }
+                      if (v) {
+                        hidden.remove(col.id);
+                      } else {
+                        hidden.add(col.id);
+                      }
                       save(cfg.copyWith(hiddenCols: hidden));
                     },
                     dense: true,
@@ -261,11 +392,14 @@ class TableConfigScreen extends ConsumerWidget {
         title: const Text('Distance step'),
         children: optionsM.map((m) {
           final disp = (Unit.meter(m) as dynamic).in_(distUnit) as double;
-          final lbl  = '${disp.toStringAsFixed(distAcc)} ${distUnit.symbol}';
+          final lbl = '${disp.toStringAsFixed(distAcc)} ${distUnit.symbol}';
           return RadioGroup<double>(
             groupValue: currentM,
             onChanged: (v) {
-              if (v != null) { onPick(v); Navigator.pop(ctx); }
+              if (v != null) {
+                onPick(v);
+                Navigator.pop(ctx);
+              }
             },
             child: RadioListTile<double>(
               value: m,
@@ -358,8 +492,7 @@ class _DistanceTile extends StatelessWidget {
   }
 
   void _showDialog(BuildContext context, double currentDisp, int acc) {
-    final ctrl = TextEditingController(
-        text: currentDisp.toStringAsFixed(acc));
+    final ctrl = TextEditingController(text: currentDisp.toStringAsFixed(acc));
     String? error;
     showDialog<void>(
       context: context,
@@ -377,23 +510,28 @@ class _DistanceTile extends StatelessWidget {
             onChanged: (t) {
               setState(() {
                 error = double.tryParse(t.replaceAll(',', '.')) == null
-                    ? 'Invalid number' : null;
+                    ? 'Invalid number'
+                    : null;
               });
             },
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel')),
             TextButton(
-              onPressed: error != null ? null : () {
-                final v = double.tryParse(
-                    ctrl.text.replaceAll(',', '.'));
-                if (v != null) {
-                  final rawM = (units(v) as dynamic).in_(Unit.meter) as double;
-                  onChanged(rawM);
-                }
-                Navigator.pop(ctx);
-              },
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: error != null
+                  ? null
+                  : () {
+                      final v = double.tryParse(ctrl.text.replaceAll(',', '.'));
+                      if (v != null) {
+                        final rawM =
+                            (units(v) as dynamic).in_(Unit.meter) as double;
+                        onChanged(rawM);
+                      }
+                      Navigator.pop(ctx);
+                    },
               child: const Text('OK'),
             ),
           ],
@@ -424,20 +562,24 @@ class _UnitOverrideTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs        = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final effective = current ?? globalUnit;
     return ListTile(
-      title: Text(label,
-          style: TextStyle(
-            fontSize: 14,
-            color: enabled ? null : cs.onSurface.withAlpha(80),
-          )),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          color: enabled ? null : cs.onSurface.withAlpha(80),
+        ),
+      ),
       subtitle: current == null
-          ? Text('Global (${globalUnit.symbol})',
+          ? Text(
+              'Global (${globalUnit.symbol})',
               style: TextStyle(
                 fontSize: 11,
                 color: enabled ? null : cs.onSurface.withAlpha(60),
-              ))
+              ),
+            )
           : null,
       trailing: Text(
         effective.symbol,
@@ -460,7 +602,10 @@ class _UnitOverrideTile extends StatelessWidget {
         children: [
           RadioGroup<Unit?>(
             groupValue: current,
-            onChanged: (_) { onChanged(null); Navigator.pop(ctx); },
+            onChanged: (_) {
+              onChanged(null);
+              Navigator.pop(ctx);
+            },
             child: RadioListTile<Unit?>(
               value: null,
               title: Text('Global (${globalUnit.symbol})'),
@@ -468,15 +613,20 @@ class _UnitOverrideTile extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          ...options.map((u) => RadioGroup<Unit?>(
-            groupValue: current,
-            onChanged: (_) { onChanged(u); Navigator.pop(ctx); },
-            child: RadioListTile<Unit?>(
-              value: u,
-              title: Text('${u.label}  (${u.symbol})'),
-              dense: true,
+          ...options.map(
+            (u) => RadioGroup<Unit?>(
+              groupValue: current,
+              onChanged: (_) {
+                onChanged(u);
+                Navigator.pop(ctx);
+              },
+              child: RadioListTile<Unit?>(
+                value: u,
+                title: Text('${u.label}  (${u.symbol})'),
+                dense: true,
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -493,15 +643,15 @@ class _ColEntry {
 }
 
 const _columnDefs = [
-  _ColEntry('range',    'Range',              alwaysOn: true),
-  _ColEntry('time',     'Time'),
+  _ColEntry('range', 'Range', alwaysOn: true),
+  _ColEntry('time', 'Time'),
   _ColEntry('velocity', 'Velocity'),
-  _ColEntry('height',   'Height'),
-  _ColEntry('drop',     'Drop (slant height)'),
-  _ColEntry('adjDrop',  'Drop adjustment'),
-  _ColEntry('wind',     'Windage'),
-  _ColEntry('adjWind',  'Windage adjustment'),
-  _ColEntry('mach',     'Mach'),
-  _ColEntry('drag',     'Drag coefficient'),
-  _ColEntry('energy',   'Energy'),
+  _ColEntry('height', 'Height'),
+  _ColEntry('drop', 'Drop (slant height)'),
+  _ColEntry('adjDrop', 'Drop adjustment'),
+  _ColEntry('wind', 'Windage'),
+  _ColEntry('adjWind', 'Windage adjustment'),
+  _ColEntry('mach', 'Mach'),
+  _ColEntry('drag', 'Drag coefficient'),
+  _ColEntry('energy', 'Energy'),
 ];

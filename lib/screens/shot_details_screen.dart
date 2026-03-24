@@ -14,57 +14,82 @@ class ShotDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile  = ref.watch(shotProfileProvider).value;
+    final profile = ref.watch(shotProfileProvider).value;
     final settings = ref.watch(settingsProvider).value;
-    final units    = ref.watch(unitSettingsProvider);
-    final calc     = ref.watch(homeCalculationProvider);
+    final units = ref.watch(unitSettingsProvider);
+    final calc = ref.watch(homeCalculationProvider);
 
-    final cartridge   = profile?.cartridge;
-    final targetDistM = (profile?.targetDistance as dynamic)?.in_(Unit.meter) as double? ?? 300.0;
+    final cartridge = profile?.cartridge;
+    final targetDistM =
+        (profile?.targetDistance as dynamic)?.in_(Unit.meter) as double? ??
+        300.0;
 
     // ── MV with powder sensitivity ─────────────────────────────────────────
-    final refMvMps       = (cartridge?.mv as dynamic)?.in_(Unit.mps) as double? ?? 0.0;
-    final refPowderTempC = (cartridge?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ?? 15.0;
-    final tempModifier   = cartridge?.tempModifier ?? 0.0;
-    final powderSensOn   = (settings?.enablePowderSensitivity ?? false) &&
+    final refMvMps =
+        (cartridge?.mv as dynamic)?.in_(Unit.mps) as double? ?? 0.0;
+    final refPowderTempC =
+        (cartridge?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ??
+        15.0;
+    final tempModifier = cartridge?.tempModifier ?? 0.0;
+    final powderSensOn =
+        (settings?.enablePowderSensitivity ?? false) &&
         (cartridge?.usePowderSensitivity ?? false);
-    final useDiffTemp    = powderSensOn && (settings?.useDifferentPowderTemperature ?? false);
+    final useDiffTemp =
+        powderSensOn && (settings?.useDifferentPowderTemperature ?? false);
 
     double mvAtTempC(double tC) {
       if (refMvMps <= 0 || tempModifier == 0) return refMvMps;
-      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) + refMvMps;
+      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) +
+          refMvMps;
     }
 
     final conditions = profile?.conditions;
     final currentPowderTempC = useDiffTemp
-        ? ((conditions?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ?? 15.0)
-        : ((conditions?.temperature as dynamic)?.in_(Unit.celsius) as double? ?? 15.0);
-    final currentMvMps = powderSensOn ? mvAtTempC(currentPowderTempC) : refMvMps;
+        ? ((conditions?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ??
+              15.0)
+        : ((conditions?.temperature as dynamic)?.in_(Unit.celsius) as double? ??
+              15.0);
+    final currentMvMps = powderSensOn
+        ? mvAtTempC(currentPowderTempC)
+        : refMvMps;
 
-    final zeroAtmo        = profile?.zeroConditions ?? conditions;
+    final zeroAtmo = profile?.zeroConditions ?? conditions;
     final zeroPowderTempC = useDiffTemp
-        ? ((zeroAtmo?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ?? 15.0)
-        : ((zeroAtmo?.temperature as dynamic)?.in_(Unit.celsius) as double? ?? 15.0);
+        ? ((zeroAtmo?.powderTemp as dynamic)?.in_(Unit.celsius) as double? ??
+              15.0)
+        : ((zeroAtmo?.temperature as dynamic)?.in_(Unit.celsius) as double? ??
+              15.0);
     final zeroMvMps = powderSensOn ? mvAtTempC(zeroPowderTempC) : refMvMps;
 
     // ── Gyroscopic stability factor Sg (Miller formula) ───────────────────
-    final dm         = cartridge?.projectile.dm;
-    final twistInch  = (profile?.rifle.weapon.twist as dynamic)?.in_(Unit.inch) as double? ?? 0.0;
-    final weightGr   = (dm?.weight  as dynamic)?.in_(Unit.grain) as double? ?? 0.0;
-    final diamInch   = (dm?.diameter as dynamic)?.in_(Unit.inch)  as double? ?? 0.0;
-    final lenInch    = (dm?.length   as dynamic)?.in_(Unit.inch)  as double? ?? 0.0;
+    final dm = cartridge?.projectile.dm;
+    final twistInch =
+        (profile?.rifle.weapon.twist as dynamic)?.in_(Unit.inch) as double? ??
+        0.0;
+    final weightGr = (dm?.weight as dynamic)?.in_(Unit.grain) as double? ?? 0.0;
+    final diamInch =
+        (dm?.diameter as dynamic)?.in_(Unit.inch) as double? ?? 0.0;
+    final lenInch = (dm?.length as dynamic)?.in_(Unit.inch) as double? ?? 0.0;
 
     double? sg;
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
       final lCal = lenInch / diamInch;
       final nCal = twistInch / diamInch;
-      sg = (30.0 * weightGr) / (nCal * nCal * diamInch * diamInch * diamInch * lCal * (1.0 + lCal * lCal));
+      sg =
+          (30.0 * weightGr) /
+          (nCal *
+              nCal *
+              diamInch *
+              diamInch *
+              diamInch *
+              lCal *
+              (1.0 + lCal * lCal));
     }
 
     // ── Trajectory data ────────────────────────────────────────────────────
-    final hit       = calc.value;
-    final traj      = hit?.trajectory ?? [];
-    final atTarget  = hit?.getAtDistance(Distance(targetDistM, Unit.meter));
+    final hit = calc.value;
+    final traj = hit?.trajectory ?? [];
+    final atTarget = hit?.getAtDistance(Distance(targetDistM, Unit.meter));
 
     // Speed of sound: fps / mach at first point
     final double? soundSpeedFps = (traj.isNotEmpty && traj[0].mach > 0)
@@ -115,39 +140,85 @@ class ShotDetailsScreen extends ConsumerWidget {
     }
 
     // ── Values ─────────────────────────────────────────────────────────────
-    final distDisp = (Unit.meter(targetDistM) as dynamic).in_(units.distance) as double;
-    final distStr  = '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
+    final distDisp =
+        (Unit.meter(targetDistM) as dynamic).in_(units.distance) as double;
+    final distStr =
+        '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
 
-    final soundDisp = soundSpeedFps == null ? '—'
+    final soundDisp = soundSpeedFps == null
+        ? '—'
         : '${((Unit.fps(soundSpeedFps) as dynamic).in_(units.velocity) as double).toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
 
     final items = <Widget>[
       SectionHeader('Velocity'),
-      _InfoTile(icon: Icons.speed_outlined,         label: 'Current muzzle velocity', value: fmtV(currentMvMps)),
-      _InfoTile(icon: Icons.speed_outlined,         label: 'Zero muzzle velocity',    value: fmtV(zeroMvMps)),
-      _InfoTile(icon: Icons.graphic_eq_outlined,    label: 'Speed of sound',          value: soundDisp),
-      _InfoTile(icon: Icons.arrow_forward_outlined, label: 'Velocity at target',
-          value: atTarget == null ? '—' : fmtV(conv(atTarget.velocity, Unit.fps, Unit.mps))),
+      _InfoTile(
+        icon: Icons.speed_outlined,
+        label: 'Current muzzle velocity',
+        value: fmtV(currentMvMps),
+      ),
+      _InfoTile(
+        icon: Icons.speed_outlined,
+        label: 'Zero muzzle velocity',
+        value: fmtV(zeroMvMps),
+      ),
+      _InfoTile(
+        icon: Icons.graphic_eq_outlined,
+        label: 'Speed of sound',
+        value: soundDisp,
+      ),
+      _InfoTile(
+        icon: Icons.arrow_forward_outlined,
+        label: 'Velocity at target',
+        value: atTarget == null
+            ? '—'
+            : fmtV(conv(atTarget.velocity, Unit.fps, Unit.mps)),
+      ),
       const Divider(height: 1),
       SectionHeader('Energy'),
-      _InfoTile(icon: Icons.bolt_outlined, label: 'Energy at muzzle',  value: fmtEnergy(firstPoint?.energy)),
-      _InfoTile(icon: Icons.bolt_outlined, label: 'Energy at target',  value: fmtEnergy(atTarget?.energy)),
+      _InfoTile(
+        icon: Icons.bolt_outlined,
+        label: 'Energy at muzzle',
+        value: fmtEnergy(firstPoint?.energy),
+      ),
+      _InfoTile(
+        icon: Icons.bolt_outlined,
+        label: 'Energy at target',
+        value: fmtEnergy(atTarget?.energy),
+      ),
       const Divider(height: 1),
       SectionHeader('Stability'),
       _InfoTile(
         icon: Icons.rotate_right_outlined,
-        label: 'Gyroscopic stability factor (Sg)',
+        label: 'Gyroscopic stability factor',
         value: sg != null ? sg.toStringAsFixed(2) : '—',
       ),
       const Divider(height: 1),
       SectionHeader('Trajectory'),
-      _InfoTile(icon: Icons.flag_outlined,           label: 'Shot distance',       value: distStr),
-      _InfoTile(icon: Icons.height,                  label: 'Height at target',    value: fmtDrop(atTarget?.height)),
-      _InfoTile(icon: Icons.architecture_outlined,   label: 'Max height distance',
-          value: apexPoint == null ? '—' : fmtDist(apexPoint.distance)),
-      _InfoTile(icon: Icons.arrow_right_alt_outlined, label: 'Windage',            value: fmtDrop(atTarget?.windage)),
-      _InfoTile(icon: Icons.timer_outlined,           label: 'Time to target',
-          value: atTarget == null ? '—' : '${atTarget.time.toStringAsFixed(3)} s'),
+      _InfoTile(
+        icon: Icons.flag_outlined,
+        label: 'Shot distance',
+        value: distStr,
+      ),
+      _InfoTile(
+        icon: Icons.height,
+        label: 'Height at target',
+        value: fmtDrop(atTarget?.height),
+      ),
+      _InfoTile(
+        icon: Icons.architecture_outlined,
+        label: 'Max height distance',
+        value: apexPoint == null ? '—' : fmtDist(apexPoint.distance),
+      ),
+      _InfoTile(
+        icon: Icons.arrow_right_alt_outlined,
+        label: 'Windage',
+        value: fmtDrop(atTarget?.windage),
+      ),
+      _InfoTile(
+        icon: Icons.timer_outlined,
+        label: 'Time to target',
+        value: atTarget == null ? '—' : '${atTarget.time.toStringAsFixed(3)} s',
+      ),
       const SizedBox(height: 16),
     ];
 
@@ -204,13 +275,13 @@ class _InfoTile extends StatelessWidget {
   });
 
   final IconData icon;
-  final String   label;
-  final String   value;
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs    = theme.colorScheme;
+    final cs = theme.colorScheme;
     return ListTile(
       dense: true,
       leading: Icon(icon, color: cs.onSurfaceVariant),
