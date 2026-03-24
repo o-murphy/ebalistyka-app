@@ -947,12 +947,10 @@ All 7 screens are stubs. To implement:
 Proto generated (`src/proto/profedit.pb.dart`). Nothing else done.
 
 **To implement in order:**
-1. `lib/src/a7p/a7p_validator.dart` — port Python yupy schema; `validate(Payload)` throws with field-level errors
-2. `lib/src/a7p/a7p_parser.dart` — `Profile` → `ShotProfile` with scale-factor conversion
+1. `lib/src/a7p/a7p_validator.dart` — port Python yupy schema; `validate(Payload)` throws with field-level errors (seems like done)
+2. `lib/src/a7p/a7p_parser.dart` — `Profile` → `ShotProfile` with scale-factor conversion (seems like done)
 3. `lib/src/a7p/a7p_writer.dart` — `ShotProfile` → `Payload` bytes
 4. Add deps: `file_picker`, `share_plus`, `archive`
-5. Import UI in Settings (file picker → parse → load)
-6. Export UI in Settings (serialize → share sheet)
 
 **Scale factors** (from proto comments):
 | Field | Raw unit | Scale |
