@@ -115,7 +115,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     if (profile == null || settings == null) return;
 
-    state = const AsyncData(HomeUiLoading());
+    // Keep previous Ready state visible while recalculating — no flicker.
+    // Only show Loading on first calculation (when state is still Loading).
+    if (state.value is! HomeUiReady) {
+      state = const AsyncData(HomeUiLoading());
+    }
 
     try {
       final opts = TargetCalcOptions(

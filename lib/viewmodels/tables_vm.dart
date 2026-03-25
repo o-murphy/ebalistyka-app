@@ -112,7 +112,9 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       return;
     }
 
-    state = const AsyncData(TablesUiLoading());
+    if (state.value is! TablesUiReady) {
+      state = const AsyncData(TablesUiLoading());
+    }
 
     try {
       final cfg = settings.tableConfig;

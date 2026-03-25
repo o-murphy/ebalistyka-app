@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -8,8 +6,8 @@ import '../viewmodels/tables_vm.dart';
 
 // ─── Trajectory Table ─────────────────────────────────────────────────────────
 //
-// Layout: rows = metrics (Time, V, Height, ...), columns = trajectory distances.
-// The distance header row sticks to the top; columns scroll horizontally.
+// Layout: rows = distance points, columns = metrics (Range, Time, V, Height, …).
+// The metric header row sticks to the top; columns scroll horizontally.
 
 class TrajectoryTable extends StatefulWidget {
   final FormattedTableData mainTable;
@@ -69,7 +67,6 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
     final table = widget.mainTable;
 
     const colPad  = EdgeInsets.symmetric(horizontal: 6, vertical: 4);
-    const labelW  = 72.0;
     const colW    = 72.0;
 
     final hdrStyle      = theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: cs.onSurface);
@@ -79,9 +76,6 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
     final subsCellStyle = cellStyle?.copyWith(color: cs.tertiary, fontWeight: FontWeight.bold);
     final zeroBannerStyle = theme.textTheme.bodySmall?.copyWith(
         color: cs.primary, fontWeight: FontWeight.bold, fontFamily: 'monospace');
-    final labelStyle    = theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface);
-    final unitLabelStyle = theme.textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant);
-
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     Widget hCell(String text, TextStyle? style, {double width = colW}) => SizedBox(
@@ -102,21 +96,6 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
             child: Text(text, style: style, textAlign: TextAlign.right),
           ),
         );
-
-    Widget labelCell(String label, String unit) => SizedBox(
-      width: labelW,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: labelStyle),
-            Text(unit, style: unitLabelStyle),
-          ],
-        ),
-      ),
-    );
 
     Widget rowDivider() => Divider(height: 1, color: cs.outlineVariant, thickness: 0.5);
 
@@ -162,60 +141,60 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
       ),
     );
 
-    // ── Single table renderer ─────────────────────────────────────────────────
+    // ── Main table renderer (rows = distance points, cols = metrics) ────────
 
-    Widget buildTable(FormattedTableData t, {bool isZero = false}) {
-      final nCols = t.distanceHeaders.length;
-      final totalW = labelW + colW * nCols;
+    Widget buildTable(FormattedTableData t) {
+      final nMetrics = t.rows.length;
+      final nPoints  = t.distanceHeaders.length;
+      final totalW   = colW * (1 + nMetrics);
 
-      // Distance header row
-      Widget headerRow() => Container(
+      // Metric label header row
+      Widget labelRow() => Container(
         color: cs.surfaceContainerHighest,
-        child: Row(
-          children: [
-            SizedBox(
-              width: labelW,
-              child: Padding(
-                padding: colPad,
-                child: Text(t.distanceUnit, style: subStyle),
-              ),
-            ),
-            ...List.generate(nCols, (ci) => hCell(t.distanceHeaders[ci],
-                isZero ? zeroBannerStyle : hdrStyle)),
-          ],
-        ),
+        child: Row(children: [
+          hCell(t.distanceUnit, hdrStyle),
+          ...List.generate(nMetrics, (i) => hCell(t.rows[i].label, hdrStyle)),
+        ]),
       );
 
-      // Data rows
+      // Metric unit sub-header
+      Widget unitRow() => Container(
+        color: cs.surfaceContainerHigh,
+        child: Row(children: [
+          hCell('', subStyle),
+          ...List.generate(nMetrics, (i) => hCell(t.rows[i].unitSymbol, subStyle)),
+        ]),
+      );
+
+      // Data rows: one per distance point
       Widget dataRows() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var ri = 0; ri < t.rows.length; ri++) ...[
-            if (ri > 0) rowDivider(),
-            GestureDetector(
-              onTap: null, // row tap shows nothing; tap cells for detail
-              child: Row(
-                children: [
-                  labelCell(t.rows[ri].label, t.rows[ri].unitSymbol),
-                  ...List.generate(
-                    min(nCols, t.rows[ri].cells.length),
-                    (ci) {
-                      final cell = t.rows[ri].cells[ci];
-                      final isZ  = cell.isZeroCrossing;
-                      final isS  = cell.isSubsonic;
-                      final bg   = isZ
-                          ? cs.errorContainer.withAlpha(80)
-                          : isS
-                              ? cs.tertiaryContainer.withAlpha(80)
-                              : (ci.isEven ? null : cs.surfaceContainerLowest);
-                      final style = isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
-                      return dCell(cell.value, style,
-                          bg: bg, onTap: () => showDetail(t, ci));
-                    },
-                  ),
-                ],
-              ),
-            ),
+          for (var pi = 0; pi < nPoints; pi++) ...[
+            if (pi > 0) rowDivider(),
+            Builder(builder: (_) {
+              final isZ = nMetrics > 0 && pi < t.rows[0].cells.length &&
+                  t.rows[0].cells[pi].isZeroCrossing;
+              final isS = nMetrics > 0 && pi < t.rows[0].cells.length &&
+                  t.rows[0].cells[pi].isSubsonic;
+              final bg = isZ
+                  ? cs.errorContainer.withAlpha(80)
+                  : isS
+                      ? cs.tertiaryContainer.withAlpha(80)
+                      : (pi.isEven ? null : cs.surfaceContainerLowest);
+              final style = isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
+              return Row(children: [
+                dCell(t.distanceHeaders[pi], hdrStyle,
+                    bg: bg, onTap: () => showDetail(t, pi)),
+                ...List.generate(nMetrics, (mi) {
+                  final cell = pi < t.rows[mi].cells.length
+                      ? t.rows[mi].cells[pi]
+                      : null;
+                  return dCell(cell?.value ?? '—', style,
+                      bg: bg, onTap: () => showDetail(t, pi));
+                }),
+              ]);
+            }),
           ],
         ],
       );
@@ -230,19 +209,81 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
             ),
           );
 
+      return StickyHeader(
+        header: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            sectionTitle('Trajectory'),
+            hScroll(Column(children: [labelRow(), unitRow()]), ctrl: _trajHdrCtrl),
+            Divider(height: 1, color: cs.outlineVariant, thickness: 0.5),
+          ],
+        ),
+        content: hScroll(dataRows(), ctrl: _trajDataCtrl),
+      );
+    }
+
+    // ── Zero crossings table (transposed: rows = points, cols = metrics) ─────
+
+    Widget buildZeroTable(FormattedTableData t) {
+      // Columns: Range + each metric
+      final nMetrics = t.rows.length;
+      final nPoints  = t.distanceHeaders.length;
+      final totalW   = colW * (1 + nMetrics);
+
+      // Header row: Range, Time, V, Height, ...
+      Widget headerRow() => Container(
+        color: cs.surfaceContainerHighest,
+        child: Row(children: [
+          hCell(t.distanceUnit, hdrStyle),
+          ...List.generate(nMetrics, (i) => hCell(t.rows[i].label, hdrStyle)),
+        ]),
+      );
+
+      // Unit sub-header
+      Widget unitRow() => Container(
+        color: cs.surfaceContainerHighest,
+        child: Row(children: [
+          hCell('', subStyle),
+          ...List.generate(nMetrics, (i) => hCell(t.rows[i].unitSymbol, subStyle)),
+        ]),
+      );
+
+      // Data rows: one per zero crossing point
+      Widget dataArea() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var pi = 0; pi < nPoints; pi++) ...[
+            if (pi > 0) rowDivider(),
+            Container(
+              color: cs.primaryContainer.withAlpha(60),
+              child: Row(children: [
+                dCell(t.distanceHeaders[pi], zeroBannerStyle),
+                ...List.generate(nMetrics, (mi) {
+                  final cell = pi < t.rows[mi].cells.length
+                      ? t.rows[mi].cells[pi]
+                      : null;
+                  return dCell(cell?.value ?? '—', zeroBannerStyle);
+                }),
+              ]),
+            ),
+          ],
+        ],
+      );
+
+      Widget hScroll(Widget child) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: totalW),
+          child: child,
+        ),
+      );
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          StickyHeader(
-            header: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                hScroll(headerRow(), ctrl: _trajHdrCtrl),
-                Divider(height: 1, color: cs.outlineVariant, thickness: 0.5),
-              ],
-            ),
-            content: hScroll(dataRows(), ctrl: _trajDataCtrl),
-          ),
+          hScroll(Column(children: [headerRow(), unitRow()])),
+          Divider(height: 1, color: cs.outlineVariant, thickness: 0.5),
+          hScroll(dataArea()),
         ],
       );
     }
@@ -254,15 +295,14 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
         // 1. Details spoiler
         _DetailsSpoiler(spoiler: widget.spoiler),
 
-        // 2. Zero crossings
+        // 2. Zero crossings (row-per-point layout)
         if (widget.zeroCrossings != null &&
             widget.zeroCrossings!.distanceHeaders.isNotEmpty) ...[
           sectionTitle('Zero Crossings'),
-          buildTable(widget.zeroCrossings!, isZero: true),
+          buildZeroTable(widget.zeroCrossings!),
         ],
 
-        // 3. Main trajectory table
-        sectionTitle('Trajectory'),
+        // 3. Main trajectory table (StickyHeader — must be direct ListView child)
         buildTable(table),
       ],
     );
