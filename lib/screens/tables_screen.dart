@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../providers/calculation_provider.dart';
-import '../providers/settings_provider.dart';
 import '../router.dart';
+import '../viewmodels/tables_vm.dart';
 import '../widgets/trajectory_table.dart';
 
 class TablesScreen extends ConsumerWidget {
@@ -12,37 +11,39 @@ class TablesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calc        = ref.watch(tableCalculationProvider);
-    final settings    = ref.watch(settingsProvider).value;
-    final displayStep = settings?.tableConfig.stepM ?? 100.0;
-    final traj        = calc.value?.trajectory ?? [];
+    final vmAsync = ref.watch(tablesVmProvider);
+    final vmState = vmAsync.value;
+
+    Widget body;
+    if (vmState is TablesUiLoading || vmState == null) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (vmState is TablesUiEmpty) {
+      body = Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.table_view_outlined,
+                size: 48,
+                color: Theme.of(context).colorScheme.outlineVariant),
+            const SizedBox(height: 12),
+            const Text('No data'),
+          ],
+        ),
+      );
+    } else if (vmState is TablesUiReady) {
+      body = TrajectoryTable(
+        mainTable:      vmState.mainTable,
+        zeroCrossings:  vmState.zeroCrossings,
+        spoiler:        vmState.spoiler,
+      );
+    } else {
+      body = const Center(child: Text('No data'));
+    }
 
     return Column(
       children: [
         const _Header(),
-        Expanded(
-          child: calc.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : traj.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.table_view_outlined,
-                              size: 48,
-                              color: Theme.of(context).colorScheme.outlineVariant),
-                          const SizedBox(height: 12),
-                          const Text('No data'),
-                        ],
-                      ),
-                    )
-                  : TrajectoryTable(
-                      traj:                   traj,
-                      zeros:                  calc.value?.zeros ?? [],
-                      displayStepM:           displayStep,
-                      showSubsonicTransition: settings?.tableConfig.showSubsonicTransition ?? false,
-                    ),
-        ),
+        Expanded(child: body),
       ],
     );
   }

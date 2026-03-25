@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/calculation_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/shot_profile_provider.dart';
-import '../providers/calculation_provider.dart';
 import '../src/models/app_settings.dart';
 import '../viewmodels/home_vm.dart';
 import '../viewmodels/tables_vm.dart';
@@ -10,8 +10,8 @@ import '../viewmodels/tables_vm.dart';
 /// Centralises all recalculation triggers.
 ///
 /// Listens to [shotProfileProvider] and [settingsProvider] and triggers
-/// both the new ViewModels (Phase 2) and the old calculation providers
-/// (until Phase 4 migrates the screens).
+/// the new ViewModels and the old [homeCalculationProvider] (still used by
+/// shot_details_screen.dart).
 class RecalcCoordinator extends Notifier<void> {
   @override
   void build() {
@@ -33,20 +33,15 @@ class RecalcCoordinator extends Notifier<void> {
     }
     if (tabIndex == 2) {
       ref.read(tablesVmProvider.notifier).recalculate();
-      ref.read(tableCalculationProvider.notifier).recalculateIfNeeded();
     }
   }
 
   void _triggerAll() {
-    // New ViewModels (Phase 2)
     ref.read(homeVmProvider.notifier).recalculate();
     ref.read(tablesVmProvider.notifier).recalculate();
-
-    // Old calculation providers (still used by screens until Phase 4)
+    // homeCalculationProvider still used by shot_details_screen
     ref.read(homeCalculationProvider.notifier).markDirty();
-    ref.read(tableCalculationProvider.notifier).markDirty();
     ref.read(homeCalculationProvider.notifier).recalculateIfNeeded();
-    ref.read(tableCalculationProvider.notifier).recalculateIfNeeded();
   }
 
   bool _needsRecalc(AppSettings? prev, AppSettings next) {

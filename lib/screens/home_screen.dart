@@ -4,14 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../providers/calculation_provider.dart';
-import '../providers/settings_provider.dart';
-import '../providers/shot_profile_provider.dart';
 import '../router.dart';
 import '../src/models/field_constraints.dart';
-import '../src/solver/conditions.dart' as solver;
-import '../src/solver/unit.dart' as solver;
 import '../src/solver/unit.dart';
+import '../viewmodels/home_vm.dart';
 import '../widgets/home_chart_page.dart';
 import '../widgets/home_reticle_page.dart';
 import '../widgets/home_table_page.dart';
@@ -53,38 +49,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Trigger "updated" badge animation when calculation finishes.
-    ref.listen<AsyncValue<Object?>>(homeCalculationProvider, (prev, next) {
-      if (!next.isLoading && (prev?.isLoading ?? false)) {
-        _calcDoneCtrl.forward(from: 0);
-      }
+    // Trigger overlay animation when VM transitions from Loading → Ready.
+    ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
+      final wasLoading = prev?.value is HomeUiLoading;
+      final isReady    = next.value is HomeUiReady;
+      if (wasLoading && isReady) _calcDoneCtrl.forward(from: 0);
     });
 
-    final profile = ref.watch(shotProfileProvider).value;
-    final units   = ref.watch(unitSettingsProvider);
+    final vmAsync = ref.watch(homeVmProvider);
+    final vmState = vmAsync.value;
 
-    final rifleName     = profile?.rifle.name     ?? '—';
-    final cartridgeName = profile?.cartridge.name ?? '—';
-
-    String dimStr(dynamic dim, Unit rawUnit, Unit dispUnit, {int dec = 0}) {
-      if (dim == null) return '—';
-      final raw  = (dim as dynamic).in_(rawUnit) as double;
-      final disp = (rawUnit(raw) as dynamic).in_(dispUnit) as double;
-      return '${disp.toStringAsFixed(dec)} ${dispUnit.symbol}';
-    }
-
-    final windDirDeg     = profile?.winds.isNotEmpty == true
-        ? (profile!.winds.first.directionFrom as dynamic).in_(solver.Unit.degree) as double
-        : 0.0;
-    final windInitialAngle = (windDirDeg - 90) * math.pi / 180;
-
-    final conditions = profile?.conditions;
-    final tempStr    = dimStr(conditions?.temperature, Unit.celsius,  units.temperature);
-    final altStr     = dimStr(conditions?.altitude,    Unit.meter,    units.distance);
-    final pressStr   = dimStr(conditions?.pressure,    Unit.hPa,      units.pressure);
-    final humidStr   = conditions != null
-        ? '${(conditions.humidity * 100).toStringAsFixed(0)}%'
-        : '—';
+    final rifleName     = vmState is HomeUiReady ? vmState.rifleName     : '—';
+    final cartridgeName = vmState is HomeUiReady ? vmState.cartridgeName : '—';
+    final tempStr       = vmState is HomeUiReady ? vmState.tempDisplay   : '—';
+    final altStr        = vmState is HomeUiReady ? vmState.altDisplay    : '—';
+    final pressStr      = vmState is HomeUiReady ? vmState.pressDisplay  : '—';
+    final humidStr      = vmState is HomeUiReady ? vmState.humidDisplay  : '—';
+    final windAngleDeg  = vmState is HomeUiReady ? vmState.windAngleDeg  : 0.0;
+    final windInitialAngle = (windAngleDeg - 90) * math.pi / 180;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -171,13 +153,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     child: WindIndicator(
                                       initialAngle: windInitialAngle,
                                       onAngleChanged: (degrees, _) {
-                                        final existing = ref.read(shotProfileProvider).value?.winds ?? [];
-                                        ref.read(shotProfileProvider.notifier).updateWinds([
-                                          solver.Wind(
-                                            velocity:      existing.isNotEmpty ? existing.first.velocity : solver.Velocity(0, solver.Unit.mps),
-                                            directionFrom: solver.Angular(degrees, solver.Unit.degree),
-                                          ),
-                                        ]);
+                                        ref.read(homeVmProvider.notifier)
+                                            .updateWindDirection(degrees);
                                       },
                                       onDirectionTap: (deg) => showUnitEditDialog(
                                         context,
@@ -187,13 +164,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         displayUnit: Unit.degree,
                                         onChanged: (newDeg) {
                                           final normalized = ((newDeg % 360) + 360) % 360;
-                                          final existing = ref.read(shotProfileProvider).value?.winds ?? [];
-                                          ref.read(shotProfileProvider.notifier).updateWinds([
-                                            solver.Wind(
-                                              velocity:      existing.isNotEmpty ? existing.first.velocity : solver.Velocity(0, solver.Unit.mps),
-                                              directionFrom: solver.Angular(normalized, solver.Unit.degree),
-                                            ),
-                                          ]);
+                                          ref.read(homeVmProvider.notifier)
+                                              .updateWindDirection(normalized);
                                         },
                                       ),
                                     ),

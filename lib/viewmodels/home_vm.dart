@@ -235,8 +235,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     // ── Table data (5 distances around target) ──
     final tableData = _buildHomeTable(hit, targetM, settings, formatter);
 
-    // ── Chart data ──
+    // ── Chart data + auto-select target point ──
     final chartData = _buildChartData(traj, settings);
+    final autoIndex = _closestIndex(chartData.points, targetM);
+    final autoInfo = autoIndex != null
+        ? _buildPointInfo(chartData.points[autoIndex], formatter)
+        : null;
 
     return HomeUiReady(
       rifleName: profile.rifle.name,
@@ -251,6 +255,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       adjustmentFormat: settings.adjustmentFormat,
       tableData: tableData,
       chartData: chartData,
+      selectedPointInfo: autoInfo,
+      selectedChartIndex: autoIndex,
     );
   }
 
@@ -416,6 +422,20 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       rows: rows,
       distanceUnit: units.distance.symbol,
     );
+  }
+
+  int? _closestIndex(List<ChartPoint> points, double targetM) {
+    if (points.isEmpty) return null;
+    var best = 0;
+    var bestDist = (points[0].distanceM - targetM).abs();
+    for (var i = 1; i < points.length; i++) {
+      final d = (points[i].distanceM - targetM).abs();
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    }
+    return best;
   }
 
   ChartData _buildChartData(List<TrajectoryData> traj, AppSettings settings) {

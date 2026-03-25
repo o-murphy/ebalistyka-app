@@ -240,11 +240,11 @@ void main() {
       expect(ctx.tableCalc.recalcCount, 0);
     });
 
-    test('tab 2 (Tables) triggers tablesVM and tableCalc only', () {
+    test('tab 2 (Tables) triggers tablesVM only (tableCalc no longer triggered)', () {
       ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(2);
 
       expect(ctx.tablesVM.recalcCount, 1);
-      expect(ctx.tableCalc.recalcCount, 1);
+      expect(ctx.tableCalc.recalcCount, 0);
       expect(ctx.homeVM.recalcCount, 0);
       expect(ctx.homeCalc.recalcCount, 0);
     });
@@ -292,8 +292,8 @@ void main() {
       expect(ctx.tablesVM.recalcCount, 1);
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 1);
-      expect(ctx.tableCalc.recalcCount, 1);
+      expect(ctx.tableCalc.markDirtyCount, 0);
+      expect(ctx.tableCalc.recalcCount, 0);
     });
 
     test('multiple profile changes trigger multiple times', () async {
@@ -395,17 +395,17 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('profile change marks old providers dirty and recalculates', () async {
+    test('profile change marks homeCalc dirty and recalculates (tableCalc no longer triggered)', () async {
       ctx.profileNotifier.push(_makeProfile());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 1);
-      expect(ctx.tableCalc.recalcCount, 1);
+      expect(ctx.tableCalc.markDirtyCount, 0);
+      expect(ctx.tableCalc.recalcCount, 0);
     });
 
-    test('settings change marks old providers dirty and recalculates', () async {
+    test('settings change marks homeCalc dirty and recalculates (tableCalc no longer triggered)', () async {
       ctx.settingsNotifier.push(
         const AppSettings(enablePowderSensitivity: true),
       );
@@ -413,8 +413,8 @@ void main() {
 
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 1);
-      expect(ctx.tableCalc.recalcCount, 1);
+      expect(ctx.tableCalc.markDirtyCount, 0);
+      expect(ctx.tableCalc.recalcCount, 0);
     });
 
     test('onTabActivated does not call markDirty on old providers', () {

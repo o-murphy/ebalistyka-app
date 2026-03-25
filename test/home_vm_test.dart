@@ -256,8 +256,9 @@ void main() {
       expect(state.chartData.points, isNotEmpty);
     });
 
-    test('selected point info is null initially', () {
-      expect(state.selectedPointInfo, isNull);
+    test('selected point info is auto-populated at target distance', () {
+      expect(state.selectedPointInfo, isNotNull);
+      expect(state.selectedChartIndex, isNotNull);
     });
 
     test('ballistics service was called once', () {
@@ -290,11 +291,12 @@ void main() {
       expect(state.selectedPointInfo!.energy, isNotEmpty);
     });
 
-    test('selectChartPoint with invalid index keeps null', () {
+    test('selectChartPoint with invalid index preserves previous info', () {
       final notifier = container.read(homeVmProvider.notifier);
+      final before = (container.read(homeVmProvider).value as HomeUiReady).selectedPointInfo;
       notifier.selectChartPoint(999);
       final state = container.read(homeVmProvider).value as HomeUiReady;
-      expect(state.selectedPointInfo, isNull);
+      expect(state.selectedPointInfo, equals(before));
     });
   });
 

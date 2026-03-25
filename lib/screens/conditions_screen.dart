@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../helpers/dimension_converter.dart';
-import '../providers/settings_provider.dart';
-import '../providers/shot_profile_provider.dart';
 import '../router.dart';
 import '../src/models/field_constraints.dart';
-import '../src/solver/conditions.dart' as solver;
-import '../src/solver/unit.dart';
+import '../viewmodels/conditions_vm.dart';
 import '../widgets/temperature_control.dart';
 import '../widgets/unit_value_field.dart';
 
@@ -17,68 +13,14 @@ class ConditionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(shotProfileProvider).value;
-    final settings = ref.watch(settingsProvider).value;
-    final units = ref.watch(unitSettingsProvider);
+    final vmAsync = ref.watch(conditionsVmProvider);
+    final state = vmAsync.value;
 
-    final atmo = profile?.conditions;
-
-    final tempRaw = atmo?.temperature.in_(Unit.celsius) ?? 15.0;
-    final altRaw = atmo?.altitude.in_(Unit.meter) ?? 0.0;
-    final pressRaw = atmo?.pressure.in_(Unit.hPa) ?? 1013.25;
-    final humRaw = (atmo?.humidity ?? 0.5) * 100;
-
-    final powderSensOn = settings?.enablePowderSensitivity ?? false;
-    final useDiffPowderTemp =
-        powderSensOn && (settings?.useDifferentPowderTemperature ?? false);
-
-    final powderTempRaw = useDiffPowderTemp
-        ? (atmo?.powderTemp.in_(Unit.celsius) ?? tempRaw)
-        : tempRaw;
-
-    // Readonly values calculated from cartridge
-    final cartridge = profile?.cartridge;
-    final refMvMps = safeDimensionValue(cartridge?.mv, Unit.mps) ?? 0.0;
-    final refPowderTempC = safeDimensionValue(cartridge?.powderTemp, Unit.celsius) ?? 15.0;
-    final tempModifier = cartridge?.tempModifier ?? 0.0;
-
-    double mvAtTemp(double tC) {
-      if (refMvMps <= 0 || tempModifier == 0) return refMvMps;
-      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) +
-          refMvMps;
+    if (state == null) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    final currentMvMps = mvAtTemp(powderTempRaw);
-    final currentMvDisp = Unit.mps(currentMvMps).in_(units.velocity);
-    final mvStr =
-        '${currentMvDisp.toStringAsFixed(FC.muzzleVelocity.accuracy)} ${units.velocity.symbol}';
-    final sensStr = '${tempModifier.toStringAsFixed(2)} %/15°C';
-
-    void updateAtmo({
-      double? tempC,
-      double? altM,
-      double? pressHPa,
-      double? humPct,
-      double? powderTempC,
-    }) {
-      final newTempC = tempC ?? tempRaw;
-      ref
-          .read(shotProfileProvider.notifier)
-          .updateConditions(
-            solver.Atmo(
-              temperature: Temperature(newTempC, Unit.celsius),
-              altitude: Distance(altM ?? altRaw, Unit.meter),
-              pressure: Pressure(pressHPa ?? pressRaw, Unit.hPa),
-              humidity: (humPct ?? humRaw) / 100,
-              powderTemperature: Temperature(
-                useDiffPowderTemp ? (powderTempC ?? powderTempRaw) : newTempC,
-                Unit.celsius,
-              ),
-            ),
-          );
-    }
-
-    final notifier = ref.read(settingsProvider.notifier);
+    final notifier = ref.read(conditionsVmProvider.notifier);
 
     return Column(
       children: [
@@ -90,9 +32,9 @@ class ConditionsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                 child: TempControl(
-                  rawValue: tempRaw,
-                  displayUnit: units.temperature,
-                  onChanged: (v) => updateAtmo(tempC: v),
+                  rawValue: state.temperature.rawValue,
+                  displayUnit: state.temperature.displayUnit,
+                  onChanged: (v) => notifier.updateTemperature(v),
                 ),
               ),
               const Divider(height: 1),
@@ -101,76 +43,78 @@ class ConditionsScreen extends ConsumerWidget {
               UnitValueField(
                 label: 'Altitude',
                 icon: Icons.terrain_outlined,
-                rawValue: altRaw,
+                rawValue: state.altitude.rawValue,
                 constraints: FC.altitude,
-                displayUnit: units.distance,
-                onChanged: (v) => updateAtmo(altM: v),
+                displayUnit: state.altitude.displayUnit,
+                onChanged: (v) => notifier.updateAltitude(v),
               ),
               UnitValueField(
                 label: 'Humidity',
                 icon: Icons.water_drop_outlined,
-                rawValue: humRaw,
+                rawValue: state.humidity.rawValue,
                 constraints: FC.humidity,
-                displayUnit: FC.humidity.rawUnit,
+                displayUnit: state.humidity.displayUnit,
                 symbol: '%',
-                onChanged: (v) => updateAtmo(humPct: v),
+                onChanged: (v) => notifier.updateHumidity(v),
               ),
               UnitValueField(
                 label: 'Pressure',
                 icon: Icons.speed_outlined,
-                rawValue: pressRaw,
+                rawValue: state.pressure.rawValue,
                 constraints: FC.pressure,
-                displayUnit: units.pressure,
-                onChanged: (v) => updateAtmo(pressHPa: v),
+                displayUnit: state.pressure.displayUnit,
+                onChanged: (v) => notifier.updatePressure(v),
               ),
               const Divider(height: 1),
+
               // ── Switches ──────────────────────────────────────────────────
               _SwitchTile(
                 label: 'Powder temperature sensitivity',
                 icon: Icons.local_fire_department_outlined,
-                value: powderSensOn,
-                onChanged: (v) => notifier.setSwitch('powderSensitivity', v),
+                value: state.powderSensOn,
+                onChanged: (v) => notifier.setPowderSensitivity(v),
               ),
-              if (powderSensOn) ...[
+              if (state.powderSensOn) ...[
                 _SwitchTile(
                   label: 'Use different powder temperature',
                   icon: Icons.thermostat_outlined,
-                  value: useDiffPowderTemp,
-                  onChanged: (v) =>
-                      notifier.setSwitch('diffPowderTemperature', v),
+                  value: state.useDiffPowderTemp,
+                  onChanged: (v) => notifier.setDiffPowderTemp(v),
                 ),
-                if (useDiffPowderTemp)
+                if (state.powderTemperature != null)
                   UnitValueField(
                     label: 'Powder temperature',
                     icon: Icons.local_fire_department_outlined,
-                    rawValue: powderTempRaw,
+                    rawValue: state.powderTemperature!.rawValue,
                     constraints: FC.temperature,
-                    displayUnit: units.temperature,
-                    onChanged: (v) => updateAtmo(powderTempC: v),
+                    displayUnit: state.powderTemperature!.displayUnit,
+                    onChanged: (v) => notifier.updatePowderTemp(v),
                   ),
-                _InfoTile(
-                  label: 'Muzzle velocity at powder temp',
-                  value: mvStr,
-                  icon: Icons.speed_outlined,
-                ),
-                _InfoTile(
-                  label: 'Powder sensitivity',
-                  value: sensStr,
-                  icon: Icons.show_chart_outlined,
-                ),
+                if (state.mvAtPowderTemp != null)
+                  _InfoTile(
+                    label: 'Muzzle velocity at powder temp',
+                    value: state.mvAtPowderTemp!,
+                    icon: Icons.speed_outlined,
+                  ),
+                if (state.powderSensitivity != null)
+                  _InfoTile(
+                    label: 'Powder sensitivity',
+                    value: state.powderSensitivity!,
+                    icon: Icons.show_chart_outlined,
+                  ),
               ],
               const Divider(height: 1),
               _SwitchTile(
                 label: 'Coriolis effect',
                 icon: Icons.rotate_right_outlined,
-                value: settings?.enableCoriolis ?? false,
-                onChanged: (v) => notifier.setSwitch('coriolis', v),
+                value: state.coriolisOn,
+                onChanged: (v) => notifier.setCoriolis(v),
               ),
               _SwitchTile(
                 label: 'Spin drift (derivation)',
                 icon: Icons.rotate_left_outlined,
-                value: settings?.enableDerivation ?? false,
-                onChanged: (v) => notifier.setSwitch('derivation', v),
+                value: state.derivationOn,
+                onChanged: (v) => notifier.setDerivation(v),
               ),
               // Always ON — engine limitation, control disabled
               const _SwitchTile(
