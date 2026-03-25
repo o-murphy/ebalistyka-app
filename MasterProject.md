@@ -1,6 +1,6 @@
 # eBallistica — Master Project Document
 
-**Version:** 1.2
+**Version:** 2.0
 **Status:** Working Document
 **Stack:** Flutter · Dart · Riverpod · FFI (bclibc C++)
 **Package:** `eballistica` · Bundle ID: `com.ballistics.eballistica`
@@ -198,7 +198,7 @@ Switched by swipe.
 
 - Left half: rounded square placeholder for future reticle widget
 - Right half: two rows (drop / windage), each showing adjustment value in multiple units (cm/100m, in/100yd, MOA, MIL, MRAD) based on Adjustment Display settings
-- Data source: `calculationProvider` → `HitResult.getAtDistance(targetDistance)` → `dropAngle`, `windageAngle`
+- Data source: `homeVmProvider` → `HomeUiReady.reticleData` → drop/windage adjustments per enabled unit
 
 **Page 2: Adjustment Tables**
 
@@ -553,12 +553,25 @@ Home screen - Page 1 - add GSF to title after dragmodel ✅
 ```
 ┌─────────────────────────────────────────┐
 │           UI (screens / widgets)         │
-│    reads UnitSettings via Riverpod       │
-│    passes explicit Unit to domain        │
+│    ref.watch(xxxVmProvider)              │
+│    receives ready-to-display strings     │
+├─────────────────────────────────────────┤
+│           ViewModels                     │
+│  HomeViewModel · ConditionsViewModel     │
+│  TablesViewModel                         │
+│  (sealed UiState classes, formatted)     │
+├─────────────────────────────────────────┤
+│        Formatting / UnitFormatter        │
+│  UnitFormatter · UnitFormatterImpl       │
+│  (Dimension/double → String)             │
 ├─────────────────────────────────────────┤
 │           Riverpod providers             │
 │  ShotProfileNotifier · SettingsNotifier  │
-│  LibraryNotifier · CalculationNotifier   │
+│  RecalcCoordinator · HomeCalcNotifier    │
+├─────────────────────────────────────────┤
+│         Domain / Services                │
+│  BallisticsService (interface)           │
+│  BallisticsServiceImpl (FFI bridge)      │
 ├─────────────────────────────────────────┤
 │           Domain models                  │
 │  Rifle · Sight · Cartridge · Projectile  │
@@ -577,6 +590,8 @@ Home screen - Page 1 - add GSF to title after dragmodel ✅
 ### 6.2 Unit System
 
 `PreferredUnits` removed from domain. Domain classes use explicit `Unit` parameters. UI reads units via `unitSettingsProvider`.
+
+**UnitFormatter** (`lib/formatting/`): Stateless formatter that converts between raw domain values and display strings. Takes `UnitSettings` at construction, provides `format(FieldRole, value)`, `inputToRaw(FieldRole, displayValue)`, `rawToInput(FieldRole, rawValue)`. Testable with `dart test` (no Flutter dependency).
 
 ### 6.3 Domain Models
 
@@ -675,53 +690,57 @@ class ShotProfile {
 
 ### 6.4 Riverpod Providers
 
+#### Data providers
+
 | Provider                   | Type                                                          | Purpose                                                                        |
 | -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `settingsProvider`         | `AsyncNotifierProvider<SettingsNotifier, AppSettings>`        | All app settings                                                               |
 | `unitSettingsProvider`     | `Provider<UnitSettings>`                                      | Sync unit access                                                               |
 | `themeModeProvider`        | `Provider<ThemeMode>`                                         | Sync theme access                                                              |
 | `shotProfileProvider`      | `AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>`     | Current shot profile                                                           |
-| `tableCalculationProvider` | `AsyncNotifierProvider<TableCalculationNotifier, HitResult?>` | Lazy — zeroed at zeroDistance, full 2000 m, used by Tables screen              |
-| `homeCalculationProvider`  | `AsyncNotifierProvider<HomeCalculationNotifier, HitResult?>`  | Lazy — shootTheTarget pattern, up to targetDist+chartStep, used by Home screen |
 | `rifleLibraryProvider`     | `AsyncNotifierProvider`                                       | Rifle CRUD                                                                     |
 | `cartridgeLibraryProvider` | `AsyncNotifierProvider`                                       | Cartridge CRUD                                                                 |
 | `sightLibraryProvider`     | `AsyncNotifierProvider`                                       | Sight CRUD                                                                     |
 | `appStorageProvider`       | `Provider<AppStorage>`                                        | Storage singleton                                                              |
 
-**Calculation architecture:** Two separate lazy notifiers with `_dirty` flag. `build()` returns null immediately. `markDirty()` called on both from `_ScaffoldWithNavState` via `ref.listen(shotProfileProvider)` and `ref.listen(settingsProvider)`. `recalculateIfNeeded()` triggered on tab activation (Tables = tab 2, Home = tab 0). Both run in isolate via `compute()`.
+#### Service providers
 
-**Two-phase calculation flow:**
+| Provider                   | Type                                                          | Purpose                                                                        |
+| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `ballisticsServiceProvider`| `Provider<BallisticsService>`                                 | FFI-backed calculation service                                                 |
+| `unitFormatterProvider`    | `Provider<UnitFormatter>`                                     | Unit formatting (depends on unitSettingsProvider)                              |
 
-*makeShot (tableCalculationProvider):*
-```
-Phase 1 — Zero
-  atmo     = profile.zeroConditions ?? profile.conditions
-  zeroShot = Shot(weapon, baseAmmo, lookAngle, atmo, winds=[])
-  calc.setWeaponZero(zeroShot, profile.zeroDistance)
-    → stores barrelElevationForTarget(zeroShot, zeroDistance) in weapon.zeroElevation
-    → resets zeroShot.relativeAngle = 0
+#### ViewModel providers
 
-Phase 2 — Shot
-  shot = Shot(weapon, shotAmmo, lookAngle, currentConditions, winds)
-  // weapon.zeroElevation already set → shot.barrelElevation = zero angle
-  hitResult = calc.fire(shot, 2000 m, tableStep)
-```
+| Provider                   | Type                                                          | Purpose                                                                        |
+| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `homeVmProvider`           | `AsyncNotifierProvider<HomeViewModel, HomeUiState>`           | Home screen state (sealed: Loading/Ready/Error)                                |
+| `conditionsVmProvider`     | `AsyncNotifierProvider<ConditionsViewModel, ConditionsUiState>` | Conditions screen state                                                      |
+| `tablesVmProvider`         | `AsyncNotifierProvider<TablesViewModel, TablesUiState>`       | Tables screen state                                                            |
 
-*shootTheTarget (homeCalculationProvider):*
-```
-Phase 1 — Zero (same as above)
-  calc.setWeaponZero(zeroShot, profile.zeroDistance)
+#### Coordination providers
 
-Phase 2 — Hold
-  newShot = Shot(weapon, shotAmmo, lookAngle, currentConditions, winds)
-  targetElev = calc.barrelElevationForTarget(newShot, targetDistance)
-  hold = targetElev - weapon.zeroElevation
-  newShot.relativeAngle = hold
+| Provider                   | Type                                                          | Purpose                                                                        |
+| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `recalcCoordinatorProvider`| `NotifierProvider<RecalcCoordinator, void>`                   | Centralises recalculation triggers on profile/settings changes and tab switches |
+| `homeCalculationProvider`  | `AsyncNotifierProvider<HomeCalculationNotifier, HitResult?>`  | Legacy — used by shot_details_screen; will be replaced by ShotDetailsViewModel |
 
-Phase 3 — Fire
-  hitResult = calc.fire(newShot, targetDist + chartStep, chartStep)
-  // trajectory arc crosses 0 at targetDistance
-```
+**Calculation architecture (after refactoring):**
+
+`RecalcCoordinator` listens to `shotProfileProvider` and `settingsProvider`. On change, it triggers:
+- `homeVmProvider.notifier.recalculate()`
+- `tablesVmProvider.notifier.recalculate()`
+- `homeCalculationProvider.notifier.markDirty()` + `recalculateIfNeeded()`
+
+On tab activation (from router):
+- Tab 0 (Home): triggers `homeVmProvider` + `homeCalculationProvider`
+- Tab 2 (Tables): triggers `tablesVmProvider`
+
+**BallisticsService** (`lib/domain/ballistics_service.dart` + `lib/services/ballistics_service_impl.dart`):
+- Interface: `calculateForTarget(profile, options, cachedZeroElevRad?)`
+- Returns `BallisticsCalcResult { hitResult, zeroElevationRad }`
+- ViewModels call it via `ref.read(ballisticsServiceProvider)`
+- Zero elevation caching done per-VM via `_buildZeroKey()` fingerprint
 
 > Note: `zeroConditions` defaults to null in the seed (= use `conditions`). A dedicated Zero Conditions UI screen is pending (Phase 8.8 follow-up).
 
@@ -808,12 +827,14 @@ eballistica_backup.zip
 
 | Feature | Notes |
 | ------- | ----- |
-| Two-provider split | `tableCalculationProvider` (2000 m, zeroed) · `homeCalculationProvider` (shootTheTarget, up to targetDist) |
-| Zero uses zeroConditions | Phase 1 always uses `profile.zeroConditions ?? profile.conditions` |
-| Zero elevation cache | `_buildZeroKey` (19-field flat list, `listEquals`) — Phase 1 skipped when zero-relevant inputs unchanged; Phase 2 always re-runs on any profile/settings change |
+| BallisticsService | Single service interface; `HomeViewModel` and `TablesViewModel` call it via provider |
+| RecalcCoordinator | Centralises all recalculation triggers (profile/settings changes + tab activation) |
+| ViewModels | `HomeViewModel`, `TablesViewModel` — produce sealed UiState with formatted strings |
+| homeCalculationProvider | Legacy notifier, still used by `shot_details_screen.dart`; will be replaced by ShotDetailsViewModel |
+| Zero uses zeroConditions | Always uses `profile.zeroConditions ?? profile.conditions` |
+| Zero elevation cache | `_buildZeroKey` (19-field flat list, `listEquals`) — zero phase skipped when zero-relevant inputs unchanged |
 | Powder sensitivity | Engine handles `getVelocityForTemp` internally; `usePowderSensitivity` flag propagated correctly |
 | Coriolis / spin drift | Passed via `latitudeDeg` / `azimuthDeg` / settings flags |
-| Isolate computation | Both notifiers use `compute()` for off-main-thread FFI calls |
 
 #### Proto / A7P
 
@@ -821,7 +842,7 @@ eballistica_backup.zip
 | ---- | ------ |
 | `proto/profedit.proto` | ✅ Schema present (stripped of buf/validate) |
 | `src/proto/profedit.pb.dart` | ✅ Generated (Dart protobuf classes) |
-| `src/a7p/` directory | ⛔ Does not exist — parser/writer not started |
+| `src/a7p/` directory | ✅ `a7p_parser.dart` (213 lines) + `a7p_validator.dart` (157 lines) implemented |
 | A7P import UI | ⛔ Not started |
 | A7P export UI | ⛔ Not started |
 
@@ -873,6 +894,20 @@ eballistica_backup.zip
 ### Phase 1–5 ✅ — Foundation
 
 Domain models, storage, providers, navigation. **Done.**
+
+---
+
+### Architecture Refactoring ✅ — MVVM + Service Layer
+
+Full refactoring per `REFACTORING_PLAN.md` (5 phases):
+- **Phase 0:** UnitFormatter interface + implementation (57 tests, `dart test`)
+- **Phase 1:** BallisticsService interface + FFI-backed implementation
+- **Phase 2:** HomeViewModel, ConditionsViewModel, TablesViewModel — sealed UiState, 70 tests
+- **Phase 3:** RecalcCoordinator — centralised recalculation triggers, 18 tests
+- **Phase 4:** Screens wired to ViewModels (home, conditions, tables)
+- **Phase 5:** Cleanup — deleted `dimension_converter.dart`, `calculation_provider.dart`; extracted `HomeCalculationNotifier` to `home_calculation_provider.dart`
+
+**Total: 145 non-FFI tests passing.**
 
 ---
 
@@ -944,12 +979,12 @@ All 7 screens are stubs. To implement:
 
 ### Phase A7P — .a7p File Support 🔴🔴
 
-Proto generated (`src/proto/profedit.pb.dart`). Nothing else done.
+Proto generated (`src/proto/profedit.pb.dart`). Validator and parser implemented.
 
-**To implement in order:**
-1. `lib/src/a7p/a7p_validator.dart` — port Python yupy schema; `validate(Payload)` throws with field-level errors (seems like done)
-2. `lib/src/a7p/a7p_parser.dart` — `Profile` → `ShotProfile` with scale-factor conversion (seems like done)
-3. `lib/src/a7p/a7p_writer.dart` — `ShotProfile` → `Payload` bytes
+**Status:**
+1. `lib/src/a7p/a7p_validator.dart` — ✅ implemented
+2. `lib/src/a7p/a7p_parser.dart` — ✅ implemented (`Profile` → `ShotProfile` with scale-factor conversion)
+3. `lib/src/a7p/a7p_writer.dart` — ⛔ not started (`ShotProfile` → `Payload` bytes)
 4. Add deps: `file_picker`, `share_plus`, `archive`
 
 **Scale factors** (from proto comments):
@@ -1037,7 +1072,18 @@ Refactor    ✅  home_screen, settings screens split into widget files
 Rename      ✅  eBallistica / com.ballistics.eballistica
 Zero cache  ✅  _buildZeroKey + Phase 1 skip when zero inputs unchanged
 
-A7P         🔴🔴 validator → parser → writer → import/export UI (add file_picker, share_plus, archive)
+─── Architecture Refactoring (REFACTORING_PLAN.md) ───
+Refactor 0  ✅  UnitFormatter interface + implementation + 57 tests
+Refactor 1  ✅  BallisticsService interface + FFI implementation
+Refactor 2  ✅  HomeViewModel + ConditionsViewModel + TablesViewModel (70 tests)
+Refactor 3  ✅  RecalcCoordinator (18 tests); router.dart updated
+Refactor 4  ✅  Screens wired to ViewModels (home, conditions, tables)
+Refactor 5  ✅  Cleanup: deleted dimension_converter.dart, calculation_provider.dart;
+                extracted HomeCalculationNotifier → home_calculation_provider.dart
+Tests reorg ✅  Tests moved to test/formatting/, test/viewmodels/, test/services/
+
+─── Remaining ───
+A7P         🔴  writer → import/export UI (validator + parser done; add file_picker, share_plus, archive)
 Zero Cond   🔴  Zero Conditions UI — screen to edit zeroConditions separately from current conditions
 Phase 11        Rifle / Cartridge / Sight / Projectile selection + edit screens (7 stubs)
 Phase 9         Individual Convertor screen (/convertors/:type stub)
