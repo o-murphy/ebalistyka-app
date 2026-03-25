@@ -77,6 +77,7 @@ class _WindIndicatorState extends State<WindIndicator> {
           onDoubleTap: _reset,
           onPanUpdate: (details) => _updateAngle(details.localPosition, size),
           onPanEnd: (_) => _commit(),
+          onTapUp: (_) => _commit(),
           onTapDown: (details) {
             final center = Offset(size.width / 2, size.height / 2);
             final dist = (details.localPosition - center).distance;
@@ -153,7 +154,7 @@ class WindPainter extends CustomPainter {
         tickStart,
         tickEnd,
         Paint()
-          ..color = color.withOpacity(0.5)
+          ..color = color.withValues(alpha: 0.5)
           ..strokeWidth = 2,
       );
 
@@ -162,7 +163,7 @@ class WindPainter extends CustomPainter {
         text: TextSpan(
           text: '$i',
           style: TextStyle(
-            color: color.withOpacity(0.8),
+            color: color.withValues(alpha: 0.8),
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),

@@ -14,9 +14,6 @@ export 'package:eballistica/services/ballistics_service_impl.dart'
     show CalculationException;
 
 // ── Zero fingerprint ─────────────────────────────────────────────────────────
-//
-// All inputs that affect setWeaponZero. Flat List<double> — equality via
-// listEquals, no hashCode overrides needed on domain objects.
 
 List<double> _buildZeroKey(ShotProfile profile, bool usePowderSens) {
   final zeroAtmo = profile.zeroConditions ?? profile.conditions;
@@ -45,62 +42,6 @@ List<double> _buildZeroKey(ShotProfile profile, bool usePowderSens) {
     usePowderSens ? 1.0 : 0.0,
   ];
 }
-
-// ── Table calculation notifier ───────────────────────────────────────────────
-
-class TableCalculationNotifier extends AsyncNotifier<HitResult?> {
-  bool _dirty = true;
-  List<double>? _lastZeroKey;
-  double? _cachedZeroElevRad;
-
-  @override
-  Future<HitResult?> build() async => null;
-
-  void markDirty() => _dirty = true;
-
-  void retry() {
-    _dirty = true;
-    _lastZeroKey = null;
-    _cachedZeroElevRad = null;
-    recalculateIfNeeded();
-  }
-
-  Future<void> recalculateIfNeeded() async {
-    if (!_dirty) return;
-    final profile = ref.read(shotProfileProvider).value;
-    if (profile == null) return;
-    final settings = ref.read(settingsProvider).value;
-    final tableStep = settings?.tableConfig.stepM ?? 100.0;
-    final stepM = tableStep < 1.0 ? tableStep : 1.0;
-    final usePowderSens = settings?.enablePowderSensitivity ?? false;
-
-    final zeroKey = _buildZeroKey(profile, usePowderSens);
-    final cachedElev =
-        listEquals(zeroKey, _lastZeroKey) ? _cachedZeroElevRad : null;
-
-    _dirty = false;
-    state = const AsyncLoading();
-    try {
-      final service = ref.read(ballisticsServiceProvider);
-      final result = await service.calculateTable(
-        profile,
-        TableCalcOptions(stepM: stepM, usePowderSensitivity: usePowderSens),
-        cachedZeroElevRad: cachedElev,
-      );
-      if (cachedElev == null) {
-        _lastZeroKey = zeroKey;
-        _cachedZeroElevRad = result.zeroElevationRad;
-      }
-      state = AsyncData(result.hitResult);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
-  }
-}
-
-final tableCalculationProvider =
-    AsyncNotifierProvider<TableCalculationNotifier, HitResult?>(
-        TableCalculationNotifier.new);
 
 // ── Home calculation notifier ────────────────────────────────────────────────
 

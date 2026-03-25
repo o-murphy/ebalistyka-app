@@ -6,7 +6,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/providers/calculation_provider.dart';
+import 'package:eballistica/providers/home_calculation_provider.dart';
 import 'package:eballistica/providers/recalc_coordinator.dart';
 import 'package:eballistica/providers/settings_provider.dart';
 import 'package:eballistica/providers/shot_profile_provider.dart';
@@ -114,24 +114,6 @@ class _TrackingHomeCalc extends HomeCalculationNotifier {
   }
 }
 
-class _TrackingTableCalc extends TableCalculationNotifier {
-  int markDirtyCount = 0;
-  int recalcCount = 0;
-
-  @override
-  Future<HitResult?> build() async => null;
-
-  @override
-  void markDirty() {
-    markDirtyCount++;
-  }
-
-  @override
-  Future<void> recalculateIfNeeded() async {
-    recalcCount++;
-  }
-}
-
 /// Profile notifier that can push new values.
 class _ControllableProfileNotifier extends ShotProfileNotifier {
   final ShotProfile _initial;
@@ -161,7 +143,6 @@ class _TestContext {
   final _TrackingHomeVM homeVM;
   final _TrackingTablesVM tablesVM;
   final _TrackingHomeCalc homeCalc;
-  final _TrackingTableCalc tableCalc;
   final _ControllableProfileNotifier profileNotifier;
   final _ControllableSettingsNotifier settingsNotifier;
 
@@ -170,7 +151,6 @@ class _TestContext {
     required this.homeVM,
     required this.tablesVM,
     required this.homeCalc,
-    required this.tableCalc,
     required this.profileNotifier,
     required this.settingsNotifier,
   });
@@ -182,7 +162,6 @@ _TestContext _createTestContext({
   final homeVM = _TrackingHomeVM();
   final tablesVM = _TrackingTablesVM();
   final homeCalc = _TrackingHomeCalc();
-  final tableCalc = _TrackingTableCalc();
   final profileNotifier = _ControllableProfileNotifier(_makeProfile());
   final settingsNotifier = _ControllableSettingsNotifier(initialSettings);
 
@@ -193,7 +172,6 @@ _TestContext _createTestContext({
       homeVmProvider.overrideWith(() => homeVM),
       tablesVmProvider.overrideWith(() => tablesVM),
       homeCalculationProvider.overrideWith(() => homeCalc),
-      tableCalculationProvider.overrideWith(() => tableCalc),
     ],
   );
 
@@ -202,7 +180,6 @@ _TestContext _createTestContext({
     homeVM: homeVM,
     tablesVM: tablesVM,
     homeCalc: homeCalc,
-    tableCalc: tableCalc,
     profileNotifier: profileNotifier,
     settingsNotifier: settingsNotifier,
   );
@@ -237,14 +214,12 @@ void main() {
       expect(ctx.homeVM.recalcCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
       expect(ctx.tablesVM.recalcCount, 0);
-      expect(ctx.tableCalc.recalcCount, 0);
     });
 
-    test('tab 2 (Tables) triggers tablesVM only (tableCalc no longer triggered)', () {
+    test('tab 2 (Tables) triggers tablesVM only', () {
       ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(2);
 
       expect(ctx.tablesVM.recalcCount, 1);
-      expect(ctx.tableCalc.recalcCount, 0);
       expect(ctx.homeVM.recalcCount, 0);
       expect(ctx.homeCalc.recalcCount, 0);
     });
@@ -255,7 +230,6 @@ void main() {
       expect(ctx.homeVM.recalcCount, 0);
       expect(ctx.tablesVM.recalcCount, 0);
       expect(ctx.homeCalc.recalcCount, 0);
-      expect(ctx.tableCalc.recalcCount, 0);
     });
 
     test('tab 3 (Convertors) triggers nothing', () {
@@ -292,8 +266,6 @@ void main() {
       expect(ctx.tablesVM.recalcCount, 1);
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 0);
-      expect(ctx.tableCalc.recalcCount, 0);
     });
 
     test('multiple profile changes trigger multiple times', () async {
@@ -395,17 +367,15 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('profile change marks homeCalc dirty and recalculates (tableCalc no longer triggered)', () async {
+    test('profile change marks homeCalc dirty and recalculates', () async {
       ctx.profileNotifier.push(_makeProfile());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 0);
-      expect(ctx.tableCalc.recalcCount, 0);
     });
 
-    test('settings change marks homeCalc dirty and recalculates (tableCalc no longer triggered)', () async {
+    test('settings change marks homeCalc dirty and recalculates', () async {
       ctx.settingsNotifier.push(
         const AppSettings(enablePowderSensitivity: true),
       );
@@ -413,8 +383,6 @@ void main() {
 
       expect(ctx.homeCalc.markDirtyCount, 1);
       expect(ctx.homeCalc.recalcCount, 1);
-      expect(ctx.tableCalc.markDirtyCount, 0);
-      expect(ctx.tableCalc.recalcCount, 0);
     });
 
     test('onTabActivated does not call markDirty on old providers', () {

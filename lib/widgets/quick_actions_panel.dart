@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../helpers/dimension_converter.dart';
 import '../providers/settings_provider.dart';
 import '../providers/shot_profile_provider.dart';
 import '../src/models/field_constraints.dart';
@@ -20,17 +19,17 @@ class QuickActionsPanel extends ConsumerWidget {
 
     // ── Wind speed ──────────────────────────────────────────────────────────
     final windMps = profile?.winds.isNotEmpty == true
-        ? convertDimension(profile!.winds.first.velocity, Unit.mps)
+        ? profile!.winds.first.velocity.in_(Unit.mps)
         : 0.0;
     final windDisp = Unit.mps(windMps).in_(units.velocity);
     final windStr  = '${windDisp.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
 
     // ── Look angle ──────────────────────────────────────────────────────────
-    final lookDeg = safeDimensionValue(profile?.lookAngle, Unit.degree) ?? 0.0;
+    final lookDeg = profile?.lookAngle.in_(Unit.degree) ?? 0.0;
     final lookStr = '${lookDeg.toStringAsFixed(FC.lookAngle.accuracy)}°';
 
     // ── Target distance ─────────────────────────────────────────────────────
-    final distM    = safeDimensionValue(profile?.targetDistance, Unit.meter) ?? 300.0;
+    final distM    = profile?.targetDistance.in_(Unit.meter) ?? 300.0;
     final distDisp = Unit.meter(distM).in_(units.distance);
     final distStr  = '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
 

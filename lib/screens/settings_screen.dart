@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../helpers/dimension_converter.dart';
 import '../providers/settings_provider.dart';
 import '../router.dart';
 import '../src/models/app_settings.dart';
@@ -324,7 +323,7 @@ class _StepTile extends ConsumerWidget {
               final v = double.tryParse(controller.text);
               if (v != null && v > 0) {
                 // convert display unit → metres
-                final metres = valueInUnit(v, distUnit, Unit.meter);
+                final metres = distUnit(v).in_(Unit.meter);
                 onConfirm(metres);
               }
               Navigator.pop(ctx);

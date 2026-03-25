@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../helpers/dimension_converter.dart';
 import '../src/models/field_constraints.dart';
 import '../src/solver/unit.dart';
 
@@ -24,17 +23,17 @@ class TempControl extends StatelessWidget {
 
   double get _display {
     if (_fc.rawUnit == displayUnit) return rawValue;
-    return valueInUnit(rawValue, _fc.rawUnit, displayUnit);
+    return _fc.rawUnit(rawValue).in_(displayUnit);
   }
 
   double _toDisplay(double raw) {
     if (_fc.rawUnit == displayUnit) return raw;
-    return valueInUnit(raw, _fc.rawUnit, displayUnit);
+    return _fc.rawUnit(raw).in_(displayUnit);
   }
 
   double _toRaw(double display) {
     if (_fc.rawUnit == displayUnit) return display;
-    return valueInUnit(display, displayUnit, _fc.rawUnit);
+    return displayUnit(display).in_(_fc.rawUnit);
   }
 
   int get _accuracy {
