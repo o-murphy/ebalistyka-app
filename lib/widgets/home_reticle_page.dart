@@ -3,14 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../helpers/dimension_converter.dart';
-import '../providers/calculation_provider.dart';
-import '../providers/settings_provider.dart';
-import '../providers/shot_profile_provider.dart';
-import '../src/models/app_settings.dart';
-import '../src/models/field_constraints.dart';
-import '../src/models/projectile.dart' show DragModelType;
-import '../src/solver/unit.dart';
+import '../src/models/app_settings.dart' show AdjustmentFormat;
+import '../viewmodels/home_vm.dart';
+import '../viewmodels/shared/adjustment_data.dart';
 
 // ─── Page 1 — Reticle & Adjustments ──────────────────────────────────────────
 
@@ -19,64 +14,15 @@ class HomeReticlePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider).value ?? const AppSettings();
-    final units    = ref.watch(unitSettingsProvider);
-    final calc     = ref.watch(homeCalculationProvider);
-    final profile  = ref.watch(shotProfileProvider).value;
+    final vmAsync = ref.watch(homeVmProvider);
+    final vmState = vmAsync.value;
 
-    final hit       = calc.value;
-    final traj      = hit?.trajectory ?? [];
-    final targetM   = safeDimensionValue(profile?.targetDistance, Unit.meter) ?? 300.0;
-    final point     = (hit != null && traj.isNotEmpty)
-        ? hit.getAtDistance(Distance(targetM, Unit.meter))
-        : null;
-
-    final elevAngle = hit?.shot.relativeAngle;
-    final windAngle = point?.windageAngle;
-
-    final dispUnits = <(Unit, String)>[
-      if (settings.showMrad) (Unit.mRad, 'MRAD'),
-      if (settings.showMoa)  (Unit.moa,  'MOA'),
-      if (settings.showMil)  (Unit.mil,  'MIL'),
-      if (settings.showCmPer100m)   (Unit.cmPer100m,      'cm/100m'),
-      if (settings.showInPer100yd)  (Unit.inchesPer100Yd, 'in/100yd'),
-    ];
+    if (vmState is! HomeUiReady) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     final tt = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
-
-    final proj   = profile?.cartridge.projectile;
-    final mvDisp = profile != null
-        ? convertDimension(profile.cartridge.mv, units.velocity)
-        : null;
-    final mvStr  = mvDisp != null
-        ? '${mvDisp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}'
-        : '—';
-    final bcAcc  = FC.ballisticCoefficient.accuracy;
-    final dragStr = switch (proj?.dragType) {
-      DragModelType.g1     => 'G1 ${proj!.dm.bc.toStringAsFixed(bcAcc)}',
-      DragModelType.g7     => 'G7 ${proj!.dm.bc.toStringAsFixed(bcAcc)}',
-      DragModelType.custom => 'Custom',
-      null                 => '—',
-    };
-    // Gyroscopic stability factor Sg (Miller)
-    String? sgStr;
-    if (proj != null && profile != null) {
-      final twistInch  = convertDimension(profile.rifle.weapon.twist, Unit.inch);
-      final weightGr   = convertDimension(proj.dm.weight, Unit.grain);
-      final diamInch   = convertDimension(proj.dm.diameter, Unit.inch);
-      final lenInch    = convertDimension(proj.dm.length, Unit.inch);
-      if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-        final lCal = lenInch / diamInch;
-        final nCal = twistInch / diamInch;
-        final sg = (30.0 * weightGr) /
-            (nCal * nCal * diamInch * diamInch * diamInch * lCal * (1.0 + lCal * lCal));
-        sgStr = 'Sg ${sg.toStringAsFixed(2)}';
-      }
-    }
-    final cartridgeLabel = proj != null
-        ? '${proj.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}'
-        : '—';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +30,7 @@ class HomeReticlePage extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Text(
-            cartridgeLabel,
+            vmState.cartridgeInfoLine,
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -104,7 +50,7 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
-                  child: dispUnits.isEmpty
+                  child: vmState.adjustment.elevation.isEmpty
                       ? Center(
                           child: Text(
                             'Enable units in\nSettings → Adjustment Display',
@@ -113,10 +59,8 @@ class HomeReticlePage extends ConsumerWidget {
                           ),
                         )
                       : _AdjPanel(
-                          dispUnits: dispUnits,
-                          elevAngle: elevAngle,
-                          windAngle: windAngle,
-                          fmt: settings.adjustmentFormat,
+                          adjustment: vmState.adjustment,
+                          fmt: vmState.adjustmentFormat,
                         ),
                 ),
               ),
@@ -191,45 +135,31 @@ class _ReticlePainter extends CustomPainter {
 
 class _AdjPanel extends StatelessWidget {
   const _AdjPanel({
-    required this.dispUnits,
-    required this.elevAngle,
-    required this.windAngle,
+    required this.adjustment,
     required this.fmt,
   });
 
-  final List<(Unit, String)> dispUnits;
-  final Angular?             elevAngle;
-  final Angular?             windAngle;
-  final AdjustmentFormat     fmt;
+  final AdjustmentData     adjustment;
+  final AdjustmentFormat   fmt;
 
   String _elevDir() {
-    if (elevAngle == null) return '';
-    final v = elevAngle!.in_(Unit.mRad);
+    if (adjustment.elevation.isEmpty) return '';
+    final pos = adjustment.elevation.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows  => v >= 0 ? '↑' : '↓',
-      AdjustmentFormat.signs   => v >= 0 ? '+' : '−',
-      AdjustmentFormat.letters => v >= 0 ? 'U' : 'D',
+      AdjustmentFormat.arrows  => pos ? '↑' : '↓',
+      AdjustmentFormat.signs   => pos ? '+' : '−',
+      AdjustmentFormat.letters => pos ? 'U' : 'D',
     };
   }
 
   String _windDir() {
-    if (windAngle == null) return '';
-    final corr = -(windAngle!.in_(Unit.mRad));
+    if (adjustment.windage.isEmpty) return '';
+    final pos = adjustment.windage.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows  => corr >= 0 ? '→' : '←',
-      AdjustmentFormat.signs   => corr >= 0 ? '+' : '−',
-      AdjustmentFormat.letters => corr >= 0 ? 'R' : 'L',
+      AdjustmentFormat.arrows  => pos ? '→' : '←',
+      AdjustmentFormat.signs   => pos ? '+' : '−',
+      AdjustmentFormat.letters => pos ? 'R' : 'L',
     };
-  }
-
-  String _elevVal(Unit unit) {
-    if (elevAngle == null) return '—';
-    return (elevAngle!.in_(unit)).abs().toStringAsFixed(unit.accuracy);
-  }
-
-  String _windVal(Unit unit) {
-    if (windAngle == null) return '—';
-    return (windAngle!.in_(unit)).abs().toStringAsFixed(unit.accuracy);
   }
 
   @override
@@ -242,15 +172,15 @@ class _AdjPanel extends StatelessWidget {
     final valStyle    = tt.bodyMedium!.copyWith(fontWeight: FontWeight.w700);
     final unitStyle   = tt.bodySmall!.copyWith(color: cs.onSurface.withAlpha(140));
 
-    Widget valueRow(String val, String unitLabel) => Padding(
+    Widget valueRow(AdjustmentValue v) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          Text(val, style: valStyle),
+          Text(v.absValue.toStringAsFixed(v.decimals), style: valStyle),
           const SizedBox(width: 4),
-          Text(unitLabel, style: unitStyle),
+          Text(v.symbol, style: unitStyle),
         ],
       ),
     );
@@ -273,11 +203,11 @@ class _AdjPanel extends StatelessWidget {
         children: [
           sectionHeader('Drop', _elevDir()),
           const SizedBox(height: 2),
-          ...dispUnits.map((u) => valueRow(_elevVal(u.$1), u.$2)),
+          ...adjustment.elevation.map(valueRow),
           const Divider(height: 16),
           sectionHeader('Windage', _windDir()),
           const SizedBox(height: 2),
-          ...dispUnits.map((u) => valueRow(_windVal(u.$1), u.$2)),
+          ...adjustment.windage.map(valueRow),
         ],
       ),
     );

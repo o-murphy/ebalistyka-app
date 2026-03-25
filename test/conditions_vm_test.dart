@@ -360,6 +360,7 @@ void main() {
         displayStep: 1,
         decimals: 2,
         inputField: InputField.temperature,
+        displayUnit: Unit.celsius,
       );
       expect(f.label, 'Test');
       expect(f.displayValue, 42.0);

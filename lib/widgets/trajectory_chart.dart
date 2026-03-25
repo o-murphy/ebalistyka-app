@@ -1,14 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:eballistica/src/solver/trajectory_data.dart';
-import 'package:eballistica/src/solver/unit.dart';
-
-const _ftToM = 1.0 / 3.28084;
-const _ftToCm = 30.48;
-const _fpsToms = 1.0 / 3.28084;
+import 'package:eballistica/viewmodels/shared/chart_point.dart';
 
 class TrajectoryChart extends StatelessWidget {
-  final List<TrajectoryData> traj;
+  final List<ChartPoint> points;
   final int? selectedIndex;
   final ValueChanged<int>? onIndexSelected;
   final double snapDistM;
@@ -16,7 +11,7 @@ class TrajectoryChart extends StatelessWidget {
 
   const TrajectoryChart({
     super.key,
-    required this.traj,
+    required this.points,
     this.selectedIndex,
     this.onIndexSelected,
     this.snapDistM = 1.0,
@@ -28,7 +23,7 @@ class TrajectoryChart extends StatelessWidget {
     const mr = _ChartPainter._mr;
     final pw = paintWidth - ml - mr;
     if (pw <= 0) return 0;
-    final dists = traj.map((r) => r.distance.in_(Unit.foot) * _ftToM).toList();
+    final dists = points.map((p) => p.distanceM).toList();
     final xMin = dists.first, xMax = dists.last;
     final rawD = xMin + ((tapX - ml).clamp(0.0, pw)) / pw * (xMax - xMin);
     // Snap to nearest snapDistM interval.
@@ -65,7 +60,7 @@ class TrajectoryChart extends StatelessWidget {
                 ),
           child: CustomPaint(
             painter: _ChartPainter(
-              traj: traj,
+              points: points,
               selectedIndex: selectedIndex,
               heightColor: cs.primary,
               velColor: Colors.green.shade600,
@@ -83,7 +78,7 @@ class TrajectoryChart extends StatelessWidget {
 }
 
 class _ChartPainter extends CustomPainter {
-  final List<TrajectoryData> traj;
+  final List<ChartPoint> points;
   final int? selectedIndex;
   final Color heightColor, velColor, gridColor, textColor, selectedColor;
   final Color? subsonicLineColor;
@@ -91,7 +86,7 @@ class _ChartPainter extends CustomPainter {
   static const _ml = 28.0, _mr = 24.0, _mt = 16.0, _mb = 14.0;
 
   _ChartPainter({
-    required this.traj,
+    required this.points,
     this.selectedIndex,
     required this.heightColor,
     required this.velColor,
@@ -106,13 +101,9 @@ class _ChartPainter extends CustomPainter {
     final pw = size.width - _ml - _mr;
     final ph = size.height - _mt - _mb;
 
-    // slantHeight = height relative to LoS after zeroing (shows the arc).
-    // height = drop from bore axis (always decreasing — not suitable for chart).
-    final heights = traj
-        .map((r) => r.slantHeight.in_(Unit.foot) * _ftToCm)
-        .toList();
-    final vels = traj.map((r) => r.velocity.in_(Unit.fps) * _fpsToms).toList();
-    final dists = traj.map((r) => r.distance.in_(Unit.foot) * _ftToM).toList();
+    final heights = points.map((p) => p.heightCm).toList();
+    final vels = points.map((p) => p.velocityMps).toList();
+    final dists = points.map((p) => p.distanceM).toList();
 
     final xMin = dists.first, xMax = dists.last;
     final yHMin = (heights.reduce(math.min) * 1.1).floorToDouble();
@@ -166,9 +157,9 @@ class _ChartPainter extends CustomPainter {
     // Height line (solid, on top)
     _drawLine(canvas, dists, heights, px, pyH, heightColor, 2.0);
 
-    // Subsonic transition — vertical dashed line at first mach < 1 point
+    // Subsonic transition — vertical dashed line at first subsonic point
     if (subsonicLineColor != null) {
-      final subIdx = traj.indexWhere((p) => p.mach < 1.0);
+      final subIdx = points.indexWhere((p) => p.isSubsonic);
       if (subIdx >= 0) {
         final sx = px(dists[subIdx]);
         _drawLine(
@@ -185,8 +176,8 @@ class _ChartPainter extends CustomPainter {
     }
 
     // Selected point highlight
-    if (selectedIndex != null && traj.isNotEmpty) {
-      final si = selectedIndex!.clamp(0, traj.length - 1);
+    if (selectedIndex != null && points.isNotEmpty) {
+      final si = selectedIndex!.clamp(0, points.length - 1);
       final sx = px(dists[si]);
       final syH = pyH(heights[si]);
       final syV = pyV(vels[si]);
@@ -343,7 +334,7 @@ class _ChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ChartPainter old) =>
-      old.traj != traj ||
+      old.points != points ||
       old.selectedIndex != selectedIndex ||
       old.subsonicLineColor != subsonicLineColor;
 }

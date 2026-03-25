@@ -24,6 +24,7 @@ class ConditionsField {
   final double displayStep;
   final int decimals;
   final InputField inputField;
+  final Unit displayUnit;
 
   const ConditionsField({
     required this.label,
@@ -35,6 +36,7 @@ class ConditionsField {
     required this.displayStep,
     required this.decimals,
     required this.inputField,
+    required this.displayUnit,
   });
 }
 
@@ -233,6 +235,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayStep: FC.humidity.stepRaw,
         decimals: FC.humidity.accuracy,
         inputField: InputField.humidity,
+        displayUnit: FC.humidity.rawUnit,
       ),
       pressure: _field(
         label: 'Pressure',
@@ -285,6 +288,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       displayStep: displayStep,
       decimals: decimals,
       inputField: inputField,
+      displayUnit: displayUnit,
     );
   }
 
@@ -315,6 +319,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayStep: 1,
         decimals: 0,
         inputField: InputField.temperature,
+        displayUnit: units.temperature,
       ),
       altitude: ConditionsField(
         label: 'Altitude',
@@ -326,6 +331,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayStep: 10,
         decimals: 0,
         inputField: InputField.distance,
+        displayUnit: units.distance,
       ),
       humidity: ConditionsField(
         label: 'Humidity',
@@ -337,6 +343,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayStep: 1,
         decimals: 0,
         inputField: InputField.humidity,
+        displayUnit: FC.humidity.rawUnit,
       ),
       pressure: ConditionsField(
         label: 'Pressure',
@@ -348,6 +355,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayStep: 1,
         decimals: 0,
         inputField: InputField.pressure,
+        displayUnit: units.pressure,
       ),
       powderSensOn: false,
       useDiffPowderTemp: false,

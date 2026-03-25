@@ -44,6 +44,7 @@ class HomeUiReady extends HomeUiState {
   // Bottom block — Page 1 (Reticle)
   final String cartridgeInfoLine;
   final AdjustmentData adjustment;
+  final AdjustmentFormat adjustmentFormat;
 
   // Bottom block — Page 2 (Table)
   final FormattedTableData tableData;
@@ -51,6 +52,7 @@ class HomeUiReady extends HomeUiState {
   // Bottom block — Page 3 (Chart)
   final ChartData chartData;
   final HomeChartPointInfo? selectedPointInfo;
+  final int? selectedChartIndex;
 
   const HomeUiReady({
     required this.rifleName,
@@ -62,9 +64,11 @@ class HomeUiReady extends HomeUiState {
     required this.humidDisplay,
     required this.cartridgeInfoLine,
     required this.adjustment,
+    this.adjustmentFormat = AdjustmentFormat.arrows,
     required this.tableData,
     required this.chartData,
     this.selectedPointInfo,
+    this.selectedChartIndex,
   });
 }
 
@@ -164,9 +168,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       humidDisplay: current.humidDisplay,
       cartridgeInfoLine: current.cartridgeInfoLine,
       adjustment: current.adjustment,
+      adjustmentFormat: current.adjustmentFormat,
       tableData: current.tableData,
       chartData: current.chartData,
       selectedPointInfo: info,
+      selectedChartIndex: index,
     ));
   }
 
@@ -242,6 +248,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       humidDisplay: humidStr,
       cartridgeInfoLine: cartridgeInfoLine,
       adjustment: adjustment,
+      adjustmentFormat: settings.adjustmentFormat,
       tableData: tableData,
       chartData: chartData,
     );
