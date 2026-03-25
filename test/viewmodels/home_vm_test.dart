@@ -1,7 +1,7 @@
 // Unit tests for HomeViewModel (Phase 2).
 //
 // No FFI required — uses a fake BallisticsService with provider overrides.
-//   flutter test test/home_vm_test.dart
+//   flutter test test/viewmodels/home_vm_test.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

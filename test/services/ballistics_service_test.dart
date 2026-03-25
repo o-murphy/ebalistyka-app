@@ -2,7 +2,7 @@
 //
 // Requires the native FFI library to be built:
 //   make native
-//   dart test test/ballistics_service_test.dart
+//   dart test test/services/ballistics_service_test.dart
 
 import 'package:test/test.dart';
 import 'package:eballistica/domain/ballistics_service.dart';

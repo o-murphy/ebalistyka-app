@@ -1,7 +1,7 @@
 // Unit tests for TablesViewModel (Phase 2).
 //
 // No FFI required — uses a fake BallisticsService with provider overrides.
-//   flutter test test/tables_vm_test.dart
+//   flutter test test/viewmodels/tables_vm_test.dart
 
 import 'dart:async';
 

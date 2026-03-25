@@ -1,7 +1,7 @@
 // Unit tests for ConditionsViewModel (Phase 2).
 //
 // No FFI required — uses only Riverpod container with provider overrides.
-//   flutter test test/conditions_vm_test.dart
+//   flutter test test/viewmodels/conditions_vm_test.dart
 
 import 'dart:async';
 
