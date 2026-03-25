@@ -1413,10 +1413,10 @@ lib/screens/shot_details_screen.dart          ← буде ShotDetailsViewModel
    c) Переконатись що компілюється
    d) Написати юніттести для фази 2 — DONE (70 тестів: conditions=22, home=20, tables=28)
 
-7. ФАЗА 3 — RecalcCoordinator
-   a) Створити lib/providers/recalc_coordinator.dart
-   b) Оновити router.dart
-   c) Видалити ref.listen з _ScaffoldWithNavState
+7. ФАЗА 3 — RecalcCoordinator — DONE
+   a) Створити lib/providers/recalc_coordinator.dart — DONE
+   b) Оновити router.dart — DONE
+   c) Видалити ref.listen з _ScaffoldWithNavState — DONE
 
 8. ФАЗА 4 — Оновити HomeScreen
    a) Прибрати всю логіку з home_screen.dart

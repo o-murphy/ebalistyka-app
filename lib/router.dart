@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'providers/calculation_provider.dart';
-import 'providers/settings_provider.dart';
-import 'providers/shot_profile_provider.dart';
-import 'src/models/app_settings.dart';
+import 'providers/recalc_coordinator.dart';
 
 import 'screens/home_screen.dart';
 import 'screens/home_sub_screens.dart';
@@ -150,64 +147,25 @@ class _ScaffoldWithNav extends ConsumerStatefulWidget {
 }
 
 class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
-  // Tabs 0 (Home) and 2 (Tables) trigger recalculation.
-  static const _calcTabs = {0, 2};
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _triggerCalcIfNeeded(widget.shell.currentIndex));
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  void _markAndRecalc() {
-    final i = widget.shell.currentIndex;
-    ref.read(tableCalculationProvider.notifier).markDirty();
-    ref.read(homeCalculationProvider.notifier).markDirty();
-    if (_calcTabs.contains(i)) ref.read(tableCalculationProvider.notifier).recalculateIfNeeded();
-    if (i == 0)                ref.read(homeCalculationProvider.notifier).recalculateIfNeeded();
-  }
-
-  void _triggerCalcIfNeeded(int i) {
-    if (_calcTabs.contains(i)) {
-      ref.read(tableCalculationProvider.notifier).recalculateIfNeeded();
-    }
-    if (i == 0) {
-      ref.read(homeCalculationProvider.notifier).recalculateIfNeeded();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(recalcCoordinatorProvider.notifier).onTabActivated(
+        widget.shell.currentIndex,
+      );
+    });
   }
 
   void _onTabSelected(int i) {
-    // Always go to the root of the branch — prevents sub-screens from persisting
-    // across tab switches. Tapping the current tab also resets to root.
     widget.shell.goBranch(i, initialLocation: true);
-    _triggerCalcIfNeeded(i);
+    ref.read(recalcCoordinatorProvider.notifier).onTabActivated(i);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Set up listeners in build method - Riverpod handles lifecycle properly
-    ref.listen(shotProfileProvider, (_, next) {
-      if (next.hasValue) {
-        _markAndRecalc();
-      }
-    });
-
-    ref.listen<AsyncValue<AppSettings>>(settingsProvider, (prev, next) {
-      if (!next.hasValue) return;
-      final p = prev?.value;
-      final n = next.value;
-      if (n == null) return;
-      final needsRecalc = p == null ||
-          p.enablePowderSensitivity       != n.enablePowderSensitivity       ||
-          p.useDifferentPowderTemperature != n.useDifferentPowderTemperature ||
-          p.chartDistanceStep             != n.chartDistanceStep;
-      if (needsRecalc) _markAndRecalc();
-    });
+    // Initialise the coordinator — it sets up its own listeners.
+    ref.watch(recalcCoordinatorProvider);
 
     return Scaffold(
       body: SafeArea(child: widget.shell),
