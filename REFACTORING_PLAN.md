@@ -1411,7 +1411,7 @@ lib/screens/shot_details_screen.dart          ← буде ShotDetailsViewModel
    a) Створити lib/viewmodels/tables_vm.dart
    b) Реалізувати _buildReadyState повністю
    c) Переконатись що компілюється
-   d) Написати юніттести для фази 2 - наразі не всі тести закінчено. ConditionsVM тести зависають, Home+Tables VMs - тести не написані
+   d) Написати юніттести для фази 2 — DONE (70 тестів: conditions=22, home=20, tables=28)
 
 7. ФАЗА 3 — RecalcCoordinator
    a) Створити lib/providers/recalc_coordinator.dart

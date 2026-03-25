@@ -3,12 +3,12 @@
 // No FFI required — uses only Riverpod container with provider overrides.
 //   flutter test test/conditions_vm_test.dart
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eballistica/formatting/unit_formatter.dart';
-import 'package:eballistica/formatting/unit_formatter_impl.dart';
-import 'package:eballistica/providers/formatter_provider.dart';
 import 'package:eballistica/providers/settings_provider.dart';
 import 'package:eballistica/providers/shot_profile_provider.dart';
 import 'package:eballistica/src/models/app_settings.dart';
@@ -105,12 +105,23 @@ ProviderContainer _createContainer({
   );
 }
 
-/// Waits for an AsyncNotifier to settle and returns its value.
-Future<T> _waitFor<T>(ProviderContainer container, AsyncNotifierProvider<dynamic, T> provider) async {
-  // Let the async build complete
-  await container.read(provider.future);
-  return container.read(provider).value as T;
+/// Waits for async dependencies to resolve, then reads the VM state.
+///
+/// ConditionsViewModel.build() uses ref.watch on shotProfileProvider and
+/// settingsProvider. If those are still AsyncLoading when build() runs,
+/// .value is null and the VM returns the empty state. We must ensure
+/// the dependencies have resolved BEFORE reading the VM so that it
+/// builds with real data.
+Future<ConditionsUiState> _waitForConditions(ProviderContainer container) async {
+  // 1. Resolve async dependencies
+  await container.read(shotProfileProvider.future);
+  await container.read(settingsProvider.future);
+  // 2. Yield so Riverpod can propagate invalidation to the VM
+  await Future<void>.delayed(Duration.zero);
+  // 3. Now the VM rebuilds with real data
+  return container.read(conditionsVmProvider.future);
 }
+
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -128,7 +139,7 @@ void main() {
           humidity: 0.50,
         ),
       );
-      state = await _waitFor(container, conditionsVmProvider);
+      state = await _waitForConditions(container);
     });
 
     tearDown(() => container.dispose());
@@ -206,7 +217,7 @@ void main() {
         ),
         settings: const AppSettings(units: imperial),
       );
-      state = await _waitFor(container, conditionsVmProvider);
+      state = await _waitForConditions(container);
     });
 
     tearDown(() => container.dispose());
@@ -248,7 +259,7 @@ void main() {
           useDifferentPowderTemperature: false,
         ),
       );
-      state = await _waitFor(container, conditionsVmProvider);
+      state = await _waitForConditions(container);
     });
 
     tearDown(() => container.dispose());
@@ -285,7 +296,7 @@ void main() {
           useDifferentPowderTemperature: true,
         ),
       );
-      state = await _waitFor(container, conditionsVmProvider);
+      state = await _waitForConditions(container);
     });
 
     tearDown(() => container.dispose());
@@ -302,20 +313,22 @@ void main() {
   });
 
   group('ConditionsViewModel — empty state', () {
-    test('provides default values when profile is null', () async {
-      // Override with a notifier that returns null-equivalent
+    test('provides default values when profile has no settings loaded', () async {
+      // Use a notifier that never completes — simulates profile still loading.
+      // ConditionsVM.build() reads shotProfileProvider.value which is null
+      // while loading, so it falls through to _emptyState.
       final container = ProviderContainer(
         overrides: [
-          shotProfileProvider.overrideWith(() => _FakeProfileNotifier(
-            _makeProfile(), // will be used, but let's test with settings=null
-          )),
-          settingsProvider.overrideWith(() => _NullSettingsNotifier()),
+          shotProfileProvider.overrideWith(() => _PendingProfileNotifier()),
+          settingsProvider.overrideWith(() => _FakeSettingsNotifier(const AppSettings())),
         ],
       );
       addTearDown(container.dispose);
 
-      // The VM should return an empty/default state
-      final state = await _waitFor(container, conditionsVmProvider);
+      // Wait for settings to resolve, then read the VM (profile is still loading)
+      await container.read(settingsProvider.future);
+      await Future<void>.delayed(Duration.zero);
+      final state = await container.read(conditionsVmProvider.future);
       expect(state.temperature.label, 'Temperature');
       expect(state.humidity.label, 'Humidity');
       expect(state.powderSensOn, false);
@@ -326,7 +339,7 @@ void main() {
     test('each field has correct inputField', () async {
       final container = _createContainer(profile: _makeProfile());
       addTearDown(container.dispose);
-      final state = await _waitFor(container, conditionsVmProvider);
+      final state = await _waitForConditions(container);
 
       expect(state.temperature.inputField, InputField.temperature);
       expect(state.altitude.inputField, InputField.distance);
@@ -361,15 +374,8 @@ void main() {
   });
 }
 
-/// Settings notifier that never completes (simulates null settings).
-class _NullSettingsNotifier extends SettingsNotifier {
+/// Profile notifier that never completes — simulates "still loading" state.
+class _PendingProfileNotifier extends ShotProfileNotifier {
   @override
-  Future<AppSettings> build() async {
-    // Return something that forces the empty state path.
-    // The conditions VM checks if settings == null via .value,
-    // but AsyncNotifier always resolves. So we return defaults
-    // to make the empty-state path testable only when profile is null.
-    // For now, just return defaults.
-    throw Exception('Settings unavailable');
-  }
+  Future<ShotProfile> build() => Completer<ShotProfile>().future;
 }
