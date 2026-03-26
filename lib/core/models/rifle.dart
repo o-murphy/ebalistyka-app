@@ -60,9 +60,9 @@ class Rifle {
       name: json['name'] as String,
       description: json['description'] as String?,
       weapon: Weapon(
-        sightHeight: distanceFromJson(w['sightHeight'] as Map),
-        twist: distanceFromJson(w['twist'] as Map),
-        zeroElevation: angularFromJson(w['zeroElevation'] as Map),
+        sightHeight: distanceFromJson(w['sightHeight'] as Map<String, dynamic>),
+        twist: distanceFromJson(w['twist'] as Map<String, dynamic>),
+        zeroElevation: angularFromJson(w['zeroElevation'] as Map<String, dynamic>),
       ),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),

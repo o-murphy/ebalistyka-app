@@ -146,36 +146,52 @@ class ShotProfile {
       sight: Sight.fromJson(json['sight'] as Map<String, dynamic>),
       cartridge: Cartridge.fromJson(json['cartridge'] as Map<String, dynamic>),
       conditions: Atmo(
-        altitude: distanceFromJson(c['altitude'] as Map),
-        pressure: pressureFromJson(c['pressure'] as Map),
-        temperature: temperatureFromJson(c['temperature'] as Map),
+        altitude: distanceFromJson(c['altitude'] as Map<String, dynamic>),
+        pressure: pressureFromJson(c['pressure'] as Map<String, dynamic>),
+        temperature: temperatureFromJson(
+          c['temperature'] as Map<String, dynamic>,
+        ),
         humidity: (c['humidity'] as num).toDouble(),
-        powderTemperature: temperatureFromJson(c['powderTemp'] as Map),
+        powderTemperature: temperatureFromJson(
+          c['powderTemp'] as Map<String, dynamic>,
+        ),
       ),
       winds: (json['winds'] as List)
           .map(
             (w) => Wind(
-              velocity: velocityFromJson(w['velocity'] as Map),
-              directionFrom: angularFromJson(w['directionFrom'] as Map),
-              untilDistance: distanceFromJson(w['untilDistance'] as Map),
+              velocity: velocityFromJson(w['velocity'] as Map<String, dynamic>),
+              directionFrom: angularFromJson(
+                w['directionFrom'] as Map<String, dynamic>,
+              ),
+              untilDistance: distanceFromJson(
+                w['untilDistance'] as Map<String, dynamic>,
+              ),
             ),
           )
           .toList(),
-      lookAngle: angularFromJson(json['lookAngle'] as Map),
+      lookAngle: angularFromJson(json['lookAngle'] as Map<String, dynamic>),
       latitudeDeg: (json['latitudeDeg'] as num?)?.toDouble(),
       azimuthDeg: (json['azimuthDeg'] as num?)?.toDouble(),
       zeroDistance: json['zeroDistance'] != null
-          ? distanceFromJson(json['zeroDistance'] as Map)
+          ? distanceFromJson(json['zeroDistance'] as Map<String, dynamic>)
           : null,
       zeroConditions: Atmo(
-        altitude: distanceFromJson((zc ?? c)['altitude'] as Map),
-        pressure: pressureFromJson((zc ?? c)['pressure'] as Map),
-        temperature: temperatureFromJson((zc ?? c)['temperature'] as Map),
+        altitude: distanceFromJson(
+          (zc ?? c)['altitude'] as Map<String, dynamic>,
+        ),
+        pressure: pressureFromJson(
+          (zc ?? c)['pressure'] as Map<String, dynamic>,
+        ),
+        temperature: temperatureFromJson(
+          (zc ?? c)['temperature'] as Map<String, dynamic>,
+        ),
         humidity: ((zc ?? c)['humidity'] as num).toDouble(),
-        powderTemperature: temperatureFromJson((zc ?? c)['powderTemp'] as Map),
+        powderTemperature: temperatureFromJson(
+          (zc ?? c)['powderTemp'] as Map<String, dynamic>,
+        ),
       ),
       targetDistance: json['targetDistance'] != null
-          ? distanceFromJson(json['targetDistance'] as Map)
+          ? distanceFromJson(json['targetDistance'] as Map<String, dynamic>)
           : null,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),

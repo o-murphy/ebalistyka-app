@@ -58,7 +58,7 @@ class Shot {
   List<Wind> get winds {
     final list = _winds ?? [];
     return List.from(list)..sort(
-      (a, b) => a.untilDistance.rawValue.compareTo(b.untilDistance.rawValue),
+      (a, b) => a.untilDistance.raw.compareTo(b.untilDistance.raw),
     );
   }
 

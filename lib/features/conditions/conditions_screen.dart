@@ -116,13 +116,14 @@ class ConditionsScreen extends ConsumerWidget {
                 value: state.derivationOn,
                 onChanged: (v) => notifier.setDerivation(v),
               ),
-              // Always ON — engine limitation, control disabled
+              // Always OFF — engine limitation, control disabled
               const _SwitchTile(
                 label: 'Aerodynamic jump',
                 icon: Icons.air_outlined,
-                value: true,
+                value: false,
                 onChanged: null,
               ),
+              // Always ON — engine limitation, control disabled
               const _SwitchTile(
                 label: 'Pressure depends on altitude',
                 icon: Icons.compress_outlined,

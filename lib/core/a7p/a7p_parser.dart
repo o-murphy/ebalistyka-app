@@ -198,7 +198,7 @@ class A7pParser {
         .toList();
 
     // bc for CUSTOM is derived from sectional density (same as createDragModelMultiBC)
-    final sd = (weight.rawValue > 0 && diameter.rawValue > 0)
+    final sd = (weight.raw > 0 && diameter.raw > 0)
         ? calculateSectionalDensity(
             weight.in_(Unit.grain),
             diameter.in_(Unit.inch),

@@ -46,32 +46,36 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
   }
 
   void _onTrajDataScroll() {
-    if (_syncingTraj || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients)
+    if (_syncingTraj || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients) {
       return;
+    }
     _syncingTraj = true;
     _trajHdrCtrl.jumpTo(_trajDataCtrl.offset);
     _syncingTraj = false;
   }
 
   void _onTrajHdrScroll() {
-    if (_syncingTraj || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients)
+    if (_syncingTraj || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients) {
       return;
+    }
     _syncingTraj = true;
     _trajDataCtrl.jumpTo(_trajHdrCtrl.offset);
     _syncingTraj = false;
   }
 
   void _onZeroDataScroll() {
-    if (_syncingZero || !_zeroHdrCtrl.hasClients || !_zeroDataCtrl.hasClients)
+    if (_syncingZero || !_zeroHdrCtrl.hasClients || !_zeroDataCtrl.hasClients) {
       return;
+    }
     _syncingZero = true;
     _zeroHdrCtrl.jumpTo(_zeroDataCtrl.offset);
     _syncingZero = false;
   }
 
   void _onZeroHdrScroll() {
-    if (_syncingZero || !_zeroDataCtrl.hasClients || !_zeroHdrCtrl.hasClients)
+    if (_syncingZero || !_zeroDataCtrl.hasClients || !_zeroHdrCtrl.hasClients) {
       return;
+    }
     _syncingZero = true;
     _zeroDataCtrl.jumpTo(_zeroHdrCtrl.offset);
     _syncingZero = false;
@@ -488,26 +492,35 @@ class _DetailsSpoiler extends StatelessWidget {
         spoiler.gyroStability != null;
     if (hasProj) {
       items.add(section('Projectile'));
-      if (spoiler.dragModel != null)
+      if (spoiler.dragModel != null) {
         items.add(row('Drag model', spoiler.dragModel!));
+      }
       if (spoiler.bc != null) items.add(row('BC', spoiler.bc!));
       if (spoiler.zeroMv != null) items.add(row('Zero MV', spoiler.zeroMv!));
-      if (spoiler.currentMv != null)
+      if (spoiler.currentMv != null) {
         items.add(row('Current MV', spoiler.currentMv!));
-      if (spoiler.zeroDist != null)
+      }
+      if (spoiler.zeroDist != null) {
         items.add(row('Zero distance', spoiler.zeroDist!));
-      if (spoiler.bulletLen != null)
+      }
+      if (spoiler.bulletLen != null) {
         items.add(row('Length', spoiler.bulletLen!));
-      if (spoiler.bulletDiam != null)
+      }
+      if (spoiler.bulletDiam != null) {
         items.add(row('Diameter', spoiler.bulletDiam!));
-      if (spoiler.bulletWeight != null)
+      }
+      if (spoiler.bulletWeight != null) {
         items.add(row('Weight', spoiler.bulletWeight!));
-      if (spoiler.formFactor != null)
+      }
+      if (spoiler.formFactor != null) {
         items.add(row('Form factor', spoiler.formFactor!));
-      if (spoiler.sectionalDensity != null)
+      }
+      if (spoiler.sectionalDensity != null) {
         items.add(row('Sectional density', spoiler.sectionalDensity!));
-      if (spoiler.gyroStability != null)
+      }
+      if (spoiler.gyroStability != null) {
         items.add(row('Gyrostability (Sg)', spoiler.gyroStability!));
+      }
     }
 
     // Atmosphere
@@ -519,16 +532,21 @@ class _DetailsSpoiler extends StatelessWidget {
         spoiler.windDir != null;
     if (hasAtmo) {
       items.add(section('Atmosphere'));
-      if (spoiler.temperature != null)
+      if (spoiler.temperature != null) {
         items.add(row('Temperature', spoiler.temperature!));
-      if (spoiler.humidity != null)
+      }
+      if (spoiler.humidity != null) {
         items.add(row('Humidity', spoiler.humidity!));
-      if (spoiler.pressure != null)
+      }
+      if (spoiler.pressure != null) {
         items.add(row('Pressure', spoiler.pressure!));
-      if (spoiler.windSpeed != null)
+      }
+      if (spoiler.windSpeed != null) {
         items.add(row('Wind speed', spoiler.windSpeed!));
-      if (spoiler.windDir != null)
+      }
+      if (spoiler.windDir != null) {
         items.add(row('Wind direction', spoiler.windDir!));
+      }
     }
 
     if (items.isEmpty) return const SizedBox.shrink();

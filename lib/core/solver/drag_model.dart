@@ -57,7 +57,7 @@ class DragModel {
       throw ArgumentError('Received empty drag table');
     if (bc <= 0) throw ArgumentError('Ballistic coefficient must be positive');
 
-    if (this.weight.rawValue > 0 && this.diameter.rawValue > 0) {
+    if (this.weight.raw > 0 && this.diameter.raw > 0) {
       sectionalDensity = _getSectionalDensity();
       formFactor = _getFormFactor(bc);
     } else {
@@ -131,7 +131,7 @@ DragModel createDragModelMultiBC({
   final wObj = weight ?? Weight(0, Unit.grain);
   final dObj = diameter ?? Distance(0, Unit.inch);
 
-  final double bc = (wObj.rawValue > 0 && dObj.rawValue > 0)
+  final double bc = (wObj.raw > 0 && dObj.raw > 0)
       ? calculateSectionalDensity(wObj.in_(Unit.grain), dObj.in_(Unit.inch))
       : 1.0;
 

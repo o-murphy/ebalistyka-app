@@ -79,9 +79,9 @@ class Projectile {
         dragTable: (d['dragTable'] as List)
             .map((p) => {'mach': p['mach'], 'cd': p['cd']})
             .toList(),
-        weight: weightFromJson(d['weight'] as Map),
-        diameter: distanceFromJson(d['diameter'] as Map),
-        length: distanceFromJson(d['length'] as Map),
+        weight: weightFromJson(d['weight'] as Map<String, dynamic>),
+        diameter: distanceFromJson(d['diameter'] as Map<String, dynamic>),
+        length: distanceFromJson(d['length'] as Map<String, dynamic>),
       ),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),

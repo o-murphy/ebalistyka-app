@@ -325,7 +325,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         absValue: val.abs(),
         isPositive: val >= 0,
         symbol: u.$2,
-        decimals: u.$1.accuracy,
+        decimals: FC.adjustment.accuracyFor(u.$1),
       );
     }).toList();
 
@@ -336,7 +336,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
               absValue: corr.abs(),
               isPositive: corr >= 0,
               symbol: u.$2,
-              decimals: u.$1.accuracy,
+        decimals: FC.adjustment.accuracyFor(u.$1),
             );
           }).toList()
         : <AdjustmentValue>[];

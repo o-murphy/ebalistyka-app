@@ -1,59 +1,61 @@
 import 'dart:math';
 
 enum Unit {
-  radian(0, "radian", 6, "rad"),
-  degree(1, "degree", 4, "°"),
-  moa(2, "MOA", 2, "MOA"),
-  mil(3, "MIL", 3, "MIL"),
-  mRad(4, "MRAD", 2, "MRAD"),
-  thousandth(5, "thousandth", 2, "ths"),
-  inchesPer100Yd(6, "inch/100yd", 2, "in/100yd"),
-  cmPer100m(7, "cm/100m", 2, "cm/100m"),
-  oClock(8, "hour", 2, "h"),
-  inch(10, "inch", 1, "inch"),
-  foot(11, "foot", 2, "ft"),
-  yard(12, "yard", 1, "yd"),
-  mile(13, "mile", 3, "mi"),
-  nauticalMile(14, "nautical mile", 3, "nm"),
-  millimeter(15, "millimeter", 3, "mm"),
-  centimeter(16, "centimeter", 3, "cm"),
-  meter(17, "meter", 1, "m"),
-  kilometer(18, "kilometer", 3, "km"),
-  line(19, "line", 3, "ln"),
-  footPound(30, "foot-pound", 0, "ft·lb"),
-  joule(31, "joule", 0, "J"),
-  mmHg(40, "mmHg", 0, "mmHg"),
-  inHg(41, "inHg", 6, "inHg"),
-  bar(42, "bar", 2, "bar"),
-  hPa(43, "hPa", 4, "hPa"),
-  psi(44, "psi", 4, "psi"),
-  fahrenheit(50, "fahrenheit", 1, "°F"),
-  celsius(51, "celsius", 1, "°C"),
-  kelvin(52, "kelvin", 1, "°K"),
-  rankin(53, "rankin", 1, "°R"),
-  mps(60, "mps", 0, "m/s"),
-  kmh(61, "kmh", 1, "km/h"),
-  fps(62, "fps", 1, "ft/s"),
-  mph(63, "mph", 1, "mph"),
-  kt(64, "knot", 1, "kt"),
-  grain(70, "grain", 1, "gr"),
-  ounce(71, "ounce", 1, "oz"),
-  gram(72, "gram", 1, "g"),
-  pound(73, "pound", 0, "lb"),
-  kilogram(74, "kilogram", 3, "kg"),
-  newton(75, "newton", 3, "N"),
-  minute(80, "minute", 0, "min"),
-  second(81, "second", 1, "s"),
-  millisecond(82, "millisecond", 3, "ms"),
-  microsecond(83, "microsecond", 6, "µs"),
-  nanosecond(84, "nanosecond", 9, "ns"),
-  picosecond(85, "picosecond", 12, "ps");
+  radian(0, "radian", "rad"),
+  degree(1, "degree", "°"),
+  moa(2, "MOA", "MOA"),
+  mil(3, "MIL", "MIL"),
+  mRad(4, "MRAD", "MRAD"),
+  thousandth(5, "thousandth", "ths"),
+  inchesPer100Yd(6, "inch/100yd", "in/100yd"),
+  cmPer100m(7, "cm/100m", "cm/100m"),
+  oClock(8, "hour", "h"),
+  inch(10, "inch", "inch"),
+  foot(11, "foot", "ft"),
+  yard(12, "yard", "yd"),
+  mile(13, "mile", "mi"),
+  nauticalMile(14, "nautical mile", "nm"),
+  millimeter(15, "millimeter", "mm"),
+  centimeter(16, "centimeter", "cm"),
+  meter(17, "meter", "m"),
+  kilometer(18, "kilometer", "km"),
+  line(19, "line", "ln"),
+  footPound(30, "foot-pound", "ft·lb"),
+  joule(31, "joule", "J"),
+  mmHg(40, "mmHg", "mmHg"),
+  inHg(41, "inHg", "inHg"),
+  bar(42, "bar", "bar"),
+  hPa(43, "hPa", "hPa"),
+  psi(44, "psi", "psi"),
+  fahrenheit(50, "fahrenheit", "°F"),
+  celsius(51, "celsius", "°C"),
+  kelvin(52, "kelvin", "°K"),
+  rankin(53, "rankin", "°R"),
+  mps(60, "mps", "m/s"),
+  kmh(61, "kmh", "km/h"),
+  fps(62, "fps", "ft/s"),
+  mph(63, "mph", "mph"),
+  kt(64, "knot", "kt"),
+  grain(70, "grain", "gr"),
+  ounce(71, "ounce", "oz"),
+  gram(72, "gram", "g"),
+  pound(73, "pound", "lb"),
+  kilogram(74, "kilogram", "kg"),
+  newton(75, "newton", "N"),
+  minute(80, "minute", "min"),
+  second(81, "second", "s"),
+  millisecond(82, "millisecond", "ms"),
+  microsecond(83, "microsecond", "µs"),
+  nanosecond(84, "nanosecond", "ns"),
+  picosecond(85, "picosecond", "ps");
 
-  const Unit(this.id, this.label, this.accuracy, this.symbol);
+  const Unit(this.id, this.label, this.symbol);
   final int id;
   final String label;
-  final int accuracy;
   final String symbol;
+
+  static Unit fromName(String name) =>
+      Unit.values.firstWhere((u) => u.name == name);
 }
 
 extension UnitCallable on Unit {
@@ -108,26 +110,26 @@ abstract class Dimension<T extends Dimension<T>> {
   final Unit _definedUnits;
 
   Dimension(double value, this._definedUnits) {
-    _rawValue = toRaw(value, _definedUnits);
+    _rawValue = _toRaw(value, _definedUnits);
   }
 
   Map<Unit, double> get conversionFactors => <Unit, double>{};
 
-  double get rawValue => _rawValue;
-
+  double get value => toDouble();
+  double get raw => _rawValue;
   Unit get units => _definedUnits;
+
+  double in_(Unit unit) => _fromRaw(_rawValue, unit);
+
+  T to(Unit unit) => create(in_(unit), unit);
 
   @override
   String toString() {
-    final v = fromRaw(_rawValue, _definedUnits);
-    final rounded = v.toStringAsFixed(_definedUnits.accuracy);
+    final rounded = toDouble().toStringAsFixed(6);
     return '$rounded${_definedUnits.symbol}';
   }
 
   T create(double value, Unit unit);
-
-  T createFromRaw(double value, Unit unit) =>
-      create(fromRaw(value, unit), unit);
 
   double _getFactor(Unit unit) {
     final factor = conversionFactors[unit];
@@ -137,79 +139,14 @@ abstract class Dimension<T extends Dimension<T>> {
     return factor;
   }
 
-  double in_(Unit unit) => fromRaw(_rawValue, unit);
+  double _toRaw(double value, Unit unit) => value * _getFactor(unit);
 
-  T to(Unit unit) => create(in_(unit), unit);
-
-  double toRaw(double value, Unit unit) => value * _getFactor(unit);
-
-  double fromRaw(double rawValue, Unit unit) => rawValue / _getFactor(unit);
+  double _fromRaw(double rawValue, Unit unit) => rawValue / _getFactor(unit);
 
   String get debugDetails =>
       '$runtimeType(rawValue: $_rawValue, units: ${_definedUnits.label})';
 
-  double toDouble() => fromRaw(_rawValue, _definedUnits);
-
-  double get _unitsToRawDelta {
-    if (conversionFactors.isEmpty) return 0.0;
-    return _getFactor(_definedUnits);
-  }
-
-  T operator *(Object other) {
-    if (other is num) {
-      // self._value * other
-      return createFromRaw(_rawValue * other.toDouble(), _definedUnits);
-    }
-    throw ArgumentError('Multiplication is only supported for numbers');
-  }
-
-  dynamic operator /(Object other) {
-    if (other is num) {
-      if (other == 0) throw ArgumentError('Division by zero');
-      // self._value / other
-      return createFromRaw(_rawValue / other.toDouble(), _definedUnits);
-    }
-    if (other is T) {
-      if (other.rawValue == 0) throw ArgumentError('Division by zero');
-      // float(self._value) / float(other.raw_value)
-      return _rawValue / other.rawValue;
-    }
-    throw ArgumentError(
-      'Division is only supported for numbers or same Dimension',
-    );
-  }
-
-  T operator +(Object other) {
-    if (other is num) {
-      // self._value + float(other) * self._units_to_raw_delta()
-      return createFromRaw(
-        _rawValue + (other.toDouble() * _unitsToRawDelta),
-        _definedUnits,
-      );
-    }
-    if (other is T) {
-      // self._value + other._value
-      return createFromRaw(_rawValue + other.rawValue, _definedUnits);
-    }
-    throw ArgumentError(
-      'Addition is only supported for numbers or same Dimension',
-    );
-  }
-
-  T operator -(Object other) {
-    if (other is num) {
-      return createFromRaw(
-        _rawValue - (other.toDouble() * _unitsToRawDelta),
-        _definedUnits,
-      );
-    }
-    if (other is T) {
-      return createFromRaw(_rawValue - other.rawValue, _definedUnits);
-    }
-    throw ArgumentError(
-      'Subtraction is only supported for numbers or same Dimension',
-    );
-  }
+  double toDouble() => _fromRaw(_rawValue, _definedUnits);
 }
 
 class Angular extends Dimension<Angular> {
@@ -234,10 +171,10 @@ class Angular extends Dimension<Angular> {
   Angular create(double value, Unit unit) => Angular(value, unit);
 
   @override
-  double toRaw(double value, Unit unit) {
+  double _toRaw(double value, Unit unit) {
     // Note: The logic here remains the same,
     // ensuring the result is normalized between (-pi, pi]
-    final radians = super.toRaw(value, unit);
+    final radians = super._toRaw(value, unit);
     final r = (radians + pi) % (2.0 * pi) - pi;
     return r > -pi ? r : pi;
   }
@@ -309,7 +246,7 @@ class Temperature extends Dimension<Temperature> {
   Temperature create(double value, Unit unit) => Temperature(value, unit);
 
   @override
-  double toRaw(double value, Unit unit) {
+  double _toRaw(double value, Unit unit) {
     return switch (unit) {
       Unit.fahrenheit => value,
       Unit.rankin => value - 459.67,
@@ -320,22 +257,13 @@ class Temperature extends Dimension<Temperature> {
   }
 
   @override
-  double fromRaw(double value, Unit unit) {
+  double _fromRaw(double value, Unit unit) {
     return switch (unit) {
       Unit.fahrenheit => value,
       Unit.rankin => value + 459.67,
       Unit.celsius => (value - 32) * 5.0 / 9,
       Unit.kelvin => (value - 32) * 5.0 / 9 + 273.15,
       _ => throw Exception('Temperature does not support $unit'),
-    };
-  }
-
-  @override
-  double get _unitsToRawDelta {
-    return switch (units) {
-      Unit.fahrenheit || Unit.rankin => 1.0,
-      Unit.celsius || Unit.kelvin => 9.0 / 5.0,
-      _ => 1.0,
     };
   }
 }

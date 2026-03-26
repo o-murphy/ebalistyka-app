@@ -389,8 +389,7 @@ abstract interface class DimUnit {
 // ═══ Крок 2: Measurable<T, U> — два type parameters ═══
 
 abstract interface class Measurable<T extends Measurable<T, U>, U extends Enum> {
-  T create(double value, U unit);       // тільки свій enum
-  T createFromRaw(double value, U unit);
+  T _create(double value, U unit);       // тільки свій enum
   double in_(U unit);                   // тільки свій enum
   T to(U unit);                         // тільки свій enum
   double toRaw(double value, U unit);
