@@ -214,4 +214,20 @@ abstract final class FC {
     accuracy: 0,
   );
 
+  static const tableRange = FieldConstraints(
+    rawUnit: Unit.meter,
+    minRaw: 0.0,
+    maxRaw: 5000.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+
+  static const distanceStep = FieldConstraints(
+    rawUnit: Unit.meter,
+    minRaw: 1.0,
+    maxRaw: 1000.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+
 }

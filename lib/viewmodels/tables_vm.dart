@@ -181,7 +181,8 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       cfg.stepM,
     );
 
-    final mainTable = _buildTable(filtered, effUnits, cfg);
+    final zeroDistM = profile.zeroDistance.in_(Unit.meter);
+    final mainTable = _buildTable(filtered, effUnits, cfg, zeroDistM: zeroDistM);
 
     // Zero crossings
     FormattedTableData? zeroCrossings;
@@ -359,6 +360,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     dynamic effUnits, // UnitSettings
     TableConfig cfg, {
     bool isZeroTable = false,
+    double? zeroDistM,
   }) {
     final hidden = cfg.hiddenCols;
 
@@ -426,20 +428,42 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       }
     }
 
+    // Precompute which distance points match the sighting zero distance
+    final zeroDistFlags = <bool>[];
+    if (zeroDistM != null) {
+      for (final row in rows) {
+        final distM = row.distance.in_(Unit.meter);
+        zeroDistFlags.add((distM - zeroDistM).abs() < 0.5);
+      }
+    }
+
+    // Find the single subsonic transition point (first row where mach drops below 1.0)
+    int subsonicIndex = -1;
+    if (cfg.showSubsonicTransition) {
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].mach < 1.0) {
+          subsonicIndex = i;
+          break;
+        }
+      }
+    }
+
     // Build rows (one per column definition, excluding range)
     for (var ci = 1; ci < colDefs.length; ci++) {
       final col = colDefs[ci];
       final cells = <FormattedCell>[];
-      for (final row in rows) {
+      for (var pi = 0; pi < rows.length; pi++) {
+        final row = rows[pi];
         final val = col.$4(row);
         final valStr =
             val != null ? val.toStringAsFixed(col.$5) : '—';
         final isZero = (row.flag & TrajFlag.zero.value) != 0;
-        final isSubsonic = row.mach < 1.0;
+        final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
         cells.add(FormattedCell(
           value: valStr,
           isZeroCrossing: isZero,
-          isSubsonic: isSubsonic,
+          isSubsonic: pi == subsonicIndex,
+          isTargetColumn: isTarget,
         ));
       }
       tableRows.add(FormattedRow(

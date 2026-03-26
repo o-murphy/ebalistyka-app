@@ -50,7 +50,17 @@ class RecalcCoordinator extends Notifier<void> {
         prev.useDifferentPowderTemperature !=
             next.useDifferentPowderTemperature ||
         prev.chartDistanceStep != next.chartDistanceStep ||
-        prev.tableConfig.stepM != next.tableConfig.stepM;
+        prev.homeTableStep != next.homeTableStep ||
+        prev.units != next.units ||
+        prev.showMrad != next.showMrad ||
+        prev.showMoa != next.showMoa ||
+        prev.showMil != next.showMil ||
+        prev.showCmPer100m != next.showCmPer100m ||
+        prev.showInPer100yd != next.showInPer100yd ||
+        // Any tableConfig change — identity check works because
+        // AppSettings.copyWith reuses the same reference when tableConfig
+        // is not passed.
+        !identical(prev.tableConfig, next.tableConfig);
   }
 }
 

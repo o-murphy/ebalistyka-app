@@ -21,14 +21,6 @@ class TableConfigScreen extends ConsumerWidget {
 
     void save(TableConfig updated) => notifier.updateTableConfig(updated);
 
-    final distAcc = FC.targetDistance.accuracyFor(units.distance);
-    final stepOptions = _stepOptionsM(units.distance);
-
-    String distStr(double m) {
-      final disp = (Unit.meter(m) as dynamic).in_(units.distance) as double;
-      return '${disp.toStringAsFixed(distAcc)} ${units.distance.symbol}';
-    }
-
     return Column(
       children: [
         const SettingsHeader(title: 'Table Configuration'),
@@ -43,7 +35,7 @@ class TableConfigScreen extends ConsumerWidget {
                 label: 'Start distance',
                 valueM: cfg.startM,
                 units: units.distance,
-                constraints: FC.targetDistance,
+                constraints: FC.tableRange,
                 maxValueM: cfg.endM,
                 onChanged: (v) => save(cfg.copyWith(startM: v)),
               ),
@@ -52,33 +44,18 @@ class TableConfigScreen extends ConsumerWidget {
                 label: 'End distance',
                 valueM: cfg.endM,
                 units: units.distance,
-                constraints: FC.targetDistance,
+                constraints: FC.tableRange,
                 minValueM: cfg.startM,
                 onChanged: (v) => save(cfg.copyWith(endM: v)),
               ),
 
-              ListTile(
-                leading: const Icon(Icons.straighten_outlined),
-                title: const Text(
-                  'Distance step',
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Text(
-                  distStr(cfg.stepM),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                dense: true,
-                onTap: () => _pickStep(
-                  context,
-                  cfg.stepM,
-                  stepOptions,
-                  units.distance,
-                  distAcc,
-                  (v) => save(cfg.copyWith(stepM: v)),
-                ),
+              _DistanceTile(
+                icon: Icons.straighten_outlined,
+                label: 'Distance step',
+                valueM: cfg.stepM,
+                units: units.distance,
+                constraints: FC.distanceStep,
+                onChanged: (v) => save(cfg.copyWith(stepM: v)),
               ),
 
               const Divider(height: 1),
@@ -380,45 +357,6 @@ class TableConfigScreen extends ConsumerWidget {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  void _pickStep(
-    BuildContext context,
-    double currentM,
-    List<double> optionsM,
-    Unit distUnit,
-    int distAcc,
-    ValueChanged<double> onPick,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        title: const Text('Distance step'),
-        children: optionsM.map((m) {
-          final disp = (Unit.meter(m) as dynamic).in_(distUnit) as double;
-          final lbl = '${disp.toStringAsFixed(distAcc)} ${distUnit.symbol}';
-          return RadioGroup<double>(
-            groupValue: currentM,
-            onChanged: (v) {
-              if (v != null) {
-                onPick(v);
-                Navigator.pop(ctx);
-              }
-            },
-            child: RadioListTile<double>(
-              value: m,
-              title: Text(lbl),
-              dense: true,
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  List<double> _stepOptionsM(Unit distUnit) {
-    // Standard step options in metres
-    const metres = [5.0, 10.0, 25.0, 50.0, 100.0, 200.0, 500.0];
-    return metres;
-  }
 }
 
 // ── Sub-level switch (indented) ───────────────────────────────────────────────

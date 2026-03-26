@@ -26,37 +26,63 @@ class TrajectoryTable extends StatefulWidget {
 }
 
 class _TrajectoryTableState extends State<TrajectoryTable> {
+  // Main trajectory table scroll sync
   final _trajHdrCtrl  = ScrollController();
   final _trajDataCtrl = ScrollController();
-  bool _syncingH = false;
+  bool _syncingTraj = false;
+
+  // Zero crossings table scroll sync
+  final _zeroHdrCtrl  = ScrollController();
+  final _zeroDataCtrl = ScrollController();
+  bool _syncingZero = false;
 
   @override
   void initState() {
     super.initState();
-    _trajDataCtrl.addListener(_onDataScroll);
-    _trajHdrCtrl.addListener(_onHdrScroll);
+    _trajDataCtrl.addListener(_onTrajDataScroll);
+    _trajHdrCtrl.addListener(_onTrajHdrScroll);
+    _zeroDataCtrl.addListener(_onZeroDataScroll);
+    _zeroHdrCtrl.addListener(_onZeroHdrScroll);
   }
 
-  void _onDataScroll() {
-    if (_syncingH || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients) return;
-    _syncingH = true;
+  void _onTrajDataScroll() {
+    if (_syncingTraj || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients) return;
+    _syncingTraj = true;
     _trajHdrCtrl.jumpTo(_trajDataCtrl.offset);
-    _syncingH = false;
+    _syncingTraj = false;
   }
 
-  void _onHdrScroll() {
-    if (_syncingH || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients) return;
-    _syncingH = true;
+  void _onTrajHdrScroll() {
+    if (_syncingTraj || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients) return;
+    _syncingTraj = true;
     _trajDataCtrl.jumpTo(_trajHdrCtrl.offset);
-    _syncingH = false;
+    _syncingTraj = false;
+  }
+
+  void _onZeroDataScroll() {
+    if (_syncingZero || !_zeroHdrCtrl.hasClients || !_zeroDataCtrl.hasClients) return;
+    _syncingZero = true;
+    _zeroHdrCtrl.jumpTo(_zeroDataCtrl.offset);
+    _syncingZero = false;
+  }
+
+  void _onZeroHdrScroll() {
+    if (_syncingZero || !_zeroDataCtrl.hasClients || !_zeroHdrCtrl.hasClients) return;
+    _syncingZero = true;
+    _zeroDataCtrl.jumpTo(_zeroHdrCtrl.offset);
+    _syncingZero = false;
   }
 
   @override
   void dispose() {
-    _trajDataCtrl.removeListener(_onDataScroll);
-    _trajHdrCtrl.removeListener(_onHdrScroll);
+    _trajDataCtrl.removeListener(_onTrajDataScroll);
+    _trajHdrCtrl.removeListener(_onTrajHdrScroll);
+    _zeroDataCtrl.removeListener(_onZeroDataScroll);
+    _zeroHdrCtrl.removeListener(_onZeroHdrScroll);
     _trajDataCtrl.dispose();
     _trajHdrCtrl.dispose();
+    _zeroDataCtrl.dispose();
+    _zeroHdrCtrl.dispose();
     super.dispose();
   }
 
@@ -152,7 +178,7 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
       Widget labelRow() => Container(
         color: cs.surfaceContainerHighest,
         child: Row(children: [
-          hCell(t.distanceUnit, hdrStyle),
+          hCell('Range', hdrStyle),
           ...List.generate(nMetrics, (i) => hCell(t.rows[i].label, hdrStyle)),
         ]),
       );
@@ -161,7 +187,7 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
       Widget unitRow() => Container(
         color: cs.surfaceContainerHigh,
         child: Row(children: [
-          hCell('', subStyle),
+          hCell(t.distanceUnit, subStyle),
           ...List.generate(nMetrics, (i) => hCell(t.rows[i].unitSymbol, subStyle)),
         ]),
       );
@@ -173,18 +199,27 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
           for (var pi = 0; pi < nPoints; pi++) ...[
             if (pi > 0) rowDivider(),
             Builder(builder: (_) {
-              final isZ = nMetrics > 0 && pi < t.rows[0].cells.length &&
-                  t.rows[0].cells[pi].isZeroCrossing;
-              final isS = nMetrics > 0 && pi < t.rows[0].cells.length &&
-                  t.rows[0].cells[pi].isSubsonic;
-              final bg = isZ
-                  ? cs.errorContainer.withAlpha(80)
-                  : isS
-                      ? cs.tertiaryContainer.withAlpha(80)
-                      : (pi.isEven ? null : cs.surfaceContainerLowest);
-              final style = isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
+              final firstCell = nMetrics > 0 && pi < t.rows[0].cells.length
+                  ? t.rows[0].cells[pi]
+                  : null;
+              final isZ = firstCell?.isZeroCrossing ?? false;
+              final isS = firstCell?.isSubsonic ?? false;
+              final isTarget = firstCell?.isTargetColumn ?? false;
+              final bg = isTarget
+                  ? cs.primaryContainer.withAlpha(60)
+                  : isZ
+                      ? cs.errorContainer.withAlpha(80)
+                      : isS
+                          ? cs.tertiaryContainer.withAlpha(80)
+                          : (pi.isEven ? null : cs.surfaceContainerLowest);
+              final style = isTarget
+                  ? cellStyle?.copyWith(color: cs.primary, fontWeight: FontWeight.w700)
+                  : isZ ? zeroCellStyle : isS ? subsCellStyle : cellStyle;
+              final distStyle = isTarget
+                  ? hdrStyle?.copyWith(color: cs.primary)
+                  : hdrStyle;
               return Row(children: [
-                dCell(t.distanceHeaders[pi], hdrStyle,
+                dCell(t.distanceHeaders[pi], distStyle,
                     bg: bg, onTap: () => showDetail(t, pi)),
                 ...List.generate(nMetrics, (mi) {
                   final cell = pi < t.rows[mi].cells.length
@@ -234,7 +269,7 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
       Widget headerRow() => Container(
         color: cs.surfaceContainerHighest,
         child: Row(children: [
-          hCell(t.distanceUnit, hdrStyle),
+          hCell('Range', hdrStyle),
           ...List.generate(nMetrics, (i) => hCell(t.rows[i].label, hdrStyle)),
         ]),
       );
@@ -243,7 +278,7 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
       Widget unitRow() => Container(
         color: cs.surfaceContainerHighest,
         child: Row(children: [
-          hCell('', subStyle),
+          hCell(t.distanceUnit, subStyle),
           ...List.generate(nMetrics, (i) => hCell(t.rows[i].unitSymbol, subStyle)),
         ]),
       );
@@ -270,20 +305,22 @@ class _TrajectoryTableState extends State<TrajectoryTable> {
         ],
       );
 
-      Widget hScroll(Widget child) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: totalW),
-          child: child,
-        ),
-      );
+      Widget zHScroll(Widget child, {ScrollController? ctrl}) =>
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            controller: ctrl,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: totalW),
+              child: child,
+            ),
+          );
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          hScroll(Column(children: [headerRow(), unitRow()])),
+          zHScroll(Column(children: [headerRow(), unitRow()]), ctrl: _zeroHdrCtrl),
           Divider(height: 1, color: cs.outlineVariant, thickness: 0.5),
-          hScroll(dataArea()),
+          zHScroll(dataArea(), ctrl: _zeroDataCtrl),
         ],
       );
     }

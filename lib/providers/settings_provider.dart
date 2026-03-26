@@ -49,6 +49,10 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
     await _save((state.value ?? const AppSettings()).copyWith(chartDistanceStep: step));
   }
 
+  Future<void> setHomeTableStep(double step) async {
+    await _save((state.value ?? const AppSettings()).copyWith(homeTableStep: step));
+  }
+
   Future<void> setAdjustmentFormat(AdjustmentFormat format) async {
     await _save((state.value ?? const AppSettings()).copyWith(adjustmentFormat: format));
   }

@@ -1418,21 +1418,23 @@ lib/screens/shot_details_screen.dart          ← буде ShotDetailsViewModel
    b) Оновити router.dart — DONE
    c) Видалити ref.listen з _ScaffoldWithNavState — DONE
 
-8. ФАЗА 4 — Оновити HomeScreen
-   a) Прибрати всю логіку з home_screen.dart
-   b) Підключити до homeVmProvider
-   c) Прибрати всю логіку з home_reticle_page.dart
-   d) Прибрати всю логіку з home_table_page.dart
-   e) Прибрати всю логіку з home_chart_page.dart
+8. ФАЗА 4 — Оновити HomeScreen — DONE
+   a) Прибрати всю логіку з home_screen.dart — DONE
+   b) Підключити до homeVmProvider — DONE
+   c) Прибрати всю логіку з home_reticle_page.dart — DONE
+   d) Прибрати всю логіку з home_table_page.dart — DONE
+   e) Прибрати всю логіку з home_chart_page.dart — DONE
 
-9. ФАЗА 4 — Оновити ConditionsScreen
-   a) Прибрати всю логіку з conditions_screen.dart
-   b) Підключити до conditionsVmProvider
+9. ФАЗА 4 — Оновити ConditionsScreen — DONE
+   a) Прибрати всю логіку з conditions_screen.dart — DONE
+   b) Підключити до conditionsVmProvider — DONE
 
-10. ФАЗА 4 — Оновити TablesScreen
-    a) Прибрати всю логіку з tables_screen.dart
-    b) Оновити trajectory_table.dart щоб приймав FormattedTableData
-    c) Підключити до tablesVmProvider
+10. ФАЗА 4 — Оновити TablesScreen — DONE
+    a) Прибрати всю логіку з tables_screen.dart — DONE
+    b) Оновити trajectory_table.dart щоб приймав FormattedTableData — DONE
+    c) Підключити до tablesVmProvider — DONE
+    d) Видалити tableCalculationProvider з RecalcCoordinator — DONE
+    e) Виджет-тести для фази 4 — DONE (54 тести: trajectory_table=20, home_widgets=24, tables_screen=10)
 
 11. ФАЗА 5 — Cleanup
     a) Видалити lib/helpers/dimension_converter.dart

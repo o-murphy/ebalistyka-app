@@ -12,6 +12,7 @@ class AppSettings {
   final String           languageCode;
   final ThemeMode        themeMode;
   final double           chartDistanceStep;
+  final double           homeTableStep;
   final TableConfig      tableConfig;
   final bool             showSubsonicTransition;
   final bool             enableCoriolis;
@@ -32,6 +33,7 @@ class AppSettings {
     this.languageCode                  = 'en',
     this.themeMode                     = ThemeMode.system,
     this.chartDistanceStep             = 10,
+    this.homeTableStep                 = 100,
     this.tableConfig                   = const TableConfig(),
     this.showSubsonicTransition        = false,
     this.enableCoriolis                = false,
@@ -53,6 +55,7 @@ class AppSettings {
     String?           languageCode,
     ThemeMode?        themeMode,
     double?           chartDistanceStep,
+    double?           homeTableStep,
     TableConfig?      tableConfig,
     bool?             showSubsonicTransition,
     bool?             enableCoriolis,
@@ -72,6 +75,7 @@ class AppSettings {
     languageCode:                  languageCode                  ?? this.languageCode,
     themeMode:                     themeMode                     ?? this.themeMode,
     chartDistanceStep:             chartDistanceStep             ?? this.chartDistanceStep,
+    homeTableStep:                 homeTableStep                 ?? this.homeTableStep,
     tableConfig:                   tableConfig                   ?? this.tableConfig,
     showSubsonicTransition:        showSubsonicTransition        ?? this.showSubsonicTransition,
     enableCoriolis:                enableCoriolis                ?? this.enableCoriolis,
@@ -114,6 +118,7 @@ class AppSettings {
     'languageCode':                  languageCode,
     'themeMode':                     _themeModeNames[themeMode],
     'chartDistanceStep':             chartDistanceStep,
+    'homeTableStep':                 homeTableStep,
     'tableConfig':                   tableConfig.toJson(),
     'showSubsonicTransition':        showSubsonicTransition,
     'enableCoriolis':                enableCoriolis,
@@ -136,6 +141,7 @@ class AppSettings {
     languageCode:    json['languageCode']  as String? ?? 'en',
     themeMode:       _themeModeByName[json['themeMode']] ?? ThemeMode.system,
     chartDistanceStep: (json['chartDistanceStep'] as num?)?.toDouble() ?? 100,
+    homeTableStep: (json['homeTableStep'] as num?)?.toDouble() ?? 100,
     tableConfig:     json['tableConfig'] != null
                        ? TableConfig.fromJson(
                            json['tableConfig'] as Map<String, dynamic>)

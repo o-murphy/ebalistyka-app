@@ -330,7 +330,7 @@ void main() {
     });
   });
 
-  group('RecalcCoordinator — settings changes that do NOT trigger recalc', () {
+  group('RecalcCoordinator — unit display toggles trigger recalc', () {
     late _TestContext ctx;
 
     setUp(() async {
@@ -340,20 +340,20 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('showMrad change does not trigger recalc', () async {
+    test('showMrad change triggers recalc', () async {
       ctx.settingsNotifier.push(const AppSettings(showMrad: false));
       await Future<void>.delayed(Duration.zero);
 
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
+      expect(ctx.homeVM.recalcCount, 1);
+      expect(ctx.tablesVM.recalcCount, 1);
     });
 
-    test('showMoa change does not trigger recalc', () async {
+    test('showMoa change triggers recalc', () async {
       ctx.settingsNotifier.push(const AppSettings(showMoa: true));
       await Future<void>.delayed(Duration.zero);
 
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
+      expect(ctx.homeVM.recalcCount, 1);
+      expect(ctx.tablesVM.recalcCount, 1);
     });
   });
 

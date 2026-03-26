@@ -346,7 +346,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     AppSettings settings,
     UnitFormatter fmt,
   ) {
-    final stepM = settings.tableConfig.stepM;
+    final stepM = settings.homeTableStep;
     final units = settings.units;
     final distAcc = FC.targetDistance.accuracyFor(units.distance);
 
