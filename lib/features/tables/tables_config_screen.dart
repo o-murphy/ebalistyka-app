@@ -255,6 +255,21 @@ class TableConfigScreen extends ConsumerWidget {
               // ── Columns ────────────────────────────────────────────────────
               const SettingsSectionLabel('Table columns'),
 
+              // Drop / Windage unit override
+              _UnitOverrideTile(
+                label: 'Drop / Windage unit',
+                current: cfg.dropUnit,
+                globalUnit: units.drop,
+                options: const [
+                  Unit.meter,
+                  Unit.centimeter,
+                  Unit.millimeter,
+                  Unit.inch,
+                  Unit.foot,
+                ],
+                onChanged: (u) => save(cfg.copyWith(dropUnit: u)),
+              ),
+
               // Adjustment mode
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
@@ -295,20 +310,6 @@ class TableConfigScreen extends ConsumerWidget {
                 ),
               ),
 
-              // Drop / Windage unit override
-              _UnitOverrideTile(
-                label: 'Drop / Windage unit',
-                current: cfg.dropUnit,
-                globalUnit: units.drop,
-                options: const [
-                  Unit.meter,
-                  Unit.centimeter,
-                  Unit.millimeter,
-                  Unit.inch,
-                  Unit.foot,
-                ],
-                onChanged: (u) => save(cfg.copyWith(dropUnit: u)),
-              ),
               _UnitOverrideTile(
                 label: 'Adjustment unit',
                 current: cfg.adjUnit,

@@ -522,6 +522,7 @@ Phase   Task                                        Depends on   Risk
   3     FFI enum wrappers (bc_enums.dart)            —            Low
   4     ffigen update to ^20                         3            Medium (enum issue)
   5     Strict dimension typing (§3.5)               1            High (blast radius)
+  6     Safe JSON parsing loading                    —            not analyzed
 ```
 
 ### Phase 1 — Feature-first restructure ✅ DONE
