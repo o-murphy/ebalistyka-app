@@ -18,8 +18,10 @@ double _toRawVal(Unit rawUnit, Unit dispUnit, double disp) {
 
 int _calcAccuracy(FieldConstraints c, Unit displayUnit) {
   if (c.rawUnit == displayUnit) return c.accuracy;
-  final step = (_toDisp(c.rawUnit, displayUnit, c.minRaw + c.stepRaw) -
-      _toDisp(c.rawUnit, displayUnit, c.minRaw)).abs();
+  final step =
+      (_toDisp(c.rawUnit, displayUnit, c.minRaw + c.stepRaw) -
+              _toDisp(c.rawUnit, displayUnit, c.minRaw))
+          .abs();
   if (step <= 0) return c.accuracy;
   final d = (-log(step) / ln10).ceil();
   return d < 0 ? 0 : d;
@@ -43,7 +45,11 @@ void showUnitEditDialog(
   double editRaw = rawValue;
 
   final controller = TextEditingController(
-    text: _toDisp(constraints.rawUnit, displayUnit, rawValue).toStringAsFixed(inputAcc),
+    text: _toDisp(
+      constraints.rawUnit,
+      displayUnit,
+      rawValue,
+    ).toStringAsFixed(inputAcc),
   );
 
   showDialog<void>(
@@ -53,10 +59,15 @@ void showUnitEditDialog(
       return StatefulBuilder(
         builder: (ctx, setState) {
           void step(int dir) {
-            editRaw = (editRaw + dir * constraints.stepRaw)
-                .clamp(constraints.minRaw, constraints.maxRaw);
-            controller.text =
-                _toDisp(constraints.rawUnit, displayUnit, editRaw).toStringAsFixed(inputAcc);
+            editRaw = (editRaw + dir * constraints.stepRaw).clamp(
+              constraints.minRaw,
+              constraints.maxRaw,
+            );
+            controller.text = _toDisp(
+              constraints.rawUnit,
+              displayUnit,
+              editRaw,
+            ).toStringAsFixed(inputAcc);
             errorText = null;
           }
 
@@ -92,7 +103,11 @@ void showUnitEditDialog(
                               '${dispMax.toStringAsFixed(inputAcc)}';
                         } else {
                           errorText = null;
-                          editRaw = _toRawVal(constraints.rawUnit, displayUnit, parsed);
+                          editRaw = _toRawVal(
+                            constraints.rawUnit,
+                            displayUnit,
+                            parsed,
+                          );
                         }
                       });
                     },
@@ -113,7 +128,9 @@ void showUnitEditDialog(
                 onPressed: errorText != null
                     ? null
                     : () {
-                        onChanged(editRaw.clamp(constraints.minRaw, constraints.maxRaw));
+                        onChanged(
+                          editRaw.clamp(constraints.minRaw, constraints.maxRaw),
+                        );
                         Navigator.pop(ctx);
                       },
                 child: const Text('OK'),
@@ -145,18 +162,18 @@ class UnitValueField extends StatelessWidget {
     this.icon,
   });
 
-  final double               rawValue;
-  final FieldConstraints     constraints;
-  final Unit                 displayUnit;
+  final double rawValue;
+  final FieldConstraints constraints;
+  final Unit displayUnit;
   final ValueChanged<double> onChanged;
-  final String               label;
-  final String?              symbol;
-  final IconData?            icon;
+  final String label;
+  final String? symbol;
+  final IconData? icon;
 
   // ── Shorthand getters ───────────────────────────────────────────────────────
 
-  Unit   get _rawUnit => constraints.rawUnit;
-  double get _minRaw  => constraints.minRaw;
+  Unit get _rawUnit => constraints.rawUnit;
+  double get _minRaw => constraints.minRaw;
   double get _stepRaw => constraints.stepRaw;
 
   // ── Conversion ──────────────────────────────────────────────────────────────
@@ -167,13 +184,14 @@ class UnitValueField extends StatelessWidget {
   }
 
   double get _displayValue => _toDisplay(rawValue);
-  String get _sym          => symbol ?? displayUnit.symbol;
+  String get _sym => symbol ?? displayUnit.symbol;
 
   /// Decimal places needed to represent [_stepRaw] in [displayUnit].
   /// Uses step-delta so temperature offset conversions work correctly.
   int get _accuracy {
     if (_rawUnit == displayUnit) return constraints.accuracy;
-    final stepDisplay = (_toDisplay(_minRaw + _stepRaw) - _toDisplay(_minRaw)).abs();
+    final stepDisplay = (_toDisplay(_minRaw + _stepRaw) - _toDisplay(_minRaw))
+        .abs();
     if (stepDisplay <= 0) return constraints.accuracy;
     final digits = (-log(stepDisplay) / ln10).ceil();
     return digits < 0 ? 0 : digits;
@@ -182,21 +200,21 @@ class UnitValueField extends StatelessWidget {
   // ── Dialog ──────────────────────────────────────────────────────────────────
 
   void _showDialog(BuildContext context) => showUnitEditDialog(
-        context,
-        label: label,
-        rawValue: rawValue,
-        constraints: constraints,
-        displayUnit: displayUnit,
-        symbol: symbol,
-        onChanged: onChanged,
-      );
+    context,
+    label: label,
+    rawValue: rawValue,
+    constraints: constraints,
+    displayUnit: displayUnit,
+    symbol: symbol,
+    onChanged: onChanged,
+  );
 
   // ── Build ───────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs    = theme.colorScheme;
+    final cs = theme.colorScheme;
 
     return InkWell(
       onTap: () => _showDialog(context),

@@ -4,17 +4,17 @@ import 'package:eballistica/core/solver/conditions.dart';
 import 'package:eballistica/core/solver/munition.dart';
 
 class Shot {
-  final Ammo   ammo;
-  final Atmo   atmo;
+  final Ammo ammo;
+  final Atmo atmo;
   final Weapon weapon;
 
   final Angular lookAngle;
-  late  Angular relativeAngle;
+  late Angular relativeAngle;
   final Angular cantAngle;
 
   List<Wind>? _winds;
-  double?     _azimuthDeg;
-  double?     _latitudeDeg;
+  double? _azimuthDeg;
+  double? _latitudeDeg;
 
   Shot({
     required this.weapon,
@@ -22,16 +22,16 @@ class Shot {
     Angular? lookAngle,
     Angular? relativeAngle,
     Angular? cantAngle,
-    Atmo?    atmo,
+    Atmo? atmo,
     List<Wind>? winds,
     double? azimuthDeg,
     double? latitudeDeg,
-  })  : lookAngle = lookAngle ?? Angular(0, Unit.radian),
-        cantAngle = cantAngle ?? Angular(0, Unit.radian),
-        atmo      = atmo      ?? Atmo.icao() {
+  }) : lookAngle = lookAngle ?? Angular(0, Unit.radian),
+       cantAngle = cantAngle ?? Angular(0, Unit.radian),
+       atmo = atmo ?? Atmo.icao() {
     this.relativeAngle = relativeAngle ?? Angular(0, Unit.radian);
-    this.winds       = winds;
-    this.azimuthDeg  = azimuthDeg;
+    this.winds = winds;
+    this.azimuthDeg = azimuthDeg;
     this.latitudeDeg = latitudeDeg;
   }
 
@@ -57,8 +57,9 @@ class Shot {
 
   List<Wind> get winds {
     final list = _winds ?? [];
-    return List.from(list)
-      ..sort((a, b) => a.untilDistance.rawValue.compareTo(b.untilDistance.rawValue));
+    return List.from(list)..sort(
+      (a, b) => a.untilDistance.rawValue.compareTo(b.untilDistance.rawValue),
+    );
   }
 
   set winds(List<Wind>? value) => _winds = value;
@@ -66,19 +67,19 @@ class Shot {
   // --- Ballistic geometry ---
 
   Angular get barrelAzimuth => Angular(
-        math.sin(cantAngle.in_(Unit.radian)) *
-            (weapon.zeroElevation.in_(Unit.radian) +
-                relativeAngle.in_(Unit.radian)),
-        Unit.radian,
-      );
+    math.sin(cantAngle.in_(Unit.radian)) *
+        (weapon.zeroElevation.in_(Unit.radian) +
+            relativeAngle.in_(Unit.radian)),
+    Unit.radian,
+  );
 
   Angular get barrelElevation => Angular(
-        lookAngle.in_(Unit.radian) +
-            math.cos(cantAngle.in_(Unit.radian)) *
-                (weapon.zeroElevation.in_(Unit.radian) +
-                    relativeAngle.in_(Unit.radian)),
-        Unit.radian,
-      );
+    lookAngle.in_(Unit.radian) +
+        math.cos(cantAngle.in_(Unit.radian)) *
+            (weapon.zeroElevation.in_(Unit.radian) +
+                relativeAngle.in_(Unit.radian)),
+    Unit.radian,
+  );
 
   set barrelElevation(Angular value) {
     relativeAngle = Angular(

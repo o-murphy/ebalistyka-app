@@ -6,14 +6,22 @@ import 'package:eballistica/router.dart';
 // ─── Convertor tile data ──────────────────────────────────────────────────────
 
 const _convertors = [
-  (type: 'target-distance', label: 'Target Distance', icon: Icons.my_location_outlined),
-  (type: 'velocity',        label: 'Velocity',        icon: Icons.speed_outlined),
-  (type: 'length',          label: 'Length',          icon: Icons.straighten_outlined),
-  (type: 'weight',          label: 'Weight',          icon: Icons.scale_outlined),
-  (type: 'pressure',        label: 'Pressure',        icon: Icons.compress_outlined),
-  (type: 'temperature',     label: 'Temperature',     icon: Icons.device_thermostat_outlined),
-  (type: 'mil-moa',         label: 'MIL / MOA',       icon: Icons.square_foot),
-  (type: 'torque',          label: 'Torque',          icon: Icons.settings_outlined),
+  (
+    type: 'target-distance',
+    label: 'Target Distance',
+    icon: Icons.my_location_outlined,
+  ),
+  (type: 'velocity', label: 'Velocity', icon: Icons.speed_outlined),
+  (type: 'length', label: 'Length', icon: Icons.straighten_outlined),
+  (type: 'weight', label: 'Weight', icon: Icons.scale_outlined),
+  (type: 'pressure', label: 'Pressure', icon: Icons.compress_outlined),
+  (
+    type: 'temperature',
+    label: 'Temperature',
+    icon: Icons.device_thermostat_outlined,
+  ),
+  (type: 'mil-moa', label: 'MIL / MOA', icon: Icons.square_foot),
+  (type: 'torque', label: 'Torque', icon: Icons.settings_outlined),
 ];
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -41,9 +49,9 @@ class ConvertorScreen extends StatelessWidget {
                 ),
                 itemCount: _convertors.length,
                 itemBuilder: (context, i) => _ConvertorTile(
-                  type:  _convertors[i].type,
+                  type: _convertors[i].type,
                   label: _convertors[i].label,
-                  icon:  _convertors[i].icon,
+                  icon: _convertors[i].icon,
                 ),
               ),
             ),
@@ -73,10 +81,7 @@ class _Header extends StatelessWidget {
                 onPressed: () => context.go(Routes.home),
               ),
             ),
-            Text(
-              'Convertors',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text('Convertors', style: Theme.of(context).textTheme.titleLarge),
           ],
         ),
       ),
@@ -87,9 +92,13 @@ class _Header extends StatelessWidget {
 // ─── Tile ─────────────────────────────────────────────────────────────────────
 
 class _ConvertorTile extends StatelessWidget {
-  const _ConvertorTile({required this.type, required this.label, required this.icon});
-  final String   type;
-  final String   label;
+  const _ConvertorTile({
+    required this.type,
+    required this.label,
+    required this.icon,
+  });
+  final String type;
+  final String label;
   final IconData icon;
 
   @override

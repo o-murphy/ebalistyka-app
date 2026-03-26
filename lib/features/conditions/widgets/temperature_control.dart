@@ -63,8 +63,10 @@ class TempControl extends StatelessWidget {
         return StatefulBuilder(
           builder: (ctx, setState) {
             void step(int dir) {
-              editRaw =
-                  (editRaw + dir * _fc.stepRaw).clamp(_fc.minRaw, _fc.maxRaw);
+              editRaw = (editRaw + dir * _fc.stepRaw).clamp(
+                _fc.minRaw,
+                _fc.maxRaw,
+              );
               controller.text = _toDisplay(editRaw).toStringAsFixed(inputAcc);
               errorText = null;
             }
@@ -91,8 +93,9 @@ class TempControl extends StatelessWidget {
                         errorText: errorText,
                       ),
                       onChanged: (text) {
-                        final parsed =
-                            double.tryParse(text.replaceAll(',', '.'));
+                        final parsed = double.tryParse(
+                          text.replaceAll(',', '.'),
+                        );
                         setState(() {
                           if (parsed == null) {
                             errorText = 'Invalid number';

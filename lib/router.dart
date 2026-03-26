@@ -17,32 +17,32 @@ import 'features/settings/settings_adjustment_screen.dart';
 
 abstract final class Routes {
   // Primary
-  static const home              = '/home';
-  static const conditions        = '/conditions';
-  static const tables            = '/tables';
-  static const convertors        = '/convertors';
-  static const settings          = '/settings';
+  static const home = '/home';
+  static const conditions = '/conditions';
+  static const tables = '/tables';
+  static const convertors = '/convertors';
+  static const settings = '/settings';
 
   // Home stack
-  static const rifleSelect       = '/home/rifle-select';
-  static const rifleEdit         = '/home/rifle-select/rifle-edit';
-  static const sightSelect       = '/home/rifle-select/sight-select';
-  static const cartridge         = '/home/rifle-select/cartridge';
-  static const cartridgeEdit     = '/home/rifle-select/cartridge/edit';
-  static const projectileSelect  = '/home/projectile-select';
-  static const projectileEdit    = '/home/projectile-select/edit';
-  static const shotDetails       = '/home/shot-details';
+  static const rifleSelect = '/home/rifle-select';
+  static const rifleEdit = '/home/rifle-select/rifle-edit';
+  static const sightSelect = '/home/rifle-select/sight-select';
+  static const cartridge = '/home/rifle-select/cartridge';
+  static const cartridgeEdit = '/home/rifle-select/cartridge/edit';
+  static const projectileSelect = '/home/projectile-select';
+  static const projectileEdit = '/home/projectile-select/edit';
+  static const shotDetails = '/home/shot-details';
 
   // Tables stack
-  static const tableConfig       = '/tables/configure';
+  static const tableConfig = '/tables/configure';
 
   // Convertors stack
-  static const convertor         = '/convertors/:type';  // push individual convertor
+  static const convertor = '/convertors/:type'; // push individual convertor
   static String convertorOf(String type) => '/convertors/$type';
 
   // Settings stack
-  static const settingsUnits       = '/settings/units';
-  static const settingsAdjustment  = '/settings/adjustment';
+  static const settingsUnits = '/settings/units';
+  static const settingsAdjustment = '/settings/adjustment';
 }
 
 // ─── Router ──────────────────────────────────────────────────────────────────
@@ -56,82 +56,116 @@ final appRouter = GoRouter(
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => _ScaffoldWithNav(shell: shell),
       branches: [
-
         // ── Home branch ──────────────────────────────────────────────────────
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: Routes.home,
-            builder: (_, _) => const HomeScreen(),
-            routes: [
-              GoRoute(
-                path: 'rifle-select',
-                builder: (_, _) => const RifleSelectScreen(),
-                routes: [
-                  GoRoute(path: 'rifle-edit',   builder: (_, _) => const RifleEditScreen()),
-                  GoRoute(path: 'sight-select',  builder: (_, _) => const SightSelectScreen()),
-                  GoRoute(
-                    path: 'cartridge',
-                    builder: (_, _) => const CartridgeScreen(),
-                    routes: [
-                      GoRoute(path: 'edit', builder: (_, _) => const CartridgeEditScreen()),
-                    ],
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: 'projectile-select',
-                builder: (_, _) => const ProjectileSelectScreen(),
-                routes: [
-                  GoRoute(path: 'edit', builder: (_, _) => const ProjectileEditScreen()),
-                ],
-              ),
-              GoRoute(path: 'shot-details', builder: (_, _) => const ShotDetailsScreen()),
-            ],
-          ),
-        ]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.home,
+              builder: (_, _) => const HomeScreen(),
+              routes: [
+                GoRoute(
+                  path: 'rifle-select',
+                  builder: (_, _) => const RifleSelectScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'rifle-edit',
+                      builder: (_, _) => const RifleEditScreen(),
+                    ),
+                    GoRoute(
+                      path: 'sight-select',
+                      builder: (_, _) => const SightSelectScreen(),
+                    ),
+                    GoRoute(
+                      path: 'cartridge',
+                      builder: (_, _) => const CartridgeScreen(),
+                      routes: [
+                        GoRoute(
+                          path: 'edit',
+                          builder: (_, _) => const CartridgeEditScreen(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'projectile-select',
+                  builder: (_, _) => const ProjectileSelectScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'edit',
+                      builder: (_, _) => const ProjectileEditScreen(),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'shot-details',
+                  builder: (_, _) => const ShotDetailsScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
 
         // ── Conditions branch ────────────────────────────────────────────────
-        StatefulShellBranch(routes: [
-          GoRoute(path: Routes.conditions, builder: (_, _) => const ConditionsScreen()),
-        ]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.conditions,
+              builder: (_, _) => const ConditionsScreen(),
+            ),
+          ],
+        ),
 
         // ── Tables branch ────────────────────────────────────────────────────
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: Routes.tables,
-            builder: (_, _) => const TablesScreen(),
-            routes: [
-              GoRoute(path: 'configure', builder: (_, _) => const TableConfigScreen()),
-            ],
-          ),
-        ]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.tables,
+              builder: (_, _) => const TablesScreen(),
+              routes: [
+                GoRoute(
+                  path: 'configure',
+                  builder: (_, _) => const TableConfigScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
 
         // ── Convertors branch ────────────────────────────────────────────────
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: Routes.convertors,
-            builder: (_, _) => const ConvertorScreen(),
-            routes: [
-              GoRoute(
-                path: ':type',
-                builder: (_, state) => ConvertorScreen(key: ValueKey(state.pathParameters['type'])),
-              ),
-            ],
-          ),
-        ]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.convertors,
+              builder: (_, _) => const ConvertorScreen(),
+              routes: [
+                GoRoute(
+                  path: ':type',
+                  builder: (_, state) => ConvertorScreen(
+                    key: ValueKey(state.pathParameters['type']),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
 
         // ── Settings branch ──────────────────────────────────────────────────
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: Routes.settings,
-            builder: (_, _) => const SettingsScreen(),
-            routes: [
-              GoRoute(path: 'units',       builder: (_, _) => const UnitsScreen()),
-              GoRoute(path: 'adjustment',  builder: (_, _) => const AdjustmentDisplayScreen()),
-            ],
-          ),
-        ]),
-
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.settings,
+              builder: (_, _) => const SettingsScreen(),
+              routes: [
+                GoRoute(path: 'units', builder: (_, _) => const UnitsScreen()),
+                GoRoute(
+                  path: 'adjustment',
+                  builder: (_, _) => const AdjustmentDisplayScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
       ],
     ),
   ],
@@ -152,9 +186,9 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(recalcCoordinatorProvider.notifier).onTabActivated(
-        widget.shell.currentIndex,
-      );
+      ref
+          .read(recalcCoordinatorProvider.notifier)
+          .onTabActivated(widget.shell.currentIndex);
     });
   }
 
@@ -174,11 +208,23 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         selectedIndex: widget.shell.currentIndex,
         onDestinationSelected: _onTabSelected,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined),        label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.thunderstorm_outlined), label: 'Conditions'),
-          NavigationDestination(icon: Icon(Icons.table_view_outlined),   label: 'Tables'),
-          NavigationDestination(icon: Icon(Icons.calculate_outlined),    label: 'Convertors'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined),     label: 'Settings'),
+          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
+          NavigationDestination(
+            icon: Icon(Icons.thunderstorm_outlined),
+            label: 'Conditions',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.table_view_outlined),
+            label: 'Tables',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calculate_outlined),
+            label: 'Convertors',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            label: 'Settings',
+          ),
         ],
       ),
     );

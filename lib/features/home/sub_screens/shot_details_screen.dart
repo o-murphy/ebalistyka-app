@@ -81,7 +81,7 @@ class ShotDetailsScreen extends ConsumerWidget {
 
     // Speed of sound: fps / mach at first point
     final double? soundSpeedFps = (traj.isNotEmpty && traj[0].mach > 0)
-        ? ((traj[0].velocity as dynamic).in_(Unit.fps) as double) / traj[0].mach
+        ? ((traj[0].velocity as Dimension).in_(Unit.fps)) / traj[0].mach
         : null;
 
     // First-point energy (near barrel)
@@ -91,21 +91,21 @@ class ShotDetailsScreen extends ConsumerWidget {
     TrajectoryData? apexPoint;
     if (traj.length > 1) {
       apexPoint = traj.reduce((a, b) {
-        final ha = (a.height as dynamic).in_(Unit.foot) as double;
-        final hb = (b.height as dynamic).in_(Unit.foot) as double;
+        final ha = (a.height as Dimension).in_(Unit.foot);
+        final hb = (b.height as Dimension).in_(Unit.foot);
         return ha >= hb ? a : b;
       });
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────
-    double conv(dynamic dim, Unit raw, Unit disp) {
-      final v = (dim as dynamic).in_(raw) as double;
-      return (raw(v) as dynamic).in_(disp) as double;
+    double conv(Dimension dim, Unit raw, Unit disp) {
+      final v = dim.in_(raw);
+      return (raw(v) as Dimension).in_(disp);
     }
 
     String fmtV(double? mps) {
       if (mps == null) return '—';
-      final disp = (Unit.mps(mps) as dynamic).in_(units.velocity) as double;
+      final disp = (Unit.mps(mps) as Dimension).in_(units.velocity);
       return '${disp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     }
 
@@ -128,14 +128,13 @@ class ShotDetailsScreen extends ConsumerWidget {
     }
 
     // ── Values ─────────────────────────────────────────────────────────────
-    final distDisp =
-        (Unit.meter(targetDistM) as dynamic).in_(units.distance) as double;
+    final distDisp = (Unit.meter(targetDistM) as Dimension).in_(units.distance);
     final distStr =
         '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
 
     final soundDisp = soundSpeedFps == null
         ? '—'
-        : '${((Unit.fps(soundSpeedFps) as dynamic).in_(units.velocity) as double).toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+        : '${((Unit.fps(soundSpeedFps) as Dimension).in_(units.velocity)).toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
 
     final items = <Widget>[
       SectionHeader('Velocity'),

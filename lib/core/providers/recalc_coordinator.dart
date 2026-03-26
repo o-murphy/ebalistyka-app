@@ -64,5 +64,6 @@ class RecalcCoordinator extends Notifier<void> {
   }
 }
 
-final recalcCoordinatorProvider =
-    NotifierProvider<RecalcCoordinator, void>(RecalcCoordinator.new);
+final recalcCoordinatorProvider = NotifierProvider<RecalcCoordinator, void>(
+  RecalcCoordinator.new,
+);

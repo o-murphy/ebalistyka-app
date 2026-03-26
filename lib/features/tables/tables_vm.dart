@@ -1,4 +1,5 @@
 // ЧИСТИЙ DART
+import 'package:eballistica/core/models/unit_settings.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -128,12 +129,13 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       final zeroKey = _buildZeroKey(profile, settings.enablePowderSensitivity);
       final useCache = listEquals(zeroKey, _lastZeroKey);
 
-      final result =
-          await ref.read(ballisticsServiceProvider).calculateTable(
-                profile,
-                opts,
-                cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
-              );
+      final result = await ref
+          .read(ballisticsServiceProvider)
+          .calculateTable(
+            profile,
+            opts,
+            cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
+          );
 
       if (!useCache) {
         _cachedZeroElevRad = result.zeroElevationRad;
@@ -182,7 +184,12 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     );
 
     final zeroDistM = profile.zeroDistance.in_(Unit.meter);
-    final mainTable = _buildTable(filtered, effUnits, cfg, zeroDistM: zeroDistM);
+    final mainTable = _buildTable(
+      filtered,
+      effUnits,
+      cfg,
+      zeroDistM: zeroDistM,
+    );
 
     // Zero crossings
     FormattedTableData? zeroCrossings;
@@ -222,8 +229,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     // Powder sensitivity
     final powderSensOn =
         settings.enablePowderSensitivity && cart.usePowderSensitivity;
-    final useDiffTemp =
-        powderSensOn && settings.useDifferentPowderTemperature;
+    final useDiffTemp = powderSensOn && settings.useDifferentPowderTemperature;
 
     final refMvMps = cart.mv.in_(Unit.mps);
     final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
@@ -253,8 +259,10 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
       final lCal = lenInch / diamInch;
       final nCal = twistInch / diamInch;
-      sg = (30.0 * weightGr) /
-          (nCal * nCal *
+      sg =
+          (30.0 * weightGr) /
+          (nCal *
+              nCal *
               diamInch *
               diamInch *
               diamInch *
@@ -273,21 +281,30 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       return '${disp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     }
 
-    String fmtWithAcc(dynamic dim, Unit rawUnit, Unit dispUnit, FieldConstraints fc) {
-      final v = (dim as dynamic).in_(rawUnit) as double;
-      final d = (rawUnit(v) as dynamic).in_(dispUnit) as double;
+    String fmtWithAcc(
+      Dimension dim,
+      Unit rawUnit,
+      Unit dispUnit,
+      FieldConstraints fc,
+    ) {
+      final v = dim.in_(rawUnit);
+      final d = (rawUnit(v) as Dimension).in_(dispUnit);
       return '${d.toStringAsFixed(fc.accuracyFor(dispUnit))} ${dispUnit.symbol}';
     }
 
     return TablesSpoilerData(
       rifleName: rifle.name,
       caliber: cfg.spoilerShowCaliber && diamInch > 0
-          ? fmtWithAcc(dm.diameter, Unit.inch, units.diameter, FC.bulletDiameter)
+          ? fmtWithAcc(
+              dm.diameter,
+              Unit.inch,
+              units.diameter,
+              FC.bulletDiameter,
+            )
           : null,
       twist: cfg.spoilerShowTwist && twistInch > 0
           ? () {
-              final tw = (Unit.inch(twistInch) as dynamic).in_(units.twist)
-                  as double;
+              final tw = (Unit.inch(twistInch) as Dimension).in_(units.twist);
               return '1:${tw.toStringAsFixed(FC.twistRate.accuracyFor(units.twist))} ${units.twist.symbol}';
             }()
           : null,
@@ -304,18 +321,29 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       zeroMv: cfg.spoilerShowZeroMv ? fmtV(zeroMvMps) : null,
       currentMv: cfg.spoilerShowCurrMv ? fmtV(currentMvMps) : null,
       zeroDist: cfg.spoilerShowZeroDist
-          ? fmtWithAcc(profile.zeroDistance, Unit.meter, units.distance, FC.zeroDistance)
+          ? fmtWithAcc(
+              profile.zeroDistance,
+              Unit.meter,
+              units.distance,
+              FC.zeroDistance,
+            )
           : null,
       bulletLen: cfg.spoilerShowBulletLen && lenInch > 0
           ? fmtWithAcc(dm.length, Unit.inch, units.length, FC.bulletLength)
           : null,
       bulletDiam: cfg.spoilerShowBulletDiam && diamInch > 0
-          ? fmtWithAcc(dm.diameter, Unit.inch, units.diameter, FC.bulletDiameter)
+          ? fmtWithAcc(
+              dm.diameter,
+              Unit.inch,
+              units.diameter,
+              FC.bulletDiameter,
+            )
           : null,
       bulletWeight: cfg.spoilerShowBulletWeight && weightGr > 0
           ? () {
-              final wDisp =
-                  (Unit.grain(weightGr) as dynamic).in_(units.weight) as double;
+              final wDisp = (Unit.grain(weightGr) as Dimension).in_(
+                units.weight,
+              );
               return '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weight))} ${units.weight.symbol}';
             }()
           : null,
@@ -357,7 +385,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
 
   FormattedTableData _buildTable(
     List<TrajectoryData> rows,
-    dynamic effUnits, // UnitSettings
+    UnitSettings effUnits, // UnitSettings
     TableConfig cfg, {
     bool isZeroTable = false,
     double? zeroDistM,
@@ -365,43 +393,84 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     final hidden = cfg.hiddenCols;
 
     // Column definitions matching TrajectoryTable._catalogue
-    final colDefs = <(String, String, String Function(dynamic), double? Function(TrajectoryData), int)>[
-      ('range', 'Range', (_) => (effUnits.distance as Unit).symbol,
-          (r) => _conv(r.distance, Unit.foot, effUnits.distance as Unit),
-          FC.targetDistance.accuracyFor(effUnits.distance as Unit)),
-      if (!hidden.contains('time'))
-        ('time', 'Time', (_) => 's', (r) => r.time, 3),
-      if (!hidden.contains('velocity'))
-        ('velocity', 'V', (_) => (effUnits.velocity as Unit).symbol,
-            (r) => _conv(r.velocity, Unit.fps, effUnits.velocity as Unit),
-            FC.velocity.accuracyFor(effUnits.velocity as Unit)),
-      if (!hidden.contains('height'))
-        ('height', 'Height', (_) => (effUnits.drop as Unit).symbol,
-            (r) => _conv(r.height, Unit.foot, effUnits.drop as Unit),
-            FC.drop.accuracyFor(effUnits.drop as Unit)),
-      if (!hidden.contains('drop'))
-        ('drop', 'Drop', (_) => (effUnits.drop as Unit).symbol,
-            (r) => _conv(r.slantHeight, Unit.foot, effUnits.drop as Unit),
-            FC.drop.accuracyFor(effUnits.drop as Unit)),
-      if (!hidden.contains('adjDrop'))
-        ('adjDrop', 'Drop°', (_) => (effUnits.adjustment as Unit).symbol,
-            (r) => _conv(r.dropAngle, Unit.mil, effUnits.adjustment as Unit),
-            FC.adjustment.accuracyFor(effUnits.adjustment as Unit)),
-      if (!hidden.contains('wind'))
-        ('wind', 'Wind', (_) => (effUnits.drop as Unit).symbol,
-            (r) => _conv(r.windage, Unit.foot, effUnits.drop as Unit),
-            FC.drop.accuracyFor(effUnits.drop as Unit)),
-      if (!hidden.contains('adjWind'))
-        ('adjWind', 'Wind°', (_) => (effUnits.adjustment as Unit).symbol,
-            (r) => _conv(r.windageAngle, Unit.mil, effUnits.adjustment as Unit),
-            FC.adjustment.accuracyFor(effUnits.adjustment as Unit)),
-      if (!hidden.contains('mach'))
-        ('mach', 'Mach', (_) => '', (r) => r.mach, 2),
-      if (!hidden.contains('energy'))
-        ('energy', 'Energy', (_) => (effUnits.energy as Unit).symbol,
-            (r) => _conv(r.energy, Unit.footPound, effUnits.energy as Unit),
-            FC.energy.accuracyFor(effUnits.energy as Unit)),
-    ];
+    final colDefs =
+        <
+          (
+            String,
+            String,
+            String Function(Dimension?),
+            double? Function(TrajectoryData),
+            int,
+          )
+        >[
+          (
+            'range',
+            'Range',
+            (_) => (effUnits.distance).symbol,
+            (r) => _conv(r.distance, Unit.foot, effUnits.distance),
+            FC.targetDistance.accuracyFor(effUnits.distance),
+          ),
+          if (!hidden.contains('time'))
+            ('time', 'Time', (_) => 's', (r) => r.time, 3),
+          if (!hidden.contains('velocity'))
+            (
+              'velocity',
+              'V',
+              (_) => (effUnits.velocity).symbol,
+              (r) => _conv(r.velocity, Unit.fps, effUnits.velocity),
+              FC.velocity.accuracyFor(effUnits.velocity),
+            ),
+          if (!hidden.contains('height'))
+            (
+              'height',
+              'Height',
+              (_) => (effUnits.drop).symbol,
+              (r) => _conv(r.height, Unit.foot, effUnits.drop),
+              FC.drop.accuracyFor(effUnits.drop),
+            ),
+          if (!hidden.contains('drop'))
+            (
+              'drop',
+              'Drop',
+              (_) => (effUnits.drop).symbol,
+              (r) => _conv(r.slantHeight, Unit.foot, effUnits.drop),
+              FC.drop.accuracyFor(effUnits.drop),
+            ),
+          if (!hidden.contains('adjDrop'))
+            (
+              'adjDrop',
+              'Drop°',
+              (_) => (effUnits.adjustment).symbol,
+              (r) => _conv(r.dropAngle, Unit.mil, effUnits.adjustment),
+              FC.adjustment.accuracyFor(effUnits.adjustment),
+            ),
+          if (!hidden.contains('wind'))
+            (
+              'wind',
+              'Wind',
+              (_) => (effUnits.drop).symbol,
+              (r) => _conv(r.windage, Unit.foot, effUnits.drop),
+              FC.drop.accuracyFor(effUnits.drop),
+            ),
+          if (!hidden.contains('adjWind'))
+            (
+              'adjWind',
+              'Wind°',
+              (_) => (effUnits.adjustment).symbol,
+              (r) => _conv(r.windageAngle, Unit.mil, effUnits.adjustment),
+              FC.adjustment.accuracyFor(effUnits.adjustment),
+            ),
+          if (!hidden.contains('mach'))
+            ('mach', 'Mach', (_) => '', (r) => r.mach, 2),
+          if (!hidden.contains('energy'))
+            (
+              'energy',
+              'Energy',
+              (_) => (effUnits.energy).symbol,
+              (r) => _conv(r.energy, Unit.footPound, effUnits.energy),
+              FC.energy.accuracyFor(effUnits.energy),
+            ),
+        ];
 
     // Distance headers (first column values serve as "headers")
     final distHeaders = <String>[];
@@ -420,8 +489,8 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
         final arrow = (row.flag & TrajFlag.zeroUp.value) != 0
             ? ' ↑'
             : (row.flag & TrajFlag.zeroDown.value) != 0
-                ? ' ↓'
-                : '';
+            ? ' ↓'
+            : '';
         distHeaders.add('$rangeStr$arrow');
       } else {
         distHeaders.add(rangeStr);
@@ -455,22 +524,21 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       for (var pi = 0; pi < rows.length; pi++) {
         final row = rows[pi];
         final val = col.$4(row);
-        final valStr =
-            val != null ? val.toStringAsFixed(col.$5) : '—';
+        final valStr = val != null ? val.toStringAsFixed(col.$5) : '—';
         final isZero = (row.flag & TrajFlag.zero.value) != 0;
         final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
-        cells.add(FormattedCell(
-          value: valStr,
-          isZeroCrossing: isZero,
-          isSubsonic: pi == subsonicIndex,
-          isTargetColumn: isTarget,
-        ));
+        cells.add(
+          FormattedCell(
+            value: valStr,
+            isZeroCrossing: isZero,
+            isSubsonic: pi == subsonicIndex,
+            isTargetColumn: isTarget,
+          ),
+        );
       }
-      tableRows.add(FormattedRow(
-        label: col.$2,
-        unitSymbol: col.$3(null),
-        cells: cells,
-      ));
+      tableRows.add(
+        FormattedRow(label: col.$2, unitSymbol: col.$3(null), cells: cells),
+      );
     }
 
     return FormattedTableData(
@@ -499,9 +567,9 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     return result;
   }
 
-  static double _conv(dynamic dim, Unit rawUnit, Unit dispUnit) {
-    final v = (dim as dynamic).in_(rawUnit) as double;
-    return (rawUnit(v) as dynamic).in_(dispUnit) as double;
+  static double _conv(Dimension dim, Unit rawUnit, Unit dispUnit) {
+    final v = dim.in_(rawUnit);
+    return (rawUnit(v) as Dimension).in_(dispUnit);
   }
 
   // ── Zero key ───────────────────────────────────────────────────────────────
@@ -535,5 +603,6 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
   }
 }
 
-final tablesVmProvider =
-    AsyncNotifierProvider<TablesViewModel, TablesUiState>(TablesViewModel.new);
+final tablesVmProvider = AsyncNotifierProvider<TablesViewModel, TablesUiState>(
+  TablesViewModel.new,
+);

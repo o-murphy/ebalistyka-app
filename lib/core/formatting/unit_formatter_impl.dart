@@ -12,8 +12,7 @@ class UnitFormatterImpl implements UnitFormatter {
   // --- Helpers ---
 
   /// Extract value from a Dimension in the given display unit.
-  double _val(dynamic dim, Unit displayUnit) =>
-      (dim as dynamic).in_(displayUnit) as double;
+  double _val(Dimension dim, Unit displayUnit) => dim.in_(displayUnit);
 
   // --- Formatted strings ---
 
@@ -150,29 +149,46 @@ class UnitFormatterImpl implements UnitFormatter {
   double inputToRaw(double displayValue, InputField field) {
     return switch (field) {
       InputField.velocity => Velocity(displayValue, _u.velocity).in_(Unit.mps),
-      InputField.distance =>
-        Distance(displayValue, _u.distance).in_(Unit.meter),
-      InputField.targetDistance =>
-        Distance(displayValue, _u.distance).in_(Unit.meter),
-      InputField.zeroDistance =>
-        Distance(displayValue, _u.distance).in_(Unit.meter),
-      InputField.temperature =>
-        Temperature(displayValue, _u.temperature).in_(Unit.celsius),
-      InputField.pressure =>
-        Pressure(displayValue, _u.pressure).in_(Unit.hPa),
+      InputField.distance => Distance(
+        displayValue,
+        _u.distance,
+      ).in_(Unit.meter),
+      InputField.targetDistance => Distance(
+        displayValue,
+        _u.distance,
+      ).in_(Unit.meter),
+      InputField.zeroDistance => Distance(
+        displayValue,
+        _u.distance,
+      ).in_(Unit.meter),
+      InputField.temperature => Temperature(
+        displayValue,
+        _u.temperature,
+      ).in_(Unit.celsius),
+      InputField.pressure => Pressure(displayValue, _u.pressure).in_(Unit.hPa),
       InputField.humidity => displayValue / 100.0,
-      InputField.windVelocity =>
-        Velocity(displayValue, _u.velocity).in_(Unit.mps),
+      InputField.windVelocity => Velocity(
+        displayValue,
+        _u.velocity,
+      ).in_(Unit.mps),
       InputField.lookAngle => displayValue, // завжди degrees
-      InputField.sightHeight =>
-        Distance(displayValue, _u.sightHeight).in_(Unit.millimeter),
+      InputField.sightHeight => Distance(
+        displayValue,
+        _u.sightHeight,
+      ).in_(Unit.millimeter),
       InputField.twist => Distance(displayValue, _u.twist).in_(Unit.inch),
-      InputField.bulletWeight =>
-        Weight(displayValue, _u.weight).in_(Unit.grain),
-      InputField.bulletLength =>
-        Distance(displayValue, _u.length).in_(Unit.millimeter),
-      InputField.bulletDiameter =>
-        Distance(displayValue, _u.diameter).in_(Unit.millimeter),
+      InputField.bulletWeight => Weight(
+        displayValue,
+        _u.weight,
+      ).in_(Unit.grain),
+      InputField.bulletLength => Distance(
+        displayValue,
+        _u.length,
+      ).in_(Unit.millimeter),
+      InputField.bulletDiameter => Distance(
+        displayValue,
+        _u.diameter,
+      ).in_(Unit.millimeter),
       InputField.bc => displayValue, // dimensionless
     };
   }
@@ -182,24 +198,36 @@ class UnitFormatterImpl implements UnitFormatter {
     return switch (field) {
       InputField.velocity => Velocity(rawValue, Unit.mps).in_(_u.velocity),
       InputField.distance => Distance(rawValue, Unit.meter).in_(_u.distance),
-      InputField.targetDistance =>
-        Distance(rawValue, Unit.meter).in_(_u.distance),
-      InputField.zeroDistance =>
-        Distance(rawValue, Unit.meter).in_(_u.distance),
-      InputField.temperature =>
-        Temperature(rawValue, Unit.celsius).in_(_u.temperature),
+      InputField.targetDistance => Distance(
+        rawValue,
+        Unit.meter,
+      ).in_(_u.distance),
+      InputField.zeroDistance => Distance(
+        rawValue,
+        Unit.meter,
+      ).in_(_u.distance),
+      InputField.temperature => Temperature(
+        rawValue,
+        Unit.celsius,
+      ).in_(_u.temperature),
       InputField.pressure => Pressure(rawValue, Unit.hPa).in_(_u.pressure),
       InputField.humidity => rawValue * 100.0,
       InputField.windVelocity => Velocity(rawValue, Unit.mps).in_(_u.velocity),
       InputField.lookAngle => rawValue,
-      InputField.sightHeight =>
-        Distance(rawValue, Unit.millimeter).in_(_u.sightHeight),
+      InputField.sightHeight => Distance(
+        rawValue,
+        Unit.millimeter,
+      ).in_(_u.sightHeight),
       InputField.twist => Distance(rawValue, Unit.inch).in_(_u.twist),
       InputField.bulletWeight => Weight(rawValue, Unit.grain).in_(_u.weight),
-      InputField.bulletLength =>
-        Distance(rawValue, Unit.millimeter).in_(_u.length),
-      InputField.bulletDiameter =>
-        Distance(rawValue, Unit.millimeter).in_(_u.diameter),
+      InputField.bulletLength => Distance(
+        rawValue,
+        Unit.millimeter,
+      ).in_(_u.length),
+      InputField.bulletDiameter => Distance(
+        rawValue,
+        Unit.millimeter,
+      ).in_(_u.diameter),
       InputField.bc => rawValue,
     };
   }

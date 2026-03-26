@@ -11,9 +11,15 @@ Map<String, dynamic> dimToJson(Dimension d) => {
 Unit _unit(Map json) =>
     Unit.values.firstWhere((u) => u.name == json['unit'] as String);
 
-Angular   angularFromJson(Map json)     => Angular(   (json['value'] as num).toDouble(), _unit(json));
-Distance  distanceFromJson(Map json)    => Distance(  (json['value'] as num).toDouble(), _unit(json));
-Velocity  velocityFromJson(Map json)    => Velocity(  (json['value'] as num).toDouble(), _unit(json));
-Temperature temperatureFromJson(Map json) => Temperature((json['value'] as num).toDouble(), _unit(json));
-Pressure  pressureFromJson(Map json)    => Pressure(  (json['value'] as num).toDouble(), _unit(json));
-Weight    weightFromJson(Map json)      => Weight(    (json['value'] as num).toDouble(), _unit(json));
+Angular angularFromJson(Map json) =>
+    Angular((json['value'] as num).toDouble(), _unit(json));
+Distance distanceFromJson(Map json) =>
+    Distance((json['value'] as num).toDouble(), _unit(json));
+Velocity velocityFromJson(Map json) =>
+    Velocity((json['value'] as num).toDouble(), _unit(json));
+Temperature temperatureFromJson(Map json) =>
+    Temperature((json['value'] as num).toDouble(), _unit(json));
+Pressure pressureFromJson(Map json) =>
+    Pressure((json['value'] as num).toDouble(), _unit(json));
+Weight weightFromJson(Map json) =>
+    Weight((json['value'] as num).toDouble(), _unit(json));

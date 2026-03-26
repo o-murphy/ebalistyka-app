@@ -22,9 +22,11 @@ class TablesScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.table_view_outlined,
-                size: 48,
-                color: Theme.of(context).colorScheme.outlineVariant),
+            Icon(
+              Icons.table_view_outlined,
+              size: 48,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
             const SizedBox(height: 12),
             const Text('No data'),
           ],
@@ -32,9 +34,9 @@ class TablesScreen extends ConsumerWidget {
       );
     } else if (vmState is TablesUiReady) {
       body = TrajectoryTable(
-        mainTable:      vmState.mainTable,
-        zeroCrossings:  vmState.zeroCrossings,
-        spoiler:        vmState.spoiler,
+        mainTable: vmState.mainTable,
+        zeroCrossings: vmState.zeroCrossings,
+        spoiler: vmState.spoiler,
       );
     } else {
       body = const Center(child: Text('No data'));

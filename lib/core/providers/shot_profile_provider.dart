@@ -9,26 +9,24 @@ import 'package:eballistica/core/solver/conditions.dart';
 import 'package:eballistica/core/solver/unit.dart';
 import 'storage_provider.dart';
 
-
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   @override
   Future<ShotProfile> build() async {
-    final loaded = await ref.read(appStorageProvider).loadCurrentProfile()
-        ?? seedShotProfile;
+    final loaded =
+        await ref.read(appStorageProvider).loadCurrentProfile() ??
+        seedShotProfile;
     // Clamp look angle to ±45° — corrupted values (e.g. from old wind-wheel
     // bug that wrote wind direction into lookAngle) cause zero-finding to fail.
-    final laDeg = (loaded.lookAngle as Angular).in_(Unit.degree);
+    final laDeg = (loaded.lookAngle).in_(Unit.degree);
     if (laDeg.abs() > 45) {
       return loaded.copyWith(lookAngle: Angular(0.0, Unit.degree));
     }
     return loaded;
   }
 
-  Future<void> selectRifle(Rifle r) =>
-      _update((p) => p.copyWith(rifle: r));
+  Future<void> selectRifle(Rifle r) => _update((p) => p.copyWith(rifle: r));
 
-  Future<void> selectSight(Sight s) =>
-      _update((p) => p.copyWith(sight: s));
+  Future<void> selectSight(Sight s) => _update((p) => p.copyWith(sight: s));
 
   Future<void> selectCartridge(Cartridge c) =>
       _update((p) => p.copyWith(cartridge: c));
@@ -48,22 +46,30 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   Future<void> updateZeroDistance(double meters) =>
       _update((p) => p.copyWith(zeroDistance: Distance(meters, Unit.meter)));
 
-  Future<void> updateZeroConditions(Atmo? atmo) => _update((p) => atmo != null
-      ? p.copyWith(zeroConditions: atmo)
-      : p.copyWith(clearZeroConditions: true));
+  Future<void> updateZeroConditions(Atmo? atmo) => _update(
+    (p) => atmo != null
+        ? p.copyWith(zeroConditions: atmo)
+        : p.copyWith(clearZeroConditions: true),
+  );
 
   Future<void> updateWindSpeed(double mps) => _update((p) {
-        final existing = p.winds;
-        final dir = existing.isNotEmpty
-            ? existing.first.directionFrom
-            : Angular(0.0, Unit.degree);
-        final until = existing.isNotEmpty
-            ? existing.first.untilDistance
-            : Distance(9999.0, Unit.meter);
-        return p.copyWith(
-          winds: [Wind(velocity: Velocity(mps, Unit.mps), directionFrom: dir, untilDistance: until)],
-        );
-      });
+    final existing = p.winds;
+    final dir = existing.isNotEmpty
+        ? existing.first.directionFrom
+        : Angular(0.0, Unit.degree);
+    final until = existing.isNotEmpty
+        ? existing.first.untilDistance
+        : Distance(9999.0, Unit.meter);
+    return p.copyWith(
+      winds: [
+        Wind(
+          velocity: Velocity(mps, Unit.mps),
+          directionFrom: dir,
+          untilDistance: until,
+        ),
+      ],
+    );
+  });
 
   Future<void> _update(ShotProfile Function(ShotProfile) fn) async {
     final current = state.value ?? seedShotProfile;
@@ -74,4 +80,6 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
 }
 
 final shotProfileProvider =
-    AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>(ShotProfileNotifier.new);
+    AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>(
+      ShotProfileNotifier.new,
+    );

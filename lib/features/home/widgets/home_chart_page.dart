@@ -70,20 +70,27 @@ class _ChartInfoGrid extends StatelessWidget {
     ];
 
     final valueStyle = TextStyle(
-        fontSize: 11, fontWeight: FontWeight.w600, color: cs.onSurface);
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      color: cs.onSurface,
+    );
 
     Widget infoRow(IconData icon, String value) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(
-            children: [
-              Icon(icon, size: 12, color: cs.onSurface.withAlpha(140)),
-              const SizedBox(width: 4),
-              Expanded(
-                  child: Text(value,
-                      style: valueStyle, overflow: TextOverflow.ellipsis)),
-            ],
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 12, color: cs.onSurface.withAlpha(140)),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              value,
+              style: valueStyle,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        );
+        ],
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 6),
@@ -92,16 +99,14 @@ class _ChartInfoGrid extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  leftItems.map((e) => infoRow(e.$1, e.$2)).toList(),
+              children: leftItems.map((e) => infoRow(e.$1, e.$2)).toList(),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children:
-                  rightItems.map((e) => infoRow(e.$1, e.$2)).toList(),
+              children: rightItems.map((e) => infoRow(e.$1, e.$2)).toList(),
             ),
           ),
         ],

@@ -24,9 +24,9 @@ class Projectile {
     this.notes,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : id = id ?? const Uuid().v4(),
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4(),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   Projectile copyWith({
     String? name,
@@ -34,36 +34,35 @@ class Projectile {
     DragModel? dm,
     DragModelType? dragType,
     String? notes,
-  }) =>
-      Projectile(
-        id: id,
-        name: name ?? this.name,
-        manufacturer: manufacturer ?? this.manufacturer,
-        dm: dm ?? this.dm,
-        dragType: dragType ?? this.dragType,
-        notes: notes ?? this.notes,
-        createdAt: createdAt,
-        updatedAt: DateTime.now(),
-      );
+  }) => Projectile(
+    id: id,
+    name: name ?? this.name,
+    manufacturer: manufacturer ?? this.manufacturer,
+    dm: dm ?? this.dm,
+    dragType: dragType ?? this.dragType,
+    notes: notes ?? this.notes,
+    createdAt: createdAt,
+    updatedAt: DateTime.now(),
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        if (manufacturer != null) 'manufacturer': manufacturer,
-        'dragType': dragType.name,
-        'dm': {
-          'bc': dm.bc,
-          'weight': dimToJson(dm.weight),
-          'diameter': dimToJson(dm.diameter),
-          'length': dimToJson(dm.length),
-          'dragTable': dm.dragTable
-              .map((p) => {'mach': p.mach, 'cd': p.cd})
-              .toList(),
-        },
-        if (notes != null) 'notes': notes,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    if (manufacturer != null) 'manufacturer': manufacturer,
+    'dragType': dragType.name,
+    'dm': {
+      'bc': dm.bc,
+      'weight': dimToJson(dm.weight),
+      'diameter': dimToJson(dm.diameter),
+      'length': dimToJson(dm.length),
+      'dragTable': dm.dragTable
+          .map((p) => {'mach': p.mach, 'cd': p.cd})
+          .toList(),
+    },
+    if (notes != null) 'notes': notes,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
 
   factory Projectile.fromJson(Map<String, dynamic> json) {
     final d = json['dm'] as Map;

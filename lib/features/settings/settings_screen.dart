@@ -274,21 +274,21 @@ class _StepTile extends ConsumerWidget {
   const _StepTile({
     required this.icon,
     required this.label,
-    required this.valueM,   // stored in metres
+    required this.valueM, // stored in metres
     required this.onConfirm, // receives metres
   });
 
-  final IconData    icon;
-  final String      label;
-  final double      valueM;
+  final IconData icon;
+  final String label;
+  final double valueM;
   final ValueChanged<double> onConfirm;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final distUnit = ref.watch(unitSettingsProvider).distance;
-    final acc      = FC.targetDistance.accuracyFor(distUnit);
-    final dispVal  = Unit.meter(valueM).in_(distUnit);
-    final display  = '${dispVal.toStringAsFixed(acc)} ${distUnit.symbol}';
+    final acc = FC.targetDistance.accuracyFor(distUnit);
+    final dispVal = Unit.meter(valueM).in_(distUnit);
+    final display = '${dispVal.toStringAsFixed(acc)} ${distUnit.symbol}';
 
     return ListTile(
       leading: Icon(icon),
@@ -300,8 +300,10 @@ class _StepTile extends ConsumerWidget {
   }
 
   void _showDialog(BuildContext context, Unit distUnit, int acc) {
-    final dispVal    = Unit.meter(valueM).in_(distUnit);
-    final controller = TextEditingController(text: dispVal.toStringAsFixed(acc));
+    final dispVal = Unit.meter(valueM).in_(distUnit);
+    final controller = TextEditingController(
+      text: dispVal.toStringAsFixed(acc),
+    );
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(

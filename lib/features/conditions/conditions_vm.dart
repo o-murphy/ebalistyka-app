@@ -109,11 +109,15 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   }
 
   Future<void> setPowderSensitivity(bool value) async {
-    await ref.read(settingsProvider.notifier).setSwitch('powderSensitivity', value);
+    await ref
+        .read(settingsProvider.notifier)
+        .setSwitch('powderSensitivity', value);
   }
 
   Future<void> setDiffPowderTemp(bool value) async {
-    await ref.read(settingsProvider.notifier).setSwitch('diffPowderTemperature', value);
+    await ref
+        .read(settingsProvider.notifier)
+        .setSwitch('diffPowderTemperature', value);
   }
 
   Future<void> setCoriolis(bool value) async {
@@ -145,8 +149,8 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final currentHumPct = atmo.humidity * 100;
 
     final powderSensOn = settings?.enablePowderSensitivity ?? false;
-    final useDiffTemp = powderSensOn &&
-        (settings?.useDifferentPowderTemperature ?? false);
+    final useDiffTemp =
+        powderSensOn && (settings?.useDifferentPowderTemperature ?? false);
 
     final currentPowderTempC = useDiffTemp
         ? atmo.powderTemp.in_(Unit.celsius)
@@ -154,18 +158,20 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
     final newTempC = tempC ?? currentTempC;
 
-    ref.read(shotProfileProvider.notifier).updateConditions(
-      solver.Atmo(
-        temperature: Temperature(newTempC, Unit.celsius),
-        altitude: Distance(altM ?? currentAltM, Unit.meter),
-        pressure: Pressure(pressHPa ?? currentPressHPa, Unit.hPa),
-        humidity: (humPct ?? currentHumPct) / 100,
-        powderTemperature: Temperature(
-          useDiffTemp ? (powderTempC ?? currentPowderTempC) : newTempC,
-          Unit.celsius,
-        ),
-      ),
-    );
+    ref
+        .read(shotProfileProvider.notifier)
+        .updateConditions(
+          solver.Atmo(
+            temperature: Temperature(newTempC, Unit.celsius),
+            altitude: Distance(altM ?? currentAltM, Unit.meter),
+            pressure: Pressure(pressHPa ?? currentPressHPa, Unit.hPa),
+            humidity: (humPct ?? currentHumPct) / 100,
+            powderTemperature: Temperature(
+              useDiffTemp ? (powderTempC ?? currentPowderTempC) : newTempC,
+              Unit.celsius,
+            ),
+          ),
+        );
   }
 
   ConditionsUiState _buildState(
@@ -197,8 +203,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
     double mvAtTemp(double tC) {
       if (refMvMps <= 0 || tempModifier == 0) return refMvMps;
-      return (tempModifier / 100.0 / (15 / refMvMps)) *
-              (tC - refPowderTempC) +
+      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) +
           refMvMps;
     }
 
@@ -295,18 +300,21 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   double _convertFcBound(double rawVal, Unit rawUnit, Unit dispUnit) {
     if (rawUnit == dispUnit) return rawVal;
     if (rawUnit == Unit.second) return rawVal; // sentinel (humidity, BC)
-    return (rawUnit(rawVal) as dynamic).in_(dispUnit) as double;
+    return (rawUnit(rawVal) as Dimension).in_(dispUnit);
   }
 
   double _convertFcStep(double rawStep, Unit rawUnit, Unit dispUnit) {
     if (rawUnit == dispUnit) return rawStep;
     if (rawUnit == Unit.second) return rawStep;
-    final lo = (rawUnit(0.0) as dynamic).in_(dispUnit) as double;
-    final hi = (rawUnit(rawStep) as dynamic).in_(dispUnit) as double;
+    final lo = (rawUnit(0.0) as Dimension).in_(dispUnit);
+    final hi = (rawUnit(rawStep) as Dimension).in_(dispUnit);
     return (hi - lo).abs();
   }
 
-  ConditionsUiState _emptyState(UnitFormatter? formatter, AppSettings? settings) {
+  ConditionsUiState _emptyState(
+    UnitFormatter? formatter,
+    AppSettings? settings,
+  ) {
     final units = settings?.units ?? const UnitSettings();
     return ConditionsUiState(
       temperature: ConditionsField(
@@ -367,5 +375,5 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
 final conditionsVmProvider =
     AsyncNotifierProvider<ConditionsViewModel, ConditionsUiState>(
-  ConditionsViewModel.new,
-);
+      ConditionsViewModel.new,
+    );

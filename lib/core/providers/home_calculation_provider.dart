@@ -72,8 +72,9 @@ class HomeCalculationNotifier extends AsyncNotifier<HitResult?> {
     final usePowderSens = settings?.enablePowderSensitivity ?? false;
 
     final zeroKey = _buildZeroKey(profile, usePowderSens);
-    final cachedElev =
-        listEquals(zeroKey, _lastZeroKey) ? _cachedZeroElevRad : null;
+    final cachedElev = listEquals(zeroKey, _lastZeroKey)
+        ? _cachedZeroElevRad
+        : null;
 
     _dirty = false;
     state = const AsyncLoading();
@@ -101,4 +102,5 @@ class HomeCalculationNotifier extends AsyncNotifier<HitResult?> {
 
 final homeCalculationProvider =
     AsyncNotifierProvider<HomeCalculationNotifier, HitResult?>(
-        HomeCalculationNotifier.new);
+      HomeCalculationNotifier.new,
+    );

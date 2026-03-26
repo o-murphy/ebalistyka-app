@@ -131,12 +131,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       final zeroKey = _buildZeroKey(profile, settings.enablePowderSensitivity);
       final useCache = listEquals(zeroKey, _lastZeroKey);
 
-      final result =
-          await ref.read(ballisticsServiceProvider).calculateForTarget(
-                profile,
-                opts,
-                cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
-              );
+      final result = await ref
+          .read(ballisticsServiceProvider)
+          .calculateForTarget(
+            profile,
+            opts,
+            cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
+          );
 
       _cachedZeroElevRad = result.zeroElevationRad;
       _lastZeroKey = zeroKey;
@@ -162,22 +163,24 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final formatter = ref.read(unitFormatterProvider);
     final info = _buildPointInfo(point, formatter);
-    state = AsyncData(HomeUiReady(
-      rifleName: current.rifleName,
-      cartridgeName: current.cartridgeName,
-      windAngleDeg: current.windAngleDeg,
-      tempDisplay: current.tempDisplay,
-      altDisplay: current.altDisplay,
-      pressDisplay: current.pressDisplay,
-      humidDisplay: current.humidDisplay,
-      cartridgeInfoLine: current.cartridgeInfoLine,
-      adjustment: current.adjustment,
-      adjustmentFormat: current.adjustmentFormat,
-      tableData: current.tableData,
-      chartData: current.chartData,
-      selectedPointInfo: info,
-      selectedChartIndex: index,
-    ));
+    state = AsyncData(
+      HomeUiReady(
+        rifleName: current.rifleName,
+        cartridgeName: current.cartridgeName,
+        windAngleDeg: current.windAngleDeg,
+        tempDisplay: current.tempDisplay,
+        altDisplay: current.altDisplay,
+        pressDisplay: current.pressDisplay,
+        humidDisplay: current.humidDisplay,
+        cartridgeInfoLine: current.cartridgeInfoLine,
+        adjustment: current.adjustment,
+        adjustmentFormat: current.adjustmentFormat,
+        tableData: current.tableData,
+        chartData: current.chartData,
+        selectedPointInfo: info,
+        selectedChartIndex: index,
+      ),
+    );
   }
 
   Future<void> updateWindDirection(double degrees) async {
@@ -204,8 +207,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   // ── Private builders ───────────────────────────────────────────────────────
 
   Velocity _currentWindVelocity() {
-    final winds =
-        ref.read(shotProfileProvider).value?.winds ?? const <Wind>[];
+    final winds = ref.read(shotProfileProvider).value?.winds ?? const <Wind>[];
     return winds.isNotEmpty ? winds.first.velocity : Velocity(0, Unit.mps);
   }
 
@@ -283,8 +285,10 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
       final lCal = lenInch / diamInch;
       final nCal = twistInch / diamInch;
-      final sg = (30.0 * weightGr) /
-          (nCal * nCal *
+      final sg =
+          (30.0 * weightGr) /
+          (nCal *
+              nCal *
               diamInch *
               diamInch *
               diamInch *
@@ -359,8 +363,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     ];
 
     final points = dists
-        .map((d) =>
-            d < 0 ? null : hit.getAtDistance(Distance(d, Unit.meter)))
+        .map((d) => d < 0 ? null : hit.getAtDistance(Distance(d, Unit.meter)))
         .toList();
 
     final distHeaders = dists.map<String>((m) {
@@ -373,36 +376,52 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final milAcc = FC.adjustment.accuracyFor(Unit.mil);
     final moaAcc = FC.adjustment.accuracyFor(Unit.moa);
 
-    double conv(dynamic dim, Unit rawUnit, Unit dispUnit) {
-      final raw = (dim as dynamic).in_(rawUnit) as double;
-      return (rawUnit(raw) as dynamic).in_(dispUnit) as double;
+    double conv(Dimension dim, Unit rawUnit, Unit dispUnit) {
+      final raw = dim.in_(rawUnit);
+      return (rawUnit(raw) as Dimension).in_(dispUnit);
     }
 
     final rowDefs = <(String, String, double? Function(TrajectoryData), int)>[
-      ('Height', units.drop.symbol,
-          (p) => conv(p.height, Unit.foot, units.drop),
-          FC.drop.accuracyFor(units.drop)),
-      ('Slant Ht', units.drop.symbol,
-          (p) => conv(p.slantHeight, Unit.foot, units.drop),
-          FC.drop.accuracyFor(units.drop)),
-      ('Angle', 'MIL',
-          (p) => conv(p.angle, Unit.mil, Unit.mil), milAcc),
-      ('Angle', 'MOA',
-          (p) => conv(p.angle, Unit.mil, Unit.moa), moaAcc),
-      ('Drop', 'MIL',
-          (p) => conv(p.dropAngle, Unit.mil, Unit.mil), milAcc),
-      ('Drop', 'MOA',
-          (p) => conv(p.dropAngle, Unit.mil, Unit.moa), moaAcc),
-      ('Windage', 'MIL',
-          (p) => conv(p.windageAngle, Unit.mil, Unit.mil), milAcc),
-      ('Windage', 'MOA',
-          (p) => conv(p.windageAngle, Unit.mil, Unit.moa), moaAcc),
-      ('Velocity', units.velocity.symbol,
-          (p) => conv(p.velocity, Unit.fps, units.velocity),
-          FC.velocity.accuracyFor(units.velocity)),
-      ('Energy', units.energy.symbol,
-          (p) => conv(p.energy, Unit.footPound, units.energy),
-          FC.energy.accuracyFor(units.energy)),
+      (
+        'Height',
+        units.drop.symbol,
+        (p) => conv(p.height, Unit.foot, units.drop),
+        FC.drop.accuracyFor(units.drop),
+      ),
+      (
+        'Slant Ht',
+        units.drop.symbol,
+        (p) => conv(p.slantHeight, Unit.foot, units.drop),
+        FC.drop.accuracyFor(units.drop),
+      ),
+      ('Angle', 'MIL', (p) => conv(p.angle, Unit.mil, Unit.mil), milAcc),
+      ('Angle', 'MOA', (p) => conv(p.angle, Unit.mil, Unit.moa), moaAcc),
+      ('Drop', 'MIL', (p) => conv(p.dropAngle, Unit.mil, Unit.mil), milAcc),
+      ('Drop', 'MOA', (p) => conv(p.dropAngle, Unit.mil, Unit.moa), moaAcc),
+      (
+        'Windage',
+        'MIL',
+        (p) => conv(p.windageAngle, Unit.mil, Unit.mil),
+        milAcc,
+      ),
+      (
+        'Windage',
+        'MOA',
+        (p) => conv(p.windageAngle, Unit.mil, Unit.moa),
+        moaAcc,
+      ),
+      (
+        'Velocity',
+        units.velocity.symbol,
+        (p) => conv(p.velocity, Unit.fps, units.velocity),
+        FC.velocity.accuracyFor(units.velocity),
+      ),
+      (
+        'Energy',
+        units.energy.symbol,
+        (p) => conv(p.energy, Unit.footPound, units.energy),
+        FC.energy.accuracyFor(units.energy),
+      ),
       ('Time', 's', (p) => p.time, 3),
     ];
 
@@ -413,10 +432,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         final valStr = p == null
             ? '—'
             : (rd.$3(p) ?? double.nan).toStringAsFixed(rd.$4);
-        cells.add(FormattedCell(
-          value: valStr,
-          isTargetColumn: ci == targetCol,
-        ));
+        cells.add(
+          FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
+        );
       }
       return FormattedRow(label: rd.$1, unitSymbol: rd.$2, cells: cells);
     }).toList();
@@ -460,10 +478,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       );
     }).toList();
 
-    return ChartData(
-      points: points,
-      snapDistM: settings.chartDistanceStep,
-    );
+    return ChartData(points: points, snapDistM: settings.chartDistanceStep);
   }
 
   HomeChartPointInfo _buildPointInfo(ChartPoint point, UnitFormatter fmt) {
@@ -473,8 +488,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       energy: fmt.energy(Energy(point.energyJ, Unit.joule)),
       time: fmt.time(point.time),
       height: fmt.drop(Distance(point.heightCm / 100.0, Unit.meter)),
-      drop:
-          '${point.dropAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
+      drop: '${point.dropAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
       windage:
           '${point.windageAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
       mach: fmt.mach(point.mach),

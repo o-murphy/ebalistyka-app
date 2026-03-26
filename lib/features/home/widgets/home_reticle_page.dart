@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/models/app_settings.dart' show AdjustmentFormat;
+import 'package:eballistica/core/models/app_settings.dart'
+    show AdjustmentFormat;
 import 'package:eballistica/features/home/home_vm.dart';
 import 'package:eballistica/shared/models/adjustment_data.dart';
 
@@ -79,8 +80,10 @@ class _ReticleView extends StatelessWidget {
   final ColorScheme cs;
 
   @override
-  Widget build(BuildContext context) =>
-      AspectRatio(aspectRatio: 1, child: CustomPaint(painter: _ReticlePainter(cs: cs)));
+  Widget build(BuildContext context) => AspectRatio(
+    aspectRatio: 1,
+    child: CustomPaint(painter: _ReticlePainter(cs: cs)),
+  );
 }
 
 class _ReticlePainter extends CustomPainter {
@@ -89,25 +92,25 @@ class _ReticlePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final cx = size.width  / 2;
+    final cx = size.width / 2;
     final cy = size.height / 2;
-    final r  = math.min(cx, cy) - 4;
+    final r = math.min(cx, cy) - 4;
 
     final stroke = Paint()
-      ..color       = cs.onSurface.withAlpha(160)
+      ..color = cs.onSurface.withAlpha(160)
       ..strokeWidth = 1.2
-      ..style       = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(Offset(cx, cy), r, stroke);
 
     final gap = r * 0.09;
     canvas.drawLine(Offset(cx, cy - r + 2), Offset(cx, cy - gap), stroke);
-    canvas.drawLine(Offset(cx, cy + gap),   Offset(cx, cy + r - 2), stroke);
+    canvas.drawLine(Offset(cx, cy + gap), Offset(cx, cy + r - 2), stroke);
     canvas.drawLine(Offset(cx - r + 2, cy), Offset(cx - gap, cy), stroke);
-    canvas.drawLine(Offset(cx + gap, cy),   Offset(cx + r - 2, cy), stroke);
+    canvas.drawLine(Offset(cx + gap, cy), Offset(cx + r - 2, cy), stroke);
 
     final tickPaint = Paint()
-      ..color       = cs.onSurface.withAlpha(90)
+      ..color = cs.onSurface.withAlpha(90)
       ..strokeWidth = 0.8;
     for (final frac in [0.25, 0.5, 0.75]) {
       final halfTick = r * 0.055;
@@ -115,15 +118,34 @@ class _ReticlePainter extends CustomPainter {
       final yD = cy + r * frac;
       final xL = cx - r * frac;
       final xR = cx + r * frac;
-      canvas.drawLine(Offset(cx - halfTick, yU), Offset(cx + halfTick, yU), tickPaint);
-      canvas.drawLine(Offset(cx - halfTick, yD), Offset(cx + halfTick, yD), tickPaint);
-      canvas.drawLine(Offset(xL, cy - halfTick), Offset(xL, cy + halfTick), tickPaint);
-      canvas.drawLine(Offset(xR, cy - halfTick), Offset(xR, cy + halfTick), tickPaint);
+      canvas.drawLine(
+        Offset(cx - halfTick, yU),
+        Offset(cx + halfTick, yU),
+        tickPaint,
+      );
+      canvas.drawLine(
+        Offset(cx - halfTick, yD),
+        Offset(cx + halfTick, yD),
+        tickPaint,
+      );
+      canvas.drawLine(
+        Offset(xL, cy - halfTick),
+        Offset(xL, cy + halfTick),
+        tickPaint,
+      );
+      canvas.drawLine(
+        Offset(xR, cy - halfTick),
+        Offset(xR, cy + halfTick),
+        tickPaint,
+      );
     }
 
     canvas.drawCircle(
-      Offset(cx, cy), 2.5,
-      Paint()..color = cs.primary..style = PaintingStyle.fill,
+      Offset(cx, cy),
+      2.5,
+      Paint()
+        ..color = cs.primary
+        ..style = PaintingStyle.fill,
     );
   }
 
@@ -134,20 +156,17 @@ class _ReticlePainter extends CustomPainter {
 // ─── Adjustment panel ─────────────────────────────────────────────────────────
 
 class _AdjPanel extends StatelessWidget {
-  const _AdjPanel({
-    required this.adjustment,
-    required this.fmt,
-  });
+  const _AdjPanel({required this.adjustment, required this.fmt});
 
-  final AdjustmentData     adjustment;
-  final AdjustmentFormat   fmt;
+  final AdjustmentData adjustment;
+  final AdjustmentFormat fmt;
 
   String _elevDir() {
     if (adjustment.elevation.isEmpty) return '';
     final pos = adjustment.elevation.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows  => pos ? '↑' : '↓',
-      AdjustmentFormat.signs   => pos ? '+' : '−',
+      AdjustmentFormat.arrows => pos ? '↑' : '↓',
+      AdjustmentFormat.signs => pos ? '+' : '−',
       AdjustmentFormat.letters => pos ? 'U' : 'D',
     };
   }
@@ -156,8 +175,8 @@ class _AdjPanel extends StatelessWidget {
     if (adjustment.windage.isEmpty) return '';
     final pos = adjustment.windage.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows  => pos ? '→' : '←',
-      AdjustmentFormat.signs   => pos ? '+' : '−',
+      AdjustmentFormat.arrows => pos ? '→' : '←',
+      AdjustmentFormat.signs => pos ? '+' : '−',
       AdjustmentFormat.letters => pos ? 'R' : 'L',
     };
   }
@@ -167,10 +186,18 @@ class _AdjPanel extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
 
-    final headerStyle = tt.labelMedium!.copyWith(color: cs.onSurface.withAlpha(180), fontWeight: FontWeight.w600);
-    final dirStyle    = tt.titleSmall!.copyWith(color: cs.primary, fontWeight: FontWeight.w700);
-    final valStyle    = tt.bodyMedium!.copyWith(fontWeight: FontWeight.w700);
-    final unitStyle   = tt.bodySmall!.copyWith(color: cs.onSurface.withAlpha(140));
+    final headerStyle = tt.labelMedium!.copyWith(
+      color: cs.onSurface.withAlpha(180),
+      fontWeight: FontWeight.w600,
+    );
+    final dirStyle = tt.titleSmall!.copyWith(
+      color: cs.primary,
+      fontWeight: FontWeight.w700,
+    );
+    final valStyle = tt.bodyMedium!.copyWith(fontWeight: FontWeight.w700);
+    final unitStyle = tt.bodySmall!.copyWith(
+      color: cs.onSurface.withAlpha(140),
+    );
 
     Widget valueRow(AdjustmentValue v) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
@@ -190,7 +217,10 @@ class _AdjPanel extends StatelessWidget {
       textBaseline: TextBaseline.alphabetic,
       children: [
         Text(label, style: headerStyle),
-        if (dir.isNotEmpty) ...[const SizedBox(width: 6), Text(dir, style: dirStyle)],
+        if (dir.isNotEmpty) ...[
+          const SizedBox(width: 6),
+          Text(dir, style: dirStyle),
+        ],
       ],
     );
 

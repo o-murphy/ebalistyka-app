@@ -15,7 +15,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
 
   Future<void> setUnit(String key, Unit unit) async {
     final current = state.value ?? const AppSettings();
-    await _save(current.copyWith(units: _setUnitByKey(current.units, key, unit)));
+    await _save(
+      current.copyWith(units: _setUnitByKey(current.units, key, unit)),
+    );
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
@@ -23,49 +25,61 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   }
 
   Future<void> setLanguage(String code) async {
-    await _save((state.value ?? const AppSettings()).copyWith(languageCode: code));
+    await _save(
+      (state.value ?? const AppSettings()).copyWith(languageCode: code),
+    );
   }
 
   Future<void> setSwitch(String key, bool value) async {
     final s = state.value ?? const AppSettings();
     await _save(switch (key) {
-      'coriolis'             => s.copyWith(enableCoriolis: value),
-      'powderSensitivity'    => s.copyWith(enablePowderSensitivity: value),
-      'diffPowderTemperature'=> s.copyWith(useDifferentPowderTemperature: value),
-      'derivation'           => s.copyWith(enableDerivation: value),
-      'aerodynamicJump'      => s.copyWith(enableAerodynamicJump: value),
+      'coriolis' => s.copyWith(enableCoriolis: value),
+      'powderSensitivity' => s.copyWith(enablePowderSensitivity: value),
+      'diffPowderTemperature' => s.copyWith(
+        useDifferentPowderTemperature: value,
+      ),
+      'derivation' => s.copyWith(enableDerivation: value),
+      'aerodynamicJump' => s.copyWith(enableAerodynamicJump: value),
       'pressureFromAltitude' => s.copyWith(pressureDependsOnAltitude: value),
-      'subsonicTransition'   => s.copyWith(showSubsonicTransition: value),
-      _                      => s,
+      'subsonicTransition' => s.copyWith(showSubsonicTransition: value),
+      _ => s,
     });
   }
 
   /// Update the full TableConfig at once.
   Future<void> updateTableConfig(TableConfig config) async {
-    await _save((state.value ?? const AppSettings()).copyWith(tableConfig: config));
+    await _save(
+      (state.value ?? const AppSettings()).copyWith(tableConfig: config),
+    );
   }
 
   Future<void> setChartDistanceStep(double step) async {
-    await _save((state.value ?? const AppSettings()).copyWith(chartDistanceStep: step));
+    await _save(
+      (state.value ?? const AppSettings()).copyWith(chartDistanceStep: step),
+    );
   }
 
   Future<void> setHomeTableStep(double step) async {
-    await _save((state.value ?? const AppSettings()).copyWith(homeTableStep: step));
+    await _save(
+      (state.value ?? const AppSettings()).copyWith(homeTableStep: step),
+    );
   }
 
   Future<void> setAdjustmentFormat(AdjustmentFormat format) async {
-    await _save((state.value ?? const AppSettings()).copyWith(adjustmentFormat: format));
+    await _save(
+      (state.value ?? const AppSettings()).copyWith(adjustmentFormat: format),
+    );
   }
 
   Future<void> setAdjustmentToggle(String key, bool value) async {
     final s = state.value ?? const AppSettings();
     await _save(switch (key) {
-      'showMrad'       => s.copyWith(showMrad: value),
-      'showMoa'        => s.copyWith(showMoa: value),
-      'showMil'        => s.copyWith(showMil: value),
-      'showCmPer100m'  => s.copyWith(showCmPer100m: value),
+      'showMrad' => s.copyWith(showMrad: value),
+      'showMoa' => s.copyWith(showMoa: value),
+      'showMil' => s.copyWith(showMil: value),
+      'showCmPer100m' => s.copyWith(showCmPer100m: value),
       'showInPer100yd' => s.copyWith(showInPer100yd: value),
-      _                => s,
+      _ => s,
     });
   }
 
@@ -76,26 +90,27 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
 
   UnitSettings _setUnitByKey(UnitSettings u, String key, Unit unit) =>
       switch (key) {
-        'angular'     => u.copyWith(angular: unit),
-        'distance'    => u.copyWith(distance: unit),
-        'velocity'    => u.copyWith(velocity: unit),
-        'pressure'    => u.copyWith(pressure: unit),
+        'angular' => u.copyWith(angular: unit),
+        'distance' => u.copyWith(distance: unit),
+        'velocity' => u.copyWith(velocity: unit),
+        'pressure' => u.copyWith(pressure: unit),
         'temperature' => u.copyWith(temperature: unit),
-        'diameter'    => u.copyWith(diameter: unit),
-        'length'      => u.copyWith(length: unit),
-        'weight'      => u.copyWith(weight: unit),
-        'adjustment'  => u.copyWith(adjustment: unit),
-        'drop'        => u.copyWith(drop: unit),
-        'energy'      => u.copyWith(energy: unit),
+        'diameter' => u.copyWith(diameter: unit),
+        'length' => u.copyWith(length: unit),
+        'weight' => u.copyWith(weight: unit),
+        'adjustment' => u.copyWith(adjustment: unit),
+        'drop' => u.copyWith(drop: unit),
+        'energy' => u.copyWith(energy: unit),
         'sightHeight' => u.copyWith(sightHeight: unit),
-        'twist'       => u.copyWith(twist: unit),
-        'time'        => u.copyWith(time: unit),
-        _             => u,
+        'twist' => u.copyWith(twist: unit),
+        'time' => u.copyWith(time: unit),
+        _ => u,
       };
 }
 
-final settingsProvider =
-    AsyncNotifierProvider<SettingsNotifier, AppSettings>(SettingsNotifier.new);
+final settingsProvider = AsyncNotifierProvider<SettingsNotifier, AppSettings>(
+  SettingsNotifier.new,
+);
 
 /// Synchronous access — returns defaults while loading.
 final unitSettingsProvider = Provider<UnitSettings>((ref) {

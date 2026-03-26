@@ -19,7 +19,8 @@ class StorageException implements Exception {
   StorageException(this.message, [this.originalError, this.stackTrace]);
 
   @override
-  String toString() => 'StorageException: $message${originalError != null ? ' (${originalError.runtimeType}: $originalError)' : ''}';
+  String toString() =>
+      'StorageException: $message${originalError != null ? ' (${originalError.runtimeType}: $originalError)' : ''}';
 }
 
 class JsonFileStorage implements AppStorage {
@@ -27,7 +28,9 @@ class JsonFileStorage implements AppStorage {
   static final JsonFileStorage instance = JsonFileStorage._();
 
   Future<Directory> get _dir async {
-    final home = Platform.environment['HOME'] ?? (await getApplicationDocumentsDirectory()).path;
+    final home =
+        Platform.environment['HOME'] ??
+        (await getApplicationDocumentsDirectory()).path;
     final dir = Directory('$home/.eBalistyka');
     if (!await dir.exists()) await dir.create(recursive: true);
     return dir;
@@ -44,10 +47,10 @@ class JsonFileStorage implements AppStorage {
     try {
       final f = await _file(name);
       if (!await f.exists()) return null;
-      
+
       final content = await f.readAsString();
       final decoded = jsonDecode(content);
-      
+
       if (decoded is! Map<String, dynamic>) {
         throw StorageException(
           'Invalid JSON structure in $name: expected Map, got ${decoded.runtimeType}',
@@ -55,23 +58,11 @@ class JsonFileStorage implements AppStorage {
       }
       return decoded;
     } on FileSystemException catch (e, st) {
-      throw StorageException(
-        'Failed to read file $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Failed to read file $name: ${e.message}', e, st);
     } on FormatException catch (e, st) {
-      throw StorageException(
-        'Corrupted JSON in $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Corrupted JSON in $name: ${e.message}', e, st);
     } catch (e, st) {
-      throw StorageException(
-        'Unexpected error reading $name',
-        e,
-        st,
-      );
+      throw StorageException('Unexpected error reading $name', e, st);
     }
   }
 
@@ -81,16 +72,16 @@ class JsonFileStorage implements AppStorage {
     try {
       final f = await _file(name);
       if (!await f.exists()) return [];
-      
+
       final content = await f.readAsString();
       final decoded = jsonDecode(content);
-      
+
       if (decoded is! List) {
         throw StorageException(
           'Invalid JSON structure in $name: expected List, got ${decoded.runtimeType}',
         );
       }
-      
+
       // Validate each element is a map
       final result = <Map<String, dynamic>>[];
       for (int i = 0; i < decoded.length; i++) {
@@ -104,24 +95,12 @@ class JsonFileStorage implements AppStorage {
       }
       return result;
     } on FileSystemException catch (e, st) {
-      throw StorageException(
-        'Failed to read file $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Failed to read file $name: ${e.message}', e, st);
     } on FormatException catch (e, st) {
-      throw StorageException(
-        'Corrupted JSON in $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Corrupted JSON in $name: ${e.message}', e, st);
     } catch (e, st) {
       if (e is StorageException) rethrow;
-      throw StorageException(
-        'Unexpected error reading list from $name',
-        e,
-        st,
-      );
+      throw StorageException('Unexpected error reading list from $name', e, st);
     }
   }
 
@@ -129,17 +108,9 @@ class JsonFileStorage implements AppStorage {
     try {
       await (await _file(name)).writeAsString(jsonEncode(data));
     } on FileSystemException catch (e, st) {
-      throw StorageException(
-        'Failed to write file $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Failed to write file $name: ${e.message}', e, st);
     } catch (e, st) {
-      throw StorageException(
-        'Unexpected error writing $name',
-        e,
-        st,
-      );
+      throw StorageException('Unexpected error writing $name', e, st);
     }
   }
 
@@ -147,17 +118,9 @@ class JsonFileStorage implements AppStorage {
     try {
       await (await _file(name)).writeAsString(jsonEncode(data));
     } on FileSystemException catch (e, st) {
-      throw StorageException(
-        'Failed to write file $name: ${e.message}',
-        e,
-        st,
-      );
+      throw StorageException('Failed to write file $name: ${e.message}', e, st);
     } catch (e, st) {
-      throw StorageException(
-        'Unexpected error writing list to $name',
-        e,
-        st,
-      );
+      throw StorageException('Unexpected error writing list to $name', e, st);
     }
   }
 
@@ -194,7 +157,11 @@ class JsonFileStorage implements AppStorage {
   Future<void> saveRifle(Rifle r) async {
     final list = await _readList('rifles');
     final idx = list.indexWhere((m) => m['id'] == r.id);
-    if (idx >= 0) { list[idx] = r.toJson(); } else { list.add(r.toJson()); }
+    if (idx >= 0) {
+      list[idx] = r.toJson();
+    } else {
+      list.add(r.toJson());
+    }
     await _writeList('rifles', list);
   }
 
@@ -215,7 +182,11 @@ class JsonFileStorage implements AppStorage {
   Future<void> saveCartridge(Cartridge c) async {
     final list = await _readList('cartridges');
     final idx = list.indexWhere((m) => m['id'] == c.id);
-    if (idx >= 0) { list[idx] = c.toJson(); } else { list.add(c.toJson()); }
+    if (idx >= 0) {
+      list[idx] = c.toJson();
+    } else {
+      list.add(c.toJson());
+    }
     await _writeList('cartridges', list);
   }
 
@@ -236,7 +207,11 @@ class JsonFileStorage implements AppStorage {
   Future<void> saveSight(Sight s) async {
     final list = await _readList('sights');
     final idx = list.indexWhere((m) => m['id'] == s.id);
-    if (idx >= 0) { list[idx] = s.toJson(); } else { list.add(s.toJson()); }
+    if (idx >= 0) {
+      list[idx] = s.toJson();
+    } else {
+      list.add(s.toJson());
+    }
     await _writeList('sights', list);
   }
 
@@ -251,11 +226,11 @@ class JsonFileStorage implements AppStorage {
 
   @override
   Future<Map<String, dynamic>> exportAll() async => {
-    'settings':   await _readMap('settings')  ?? {},
-    'profile':    await _readMap('profile')   ?? {},
-    'rifles':     await _readList('rifles'),
+    'settings': await _readMap('settings') ?? {},
+    'profile': await _readMap('profile') ?? {},
+    'rifles': await _readList('rifles'),
     'cartridges': await _readList('cartridges'),
-    'sights':     await _readList('sights'),
+    'sights': await _readList('sights'),
   };
 
   @override
@@ -265,7 +240,9 @@ class JsonFileStorage implements AppStorage {
       if (data.containsKey('settings')) {
         final s = data['settings'];
         if (s is! Map<String, dynamic>) {
-          throw StorageException('Invalid settings: expected Map, got ${s.runtimeType}');
+          throw StorageException(
+            'Invalid settings: expected Map, got ${s.runtimeType}',
+          );
         }
         await _writeMap('settings', s);
       }
@@ -273,7 +250,9 @@ class JsonFileStorage implements AppStorage {
       if (data.containsKey('profile')) {
         final p = data['profile'];
         if (p is! Map<String, dynamic>) {
-          throw StorageException('Invalid profile: expected Map, got ${p.runtimeType}');
+          throw StorageException(
+            'Invalid profile: expected Map, got ${p.runtimeType}',
+          );
         }
         await _writeMap('profile', p);
       }
@@ -281,13 +260,17 @@ class JsonFileStorage implements AppStorage {
       if (data.containsKey('rifles')) {
         final r = data['rifles'];
         if (r is! List) {
-          throw StorageException('Invalid rifles: expected List, got ${r.runtimeType}');
+          throw StorageException(
+            'Invalid rifles: expected List, got ${r.runtimeType}',
+          );
         }
         final rifles = <Map<String, dynamic>>[];
         for (int i = 0; i < r.length; i++) {
           final item = r[i];
           if (item is! Map<String, dynamic>) {
-            throw StorageException('Invalid rifle at index $i: expected Map, got ${item.runtimeType}');
+            throw StorageException(
+              'Invalid rifle at index $i: expected Map, got ${item.runtimeType}',
+            );
           }
           rifles.add(item);
         }
@@ -297,13 +280,17 @@ class JsonFileStorage implements AppStorage {
       if (data.containsKey('cartridges')) {
         final c = data['cartridges'];
         if (c is! List) {
-          throw StorageException('Invalid cartridges: expected List, got ${c.runtimeType}');
+          throw StorageException(
+            'Invalid cartridges: expected List, got ${c.runtimeType}',
+          );
         }
         final cartridges = <Map<String, dynamic>>[];
         for (int i = 0; i < c.length; i++) {
           final item = c[i];
           if (item is! Map<String, dynamic>) {
-            throw StorageException('Invalid cartridge at index $i: expected Map, got ${item.runtimeType}');
+            throw StorageException(
+              'Invalid cartridge at index $i: expected Map, got ${item.runtimeType}',
+            );
           }
           cartridges.add(item);
         }
@@ -313,13 +300,17 @@ class JsonFileStorage implements AppStorage {
       if (data.containsKey('sights')) {
         final s = data['sights'];
         if (s is! List) {
-          throw StorageException('Invalid sights: expected List, got ${s.runtimeType}');
+          throw StorageException(
+            'Invalid sights: expected List, got ${s.runtimeType}',
+          );
         }
         final sights = <Map<String, dynamic>>[];
         for (int i = 0; i < s.length; i++) {
           final item = s[i];
           if (item is! Map<String, dynamic>) {
-            throw StorageException('Invalid sight at index $i: expected Map, got ${item.runtimeType}');
+            throw StorageException(
+              'Invalid sight at index $i: expected Map, got ${item.runtimeType}',
+            );
           }
           sights.add(item);
         }

@@ -103,31 +103,7 @@ extension UnitParser on Unit {
   }
 }
 
-abstract interface class Measurable<T extends Measurable<T>> {
-  T create(double value, Unit unit);
-  T createFromRaw(double value, Unit unit);
-
-  double in_(Unit unit);
-  T to(Unit unit);
-
-  double toRaw(double value, Unit unit);
-  double fromRaw(double value, Unit unit);
-
-  double get rawValue;
-  Unit get units;
-
-  Map<Unit, double> get conversionFactors;
-
-  String get debugDetails;
-  double toDouble();
-
-  dynamic operator *(Object other);
-  dynamic operator /(Object other);
-  dynamic operator +(Object other);
-  dynamic operator -(Object other);
-}
-
-abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
+abstract class Dimension<T extends Dimension<T>> {
   late double _rawValue;
   final Unit _definedUnits;
 
@@ -135,13 +111,10 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     _rawValue = toRaw(value, _definedUnits);
   }
 
-  @override
   Map<Unit, double> get conversionFactors => <Unit, double>{};
 
-  @override
   double get rawValue => _rawValue;
 
-  @override
   Unit get units => _definedUnits;
 
   @override
@@ -151,10 +124,8 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     return '$rounded${_definedUnits.symbol}';
   }
 
-  @override
   T create(double value, Unit unit);
 
-  @override
   T createFromRaw(double value, Unit unit) =>
       create(fromRaw(value, unit), unit);
 
@@ -166,23 +137,17 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     return factor;
   }
 
-  @override
   double in_(Unit unit) => fromRaw(_rawValue, unit);
 
-  @override
   T to(Unit unit) => create(in_(unit), unit);
 
-  @override
   double toRaw(double value, Unit unit) => value * _getFactor(unit);
 
-  @override
   double fromRaw(double rawValue, Unit unit) => rawValue / _getFactor(unit);
 
-  @override
   String get debugDetails =>
       '$runtimeType(rawValue: $_rawValue, units: ${_definedUnits.label})';
 
-  @override
   double toDouble() => fromRaw(_rawValue, _definedUnits);
 
   double get _unitsToRawDelta {
@@ -190,8 +155,7 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     return _getFactor(_definedUnits);
   }
 
-  @override
-  dynamic operator *(Object other) {
+  T operator *(Object other) {
     if (other is num) {
       // self._value * other
       return createFromRaw(_rawValue * other.toDouble(), _definedUnits);
@@ -199,7 +163,6 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     throw ArgumentError('Multiplication is only supported for numbers');
   }
 
-  @override
   dynamic operator /(Object other) {
     if (other is num) {
       if (other == 0) throw ArgumentError('Division by zero');
@@ -216,8 +179,7 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     );
   }
 
-  @override
-  dynamic operator +(Object other) {
+  T operator +(Object other) {
     if (other is num) {
       // self._value + float(other) * self._units_to_raw_delta()
       return createFromRaw(
@@ -234,8 +196,7 @@ abstract class Dimension<T extends Dimension<T>> implements Measurable<T> {
     );
   }
 
-  @override
-  dynamic operator -(Object other) {
+  T operator -(Object other) {
     if (other is num) {
       return createFromRaw(
         _rawValue - (other.toDouble() * _unitsToRawDelta),

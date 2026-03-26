@@ -137,12 +137,22 @@ class _ChartPainter extends CustomPainter {
     ) {
       final y = pyH(h);
       canvas.drawLine(Offset(_ml, y), Offset(_ml + pw, y), gridP);
-      _text(canvas, h.toStringAsFixed(0), Offset(_ml - 4, y - 5), ts, rightAlign: true);
+      _text(
+        canvas,
+        h.toStringAsFixed(0),
+        Offset(_ml - 4, y - 5),
+        ts,
+        rightAlign: true,
+      );
     }
 
     // Grid Y right (velocity)
     final vStep = _niceStep(yVMax - yVMin, 5);
-    for (var v = (yVMin / vStep).ceil() * vStep; v <= yVMax + 0.01; v += vStep) {
+    for (
+      var v = (yVMin / vStep).ceil() * vStep;
+      v <= yVMax + 0.01;
+      v += vStep
+    ) {
       _text(
         canvas,
         v.toStringAsFixed(0),
@@ -217,7 +227,6 @@ class _ChartPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1,
     );
-
 
     // Legend — above the grid in the top margin
     _drawLegendItem(canvas, Offset(_ml + 8, 2), heightColor, 'Height');
@@ -305,8 +314,14 @@ class _ChartPainter extends CustomPainter {
     );
   }
 
-  void _text(Canvas c, String t, Offset o, TextStyle s,
-      {bool center = false, bool rightAlign = false}) {
+  void _text(
+    Canvas c,
+    String t,
+    Offset o,
+    TextStyle s, {
+    bool center = false,
+    bool rightAlign = false,
+  }) {
     final tp = TextPainter(
       text: TextSpan(text: t, style: s),
       textDirection: TextDirection.ltr,

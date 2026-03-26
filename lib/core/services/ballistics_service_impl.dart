@@ -77,8 +77,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
       shot: shot,
       trajectoryRange: Distance(2000.0, Unit.meter),
       trajectoryStep: Distance(stepM, Unit.meter),
-      filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
+      filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -141,7 +140,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       newShot,
       Distance(targetDistM, Unit.meter),
     );
-    final holdRad = targetElev.in_(Unit.radian) -
+    final holdRad =
+        targetElev.in_(Unit.radian) -
         newShot.weapon.zeroElevation.in_(Unit.radian);
     newShot.relativeAngle = Angular(holdRad, Unit.radian);
 
@@ -149,8 +149,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       shot: newShot,
       trajectoryRange: Distance(targetDistM, Unit.meter),
       trajectoryStep: Distance(internalStepM, Unit.meter),
-      filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
+      filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE | BCTrajFlag.BC_TRAJ_FLAG_ZERO,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -181,10 +180,12 @@ class BallisticsServiceImpl implements BallisticsService {
     TableCalcOptions opts, {
     double? cachedZeroElevRad,
   }) async {
-    final (hit, freshZero) = await compute(
-      _runTableCalculation,
-      (profile, opts.stepM, opts.usePowderSensitivity, cachedZeroElevRad),
-    );
+    final (hit, freshZero) = await compute(_runTableCalculation, (
+      profile,
+      opts.stepM,
+      opts.usePowderSensitivity,
+      cachedZeroElevRad,
+    ));
     if (hit == null) throw StateError('Table calculation returned null');
     return BallisticsResult(
       hitResult: hit,
@@ -198,11 +199,13 @@ class BallisticsServiceImpl implements BallisticsService {
     TargetCalcOptions opts, {
     double? cachedZeroElevRad,
   }) async {
-    final (hit, freshZero) = await compute(
-      _runHomeCalculation,
-      (profile, opts.targetDistM, opts.chartStepM,
-          opts.usePowderSensitivity, cachedZeroElevRad),
-    );
+    final (hit, freshZero) = await compute(_runHomeCalculation, (
+      profile,
+      opts.targetDistM,
+      opts.chartStepM,
+      opts.usePowderSensitivity,
+      cachedZeroElevRad,
+    ));
     if (hit == null) throw StateError('Target calculation returned null');
     return BallisticsResult(
       hitResult: hit,

@@ -24,38 +24,46 @@ class HomeTablePage extends ConsumerWidget {
 
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final hdrStyle = theme.textTheme.bodyMedium
-        ?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface);
-    final cellStyle =
-        theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace');
-    final targetCellStyle =
-        cellStyle?.copyWith(color: cs.primary, fontWeight: FontWeight.w700);
-    final labelStyle = theme.textTheme.bodySmall
-        ?.copyWith(fontWeight: FontWeight.w600, color: cs.onSurface);
-    final labelSubStyle =
-        theme.textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant);
+    final hdrStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: cs.onSurface,
+    );
+    final cellStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontFamily: 'monospace',
+    );
+    final targetCellStyle = cellStyle?.copyWith(
+      color: cs.primary,
+      fontWeight: FontWeight.w700,
+    );
+    final labelStyle = theme.textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: cs.onSurface,
+    );
+    final labelSubStyle = theme.textTheme.labelSmall?.copyWith(
+      color: cs.onSurfaceVariant,
+    );
 
     Widget cell(String text, TextStyle? style, {Color? bg}) => Container(
-          color: bg,
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerRight,
-            child: Text(text, style: style, textAlign: TextAlign.right),
-          ),
-        );
+      color: bg,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerRight,
+        child: Text(text, style: style, textAlign: TextAlign.right),
+      ),
+    );
 
     Widget labelCell(String label, String unit) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(label, style: labelStyle),
-              Text(unit, style: labelSubStyle),
-            ],
-          ),
-        );
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: labelStyle),
+          Text(unit, style: labelSubStyle),
+        ],
+      ),
+    );
 
     final tableRows = <TableRow>[
       // Header row — distance labels
@@ -73,7 +81,8 @@ class HomeTablePage extends ConsumerWidget {
                       table.rows.first.cells[i].isTargetColumn
                   ? hdrStyle?.copyWith(color: cs.primary)
                   : hdrStyle,
-              bg: table.rows.isNotEmpty &&
+              bg:
+                  table.rows.isNotEmpty &&
                       table.rows.first.cells.length > i &&
                       table.rows.first.cells[i].isTargetColumn
                   ? cs.primaryContainer.withAlpha(60)

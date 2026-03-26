@@ -22,7 +22,8 @@ class RifleLibraryNotifier extends AsyncNotifier<List<Rifle>> {
   Future<void> save(Rifle r) async {
     await ref.read(appStorageProvider).saveRifle(r);
     state = AsyncData([
-      for (final item in (state.value ?? [])) if (item.id == r.id) r else item,
+      for (final item in (state.value ?? []))
+        if (item.id == r.id) r else item,
       if (!(state.value ?? []).any((item) => item.id == r.id)) r,
     ]);
   }
@@ -34,7 +35,9 @@ class RifleLibraryNotifier extends AsyncNotifier<List<Rifle>> {
 }
 
 final rifleLibraryProvider =
-    AsyncNotifierProvider<RifleLibraryNotifier, List<Rifle>>(RifleLibraryNotifier.new);
+    AsyncNotifierProvider<RifleLibraryNotifier, List<Rifle>>(
+      RifleLibraryNotifier.new,
+    );
 
 // ── Sights ────────────────────────────────────────────────────────────────────
 
@@ -52,7 +55,8 @@ class SightLibraryNotifier extends AsyncNotifier<List<Sight>> {
   Future<void> save(Sight s) async {
     await ref.read(appStorageProvider).saveSight(s);
     state = AsyncData([
-      for (final item in (state.value ?? [])) if (item.id == s.id) s else item,
+      for (final item in (state.value ?? []))
+        if (item.id == s.id) s else item,
       if (!(state.value ?? []).any((item) => item.id == s.id)) s,
     ]);
   }
@@ -64,7 +68,9 @@ class SightLibraryNotifier extends AsyncNotifier<List<Sight>> {
 }
 
 final sightLibraryProvider =
-    AsyncNotifierProvider<SightLibraryNotifier, List<Sight>>(SightLibraryNotifier.new);
+    AsyncNotifierProvider<SightLibraryNotifier, List<Sight>>(
+      SightLibraryNotifier.new,
+    );
 
 // ── Cartridges ────────────────────────────────────────────────────────────────
 
@@ -84,7 +90,8 @@ class CartridgeLibraryNotifier extends AsyncNotifier<List<Cartridge>> {
   Future<void> save(Cartridge c) async {
     await ref.read(appStorageProvider).saveCartridge(c);
     state = AsyncData([
-      for (final item in (state.value ?? [])) if (item.id == c.id) c else item,
+      for (final item in (state.value ?? []))
+        if (item.id == c.id) c else item,
       if (!(state.value ?? []).any((item) => item.id == c.id)) c,
     ]);
   }
@@ -96,4 +103,6 @@ class CartridgeLibraryNotifier extends AsyncNotifier<List<Cartridge>> {
 }
 
 final cartridgeLibraryProvider =
-    AsyncNotifierProvider<CartridgeLibraryNotifier, List<Cartridge>>(CartridgeLibraryNotifier.new);
+    AsyncNotifierProvider<CartridgeLibraryNotifier, List<Cartridge>>(
+      CartridgeLibraryNotifier.new,
+    );

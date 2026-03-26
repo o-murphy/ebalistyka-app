@@ -12,7 +12,7 @@ class UnitsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final units   = ref.watch(unitSettingsProvider);
+    final units = ref.watch(unitSettingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
 
     void set(String key, Unit unit) => notifier.setUnit(key, unit);

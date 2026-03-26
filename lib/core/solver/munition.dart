@@ -6,13 +6,10 @@ class Weapon {
   final Distance twist;
   Angular zeroElevation;
 
-  Weapon({
-    Distance? sightHeight,
-    Distance? twist,
-    Angular? zeroElevation,
-  })  : sightHeight   = sightHeight   ?? Distance(0, Unit.inch),
-        twist         = twist         ?? Distance(0, Unit.inch),
-        zeroElevation = zeroElevation ?? Angular(0, Unit.radian);
+  Weapon({Distance? sightHeight, Distance? twist, Angular? zeroElevation})
+    : sightHeight = sightHeight ?? Distance(0, Unit.inch),
+      twist = twist ?? Distance(0, Unit.inch),
+      zeroElevation = zeroElevation ?? Angular(0, Unit.radian);
 
   @override
   String toString() =>
@@ -32,8 +29,8 @@ class Ammo {
     Temperature? powderTemp,
     this.tempModifier = 0.0,
     this.usePowderSensitivity = false,
-  })  : mv         = mv         ?? Velocity(0, Unit.mps),
-        powderTemp = powderTemp ?? Temperature(15, Unit.celsius);
+  }) : mv = mv ?? Velocity(0, Unit.mps),
+       powderTemp = powderTemp ?? Temperature(15, Unit.celsius);
 
   double calcPowderSens(Velocity otherVelocity, Temperature otherTemperature) {
     final double v0 = mv.in_(Unit.mps);
@@ -51,7 +48,8 @@ class Ammo {
 
     if (vDelta == 0 || tDelta == 0) {
       throw ArgumentError(
-          "otherVelocity and temperature can't be same as default");
+        "otherVelocity and temperature can't be same as default",
+      );
     }
 
     tempModifier = (vDelta / tDelta) * (15 / vLower) * 100.0;

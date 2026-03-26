@@ -356,7 +356,6 @@ class TableConfigScreen extends ConsumerWidget {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-
 }
 
 // ── Sub-level switch (indented) ───────────────────────────────────────────────
@@ -413,15 +412,17 @@ class _DistanceTile extends StatelessWidget {
   final Unit units;
   final FieldConstraints constraints;
   final ValueChanged<double> onChanged;
+
   /// Cross-field lower bound (metres). Overrides constraints.minRaw if set.
   final double? minValueM;
+
   /// Cross-field upper bound (metres). Overrides constraints.maxRaw if set.
   final double? maxValueM;
 
   @override
   Widget build(BuildContext context) {
     final acc = constraints.accuracyFor(units);
-    final disp = (Unit.meter(valueM) as dynamic).in_(units) as double;
+    final disp = (Unit.meter(valueM) as Dimension).in_(units);
     return ListTile(
       leading: Icon(icon),
       title: Text(label, style: const TextStyle(fontSize: 14)),
@@ -445,9 +446,10 @@ class _DistanceTile extends StatelessWidget {
     final effectiveMaxM = (maxValueM != null && maxValueM! < constraints.maxRaw)
         ? maxValueM!
         : constraints.maxRaw;
-    final minDisp = (Unit.meter(effectiveMinM) as dynamic).in_(units) as double;
-    final maxDisp = (Unit.meter(effectiveMaxM) as dynamic).in_(units) as double;
-    final rangeMsg = '${minDisp.toStringAsFixed(acc)}–${maxDisp.toStringAsFixed(acc)} ${units.symbol}';
+    final minDisp = (Unit.meter(effectiveMinM) as Dimension).in_(units);
+    final maxDisp = (Unit.meter(effectiveMaxM) as Dimension).in_(units);
+    final rangeMsg =
+        '${minDisp.toStringAsFixed(acc)}–${maxDisp.toStringAsFixed(acc)} ${units.symbol}';
 
     String? error;
     showDialog<void>(
@@ -469,7 +471,7 @@ class _DistanceTile extends StatelessWidget {
                 if (v == null) {
                   error = 'Invalid number';
                 } else {
-                  final rawM = (units(v) as dynamic).in_(Unit.meter) as double;
+                  final rawM = (units(v) as Dimension).in_(Unit.meter);
                   error = (rawM < effectiveMinM || rawM > effectiveMaxM)
                       ? rangeMsg
                       : null;
@@ -488,8 +490,7 @@ class _DistanceTile extends StatelessWidget {
                   : () {
                       final v = double.tryParse(ctrl.text.replaceAll(',', '.'));
                       if (v != null) {
-                        final rawM =
-                            (units(v) as dynamic).in_(Unit.meter) as double;
+                        final rawM = (units(v) as Dimension).in_(Unit.meter);
                         onChanged(rawM.clamp(effectiveMinM, effectiveMaxM));
                       }
                       Navigator.pop(ctx);

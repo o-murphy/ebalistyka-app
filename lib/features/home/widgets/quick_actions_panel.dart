@@ -14,7 +14,7 @@ class QuickActionsPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(shotProfileProvider).value;
-    final units   = ref.watch(unitSettingsProvider);
+    final units = ref.watch(unitSettingsProvider);
     final notifier = ref.read(shotProfileProvider.notifier);
 
     // ── Wind speed ──────────────────────────────────────────────────────────
@@ -22,16 +22,18 @@ class QuickActionsPanel extends ConsumerWidget {
         ? profile!.winds.first.velocity.in_(Unit.mps)
         : 0.0;
     final windDisp = Unit.mps(windMps).in_(units.velocity);
-    final windStr  = '${windDisp.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+    final windStr =
+        '${windDisp.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
 
     // ── Look angle ──────────────────────────────────────────────────────────
     final lookDeg = profile?.lookAngle.in_(Unit.degree) ?? 0.0;
     final lookStr = '${lookDeg.toStringAsFixed(FC.lookAngle.accuracy)}°';
 
     // ── Target distance ─────────────────────────────────────────────────────
-    final distM    = profile?.targetDistance.in_(Unit.meter) ?? 300.0;
+    final distM = profile?.targetDistance.in_(Unit.meter) ?? 300.0;
     final distDisp = Unit.meter(distM).in_(units.distance);
-    final distStr  = '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
+    final distStr =
+        '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
 
     return IconValueButtonRow(
       height: 104,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class WindIndicator extends StatefulWidget {
   final double initialAngle;
   final Function(double, String) onAngleChanged;
+
   /// Called when the user taps the center degree label. Receives current degrees (0-360).
   final void Function(double degrees)? onDirectionTap;
 
@@ -171,7 +172,9 @@ class WindPainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
       final textPos = Offset(
-        center.dx + (innerRadius - 25) * cos(hourAngle) - hourTextPainter.width / 2,
+        center.dx +
+            (innerRadius - 25) * cos(hourAngle) -
+            hourTextPainter.width / 2,
         center.dy +
             (innerRadius - 25) * sin(hourAngle) -
             hourTextPainter.height / 2,
@@ -292,7 +295,11 @@ class WindPainter extends CustomPainter {
     final degreesTextPainter = TextPainter(
       text: TextSpan(
         text: '${degrees.toStringAsFixed(0)}°',
-        style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: color,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
