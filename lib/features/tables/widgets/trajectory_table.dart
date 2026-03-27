@@ -4,10 +4,37 @@ import 'package:sticky_headers/sticky_headers.dart';
 import 'package:eballistica/shared/models/formatted_row.dart';
 import 'package:eballistica/features/tables/tables_vm.dart';
 
+// ─── Scroll Synchronization Helper ──────────────────────────────────────────
+
+class _ScrollSyncGroup {
+  final List<ScrollController> _controllers = [];
+  bool _isSyncing = false;
+
+  /// Створює та реєструє новий контролер у групі
+  ScrollController add() {
+    final controller = ScrollController();
+    controller.addListener(() {
+      if (_isSyncing || !controller.hasClients) return;
+      _isSyncing = true;
+      for (final c in _controllers) {
+        if (c != controller && c.hasClients) {
+          c.jumpTo(controller.offset);
+        }
+      }
+      _isSyncing = false;
+    });
+    _controllers.add(controller);
+    return controller;
+  }
+
+  void dispose() {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+  }
+}
+
 // ─── Trajectory Table ─────────────────────────────────────────────────────────
-//
-// Layout: rows = distance points, columns = metrics (Range, Time, V, Height, …).
-// The metric header row sticks to the top; columns scroll horizontally.
 
 class TrajectoryTable extends StatefulWidget {
   final FormattedTableData mainTable;
@@ -26,71 +53,27 @@ class TrajectoryTable extends StatefulWidget {
 }
 
 class _TrajectoryTableState extends State<TrajectoryTable> {
-  // Main trajectory table scroll sync
-  final _trajHdrCtrl = ScrollController();
-  final _trajDataCtrl = ScrollController();
-  bool _syncingTraj = false;
+  final _trajSync = _ScrollSyncGroup();
+  final _zeroSync = _ScrollSyncGroup();
 
-  // Zero crossings table scroll sync
-  final _zeroHdrCtrl = ScrollController();
-  final _zeroDataCtrl = ScrollController();
-  bool _syncingZero = false;
+  late final ScrollController _trajHdrCtrl;
+  late final ScrollController _trajDataCtrl;
+  late final ScrollController _zeroHdrCtrl;
+  late final ScrollController _zeroDataCtrl;
 
   @override
   void initState() {
     super.initState();
-    _trajDataCtrl.addListener(_onTrajDataScroll);
-    _trajHdrCtrl.addListener(_onTrajHdrScroll);
-    _zeroDataCtrl.addListener(_onZeroDataScroll);
-    _zeroHdrCtrl.addListener(_onZeroHdrScroll);
-  }
-
-  void _onTrajDataScroll() {
-    if (_syncingTraj || !_trajHdrCtrl.hasClients || !_trajDataCtrl.hasClients) {
-      return;
-    }
-    _syncingTraj = true;
-    _trajHdrCtrl.jumpTo(_trajDataCtrl.offset);
-    _syncingTraj = false;
-  }
-
-  void _onTrajHdrScroll() {
-    if (_syncingTraj || !_trajDataCtrl.hasClients || !_trajHdrCtrl.hasClients) {
-      return;
-    }
-    _syncingTraj = true;
-    _trajDataCtrl.jumpTo(_trajHdrCtrl.offset);
-    _syncingTraj = false;
-  }
-
-  void _onZeroDataScroll() {
-    if (_syncingZero || !_zeroHdrCtrl.hasClients || !_zeroDataCtrl.hasClients) {
-      return;
-    }
-    _syncingZero = true;
-    _zeroHdrCtrl.jumpTo(_zeroDataCtrl.offset);
-    _syncingZero = false;
-  }
-
-  void _onZeroHdrScroll() {
-    if (_syncingZero || !_zeroDataCtrl.hasClients || !_zeroHdrCtrl.hasClients) {
-      return;
-    }
-    _syncingZero = true;
-    _zeroDataCtrl.jumpTo(_zeroHdrCtrl.offset);
-    _syncingZero = false;
+    _trajHdrCtrl = _trajSync.add();
+    _trajDataCtrl = _trajSync.add();
+    _zeroHdrCtrl = _zeroSync.add();
+    _zeroDataCtrl = _zeroSync.add();
   }
 
   @override
   void dispose() {
-    _trajDataCtrl.removeListener(_onTrajDataScroll);
-    _trajHdrCtrl.removeListener(_onTrajHdrScroll);
-    _zeroDataCtrl.removeListener(_onZeroDataScroll);
-    _zeroHdrCtrl.removeListener(_onZeroHdrScroll);
-    _trajDataCtrl.dispose();
-    _trajHdrCtrl.dispose();
-    _zeroDataCtrl.dispose();
-    _zeroHdrCtrl.dispose();
+    _trajSync.dispose();
+    _zeroSync.dispose();
     super.dispose();
   }
 
