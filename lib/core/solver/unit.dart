@@ -106,27 +106,27 @@ extension UnitParser on Unit {
 }
 
 abstract class Dimension<T extends Dimension<T>> {
-  late double _rawValue;
-  final Unit _definedUnits;
+  late double _value;
+  final Unit _units;
 
-  Dimension(double value, this._definedUnits) {
-    _rawValue = _toRaw(value, _definedUnits);
+  Dimension(double value, this._units) {
+    _value = _toRaw(value, _units);
   }
 
   Map<Unit, double> get conversionFactors => <Unit, double>{};
 
   double get value => toDouble();
-  double get raw => _rawValue;
-  Unit get units => _definedUnits;
+  double get raw => _value;
+  Unit get units => _units;
 
-  double in_(Unit unit) => _fromRaw(_rawValue, unit);
+  double in_(Unit unit) => _fromRaw(_value, unit);
 
   T to(Unit unit) => _create(in_(unit), unit);
 
   @override
   String toString() {
     final rounded = toDouble().toStringAsFixed(6);
-    return '$rounded${_definedUnits.symbol}';
+    return '$rounded${_units.symbol}';
   }
 
   T _create(double value, Unit unit);
@@ -144,9 +144,9 @@ abstract class Dimension<T extends Dimension<T>> {
   double _fromRaw(double rawValue, Unit unit) => rawValue / _getFactor(unit);
 
   String get debugDetails =>
-      '$runtimeType(rawValue: $_rawValue, units: ${_definedUnits.label})';
+      '$runtimeType(rawValue: $_value, units: ${_units.label})';
 
-  double toDouble() => _fromRaw(_rawValue, _definedUnits);
+  double toDouble() => _fromRaw(_value, _units);
 }
 
 class Angular extends Dimension<Angular> {
@@ -257,12 +257,12 @@ class Temperature extends Dimension<Temperature> {
   }
 
   @override
-  double _fromRaw(double value, Unit unit) {
+  double _fromRaw(double rawValue, Unit unit) {
     return switch (unit) {
-      Unit.fahrenheit => value,
-      Unit.rankin => value + 459.67,
-      Unit.celsius => (value - 32) * 5.0 / 9,
-      Unit.kelvin => (value - 32) * 5.0 / 9 + 273.15,
+      Unit.fahrenheit => rawValue,
+      Unit.rankin => rawValue + 459.67,
+      Unit.celsius => (rawValue - 32) * 5.0 / 9,
+      Unit.kelvin => (rawValue - 32) * 5.0 / 9 + 273.15,
       _ => throw Exception('Temperature does not support $unit'),
     };
   }

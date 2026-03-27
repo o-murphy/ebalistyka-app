@@ -57,9 +57,8 @@ class Shot {
 
   List<Wind> get winds {
     final list = _winds ?? [];
-    return List.from(list)..sort(
-      (a, b) => a.untilDistance.raw.compareTo(b.untilDistance.raw),
-    );
+    return List.from(list)
+      ..sort((a, b) => a.untilDistance.raw.compareTo(b.untilDistance.raw));
   }
 
   set winds(List<Wind>? value) => _winds = value;
@@ -92,4 +91,48 @@ class Shot {
   }
 
   Angular get slantAngle => lookAngle;
+
+  /// Calculate the Miller stability coefficient.
+  ///
+  /// Returns:
+  ///   double: The Miller stability coefficient, or 0.0 if insufficient data.
+  double calculateStabilityCoefficient() {
+    final twistInch = weapon.twist.in_(Unit.inch).abs();
+    final lengthInch = ammo.dm.length.in_(Unit.inch);
+    final diameterInch = ammo.dm.diameter.in_(Unit.inch);
+    final weightGrains = ammo.dm.weight.in_(Unit.grain);
+    final muzzleVelocityFps = ammo.mv.in_(Unit.fps);
+    final tempF = atmo.temperature.in_(Unit.fahrenheit);
+    final pressureInHg = atmo.pressure.in_(Unit.inHg);
+
+    // Check for zero values (Python equivalent: if value)
+    if (twistInch == 0.0 ||
+        lengthInch == 0.0 ||
+        diameterInch == 0.0 ||
+        weightGrains == 0.0 ||
+        pressureInHg == 0.0) {
+      return 0.0;
+    }
+
+    // Calculate twist rate and length ratios
+    final twistRate = twistInch / diameterInch;
+    final length = lengthInch / diameterInch;
+
+    // Base Miller stability formula
+    final sd =
+        30.0 *
+        weightGrains /
+        (math.pow(twistRate, 2) *
+            math.pow(diameterInch, 3) *
+            length *
+            (1 + math.pow(length, 2)));
+
+    // Velocity correction factor
+    final fv = math.pow(muzzleVelocityFps / 2800.0, 1.0 / 3.0);
+
+    // Atmospheric correction
+    final ftp = ((tempF + 460.0) / (59.0 + 460.0)) * (29.92 / pressureInHg);
+
+    return sd * fv * ftp;
+  }
 }

@@ -105,7 +105,6 @@ lib/
 │   │   └── unit_formatter_impl.dart
 │   ├── providers/
 │   │   ├── formatter_provider.dart
-│   │   ├── home_calculation_provider.dart  # legacy, until ShotDetailsVM
 │   │   ├── library_provider.dart
 │   │   ├── recalc_coordinator.dart
 │   │   ├── service_providers.dart
@@ -530,7 +529,7 @@ Phase   Task                                        Depends on   Risk
 **Result:** 72 files moved, all imports updated, 0 errors, 244 tests pass.
 **Structure:** `lib/features/`, `lib/core/`, `lib/shared/`, `lib/main.dart`, `lib/router.dart`
 
-### Phase 2 — ShotDetailsViewModel
+### Phase 2 — ShotDetailsViewModel ✅ DONE
 
 **Estimated scope:** 1 new file (VM) + 1 new test file + edit 2 existing files
 **Verification:** `flutter test` + `flutter analyze`

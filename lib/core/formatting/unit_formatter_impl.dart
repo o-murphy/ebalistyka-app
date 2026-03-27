@@ -18,12 +18,6 @@ class UnitFormatterImpl implements UnitFormatter {
   }
 
   @override
-  String muzzleVelocity(Velocity dim) {
-    final v = dim.in_(_u.velocity);
-    return '${v.toStringAsFixed(FC.muzzleVelocity.accuracyFor(_u.velocity))} ${_u.velocity.symbol}';
-  }
-
-  @override
   String distance(Distance dim) {
     final v = dim.in_(_u.distance);
     return '${v.toStringAsFixed(FC.targetDistance.accuracyFor(_u.distance))} ${_u.distance.symbol}';

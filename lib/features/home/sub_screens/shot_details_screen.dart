@@ -1,12 +1,7 @@
-import 'package:flutter/material.dart' hide Velocity;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/home_calculation_provider.dart';
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:eballistica/features/home/shot_details_vm.dart';
 import 'package:eballistica/shared/widgets/section_header.dart';
 
 class ShotDetailsScreen extends ConsumerWidget {
@@ -14,203 +9,98 @@ class ShotDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(shotProfileProvider).value;
-    final settings = ref.watch(settingsProvider).value;
-    final units = ref.watch(unitSettingsProvider);
-    final calc = ref.watch(homeCalculationProvider);
-
-    final cartridge = profile?.cartridge;
-    final targetDistM = profile?.targetDistance.in_(Unit.meter) ?? 300.0;
-
-    // ── MV with powder sensitivity ─────────────────────────────────────────
-    final refMvMps = cartridge?.mv.in_(Unit.mps) ?? 0.0;
-    final refPowderTempC = cartridge?.powderTemp.in_(Unit.celsius) ?? 15.0;
-    final tempModifier = cartridge?.tempModifier ?? 0.0;
-    final powderSensOn =
-        (settings?.enablePowderSensitivity ?? false) &&
-        (cartridge?.usePowderSensitivity ?? false);
-    final useDiffTemp =
-        powderSensOn && (settings?.useDifferentPowderTemperature ?? false);
-
-    double mvAtTempC(double tC) {
-      if (refMvMps <= 0 || tempModifier == 0) return refMvMps;
-      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) +
-          refMvMps;
-    }
-
-    final conditions = profile?.conditions;
-    final currentPowderTempC = useDiffTemp
-        ? (conditions?.powderTemp.in_(Unit.celsius) ?? 15.0)
-        : (conditions?.temperature.in_(Unit.celsius) ?? 15.0);
-    final currentMvMps = powderSensOn
-        ? mvAtTempC(currentPowderTempC)
-        : refMvMps;
-
-    final zeroAtmo = profile?.zeroConditions ?? conditions;
-    final zeroPowderTempC = useDiffTemp
-        ? (zeroAtmo?.powderTemp.in_(Unit.celsius) ?? 15.0)
-        : (zeroAtmo?.temperature.in_(Unit.celsius) ?? 15.0);
-    final zeroMvMps = powderSensOn ? mvAtTempC(zeroPowderTempC) : refMvMps;
-
-    // ── Gyroscopic stability factor Sg (Miller formula) ───────────────────
-    final dm = cartridge?.projectile.dm;
-    final twistInch = profile?.rifle.weapon.twist.in_(Unit.inch) ?? 0.0;
-    final weightGr = dm?.weight.in_(Unit.grain) ?? 0.0;
-    final diamInch = dm?.diameter.in_(Unit.inch) ?? 0.0;
-    final lenInch = dm?.length.in_(Unit.inch) ?? 0.0;
-
-    double? sg;
-    if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-      final lCal = lenInch / diamInch;
-      final nCal = twistInch / diamInch;
-      sg =
-          (30.0 * weightGr) /
-          (nCal *
-              nCal *
-              diamInch *
-              diamInch *
-              diamInch *
-              lCal *
-              (1.0 + lCal * lCal));
-    }
-
-    // ── Trajectory data ────────────────────────────────────────────────────
-    final hit = calc.value;
-    final traj = hit?.trajectory ?? [];
-    final atTarget = hit?.getAtDistance(Distance(targetDistM, Unit.meter));
-
-    // Speed of sound: fps / mach at first point
-    final double? soundSpeedFps = (traj.isNotEmpty && traj[0].mach > 0)
-        ? (traj[0].velocity.in_(Unit.fps)) / traj[0].mach
-        : null;
-
-    // First-point energy (near barrel)
-    final firstPoint = traj.isNotEmpty ? traj[0] : null;
-
-    // Apex: trajectory point with maximum height
-    TrajectoryData? apexPoint;
-    if (traj.length > 1) {
-      apexPoint = traj.reduce((a, b) {
-        final ha = a.height.in_(Unit.foot);
-        final hb = b.height.in_(Unit.foot);
-        return ha >= hb ? a : b;
-      });
-    }
-
-    // ── Helpers ────────────────────────────────────────────────────────────
-    String fmtV(double? mps) {
-      if (mps == null) return '—';
-      final disp = Velocity(mps, Unit.mps).in_(units.velocity);
-      return '${disp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
-    }
-
-    String fmtDist(Dimension? dim) {
-      if (dim == null) return '—';
-      final v = dim.in_(units.distance);
-      return '${v.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
-    }
-
-    String fmtDrop(Dimension? dim) {
-      if (dim == null) return '—';
-      final v = dim.in_(units.drop);
-      return '${v.toStringAsFixed(FC.drop.accuracyFor(units.drop))} ${units.drop.symbol}';
-    }
-
-    String fmtEnergy(Dimension? dim) {
-      if (dim == null) return '—';
-      final v = dim.in_(units.energy);
-      return '${v.toStringAsFixed(FC.energy.accuracyFor(units.energy))} ${units.energy.symbol}';
-    }
-
-    // ── Values ─────────────────────────────────────────────────────────────
-    final distDisp = Distance(targetDistM, Unit.meter).in_(units.distance);
-    final distStr =
-        '${distDisp.toStringAsFixed(FC.targetDistance.accuracyFor(units.distance))} ${units.distance.symbol}';
-
-    final soundDisp = soundSpeedFps == null
-        ? '—'
-        : '${(Velocity(soundSpeedFps, Unit.fps).in_(units.velocity)).toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
-
-    final items = <Widget>[
-      SectionHeader('Velocity'),
-      _InfoTile(
-        icon: Icons.speed_outlined,
-        label: 'Current muzzle velocity',
-        value: fmtV(currentMvMps),
-      ),
-      _InfoTile(
-        icon: Icons.speed_outlined,
-        label: 'Zero muzzle velocity',
-        value: fmtV(zeroMvMps),
-      ),
-      _InfoTile(
-        icon: Icons.graphic_eq_outlined,
-        label: 'Speed of sound',
-        value: soundDisp,
-      ),
-      _InfoTile(
-        icon: Icons.arrow_forward_outlined,
-        label: 'Velocity at target',
-        value: atTarget == null ? '—' : fmtV(atTarget.velocity.in_(Unit.mps)),
-      ),
-      const Divider(height: 1),
-      SectionHeader('Energy'),
-      _InfoTile(
-        icon: Icons.bolt_outlined,
-        label: 'Energy at muzzle',
-        value: fmtEnergy(firstPoint?.energy),
-      ),
-      _InfoTile(
-        icon: Icons.bolt_outlined,
-        label: 'Energy at target',
-        value: fmtEnergy(atTarget?.energy),
-      ),
-      const Divider(height: 1),
-      SectionHeader('Stability'),
-      _InfoTile(
-        icon: Icons.rotate_right_outlined,
-        label: 'Gyroscopic stability factor',
-        value: sg != null ? sg.toStringAsFixed(2) : '—',
-      ),
-      const Divider(height: 1),
-      SectionHeader('Trajectory'),
-      _InfoTile(
-        icon: Icons.flag_outlined,
-        label: 'Shot distance',
-        value: distStr,
-      ),
-      _InfoTile(
-        icon: Icons.height,
-        label: 'Height at target',
-        value: fmtDrop(atTarget?.height),
-      ),
-      _InfoTile(
-        icon: Icons.architecture_outlined,
-        label: 'Max height distance',
-        value: apexPoint == null ? '—' : fmtDist(apexPoint.distance),
-      ),
-      _InfoTile(
-        icon: Icons.arrow_right_alt_outlined,
-        label: 'Windage',
-        value: fmtDrop(atTarget?.windage),
-      ),
-      _InfoTile(
-        icon: Icons.timer_outlined,
-        label: 'Time to target',
-        value: atTarget == null ? '—' : '${atTarget.time.toStringAsFixed(3)} s',
-      ),
-      const SizedBox(height: 16),
-    ];
+    final state = ref.watch(shotDetailsVmProvider);
 
     return Column(
       children: [
         const _Header(),
         Expanded(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, i) => items[i],
+          child: state.when(
+            data: (uiState) => _buildContent(context, uiState),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, st) => Center(child: Text(e.toString())),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ShotDetailsUiState state) {
+    if (state is! ShotDetailsReady) {
+      if (state is ShotDetailsError) return Center(child: Text(state.message));
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ListView(
+      children: [
+        const SectionHeader('Velocity'),
+        _InfoTile(
+          icon: Icons.speed_outlined,
+          label: 'Current muzzle velocity',
+          value: state.currentMv,
+        ),
+        _InfoTile(
+          icon: Icons.speed_outlined,
+          label: 'Zero muzzle velocity',
+          value: state.zeroMv,
+        ),
+        _InfoTile(
+          icon: Icons.graphic_eq_outlined,
+          label: 'Speed of sound',
+          value: state.speedOfSound,
+        ),
+        _InfoTile(
+          icon: Icons.arrow_forward_outlined,
+          label: 'Velocity at target',
+          value: state.velocityAtTarget,
+        ),
+        const Divider(height: 1),
+        const SectionHeader('Energy'),
+        _InfoTile(
+          icon: Icons.bolt_outlined,
+          label: 'Energy at muzzle',
+          value: state.energyAtMuzzle,
+        ),
+        _InfoTile(
+          icon: Icons.bolt_outlined,
+          label: 'Energy at target',
+          value: state.energyAtTarget,
+        ),
+        const Divider(height: 1),
+        const SectionHeader('Stability'),
+        _InfoTile(
+          icon: Icons.rotate_right_outlined,
+          label: 'Gyroscopic stability factor',
+          value: state.gyroscopicStability,
+        ),
+        const Divider(height: 1),
+        const SectionHeader('Trajectory'),
+        _InfoTile(
+          icon: Icons.flag_outlined,
+          label: 'Shot distance',
+          value: state.shotDistance,
+        ),
+        _InfoTile(
+          icon: Icons.height,
+          label: 'Height at target',
+          value: state.heightAtTarget,
+        ),
+        _InfoTile(
+          icon: Icons.architecture_outlined,
+          label: 'Max height distance',
+          value: state.maxHeightDistance,
+        ),
+        _InfoTile(
+          icon: Icons.arrow_right_alt_outlined,
+          label: 'Windage',
+          value: state.windage,
+        ),
+        _InfoTile(
+          icon: Icons.timer_outlined,
+          label: 'Time to target',
+          value: state.timeToTarget,
+        ),
+        const SizedBox(height: 16),
       ],
     );
   }

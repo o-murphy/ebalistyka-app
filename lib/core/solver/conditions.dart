@@ -125,11 +125,14 @@ class Atmo {
 
   static double calculateAirDensity(
     double tCelsius,
+    // ignore: non_constant_identifier_names
     double p_hpa,
     double humidityFraction,
   ) {
     const double R = 8.314472;
+    // ignore: constant_identifier_names
     const double Ma = 28.96546e-3;
+    // ignore: constant_identifier_names
     const double Mv = 18.01528e-3;
 
     double saturationVaporPressure(double tk) {

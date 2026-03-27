@@ -255,20 +255,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     final currentMvMps = powderSensOn ? mvAtTempC(currTempC) : refMvMps;
 
     // Gyrostability (Miller)
-    double? sg;
-    if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-      final lCal = lenInch / diamInch;
-      final nCal = twistInch / diamInch;
-      sg =
-          (30.0 * weightGr) /
-          (nCal *
-              nCal *
-              diamInch *
-              diamInch *
-              diamInch *
-              lCal *
-              (1.0 + lCal * lCal));
-    }
+    double sg = profile.toShot().calculateStabilityCoefficient();
 
     // Sectional density + form factor
     final sd = (weightGr > 0 && diamInch > 0)
@@ -278,7 +265,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
 
     String fmtV(double mps) {
       final disp = Velocity(mps, Unit.mps).in_(units.velocity);
-      return '${disp.toStringAsFixed(FC.muzzleVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+      return '${disp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     }
 
     String fmtWithAcc(
@@ -351,7 +338,7 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
       sectionalDensity: cfg.spoilerShowSectionalDensity && sd != null
           ? sd.toStringAsFixed(3)
           : null,
-      gyroStability: cfg.spoilerShowGyroStability && sg != null
+      gyroStability: cfg.spoilerShowGyroStability
           ? sg.toStringAsFixed(2)
           : null,
       temperature: cfg.spoilerShowTemp

@@ -53,8 +53,9 @@ class DragModel {
        weight = weight ?? Weight(0, Unit.grain),
        diameter = diameter ?? Distance(0, Unit.inch),
        length = length ?? Distance(0, Unit.inch) {
-    if (this.dragTable.isEmpty)
+    if (this.dragTable.isEmpty) {
       throw ArgumentError('Received empty drag table');
+    }
     if (bc <= 0) throw ArgumentError('Ballistic coefficient must be positive');
 
     if (this.weight.raw > 0 && this.diameter.raw > 0) {
@@ -99,8 +100,9 @@ List<double> linearInterpolation(
   List<double> yp,
 ) {
   if (xp.length != yp.length) throw ArgumentError('xp/yp length mismatch');
-  if (xp.isEmpty)
+  if (xp.isEmpty) {
     return x.isEmpty ? [] : throw ArgumentError('Empty reference points');
+  }
 
   return x.map((xi) {
     if (xi <= xp.first) return yp.first;

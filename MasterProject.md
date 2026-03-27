@@ -723,7 +723,6 @@ class ShotProfile {
 | Provider                   | Type                                                          | Purpose                                                                        |
 | -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `recalcCoordinatorProvider`| `NotifierProvider<RecalcCoordinator, void>`                   | Centralises recalculation triggers on profile/settings changes and tab switches |
-| `homeCalculationProvider`  | `AsyncNotifierProvider<HomeCalculationNotifier, HitResult?>`  | Legacy — used by shot_details_screen; will be replaced by ShotDetailsViewModel |
 
 **Calculation architecture (after refactoring):**
 
@@ -830,7 +829,7 @@ eballistica_backup.zip
 | BallisticsService | Single service interface; `HomeViewModel` and `TablesViewModel` call it via provider |
 | RecalcCoordinator | Centralises all recalculation triggers (profile/settings changes + tab activation) |
 | ViewModels | `HomeViewModel`, `TablesViewModel` — produce sealed UiState with formatted strings |
-| homeCalculationProvider | Legacy notifier, still used by `shot_details_screen.dart`; will be replaced by ShotDetailsViewModel |
+| ShotDetailsViewModel | Replaced legacy homeCalculationProvider; provides formatted data for Shot Info screen |
 | Zero uses zeroConditions | Always uses `profile.zeroConditions ?? profile.conditions` |
 | Zero elevation cache | `_buildZeroKey` (19-field flat list, `listEquals`) — zero phase skipped when zero-relevant inputs unchanged |
 | Powder sensitivity | Engine handles `getVelocityForTemp` internally; `usePowderSensitivity` flag propagated correctly |

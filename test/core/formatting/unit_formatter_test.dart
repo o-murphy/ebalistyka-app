@@ -22,14 +22,6 @@ void main() {
       expect(s, contains('800'));
     });
 
-    test('muzzleVelocity() formats m/s with MV precision', () {
-      final v = Velocity(850.5, Unit.mps);
-      final s = fmt.muzzleVelocity(v);
-      expect(s, contains('m/s'));
-      // MV rawUnit is mps, display is mps — accuracyFor returns accuracy (0)
-      expect(s, contains('851') /* rounded to 0 decimals */);
-    });
-
     test('distance() formats meters', () {
       final d = Distance(300.0, Unit.meter);
       final s = fmt.distance(d);
@@ -202,18 +194,20 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings(
-        velocity: Unit.fps,
-        distance: Unit.yard,
-        temperature: Unit.fahrenheit,
-        pressure: Unit.inHg,
-        drop: Unit.inch,
-        adjustment: Unit.moa,
-        energy: Unit.footPound,
-        weight: Unit.gram,
-        sightHeight: Unit.inch,
-        twist: Unit.inch,
-      ));
+      fmt = UnitFormatterImpl(
+        const UnitSettings(
+          velocity: Unit.fps,
+          distance: Unit.yard,
+          temperature: Unit.fahrenheit,
+          pressure: Unit.inHg,
+          drop: Unit.inch,
+          adjustment: Unit.moa,
+          energy: Unit.footPound,
+          weight: Unit.gram,
+          sightHeight: Unit.inch,
+          twist: Unit.inch,
+        ),
+      );
     });
 
     test('velocity() formats fps', () {
@@ -346,7 +340,10 @@ void main() {
       final raw = fmt.inputToRaw(display, InputField.sightHeight);
       // raw is in millimeters (same as display unit for default settings)
       expect(raw, closeTo(38.0, 1e-6));
-      expect(fmt.rawToInput(raw, InputField.sightHeight), closeTo(display, 1e-6));
+      expect(
+        fmt.rawToInput(raw, InputField.sightHeight),
+        closeTo(display, 1e-6),
+      );
     });
 
     test('twist: inch round-trip', () {
@@ -360,7 +357,10 @@ void main() {
       const display = 175.0;
       final raw = fmt.inputToRaw(display, InputField.bulletWeight);
       expect(raw, closeTo(175.0, 1e-6));
-      expect(fmt.rawToInput(raw, InputField.bulletWeight), closeTo(display, 1e-6));
+      expect(
+        fmt.rawToInput(raw, InputField.bulletWeight),
+        closeTo(display, 1e-6),
+      );
     });
   });
 
@@ -370,13 +370,15 @@ void main() {
     late UnitFormatterImpl fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings(
-        velocity: Unit.fps,
-        distance: Unit.yard,
-        temperature: Unit.fahrenheit,
-        pressure: Unit.inHg,
-        sightHeight: Unit.inch,
-      ));
+      fmt = UnitFormatterImpl(
+        const UnitSettings(
+          velocity: Unit.fps,
+          distance: Unit.yard,
+          temperature: Unit.fahrenheit,
+          pressure: Unit.inHg,
+          sightHeight: Unit.inch,
+        ),
+      );
     });
 
     test('velocity: fps display → mps raw', () {
@@ -418,8 +420,11 @@ void main() {
         final display = 100.0;
         final raw = fmt.inputToRaw(display, field);
         final back = fmt.rawToInput(raw, field);
-        expect(back, closeTo(display, 1e-4),
-            reason: 'Round-trip failed for $field');
+        expect(
+          back,
+          closeTo(display, 1e-4),
+          reason: 'Round-trip failed for $field',
+        );
       }
     });
   });

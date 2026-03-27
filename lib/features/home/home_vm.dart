@@ -268,7 +268,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   String _buildCartridgeInfoLine(ShotProfile profile, UnitFormatter fmt) {
     final proj = profile.cartridge.projectile;
-    final mvStr = fmt.muzzleVelocity(profile.cartridge.mv);
+    final mvStr = fmt.velocity(profile.cartridge.mv);
     final bcAcc = FC.ballisticCoefficient.accuracy;
     final dragStr = switch (proj.dragType) {
       DragModelType.g1 => 'G1 ${proj.dm.bc.toStringAsFixed(bcAcc)}',
@@ -283,17 +283,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final diamInch = proj.dm.diameter.in_(Unit.inch);
     final lenInch = proj.dm.length.in_(Unit.inch);
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-      final lCal = lenInch / diamInch;
-      final nCal = twistInch / diamInch;
-      final sg =
-          (30.0 * weightGr) /
-          (nCal *
-              nCal *
-              diamInch *
-              diamInch *
-              diamInch *
-              lCal *
-              (1.0 + lCal * lCal));
+      final sg = profile.toShot().calculateStabilityCoefficient();
       sgStr = 'Sg ${sg.toStringAsFixed(2)}';
     }
 
@@ -336,7 +326,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
               absValue: corr.abs(),
               isPositive: corr >= 0,
               symbol: u.$2,
-        decimals: FC.adjustment.accuracyFor(u.$1),
+              decimals: FC.adjustment.accuracyFor(u.$1),
             );
           }).toList()
         : <AdjustmentValue>[];
@@ -480,7 +470,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
   }
 
-  // ── Zero key (copied from calculation_provider) ────────────────────────────
+  // ── Zero key (logic for detecting zero-relevant changes) ───────────────────
 
   List<double> _buildZeroKey(ShotProfile profile, bool usePowderSens) {
     final zeroAtmo = profile.zeroConditions ?? profile.conditions;

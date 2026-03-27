@@ -11,7 +11,7 @@ ffigen:
 
 # Run all tests (native must be built first)
 test: native
-	flutter test 2>&1
+	flutter analyze && flutter test 2>&1
 
 # Run only unit tests (no native dependency)
 unit:

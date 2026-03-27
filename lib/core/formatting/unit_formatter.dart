@@ -21,7 +21,6 @@ abstract interface class UnitFormatter {
   String humidity(double fraction); // "50 %"
   String mach(double mach); // "0.85 M"
   String time(double seconds); // "1.234 s"
-  String muzzleVelocity(Velocity dim); // спеціальна точність для MV
 
   // --- Сирі числа (без одиниці, для слайдерів/полів вводу) ---
   double rawVelocity(Velocity dim);
