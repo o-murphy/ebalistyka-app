@@ -1,3 +1,4 @@
+import 'package:eballistica/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -140,10 +141,36 @@ final appRouter = GoRouter(
               builder: (_, _) => const ConvertorScreen(),
               routes: [
                 GoRoute(
-                  path: ':type',
-                  builder: (_, state) => ConvertorScreen(
-                    key: ValueKey(state.pathParameters['type']),
-                  ),
+                  path: 'target-distance',
+                  builder: (_, _) => const DistanceConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'velocity',
+                  builder: (_, _) => const VelocityConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'length',
+                  builder: (_, _) => const LengthConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'weight',
+                  builder: (_, _) => const WeightConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'pressure',
+                  builder: (_, _) => const PressureConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'temperature',
+                  builder: (_, _) => const TemperatureConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'mil-moa',
+                  builder: (_, _) => const MilMoaConvertorScreen(),
+                ),
+                GoRoute(
+                  path: 'torque',
+                  builder: (_, _) => const TorqueConvertorScreen(),
                 ),
               ],
             ),
