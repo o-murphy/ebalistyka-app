@@ -70,228 +70,314 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        const bottomHeight = 40.0; // Фіксована висота пейджинг індикатора
         const minTopH = 350.0;
         const maxTopH = 400.0;
-        const minBotH = 300.0;
-        final totalH = math.max(constraints.maxHeight, minTopH + minBotH);
+        const minCentralH = 300.0;
+
+        // Висота для контенту, що скролиться (Top + Central)
+        final scrollableHeight = math.max(
+          constraints.maxHeight - bottomHeight,
+          minTopH + minCentralH,
+        );
+
+        // Розрахунок висоти топ блоку
         final topBlockHeight = math.min(
           maxTopH,
-          math.max(totalH * 0.55, minTopH),
+          math.max(scrollableHeight * 0.55, minTopH),
         );
-        final botBlockHeight = totalH - topBlockHeight;
 
-        return SingleChildScrollView(
-          physics: totalH > constraints.maxHeight
-              ? const ClampingScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
-          child: SizedBox(
-            height: totalH,
-            child: Column(
-              children: [
-                // ── Top block ───────────────────────────────────────────────
-                Container(
-                  width: double.infinity,
-                  height: topBlockHeight,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(32),
-                      bottomRight: Radius.circular(32),
+        // Висота центрального блоку (те, що залишилось)
+        final centralBlockHeight = scrollableHeight - topBlockHeight;
+
+        // Чи потрібен скрол
+        final needsScroll =
+            scrollableHeight > constraints.maxHeight - bottomHeight;
+
+        return Stack(
+          children: [
+            // Scrollable content (Top + Central)
+            SingleChildScrollView(
+              physics: needsScroll
+                  ? const ClampingScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  // ── Top block ───────────────────────────────────────────────
+                  Container(
+                    width: double.infinity,
+                    height: topBlockHeight,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(32),
+                        bottomRight: Radius.circular(32),
+                      ),
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                      child: Column(
-                        children: [
-                          // Rifle / cartridge selector row
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FilledButton.tonal(
-                                  onPressed: () =>
-                                      context.push(Routes.rifleSelect),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          '$rifleName · $cartridgeName',
-                                          overflow: TextOverflow.ellipsis,
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                        child: Column(
+                          children: [
+                            // Rifle / cartridge selector row
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton.tonal(
+                                    onPressed: () =>
+                                        context.push(Routes.rifleSelect),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            '$rifleName · $cartridgeName',
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                      ),
-                                      const Icon(Icons.more_horiz_rounded),
-                                    ],
+                                        const Icon(Icons.more_horiz_rounded),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton.filledTonal(
-                                onPressed: () =>
-                                    context.push(Routes.projectileSelect),
-                                icon: const Icon(Icons.rocket_launch_outlined),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(width: 8),
+                                IconButton.filledTonal(
+                                  onPressed: () =>
+                                      context.push(Routes.projectileSelect),
+                                  icon: const Icon(
+                                    Icons.rocket_launch_outlined,
+                                  ),
+                                ),
+                              ],
+                            ),
 
-                          // Wind indicator + side controls
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: SideControlBlock(
-                                      topIcon: Icons.info_outline,
-                                      bottomIcon: Icons.note_add_outlined,
-                                      infoRows: [
-                                        (
-                                          Icons.device_thermostat_outlined,
-                                          tempStr,
-                                        ),
-                                        (Icons.terrain_outlined, altStr),
-                                      ],
-                                      onTopPressed: () =>
-                                          context.push(Routes.shotDetails),
-                                      onBottomPressed: () {},
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 3,
-                                    child: WindIndicator(
-                                      initialAngle: windInitialAngle,
-                                      onAngleChanged: (degrees, _) {
-                                        ref
-                                            .read(homeVmProvider.notifier)
-                                            .updateWindDirection(degrees);
-                                      },
-                                      onDirectionTap: (deg) =>
-                                          showUnitEditDialog(
-                                            context,
-                                            label: 'Wind direction',
-                                            rawValue: deg,
-                                            constraints: FC.windDirection,
-                                            displayUnit: Unit.degree,
-                                            onChanged: (newDeg) {
-                                              final normalized =
-                                                  ((newDeg % 360) + 360) % 360;
-                                              ref
-                                                  .read(homeVmProvider.notifier)
-                                                  .updateWindDirection(
-                                                    normalized,
-                                                  );
-                                            },
+                            // Wind indicator + side controls
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  0,
+                                  12,
+                                  0,
+                                  12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: SideControlBlock(
+                                        topIcon: Icons.info_outline,
+                                        bottomIcon: Icons.note_add_outlined,
+                                        infoRows: [
+                                          (
+                                            Icons.device_thermostat_outlined,
+                                            tempStr,
                                           ),
+                                          (Icons.terrain_outlined, altStr),
+                                        ],
+                                        onTopPressed: () =>
+                                            context.push(Routes.shotDetails),
+                                        onBottomPressed: () {},
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: SideControlBlock(
-                                      topIcon: Icons.question_mark_outlined,
-                                      bottomIcon: Icons.more_horiz_outlined,
-                                      infoRows: [
-                                        (Icons.water_drop_outlined, humidStr),
-                                        (Icons.speed_outlined, pressStr),
-                                      ],
-                                      onTopPressed: () {},
-                                      onBottomPressed: () {},
+                                    Expanded(
+                                      flex: 3,
+                                      child: WindIndicator(
+                                        initialAngle: windInitialAngle,
+                                        onAngleChanged: (degrees, _) {
+                                          ref
+                                              .read(homeVmProvider.notifier)
+                                              .updateWindDirection(degrees);
+                                        },
+                                        onDirectionTap: (deg) =>
+                                            showUnitEditDialog(
+                                              context,
+                                              label: 'Wind direction',
+                                              rawValue: deg,
+                                              constraints: FC.windDirection,
+                                              displayUnit: Unit.degree,
+                                              onChanged: (newDeg) {
+                                                final normalized =
+                                                    ((newDeg % 360) + 360) %
+                                                    360;
+                                                ref
+                                                    .read(
+                                                      homeVmProvider.notifier,
+                                                    )
+                                                    .updateWindDirection(
+                                                      normalized,
+                                                    );
+                                              },
+                                            ),
+                                      ),
                                     ),
-                                  ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: SideControlBlock(
+                                        topIcon: Icons.question_mark_outlined,
+                                        bottomIcon: Icons.more_horiz_outlined,
+                                        infoRows: [
+                                          (Icons.water_drop_outlined, humidStr),
+                                          (Icons.speed_outlined, pressStr),
+                                        ],
+                                        onTopPressed: () {},
+                                        onBottomPressed: () {},
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(
+                              height: 80,
+                              child: const QuickActionsPanel(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // ── Central block — 3 pages ───────────────────────────────────
+                  SizedBox(
+                    height: centralBlockHeight,
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Expanded(
+                              child: PageView(
+                                controller: _pageController,
+                                onPageChanged: (i) =>
+                                    setState(() => _currentPage = i),
+                                children: const [
+                                  HomeReticlePage(),
+                                  HomeTablePage(),
+                                  HomeChartPage(),
                                 ],
                               ),
                             ),
-                          ),
-
-                          SizedBox(
-                            height: 80,
-                            child: const QuickActionsPanel(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // ── Bottom block — 3 pages ───────────────────────────────────
-                SizedBox(
-                  height: botBlockHeight,
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Expanded(
-                            child: PageView(
-                              controller: _pageController,
-                              onPageChanged: (i) =>
-                                  setState(() => _currentPage = i),
-                              children: const [
-                                HomeReticlePage(),
-                                HomeTablePage(),
-                                HomeChartPage(),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: _PageDots(current: _currentPage, count: 3),
-                          ),
-                        ],
-                      ),
-                      // Brief spinner overlay — fades in then out after each recalc.
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: FadeTransition(
-                            opacity: _calcDoneAnim,
-                            child: Container(
-                              color: Colors.black.withAlpha(90),
-                              child: const Center(
-                                child: CircularProgressIndicator(),
+                            // Padding for spacing - bottom indicator will overlay
+                            const SizedBox(height: 8),
+                          ],
+                        ),
+                        // Brief spinner overlay — fades in then out after each recalc.
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: FadeTransition(
+                              opacity: _calcDoneAnim,
+                              child: Container(
+                                color: Colors.black.withAlpha(90),
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+
+                  // Add bottom padding to prevent content from hiding under Bottom Block
+                  SizedBox(height: bottomHeight),
+                ],
+              ),
             ),
-          ),
+
+            // ── Bottom Block — Fixed page indicator (sticky at bottom) ────────────
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: bottomHeight,
+                alignment: Alignment.center,
+                color: Theme.of(context).colorScheme.surface,
+                child: _PageDots(
+                  current: _currentPage,
+                  count: 3,
+                  onPageChanged: (page) {
+                    _pageController.animateToPage(
+                      page,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                    setState(() => _currentPage = page);
+                  },
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 }
 
-// ─── Page dots indicator ──────────────────────────────────────────────────────
+// ─── Page dots indicator with navigation arrows ──────────────────────────────
 
 class _PageDots extends StatelessWidget {
-  const _PageDots({required this.current, required this.count});
+  const _PageDots({
+    required this.current,
+    required this.count,
+    required this.onPageChanged,
+  });
 
   final int current;
   final int count;
+  final void Function(int page) onPageChanged;
+
+  void _previousPage() {
+    if (current > 0) onPageChanged(current - 1);
+  }
+
+  void _nextPage() {
+    if (current < count - 1) onPageChanged(current + 1);
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final canGoPrev = current > 0;
+    final canGoNext = current < count - 1;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(count, (i) {
-        final active = i == current;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 3),
-          width: active ? 16 : 6,
-          height: 6,
-          decoration: BoxDecoration(
-            color: active ? cs.primary : cs.onSurface.withAlpha(60),
-            borderRadius: BorderRadius.circular(3),
-          ),
-        );
-      }),
+      children: [
+        // Left arrow
+        IconButton(
+          onPressed: canGoPrev ? _previousPage : null,
+          icon: Icon(Icons.chevron_left, size: 24),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+        ),
+
+        // Dots
+        ...List.generate(count, (i) {
+          final active = i == current;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            width: active ? 16 : 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: active ? cs.primary : cs.onSurface.withAlpha(60),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          );
+        }),
+
+        // Right arrow
+        IconButton(
+          onPressed: canGoNext ? _nextPage : null,
+          icon: Icon(Icons.chevron_right, size: 24),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+        ),
+      ],
     );
   }
 }

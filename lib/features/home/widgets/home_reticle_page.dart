@@ -38,7 +38,9 @@ class HomeReticlePage extends ConsumerWidget {
           ),
         ),
         Expanded(
+          // Прибрали Align та IntrinsicHeight, щоб Row міг зайняти весь Expanded
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 flex: 2,
@@ -53,13 +55,10 @@ class HomeReticlePage extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
                   child: vmState.adjustment.elevation.isEmpty
                       ? Center(
-                          child: Text(
-                            'Enable units in\nSettings → Adjustment Display',
-                            textAlign: TextAlign.center,
-                            style: tt.bodySmall,
-                          ),
+                          child: Text('Enable units...', style: tt.bodySmall),
                         )
                       : _AdjPanel(
+                          // Прибрали Center тут, він заважає розтягуванню
                           adjustment: vmState.adjustment,
                           fmt: vmState.adjustmentFormat,
                         ),
@@ -161,6 +160,7 @@ class _AdjPanel extends StatelessWidget {
   final AdjustmentData adjustment;
   final AdjustmentFormat fmt;
 
+  // Методи _elevDir та _windDir без змін...
   String _elevDir() {
     if (adjustment.elevation.isEmpty) return '';
     final pos = adjustment.elevation.first.isPositive;
@@ -202,6 +202,7 @@ class _AdjPanel extends StatelessWidget {
     Widget valueRow(AdjustmentValue v) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
+        mainAxisSize: MainAxisSize.min, // Обов'язково min для коректного BoxFit
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
@@ -213,6 +214,7 @@ class _AdjPanel extends StatelessWidget {
     );
 
     Widget sectionHeader(String label, String dir) => Row(
+      mainAxisSize: MainAxisSize.min, // Обов'язково min
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
@@ -225,20 +227,30 @@ class _AdjPanel extends StatelessWidget {
     );
 
     return FittedBox(
-      fit: BoxFit.scaleDown,
+      fit: BoxFit.contain,
       alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          sectionHeader('Drop', _elevDir()),
-          const SizedBox(height: 2),
-          ...adjustment.elevation.map(valueRow),
-          const Divider(height: 16),
-          sectionHeader('Windage', _windDir()),
-          const SizedBox(height: 2),
-          ...adjustment.windage.map(valueRow),
-        ],
+      child: IntrinsicWidth(
+        child: Column(
+          // stretch змушує дітей (включаючи SizedBox з Divider)
+          // зайняти всю ширину, яку вирахував IntrinsicWidth
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            sectionHeader('Drop', _elevDir()),
+            const SizedBox(height: 2),
+            ...adjustment.elevation.map(valueRow),
+
+            // Контейнер-обгортка для адаптивної ширини Divider
+            const SizedBox(
+              width: double.infinity,
+              child: Divider(height: 16, thickness: 1, indent: 0, endIndent: 0),
+            ),
+
+            sectionHeader('Windage', _windDir()),
+            const SizedBox(height: 2),
+            ...adjustment.windage.map(valueRow),
+          ],
+        ),
       ),
     );
   }
