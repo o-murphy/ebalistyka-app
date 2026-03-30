@@ -8,6 +8,7 @@ on:
       - 'linux/**'
       - 'external/**'
       - 'pubspec.yaml'
+      - '.github/workflows/build-appimage.yml'
   workflow_dispatch:
     inputs:
       build_type:

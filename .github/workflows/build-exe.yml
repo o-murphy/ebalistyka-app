@@ -8,6 +8,7 @@ on:
       - 'windows/**'
       - 'external/**'
       - 'pubspec.yaml'
+      - '.github/workflows/build-exe.yml'
   workflow_dispatch:
     inputs:
       build_type:
