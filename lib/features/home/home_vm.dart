@@ -250,7 +250,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final tempStr = formatter.temperature(conditions.temperature);
     final altStr = formatter.distance(conditions.altitude);
     final pressStr = formatter.pressure(conditions.pressure);
-    final humidStr = formatter.humidity(conditions.humidity);
+    final humidStr = formatter.humidity(
+      Ratio(conditions.humidity, Unit.fraction),
+    );
 
     // ── Quick actions ──
     final windMps = profile.winds.isNotEmpty
@@ -520,7 +522,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       w.twist.in_(Unit.inch),
       c.mv.in_(Unit.mps),
       c.powderTemp.in_(Unit.celsius),
-      c.tempModifier,
+      c.powderSensitivity,
       c.usePowderSensitivity ? 1.0 : 0.0,
       dm.bc,
       dm.weight.in_(Unit.gram),

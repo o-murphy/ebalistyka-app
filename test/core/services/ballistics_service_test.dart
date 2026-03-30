@@ -373,7 +373,7 @@ void main() {
           ),
           mv: Velocity(800, Unit.mps),
           powderTemp: Temperature(15, Unit.celsius),
-          tempModifier: 1.0, // 1.0 m/s per °C (stored as %)
+          powderSensitivity: 1.0, // 1.0 m/s per °C (stored as %)
           usePowderSensitivity: true,
         ),
         conditions: Atmo(

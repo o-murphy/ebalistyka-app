@@ -349,7 +349,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       w.twist.in_(Unit.inch),
       c.mv.in_(Unit.mps),
       c.powderTemp.in_(Unit.celsius),
-      c.tempModifier,
+      c.powderSensitivity,
       c.usePowderSensitivity ? 1.0 : 0.0,
       dm.bc,
       dm.weight.in_(Unit.gram),

@@ -486,22 +486,28 @@ class BcLibC {
         );
         if (count > 0) _b.BCLIBCFFI_free_trajectory(rawPtr);
 
-        return BcHitResult(records, BCTerminationReason.fromValue(pReason.value));
-      });
-
-  BcInterception integrateAt(BcShotProps props, BCBaseTrajInterpKey key, double targetValue) =>
-      using((arena) {
-        final p = arena<BCShotProps>();
-        final out = arena<BCInterception>();
-        final err = arena<BCLIBCFFIError>();
-        props._fill(p.ref, arena);
-        final st = _b.BCLIBCFFI_integrate_at(p, key.value, targetValue, out, err);
-        if (st != 0) _throwFromError(err.ref);
-        return BcInterception(
-          BcBaseTrajData._fromNative(out.ref.raw_data),
-          BcTrajectoryData._fromNative(out.ref.full_data),
+        return BcHitResult(
+          records,
+          BCTerminationReason.fromValue(pReason.value),
         );
       });
+
+  BcInterception integrateAt(
+    BcShotProps props,
+    BCBaseTrajInterpKey key,
+    double targetValue,
+  ) => using((arena) {
+    final p = arena<BCShotProps>();
+    final out = arena<BCInterception>();
+    final err = arena<BCLIBCFFIError>();
+    props._fill(p.ref, arena);
+    final st = _b.BCLIBCFFI_integrate_at(p, key.value, targetValue, out, err);
+    if (st != 0) _throwFromError(err.ref);
+    return BcInterception(
+      BcBaseTrajData._fromNative(out.ref.raw_data),
+      BcTrajectoryData._fromNative(out.ref.full_data),
+    );
+  });
 
   double getCorrection(double distanceFt, double offsetFt) =>
       _b.BCLIBCFFI_get_correction(distanceFt, offsetFt);

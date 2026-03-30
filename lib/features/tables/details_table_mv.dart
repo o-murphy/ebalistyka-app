@@ -80,8 +80,12 @@ DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
   final refMvMps = cart.mv.in_(Unit.mps);
   final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
 
-  double mvAtTempC(double tCurC) =>
-      velocityForPowderTemp(refMvMps, refPowderTempC, tCurC, cart.tempModifier);
+  double mvAtTempC(double tCurC) => velocityForPowderTemp(
+    refMvMps,
+    refPowderTempC,
+    tCurC,
+    cart.powderSensitivity,
+  );
 
   // Zero MV
   final zeroAtmo = profile.zeroConditions ?? conds;
@@ -155,7 +159,8 @@ DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
       final t = conds.temperature.in_(units.temperature);
       return '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperature))} ${units.temperature.symbol}';
     }(),
-    humidity: '${(conds.humidity * 100).toStringAsFixed(0)} %',
+    humidity:
+        '${(conds.humidity.convert(Unit.fraction, Unit.percent)).toStringAsFixed(0)} %',
     pressure: () {
       final p = conds.pressure.in_(units.pressure);
       return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';

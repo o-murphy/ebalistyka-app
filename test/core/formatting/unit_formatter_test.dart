@@ -98,9 +98,9 @@ void main() {
     });
 
     test('humidity() formats percentage from fraction', () {
-      expect(fmt.humidity(0.5), '50 %');
-      expect(fmt.humidity(1.0), '100 %');
-      expect(fmt.humidity(0.0), '0 %');
+      expect(fmt.humidity(Ratio(0.5, Unit.fraction)), '50 %');
+      expect(fmt.humidity(Ratio(1.0, Unit.fraction)), '100 %');
+      expect(fmt.humidity(Ratio(0.0, Unit.fraction)), '0 %');
     });
 
     test('mach() formats with 2 decimals', () {

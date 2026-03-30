@@ -49,7 +49,7 @@ ShotProfile _makeProfile({
     projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
-    tempModifier: 1.0,
+    powderSensitivity: 1.0,
     usePowderSensitivity: true,
   );
   final weapon = Weapon(

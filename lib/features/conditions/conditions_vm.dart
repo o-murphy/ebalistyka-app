@@ -98,7 +98,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   }
 
   Future<void> updateHumidity(double rawPercent) async {
-    _updateAtmo(humPct: rawPercent);
+    _updateAtmo(humFrac: rawPercent.convert(Unit.percent, Unit.fraction));
   }
 
   Future<void> updatePressure(double rawHPa) async {
@@ -134,7 +134,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   void _updateAtmo({
     double? tempC,
     double? altM,
-    double? humPct,
+    double? humFrac,
     double? pressHPa,
     double? powderTempC,
   }) {
@@ -147,7 +147,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final currentTempC = atmo.temperature.in_(Unit.celsius);
     final currentAltM = atmo.altitude.in_(Unit.meter);
     final currentPressHPa = atmo.pressure.in_(Unit.hPa);
-    final currentHumPct = atmo.humidity * 100;
+    final currentHumFrac = atmo.humidity;
 
     final powderSensOn = settings?.enablePowderSensitivity ?? false;
     final useDiffTemp =
@@ -166,7 +166,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
             temperature: Temperature(newTempC, Unit.celsius),
             altitude: Distance(altM ?? currentAltM, Unit.meter),
             pressure: Pressure(pressHPa ?? currentPressHPa, Unit.hPa),
-            humidity: (humPct ?? currentHumPct) / 100,
+            humidity: humFrac ?? currentHumFrac,
             powderTemperature: Temperature(
               useDiffTemp ? (powderTempC ?? currentPowderTempC) : newTempC,
               Unit.celsius,
@@ -186,7 +186,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final tempRaw = atmo.temperature.in_(Unit.celsius);
     final altRaw = atmo.altitude.in_(Unit.meter);
     final pressRaw = atmo.pressure.in_(Unit.hPa);
-    final humRaw = atmo.humidity * 100;
+    final humRaw = atmo.humidity;
 
     final powderSensOn = settings.enablePowderSensitivity;
     final useDiffPowderTemp =
@@ -200,16 +200,20 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final cartridge = profile.cartridge;
     final refMvMps = cartridge.mv.in_(Unit.mps);
     final refPowderTempC = cartridge.powderTemp.in_(Unit.celsius);
-    final tempModifier = cartridge.tempModifier;
+    final powderSensitivity = cartridge.powderSensitivity;
 
-    double mvAtTempC(double tCurC) =>
-        velocityForPowderTemp(refMvMps, refPowderTempC, tCurC, tempModifier);
+    double mvAtTempC(double tCurC) => velocityForPowderTemp(
+      refMvMps,
+      refPowderTempC,
+      tCurC,
+      powderSensitivity,
+    );
 
     final currentMvMps = mvAtTempC(powderTempRaw);
     final currentMvDisp = Velocity(currentMvMps, Unit.mps).in_(units.velocity);
     final mvStr =
         '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
-    final sensStr = '${(tempModifier * 100.0).toStringAsFixed(2)} %/15°C';
+    final sensStr = '${(powderSensitivity * 100.0).toStringAsFixed(2)} %/15°C';
 
     return ConditionsUiState(
       temperature: _field(
@@ -228,17 +232,13 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         inputField: InputField.distance,
         formatter: formatter,
       ),
-      humidity: ConditionsField(
+      humidity: _field(
         label: 'Humidity',
-        displayValue: humRaw,
         rawValue: humRaw,
-        symbol: '%',
-        displayMin: FC.humidity.minRaw,
-        displayMax: FC.humidity.maxRaw,
-        displayStep: FC.humidity.stepRaw,
-        decimals: FC.humidity.accuracy,
+        fc: FC.humidity,
+        displayUnit: Unit.percent,
         inputField: InputField.humidity,
-        displayUnit: FC.humidity.rawUnit,
+        formatter: formatter,
       ),
       pressure: _field(
         label: 'Pressure',
@@ -338,14 +338,14 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       humidity: ConditionsField(
         label: 'Humidity',
         displayValue: 50,
-        rawValue: 50,
+        rawValue: 0.5,
         symbol: '%',
         displayMin: 0,
         displayMax: 100,
         displayStep: 1,
         decimals: 0,
         inputField: InputField.humidity,
-        displayUnit: FC.humidity.rawUnit,
+        displayUnit: Unit.percent,
       ),
       pressure: ConditionsField(
         label: 'Pressure',

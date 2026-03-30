@@ -52,14 +52,18 @@ class UnitFormatterImpl implements UnitFormatter {
   String twist(Distance dim) => '1:${_fmt(dim, FC.twist, _u.twist)}';
 
   @override
-  String humidity(double fraction) =>
-      '${(fraction * 100).toStringAsFixed(FC.humidity.accuracy)} %';
+  String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
+  // '${fraction.in_(Unit.percent).toStringAsFixed(FC.humidity.accuracy)} %';
 
   @override
   String mach(double m) => '${m.toStringAsFixed(2)} M';
 
   @override
   String time(double seconds) => '${seconds.toStringAsFixed(3)} s';
+
+  @override
+  String powderSensitivity(Ratio fraction) =>
+      '${fraction.in_(Unit.percent).toStringAsFixed(FC.powderSensitivity.accuracy)} %';
 
   // --- Raw numbers ---
 

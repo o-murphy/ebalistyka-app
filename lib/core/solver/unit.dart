@@ -1,8 +1,10 @@
 import 'dart:math';
 
 enum Unit {
-  //
-  dimensionless(-1, "", ""),
+  scalar(-1, "scalar", ""),
+  percent(-2, "percent", "%"),
+  permille(-3, "permille", "‰"),
+  fraction(-4, "fraction", ""),
   radian(0, "radian", "rad"),
   degree(1, "degree", "°"),
   moa(2, "MOA", "MOA"),
@@ -115,7 +117,7 @@ abstract class Dimension<T extends Dimension<T>> {
 
     final double val = (value as num).toDouble();
 
-    if (id < 0) return DimensionLess(val);
+    if (id < 0) return Ratio(val, units);
     if (id >= 0 && id < 10) return Angular(val, units);
     if (id >= 10 && id < 20) return Distance(val, units);
     if (id >= 30 && id < 40) return Energy(val, units);
@@ -328,24 +330,42 @@ class Weight extends Dimension<Weight> {
   Weight _create(double value, Unit unit) => Weight(value, unit);
 }
 
-class DimensionLess extends Dimension<DimensionLess> {
-  DimensionLess._(double value) : super(value, Unit.dimensionless);
+class Ratio extends Dimension<Ratio> {
+  Ratio(super.value, super.unit);
 
-  factory DimensionLess(double value) {
-    return DimensionLess._(value);
+  static const fallback = Unit.scalar;
+  static bool accepts(Unit u) => u.id < 0; // Всі від'ємні ID
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.scalar: 1.0,
+    Unit.percent: 0.01,
+    Unit.permille: 0.001,
+    Unit.fraction: 1.0,
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Ratio _create(double value, Unit unit) => Ratio(value, unit);
+
+  @override
+  double _toRaw(double value, Unit unit) {
+    if (unit == Unit.scalar) return value;
+    if (unit == Unit.percent) return value * 0.01;
+    if (unit == Unit.permille) return value * 0.001;
+    if (unit == Unit.fraction) return value;
+    return super._toRaw(value, unit);
   }
 
   @override
-  DimensionLess _create(double value, Unit unit) => DimensionLess._(value);
-
-  @override
-  Map<Unit, double> get conversionFactors => const {};
-
-  @override
-  double _toRaw(double value, Unit unit) => value;
-
-  @override
-  double _fromRaw(double rawValue, Unit unit) => rawValue;
+  double _fromRaw(double rawValue, Unit unit) {
+    if (unit == Unit.scalar) return rawValue;
+    if (unit == Unit.percent) return rawValue * 100;
+    if (unit == Unit.permille) return rawValue * 1000;
+    if (unit == Unit.fraction) return rawValue;
+    return super._fromRaw(rawValue, unit);
+  }
 }
 
 extension UnitConvertor on double {
@@ -365,7 +385,7 @@ extension UnitConvertor on double {
   // Temperature asTemperature(Unit unit) => Temperature(this, unit);
   // Pressure asPressure(Unit unit) => Pressure(this, unit);
   // Energy asEnergy(Unit unit) => Energy(this, unit);
-  // DimensionLess asDimensionLess(Unit unit) => DimensionLess(this);
+  // Scalar asScalarLess(Unit unit) => Scalar(this);
 }
 
 // Dimension<dynamic, Unit> parse(String input, [Unit? preferred]) {

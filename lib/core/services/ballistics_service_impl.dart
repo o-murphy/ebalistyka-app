@@ -77,7 +77,9 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
       shot: shot,
       trajectoryRange: Distance(2000.0, Unit.meter),
       trajectoryStep: Distance(stepM, Unit.meter),
-      filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value | BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+      filterFlags:
+          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -149,7 +151,9 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       shot: newShot,
       trajectoryRange: Distance(targetDistM, Unit.meter),
       trajectoryStep: Distance(internalStepM, Unit.meter),
-      filterFlags: BCTrajFlag.BC_TRAJ_FLAG_RANGE.value | BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+      filterFlags:
+          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {

@@ -11,7 +11,7 @@ class Cartridge {
   final Projectile projectile;
   final Velocity mv;
   final Temperature powderTemp;
-  final double tempModifier;
+  final double powderSensitivity;
   final bool usePowderSensitivity;
   final String? notes;
   final DateTime createdAt;
@@ -23,7 +23,7 @@ class Cartridge {
     required this.projectile,
     required this.mv,
     required this.powderTemp,
-    this.tempModifier = 0.0,
+    this.powderSensitivity = 0.0,
     this.usePowderSensitivity = false,
     this.notes,
     DateTime? createdAt,
@@ -36,7 +36,7 @@ class Cartridge {
     dm: projectile.dm,
     mv: mv,
     powderTemp: powderTemp,
-    tempModifier: tempModifier, // fix: / 100.0,
+    tempModifier: powderSensitivity, // fix: / 100.0,
     usePowderSensitivity: usePowderSensitivity,
   );
 
@@ -45,7 +45,7 @@ class Cartridge {
     Projectile? projectile,
     Velocity? mv,
     Temperature? powderTemp,
-    double? tempModifier,
+    double? powderSensitivity,
     bool? usePowderSensitivity,
     String? notes,
   }) => Cartridge(
@@ -54,7 +54,7 @@ class Cartridge {
     projectile: projectile ?? this.projectile,
     mv: mv ?? this.mv,
     powderTemp: powderTemp ?? this.powderTemp,
-    tempModifier: tempModifier ?? this.tempModifier,
+    powderSensitivity: powderSensitivity ?? this.powderSensitivity,
     usePowderSensitivity: usePowderSensitivity ?? this.usePowderSensitivity,
     notes: notes ?? this.notes,
     createdAt: createdAt,
@@ -67,7 +67,7 @@ class Cartridge {
     'projectile': projectile.toJson(),
     'mv': dimToJson(mv),
     'powderTemp': dimToJson(powderTemp),
-    'tempModifier': tempModifier,
+    'powderSensitivity': powderSensitivity,
     'usePowderSensitivity': usePowderSensitivity,
     if (notes != null) 'notes': notes,
     'createdAt': createdAt.toIso8601String(),
@@ -80,7 +80,7 @@ class Cartridge {
     projectile: Projectile.fromJson(json['projectile'] as Map<String, dynamic>),
     mv: velocityFromJson(json['mv'] as Map<String, dynamic>),
     powderTemp: temperatureFromJson(json['powderTemp'] as Map<String, dynamic>),
-    tempModifier: (json['tempModifier'] as num).toDouble(),
+    powderSensitivity: (json['powderSensitivity'] as num).toDouble(),
     usePowderSensitivity: json['usePowderSensitivity'] as bool,
     notes: json['notes'] as String?,
     createdAt: DateTime.parse(json['createdAt'] as String),

@@ -119,7 +119,7 @@ final seedCartridgeUkrop250 = Cartridge(
   projectile: _projUkrop250,
   mv: Velocity(888.0, Unit.mps),
   powderTemp: Temperature(29.0, Unit.celsius),
-  tempModifier: 2.0,
+  powderSensitivity: 2.0,
   usePowderSensitivity: true,
 );
 
@@ -129,7 +129,7 @@ final seedCartridgeHornady250 = Cartridge(
   projectile: _projHornady250,
   mv: Velocity(885.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
-  tempModifier: 0.02,
+  powderSensitivity: 0.02,
   usePowderSensitivity: true,
 );
 
@@ -139,7 +139,7 @@ final seedCartridgeLapua300 = Cartridge(
   projectile: _projLapua300,
   mv: Velocity(825.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
-  tempModifier: 0.123,
+  powderSensitivity: 0.123,
   usePowderSensitivity: true,
 );
 
@@ -149,7 +149,7 @@ final seedCartridgeSts285EldM = Cartridge(
   projectile: _projSts285EldM,
   mv: Velocity(810.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
-  tempModifier: 0.02,
+  powderSensitivity: 0.02,
   usePowderSensitivity: true,
 );
 

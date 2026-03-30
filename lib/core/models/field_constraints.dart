@@ -68,11 +68,11 @@ abstract final class FC {
 
   /// Humidity in percent (0–100). No unit conversion.
   static const humidity = FieldConstraints(
-    rawUnit: Unit.dimensionless, // sentinel — no conversion used for humidity
+    rawUnit: Unit.fraction, // sentinel — no conversion used for humidity
     minRaw: 0.0,
-    maxRaw: 100.0,
-    stepRaw: 1.0,
-    accuracy: 0,
+    maxRaw: 1.0,
+    stepRaw: 0.01,
+    accuracy: 2,
   );
 
   // Ballistic inputs
@@ -167,11 +167,19 @@ abstract final class FC {
   );
 
   static const ballisticCoefficient = FieldConstraints(
-    rawUnit: Unit.dimensionless, // sentinel — dimensionless, no conversion
+    rawUnit: Unit.scalar, // sentinel — dimensionless, no conversion
     minRaw: 0.001,
     maxRaw: 2.000,
     stepRaw: 0.001,
     accuracy: 3,
+  );
+
+  static const powderSensitivity = FieldConstraints(
+    rawUnit: Unit.fraction, // sentinel — no conversion used for humidity
+    minRaw: 0.0,
+    maxRaw: 100.0,
+    stepRaw: 1.0,
+    accuracy: 0,
   );
 
   // Display-only — trajectory output
