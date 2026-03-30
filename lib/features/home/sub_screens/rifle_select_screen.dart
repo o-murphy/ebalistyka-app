@@ -27,14 +27,12 @@ class CardRifleView extends StatelessWidget {
 class _RifleSelectScreenState extends State<RifleSelectScreen> {
   String _title = "Select Rifle";
   final List<String> _titles = ["Rifle 1", "Rifle 2", "Rifle 3"];
-  int _currentPage = 0;
   final _fabKey = GlobalKey<_ExpandableFabState>();
   late final _dimAnimation = _DeferredAnimation(_fabKey);
 
   void _onPageChanged(int page) {
     setState(() {
       _title = _titles[page];
-      _currentPage = page;
     });
   }
 

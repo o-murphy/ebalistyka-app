@@ -1,4 +1,3 @@
-
 // ─── Page dots indicator with navigation arrows ──────────────────────────────
 
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ class PageDotsIndicator extends StatelessWidget {
     required this.current,
     required this.count,
     required this.onPageChanged,
+    super.key,
   });
 
   final int current;
