@@ -58,8 +58,7 @@ jobs:
 
       - name: Update bclibc submodule to latest
         run: |
-          git -C external/bclibc fetch origin
-          git -C external/bclibc checkout origin/build/cross-platform
+          git submodule update --remote external/bclibc
           HASH=$(git -C external/bclibc rev-parse HEAD)
           echo "bclibc at: $HASH"
           echo "BCLIBC_HASH=$HASH" >> $GITHUB_ENV
