@@ -61,7 +61,7 @@ class TableConfigScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Extra tables ───────────────────────────────────────────────
-          const SettingsSectionLabel('Extra tables'),
+          const SettingsSectionLabel('Extra'),
 
           SwitchListTile(
             secondary: const Icon(Icons.swap_vert_outlined),
@@ -82,172 +82,6 @@ class TableConfigScreen extends ConsumerWidget {
             value: cfg.showSubsonicTransition,
             onChanged: (v) => save(cfg.copyWith(showSubsonicTransition: v)),
             dense: true,
-          ),
-
-          const Divider(height: 1),
-
-          // ── Details spoiler ────────────────────────────────────────────
-          const SettingsSectionLabel('Details spoiler'),
-
-          // Rifle
-          SwitchListTile(
-            secondary: const Icon(Icons.precision_manufacturing_outlined),
-            title: const Text('Rifle', style: TextStyle(fontSize: 14)),
-            value: cfg.spoilerShowRifle,
-            onChanged: (v) => save(cfg.copyWith(spoilerShowRifle: v)),
-            dense: true,
-          ),
-          _SubSwitch(
-            'Caliber',
-            cfg.spoilerShowCaliber,
-            cfg.spoilerShowRifle
-                ? (v) => save(cfg.copyWith(spoilerShowCaliber: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Twist rate',
-            cfg.spoilerShowTwist,
-            cfg.spoilerShowRifle
-                ? (v) => save(cfg.copyWith(spoilerShowTwist: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Twist direction',
-            cfg.spoilerShowTwistDir,
-            cfg.spoilerShowRifle
-                ? (v) => save(cfg.copyWith(spoilerShowTwistDir: v))
-                : null,
-          ),
-          Divider(height: 1),
-
-          // Projectile
-          SwitchListTile(
-            secondary: const Icon(Icons.radio_button_checked_outlined),
-            title: const Text('Projectile', style: TextStyle(fontSize: 14)),
-            value: cfg.spoilerShowProjectile,
-            onChanged: (v) => save(cfg.copyWith(spoilerShowProjectile: v)),
-            dense: true,
-          ),
-          _SubSwitch(
-            'Drag model type',
-            cfg.spoilerShowDragModel,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowDragModel: v))
-                : null,
-          ),
-          _SubSwitch(
-            'BC',
-            cfg.spoilerShowBc,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowBc: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Zero muzzle velocity',
-            cfg.spoilerShowZeroMv,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowZeroMv: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Current muzzle velocity',
-            cfg.spoilerShowCurrMv,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowCurrMv: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Zero distance',
-            cfg.spoilerShowZeroDist,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowZeroDist: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Bullet length',
-            cfg.spoilerShowBulletLen,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowBulletLen: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Bullet diameter',
-            cfg.spoilerShowBulletDiam,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowBulletDiam: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Bullet weight',
-            cfg.spoilerShowBulletWeight,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowBulletWeight: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Form factor',
-            cfg.spoilerShowFormFactor,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowFormFactor: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Sectional density',
-            cfg.spoilerShowSectionalDensity,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowSectionalDensity: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Gyroscopic stability factor',
-            cfg.spoilerShowGyroStability,
-            cfg.spoilerShowProjectile
-                ? (v) => save(cfg.copyWith(spoilerShowGyroStability: v))
-                : null,
-          ),
-          Divider(height: 1),
-          // Atmosphere
-          SwitchListTile(
-            secondary: const Icon(Icons.cloud_outlined),
-            title: const Text('Atmosphere', style: TextStyle(fontSize: 14)),
-            value: cfg.spoilerShowAtmo,
-            onChanged: (v) => save(cfg.copyWith(spoilerShowAtmo: v)),
-            dense: true,
-          ),
-          _SubSwitch(
-            'Temperature',
-            cfg.spoilerShowTemp,
-            cfg.spoilerShowAtmo
-                ? (v) => save(cfg.copyWith(spoilerShowTemp: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Humidity',
-            cfg.spoilerShowHumidity,
-            cfg.spoilerShowAtmo
-                ? (v) => save(cfg.copyWith(spoilerShowHumidity: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Pressure',
-            cfg.spoilerShowPressure,
-            cfg.spoilerShowAtmo
-                ? (v) => save(cfg.copyWith(spoilerShowPressure: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Wind speed',
-            cfg.spoilerShowWindSpeed,
-            cfg.spoilerShowAtmo
-                ? (v) => save(cfg.copyWith(spoilerShowWindSpeed: v))
-                : null,
-          ),
-          _SubSwitch(
-            'Wind direction',
-            cfg.spoilerShowWindDir,
-            cfg.spoilerShowAtmo
-                ? (v) => save(cfg.copyWith(spoilerShowWindDir: v))
-                : null,
           ),
 
           const Divider(height: 1),
@@ -316,7 +150,7 @@ class TableConfigScreen extends ConsumerWidget {
               Unit.moa,
               Unit.mRad,
               Unit.cmPer100m,
-              Unit.inchesPer100Yd,
+              Unit.inPer100Yd,
             ],
             enabled: !cfg.adjAllUnits,
             onChanged: (u) => save(cfg.copyWith(adjUnit: u)),
@@ -349,40 +183,6 @@ class TableConfigScreen extends ConsumerWidget {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-}
-
-// ── Sub-level switch (indented) ───────────────────────────────────────────────
-
-class _SubSwitch extends StatelessWidget {
-  const _SubSwitch(this.label, this.value, this.onChanged);
-  final String label;
-  final bool value;
-  final ValueChanged<bool>? onChanged; // null = disabled
-
-  @override
-  Widget build(BuildContext context) {
-    return SwitchListTile(
-      title: Row(
-        children: [
-          const SizedBox(width: 24),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                color: onChanged == null
-                    ? Theme.of(context).colorScheme.onSurface.withAlpha(80)
-                    : null,
-              ),
-            ),
-          ),
-        ],
-      ),
-      value: value,
-      onChanged: onChanged,
-      dense: true,
-    );
-  }
 }
 
 // ── Distance tile with text field dialog ──────────────────────────────────────

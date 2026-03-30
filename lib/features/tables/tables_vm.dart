@@ -1,6 +1,7 @@
 // ЧИСТИЙ DART
 import 'package:eballistica/core/models/unit_settings.dart';
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:eballistica/core/solver/munition.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:eballistica/core/domain/ballistics_service.dart';
@@ -212,7 +213,6 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     AppSettings settings,
     UnitFormatter formatter,
   ) {
-    final cfg = settings.tableConfig;
     final units = settings.units;
     final rifle = profile.rifle;
     final cart = profile.cartridge;
@@ -234,12 +234,12 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
     final refMvMps = cart.mv.in_(Unit.mps);
     final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
 
-    double mvAtTempC(double tC) {
-      if (refMvMps <= 0 || cart.tempModifier == 0) return refMvMps;
-      return (cart.tempModifier / 100.0 / (15 / refMvMps)) *
-              (tC - refPowderTempC) +
-          refMvMps;
-    }
+    double mvAtTempC(double tCurC) => velocityForPowderTemp(
+      refMvMps,
+      refPowderTempC,
+      tCurC,
+      cart.tempModifier,
+    );
 
     // Zero MV
     final zeroAtmo = profile.zeroConditions ?? conds;
@@ -274,73 +274,61 @@ class TablesViewModel extends AsyncNotifier<TablesUiState> {
 
     return DetailsTableData(
       rifleName: rifle.name,
-      caliber: cfg.spoilerShowCaliber && diamInch > 0
+      caliber: diamInch > 0
           ? fmtWithAcc(dm.diameter, units.diameter, FC.bulletDiameter)
           : null,
-      twist: cfg.spoilerShowTwist && twistInch > 0
+      twist: twistInch > 0
           ? () {
               final tw = Distance(twistInch, Unit.inch).in_(units.twist);
               return '1:${tw.toStringAsFixed(FC.twist.accuracyFor(units.twist))} ${units.twist.symbol}';
             }()
           : null,
-      dragModel: cfg.spoilerShowDragModel
-          ? switch (proj.dragType) {
-              DragModelType.g1 => 'G1',
-              DragModelType.g7 => 'G7',
-              DragModelType.custom => 'Custom',
-            }
-          : null,
-      bc: cfg.spoilerShowBc && dm.bc > 0
+      dragModel: switch (proj.dragType) {
+        DragModelType.g1 => 'G1',
+        DragModelType.g7 => 'G7',
+        DragModelType.custom => 'Custom',
+      },
+      bc: dm.bc > 0
           ? dm.bc.toStringAsFixed(FC.ballisticCoefficient.accuracy)
           : null,
-      zeroMv: cfg.spoilerShowZeroMv ? fmtV(zeroMvMps) : null,
-      currentMv: cfg.spoilerShowCurrMv ? fmtV(currentMvMps) : null,
-      zeroDist: cfg.spoilerShowZeroDist
-          ? fmtWithAcc(profile.zeroDistance, units.distance, FC.zeroDistance)
-          : null,
-      bulletLen: cfg.spoilerShowBulletLen && lenInch > 0
+      zeroMv: fmtV(zeroMvMps),
+      currentMv: fmtV(currentMvMps),
+      zeroDist: fmtWithAcc(
+        profile.zeroDistance,
+        units.distance,
+        FC.zeroDistance,
+      ),
+      bulletLen: lenInch > 0
           ? fmtWithAcc(dm.length, units.length, FC.bulletLength)
           : null,
-      bulletDiam: cfg.spoilerShowBulletDiam && diamInch > 0
+      bulletDiam: diamInch > 0
           ? fmtWithAcc(dm.diameter, units.diameter, FC.bulletDiameter)
           : null,
-      bulletWeight: cfg.spoilerShowBulletWeight && weightGr > 0
+      bulletWeight: weightGr > 0
           ? () {
               final wDisp = Weight(weightGr, Unit.grain).in_(units.weight);
               return '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weight))} ${units.weight.symbol}';
             }()
           : null,
-      formFactor: cfg.spoilerShowFormFactor && ff != null
-          ? ff.toStringAsFixed(3)
-          : null,
-      sectionalDensity: cfg.spoilerShowSectionalDensity && sd != null
-          ? sd.toStringAsFixed(3)
-          : null,
-      gyroStability: cfg.spoilerShowGyroStability
-          ? sg.toStringAsFixed(2)
-          : null,
-      temperature: cfg.spoilerShowTemp
-          ? () {
-              final t = conds.temperature.in_(units.temperature);
-              return '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperature))} ${units.temperature.symbol}';
-            }()
-          : null,
-      humidity: cfg.spoilerShowHumidity
-          ? '${(conds.humidity * 100).toStringAsFixed(0)} %'
-          : null,
-      pressure: cfg.spoilerShowPressure
-          ? () {
-              final p = conds.pressure.in_(units.pressure);
-              return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
-            }()
-          : null,
-      windSpeed: cfg.spoilerShowWindSpeed && winds.isNotEmpty
+      formFactor: ff?.toStringAsFixed(3),
+      sectionalDensity: sd?.toStringAsFixed(3),
+      gyroStability: sg.toStringAsFixed(2),
+      temperature: () {
+        final t = conds.temperature.in_(units.temperature);
+        return '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperature))} ${units.temperature.symbol}';
+      }(),
+      humidity: '${(conds.humidity * 100).toStringAsFixed(0)} %',
+      pressure: () {
+        final p = conds.pressure.in_(units.pressure);
+        return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
+      }(),
+      windSpeed: winds.isNotEmpty
           ? () {
               final ws = winds.first.velocity.in_(units.velocity);
               return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
             }()
           : null,
-      windDir: cfg.spoilerShowWindDir && winds.isNotEmpty
+      windDir: winds.isNotEmpty
           ? '${winds.first.directionFrom.in_(Unit.degree).toStringAsFixed(0)}°'
           : null,
     );

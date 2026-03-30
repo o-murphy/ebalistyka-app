@@ -394,48 +394,6 @@ void main() {
     });
   });
 
-  group('TablesViewModel — spoiler toggles', () {
-    test('spoiler fields are null when disabled', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        service: service,
-        settings: const AppSettings(
-          tableConfig: TableConfig(
-            spoilerShowCaliber: false,
-            spoilerShowTwist: false,
-            spoilerShowDragModel: false,
-            spoilerShowBc: false,
-            spoilerShowZeroMv: false,
-            spoilerShowCurrMv: false,
-            spoilerShowZeroDist: false,
-            spoilerShowTemp: false,
-            spoilerShowHumidity: false,
-            spoilerShowPressure: false,
-            spoilerShowWindSpeed: false,
-            spoilerShowWindDir: false,
-          ),
-        ),
-      );
-      addTearDown(container.dispose);
-      final state = await _recalculate(container);
-
-      expect(state.details.rifleName, 'Test Rifle');
-      expect(state.details.caliber, isNull);
-      expect(state.details.twist, isNull);
-      expect(state.details.dragModel, isNull);
-      expect(state.details.bc, isNull);
-      expect(state.details.zeroMv, isNull);
-      expect(state.details.currentMv, isNull);
-      expect(state.details.zeroDist, isNull);
-      expect(state.details.temperature, isNull);
-      expect(state.details.humidity, isNull);
-      expect(state.details.pressure, isNull);
-      expect(state.details.windSpeed, isNull);
-      expect(state.details.windDir, isNull);
-    });
-  });
-
   group('TablesViewModel — empty state', () {
     test('returns empty when profile is null', () async {
       final service = _FakeBallisticsService(_makeResult());

@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:async';
+import 'package:eballistica/core/solver/munition.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:eballistica/core/domain/ballistics_service.dart';
@@ -124,16 +125,16 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     // MV Logic with powder sensitivity
     final refMvMps = cartridge.mv.in_(Unit.mps);
     final refPowderTempC = cartridge.powderTemp.in_(Unit.celsius);
-    final tempModifier = cartridge.tempModifier;
     final powderSensOn =
         settings.enablePowderSensitivity && cartridge.usePowderSensitivity;
     final useDiffTemp = powderSensOn && settings.useDifferentPowderTemperature;
 
-    double mvAtTempC(double tC) {
-      if (refMvMps <= 0 || tempModifier == 0) return refMvMps;
-      return (tempModifier / 100.0 / (15 / refMvMps)) * (tC - refPowderTempC) +
-          refMvMps;
-    }
+    double mvAtTempC(double tCurC) => velocityForPowderTemp(
+      refMvMps,
+      refPowderTempC,
+      tCurC,
+      cartridge.tempModifier,
+    );
 
     final conditions = profile.conditions;
     final currentPowderTempC = useDiffTemp

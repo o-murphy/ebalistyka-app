@@ -97,42 +97,56 @@ class Shot {
   /// Returns:
   ///   double: The Miller stability coefficient, or 0.0 if insufficient data.
   double calculateStabilityCoefficient() {
-    final twistInch = weapon.twist.in_(Unit.inch).abs();
-    final lengthInch = ammo.dm.length.in_(Unit.inch);
-    final diameterInch = ammo.dm.diameter.in_(Unit.inch);
-    final weightGrains = ammo.dm.weight.in_(Unit.grain);
-    final muzzleVelocityFps = ammo.mv.in_(Unit.fps);
-    final tempF = atmo.temperature.in_(Unit.fahrenheit);
-    final pressureInHg = atmo.pressure.in_(Unit.inHg);
-
-    // Check for zero values (Python equivalent: if value)
-    if (twistInch == 0.0 ||
-        lengthInch == 0.0 ||
-        diameterInch == 0.0 ||
-        weightGrains == 0.0 ||
-        pressureInHg == 0.0) {
-      return 0.0;
-    }
-
-    // Calculate twist rate and length ratios
-    final twistRate = twistInch / diameterInch;
-    final length = lengthInch / diameterInch;
-
-    // Base Miller stability formula
-    final sd =
-        30.0 *
-        weightGrains /
-        (math.pow(twistRate, 2) *
-            math.pow(diameterInch, 3) *
-            length *
-            (1 + math.pow(length, 2)));
-
-    // Velocity correction factor
-    final fv = math.pow(muzzleVelocityFps / 2800.0, 1.0 / 3.0);
-
-    // Atmospheric correction
-    final ftp = ((tempF + 460.0) / (59.0 + 460.0)) * (29.92 / pressureInHg);
-
-    return sd * fv * ftp;
+    return calculateMillerStability(
+      twistInch: weapon.twist.in_(Unit.inch),
+      bulletLenInch: ammo.dm.length.in_(Unit.inch),
+      bulletDiamInch: ammo.dm.diameter.in_(Unit.inch),
+      bulletWghtGrains: ammo.dm.weight.in_(Unit.grain),
+      muzzleVelocityFps: ammo.mv.in_(Unit.fps),
+      tempF: atmo.temperature.in_(Unit.fahrenheit),
+      pressureInHg: atmo.pressure.in_(Unit.inHg),
+    );
   }
+}
+
+double calculateMillerStability({
+  required double twistInch,
+  bulletLenInch,
+  bulletDiamInch,
+  bulletWghtGrains,
+  muzzleVelocityFps,
+  tempF,
+  pressureInHg,
+}) {
+  twistInch = twistInch.abs();
+
+  // Check for zero values (Python equivalent: if value)
+  if (twistInch == 0.0 ||
+      bulletLenInch == 0.0 ||
+      bulletDiamInch == 0.0 ||
+      bulletWghtGrains == 0.0 ||
+      pressureInHg == 0.0) {
+    return 0.0;
+  }
+
+  // Calculate twist rate and length ratios
+  final twistRate = twistInch / bulletDiamInch;
+  final length = bulletLenInch / bulletDiamInch;
+
+  // Base Miller stability formula
+  final sd =
+      30.0 *
+      bulletWghtGrains /
+      (math.pow(twistRate, 2) *
+          math.pow(bulletDiamInch, 3) *
+          length *
+          (1 + math.pow(length, 2)));
+
+  // Velocity correction factor
+  final fv = math.pow(muzzleVelocityFps / 2800.0, 1.0 / 3.0);
+
+  // Atmospheric correction
+  final ftp = ((tempF + 460.0) / (59.0 + 460.0)) * (29.92 / pressureInHg);
+
+  return sd * fv * ftp;
 }

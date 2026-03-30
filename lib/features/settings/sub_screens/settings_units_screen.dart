@@ -80,7 +80,7 @@ class UnitsScreen extends ConsumerWidget {
               Unit.moa,
               Unit.mRad,
               Unit.cmPer100m,
-              Unit.inchesPer100Yd,
+              Unit.inPer100Yd,
             ],
             onChanged: (u) => set('adjustment', u),
           ),

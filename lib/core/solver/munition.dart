@@ -59,17 +59,12 @@ class Ammo {
   Velocity getVelocityForTemp(Temperature currentTemp) {
     if (!usePowderSensitivity) return mv;
 
-    final double v0 = mv.in_(Unit.mps);
-    final double t0 = powderTemp.in_(Unit.celsius);
-    final double t1 = currentTemp.in_(Unit.celsius);
-    final double tDelta = t1 - t0;
-
-    double adjustedMv;
-    try {
-      adjustedMv = (tempModifier / (15 / v0)) * tDelta + v0;
-    } catch (_) {
-      adjustedMv = 0;
-    }
+    double adjustedMv = velocityForPowderTemp(
+      mv.in_(Unit.mps),
+      powderTemp.in_(Unit.celsius),
+      currentTemp.in_(Unit.celsius),
+      tempModifier,
+    );
 
     return Velocity(adjustedMv, Unit.mps);
   }
@@ -77,4 +72,15 @@ class Ammo {
   @override
   String toString() =>
       'Ammo(mv: $mv, powderTemp: $powderTemp, mod: ${tempModifier.toStringAsFixed(4)})';
+}
+
+double velocityForPowderTemp(double vMps, tC, tCurC, tempModifier) {
+  final double tDelta = tCurC - tC;
+  double adjustedMv;
+  try {
+    adjustedMv = (tempModifier / (15 / vMps)) * tDelta + vMps;
+  } catch (_) {
+    adjustedMv = 0;
+  }
+  return adjustedMv;
 }

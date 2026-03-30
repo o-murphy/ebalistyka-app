@@ -344,7 +344,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       if (settings.showMoa) (Unit.moa, 'MOA'),
       if (settings.showMil) (Unit.mil, 'MIL'),
       if (settings.showCmPer100m) (Unit.cmPer100m, 'cm/100m'),
-      if (settings.showInPer100yd) (Unit.inchesPer100Yd, 'in/100yd'),
+      if (settings.showInPer100yd) (Unit.inPer100Yd, 'in/100yd'),
     ];
 
     final elevValues = dispUnits.map((u) {

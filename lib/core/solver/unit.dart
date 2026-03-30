@@ -9,7 +9,7 @@ enum Unit {
   mil(3, "MIL", "MIL"),
   mRad(4, "MRAD", "MRAD"),
   thousandth(5, "thousandth", "ths"),
-  inchesPer100Yd(6, "inch/100yd", "in/100yd"),
+  inPer100Yd(6, "inch/100yd", "in/100yd"),
   cmPer100m(7, "cm/100m", "cm/100m"),
   oClock(8, "hour", "h"),
   inch(10, "inch", "inch"),
@@ -139,7 +139,7 @@ class Angular extends Dimension<Angular> {
     Unit.mil: pi / 3200,
     Unit.mRad: 1.0 / 1000,
     Unit.thousandth: pi / 3000,
-    Unit.inchesPer100Yd: 1.0 / 3600,
+    Unit.inPer100Yd: 1.0 / 3600,
     Unit.cmPer100m: 1.0 / 10000,
     Unit.oClock: pi / 6,
   };
@@ -331,6 +331,17 @@ extension UnitConvertor on double {
     }
     return Dimension.auto(this, from).in_(to);
   }
+
+  // Dimension<dynamic> asDimension(Unit unit) => Dimension.auto(this, unit);
+  // Angular asAngular(Unit unit) => Angular(this, unit);
+  // Distance asDistance(Unit unit) => Distance(this, unit);
+  // Velocity asVelocity(Unit unit) => Velocity(this, unit);
+  // Weight asWeight(Unit unit) => Weight(this, unit);
+  // Time asTime(Unit unit) => Time(this, unit);
+  // Temperature asTemperature(Unit unit) => Temperature(this, unit);
+  // Pressure asPressure(Unit unit) => Pressure(this, unit);
+  // Energy asEnergy(Unit unit) => Energy(this, unit);
+  // DimensionLess asDimensionLess(Unit unit) => DimensionLess(this);
 }
 
 // Dimension<dynamic, Unit> parse(String input, [Unit? preferred]) {
