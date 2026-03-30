@@ -520,10 +520,8 @@ Phase   Task                                        Depends on   Risk
   2     ShotDetailsViewModel                         1 (paths)    Low
   3     FFI enum wrappers (bc_enums.dart)            —            Low          ✅ DONE
   4     ffigen update to ^20                         3            Medium (enum issue) ✅ DONE
-  5     Strict dimension typing (§3.5)               1            High (blast radius)
+  5     Strict dimension typing (§3.5)               1            High (blast radius) ✅ DONE
   6     Safe JSON parsing loading                    —            not analyzed
-  7     Bug in tables screen, the tables are not     —            not analyzed
-        expands to allowed width if it's anough
 ```
 
 ### Phase 1 — Feature-first restructure ✅ DONE
@@ -553,7 +551,7 @@ Bindings regenerated — ffigen ^20 now generates proper Dart `enum` types (with
 `BcHitResult.reason` → `BCTerminationReason`, `BcLibC.integrateAt` key → `BCBaseTrajInterpKey`,
 `BcShotProps.method` → `BCIntegrationMethod`.
 
-### Phase 5 — Strict dimension typing (§3.5) 
+### Phase 5 — Strict dimension typing ✅ DONE (§3.5) 
 > [!NOTE] IT IS MAYBE NOT REALLY NEEDED
 
 **Goal:** Replace single `Unit` enum with per-dimension enums (`DistanceUnit`, `VelocityUnit`, etc.) and parameterize `Dimension<T, U>` — mirroring C++ `unit.hpp` architecture.
