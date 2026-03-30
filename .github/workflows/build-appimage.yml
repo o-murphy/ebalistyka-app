@@ -1,0 +1,260 @@
+name: Build Linux AppImage
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'lib/**'
+      - 'linux/**'
+      - 'external/**'
+      - 'pubspec.yaml'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - debug
+
+env:
+  FLUTTER_VERSION: '3.41.6'
+
+jobs:
+  build-linux-appimage:
+    name: Build Linux AppImage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Flutter with cache
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            fuse libfuse2
+
+      - name: Get Flutter version
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      - name: Update bclibc submodule to latest
+        run: |
+          git -C external/bclibc fetch origin
+          git -C external/bclibc checkout origin/build/cross-platform
+          HASH=$(git -C external/bclibc rev-parse HEAD)
+          echo "bclibc at: $HASH"
+          echo "BCLIBC_HASH=$HASH" >> $GITHUB_ENV
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-
+
+      - name: Cache bclibc build
+        uses: actions/cache@v4
+        with:
+          path: build/linux/x64/bclibc_ffi_build
+          key: bclibc-linux-${{ env.BCLIBC_HASH }}
+
+      - name: Install dependencies
+        run: |
+          flutter clean
+          flutter pub get
+
+      - name: Build Linux bundle
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILD_MODE="release"
+          else
+            BUILD_MODE="${{ inputs.build_type }}"
+            BUILD_MODE="${BUILD_MODE:-release}"
+          fi
+
+          echo "Building in $BUILD_MODE mode..."
+          flutter build linux --$BUILD_MODE
+          echo "BUILD_MODE=$BUILD_MODE" >> $GITHUB_ENV
+
+      - name: Download appimagetool
+        run: |
+          wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" \
+            -O /usr/local/bin/appimagetool
+          chmod +x /usr/local/bin/appimagetool
+
+      - name: Package AppImage
+        run: |
+          BUNDLE_DIR="build/linux/x64/${{ env.BUILD_MODE }}/bundle"
+
+          if [ ! -d "$BUNDLE_DIR" ]; then
+            echo "❌ Bundle not found at: $BUNDLE_DIR"
+            find build/linux -type f -name "eballistica" 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "Bundle found at: $BUNDLE_DIR"
+
+          # AppDir structure
+          APPDIR="AppDir"
+          mkdir -p "$APPDIR/usr/bin"
+          mkdir -p "$APPDIR/usr/lib"
+          mkdir -p "$APPDIR/usr/share/applications"
+          mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
+
+          # Copy binary and bundle
+          cp "$BUNDLE_DIR/eballistica" "$APPDIR/usr/bin/"
+          cp -r "$BUNDLE_DIR/data" "$APPDIR/usr/bin/"
+          cp -r "$BUNDLE_DIR/lib/"* "$APPDIR/usr/lib/"
+
+          # Desktop entry
+          cat > "$APPDIR/usr/share/applications/eballistica.desktop" << 'EOF'
+          [Desktop Entry]
+          Name=eBallistica
+          Exec=eballistica
+          Icon=eballistica
+          Type=Application
+          Categories=Utility;
+          EOF
+
+          # Placeholder icon (replace with real icon if available)
+          if [ -f "assets/icon.png" ]; then
+            cp "assets/icon.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/eballistica.png"
+          else
+            # 1x1 transparent PNG as fallback
+            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82' \
+              > "$APPDIR/usr/share/icons/hicolor/256x256/apps/eballistica.png"
+          fi
+
+          # AppRun symlink
+          ln -sf usr/share/applications/eballistica.desktop "$APPDIR/eballistica.desktop"
+          ln -sf usr/share/icons/hicolor/256x256/apps/eballistica.png "$APPDIR/eballistica.png"
+
+          cat > "$APPDIR/AppRun" << 'EOF'
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "$0")")"
+          export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+          exec "$HERE/usr/bin/eballistica" "$@"
+          EOF
+          chmod +x "$APPDIR/AppRun"
+
+          # Build AppImage
+          APPIMAGE_NAME="eballistica-x86_64.AppImage"
+          ARCH=x86_64 appimagetool "$APPDIR" "$APPIMAGE_NAME"
+
+          mkdir -p artifacts
+          mv "$APPIMAGE_NAME" artifacts/
+
+          # Build info
+          cat > artifacts/build_info.txt << EOF
+          Build Information:
+          - Build Date: $(date -u '+%Y-%m-%d %H:%M:%S')
+          - Commit: ${{ github.sha }}
+          - Branch: ${{ github.head_ref }}
+          - PR: ${{ github.event.pull_request.number }}
+          - Build Mode: ${{ env.BUILD_MODE }}
+          EOF
+
+          echo "✅ AppImage created: artifacts/$APPIMAGE_NAME"
+          ls -lh artifacts/
+
+      - name: Upload artifacts (PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eballistica-linux-pr-${{ github.event.pull_request.number }}
+          path: artifacts/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload artifacts (Manual)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eballistica-linux-${{ inputs.build_type || 'release' }}-${{ github.run_number }}
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  pr-summary:
+    name: PR Build Summary
+    runs-on: ubuntu-latest
+    needs: [build-linux-appimage]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Generate summary comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildStatus = '${{ needs.build-linux-appimage.result }}';
+            const buildSuccess = buildStatus === 'success';
+
+            const artifactUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            let comment = `## 🐧 Linux AppImage Build Result\n\n`;
+
+            if (buildSuccess) {
+              comment += `✅ **Build successful!**\n\n`;
+              comment += `📦 **Download AppImage**: [Download from artifacts](${artifactUrl})\n\n`;
+              comment += `### Build Details:\n`;
+              comment += `- **PR**: #${{ github.event.pull_request.number }}\n`;
+              comment += `- **Commit**: \`${{ github.sha }}\`\n`;
+              comment += `- **Build Mode**: Debug (PR builds use debug mode for faster builds)\n`;
+              comment += `- **Artifacts available for**: 7 days\n\n`;
+              comment += `### Usage:\n`;
+              comment += `\`\`\`bash\n`;
+              comment += `chmod +x eballistica-x86_64.AppImage\n`;
+              comment += `./eballistica-x86_64.AppImage\n`;
+              comment += `\`\`\`\n`;
+            } else {
+              comment += `❌ **Build failed!**\n\n`;
+              comment += `Check the [Actions logs](${artifactUrl}) for details.\n`;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' && comment.body.includes('🐧 Linux AppImage Build Result')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
