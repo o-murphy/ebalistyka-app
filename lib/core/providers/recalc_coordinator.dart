@@ -1,3 +1,4 @@
+import 'package:eballistica/features/tables/details_table_mv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:eballistica/core/providers/settings_provider.dart';
@@ -5,7 +6,7 @@ import 'package:eballistica/core/providers/shot_profile_provider.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/features/home/home_vm.dart';
 import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 
 /// Centralises all recalculation triggers.
 ///
@@ -33,13 +34,13 @@ class RecalcCoordinator extends Notifier<void> {
       ref.read(shotDetailsVmProvider.notifier).recalculate();
     }
     if (tabIndex == 2) {
-      ref.read(tablesVmProvider.notifier).recalculate();
+      ref.read(trajectoryTablesVmProvider.notifier).recalculate();
     }
   }
 
   void _triggerAll() {
     ref.read(homeVmProvider.notifier).recalculate();
-    ref.read(tablesVmProvider.notifier).recalculate();
+    ref.read(trajectoryTablesVmProvider.notifier).recalculate();
     ref.read(shotDetailsVmProvider.notifier).recalculate();
   }
 

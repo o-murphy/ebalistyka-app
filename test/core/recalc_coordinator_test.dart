@@ -22,7 +22,7 @@ import 'package:eballistica/core/solver/munition.dart';
 import 'package:eballistica/core/solver/unit.dart';
 import 'package:eballistica/features/home/home_vm.dart';
 import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -95,11 +95,12 @@ class _TrackingShotDetailsVM extends ShotDetailsViewModel {
   }
 }
 
-class _TrackingTablesVM extends TablesViewModel {
+class _TrackingTablesVM extends TrajectoryTablesViewModel {
   int recalcCount = 0;
 
   @override
-  Future<TablesUiState> build() async => const TablesUiLoading();
+  Future<TrajectoryTablesUiState> build() async =>
+      const TrajectoryTablesUiLoading();
 
   @override
   Future<void> recalculate() async {
@@ -163,7 +164,7 @@ _TestContext _createTestContext({
       shotProfileProvider.overrideWith(() => profileNotifier),
       settingsProvider.overrideWith(() => settingsNotifier),
       homeVmProvider.overrideWith(() => homeVM),
-      tablesVmProvider.overrideWith(() => tablesVM),
+      trajectoryTablesVmProvider.overrideWith(() => tablesVM),
       shotDetailsVmProvider.overrideWith(() => shotDetailsVM),
     ],
   );

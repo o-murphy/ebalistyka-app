@@ -1,3 +1,4 @@
+import 'package:eballistica/features/tables/details_table_mv.dart';
 import 'package:eballistica/features/tables/widgets/details_table.dart';
 import 'package:eballistica/shared/widgets/base_screen.dart';
 import 'package:eballistica/shared/widgets/empty_state.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:eballistica/router.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
 
 class TablesScreen extends ConsumerWidget {
@@ -29,23 +30,30 @@ class TablesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vmAsync = ref.watch(tablesVmProvider);
-    final vmState = vmAsync.value;
+    final vmTrajectoryAsync = ref.watch(trajectoryTablesVmProvider);
+    final vmDetailsState = ref.watch(detailsTableMvProvider);
+    final vmTrajectoryState = vmTrajectoryAsync.value;
 
     Widget tablesTab;
-    Widget detailsTab;
-    if (vmState is TablesUiLoading || vmState == null) {
-      tablesTab = detailsTab = const Center(child: CircularProgressIndicator());
-    } else if (vmState is TablesUiEmpty) {
-      tablesTab = detailsTab = const EmptyStatePlaceholder();
-    } else if (vmState is TablesUiReady) {
+    if (vmTrajectoryState is TrajectoryTablesUiLoading ||
+        vmTrajectoryState == null) {
+      tablesTab = const Center(child: CircularProgressIndicator());
+    } else if (vmTrajectoryState is TrajectoryTablesUiEmpty) {
+      tablesTab = const EmptyStatePlaceholder();
+    } else if (vmTrajectoryState is TrajectoryTablesUiReady) {
       tablesTab = TrajectoryTable(
-        mainTable: vmState.mainTable,
-        zeroCrossings: vmState.zeroCrossings,
+        mainTable: vmTrajectoryState.mainTable,
+        zeroCrossings: vmTrajectoryState.zeroCrossings,
       );
-      detailsTab = DetailsTable(details: vmState.details);
     } else {
-      tablesTab = detailsTab = const EmptyStatePlaceholder();
+      tablesTab = const EmptyStatePlaceholder();
+    }
+
+    Widget detailsTab;
+    if (vmDetailsState == null) {
+      detailsTab = const EmptyStatePlaceholder();
+    } else {
+      detailsTab = DetailsTable(details: vmDetailsState);
     }
 
     return DefaultTabController(

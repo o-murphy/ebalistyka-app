@@ -1,5 +1,5 @@
+import 'package:eballistica/features/tables/details_table_mv.dart';
 import 'package:flutter/material.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
 
 class DetailsTable extends StatefulWidget {
   final DetailsTableData details;

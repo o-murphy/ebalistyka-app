@@ -25,7 +25,7 @@ import 'package:eballistica/core/solver/drag_tables.dart';
 import 'package:eballistica/core/solver/munition.dart';
 import 'package:eballistica/core/solver/trajectory_data.dart';
 import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -192,14 +192,16 @@ ProviderContainer _createContainer({
   );
 }
 
-Future<TablesUiReady> _recalculate(ProviderContainer container) async {
+Future<TrajectoryTablesUiReady> _recalculate(
+  ProviderContainer container,
+) async {
   await container.read(shotProfileProvider.future);
   await container.read(settingsProvider.future);
   await Future<void>.delayed(Duration.zero);
-  final notifier = container.read(tablesVmProvider.notifier);
+  final notifier = container.read(trajectoryTablesVmProvider.notifier);
   await notifier.recalculate();
-  final state = container.read(tablesVmProvider).value;
-  return state as TablesUiReady;
+  final state = container.read(trajectoryTablesVmProvider).value;
+  return state as TrajectoryTablesUiReady;
 }
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -208,7 +210,7 @@ void main() {
   group('TablesViewModel — basic ready state', () {
     late ProviderContainer container;
     late _FakeBallisticsService service;
-    late TablesUiReady state;
+    late TrajectoryTablesUiReady state;
 
     setUp(() async {
       service = _FakeBallisticsService(_makeResult());
@@ -297,7 +299,7 @@ void main() {
 
   group('TablesViewModel — zero crossings', () {
     late ProviderContainer container;
-    late TablesUiReady state;
+    late TrajectoryTablesUiReady state;
 
     setUp(() async {
       final service = _FakeBallisticsService(_makeResult());
@@ -354,7 +356,7 @@ void main() {
 
   group('TablesViewModel — imperial units', () {
     late ProviderContainer container;
-    late TablesUiReady state;
+    late TrajectoryTablesUiReady state;
 
     setUp(() async {
       const imperial = AppSettings(
@@ -418,14 +420,14 @@ void main() {
       addTearDown(container.dispose);
 
       // Let the tablesVmProvider build complete (returns Loading)
-      await container.read(tablesVmProvider.future);
+      await container.read(trajectoryTablesVmProvider.future);
       // Settings is ready, but profile is pending → .value == null
       await container.read(settingsProvider.future);
       await Future<void>.delayed(Duration.zero);
-      final notifier = container.read(tablesVmProvider.notifier);
+      final notifier = container.read(trajectoryTablesVmProvider.notifier);
       await notifier.recalculate();
-      final state = container.read(tablesVmProvider).value;
-      expect(state, isA<TablesUiEmpty>());
+      final state = container.read(trajectoryTablesVmProvider).value;
+      expect(state, isA<TrajectoryTablesUiEmpty>());
     });
   });
 
@@ -450,11 +452,11 @@ void main() {
       await container.read(settingsProvider.future);
       await Future<void>.delayed(Duration.zero);
 
-      final notifier = container.read(tablesVmProvider.notifier);
+      final notifier = container.read(trajectoryTablesVmProvider.notifier);
       await notifier.recalculate();
-      final state = container.read(tablesVmProvider).value;
-      expect(state, isA<TablesUiError>());
-      expect((state as TablesUiError).message, contains('Boom'));
+      final state = container.read(trajectoryTablesVmProvider).value;
+      expect(state, isA<TrajectoryTablesUiError>());
+      expect((state as TrajectoryTablesUiError).message, contains('Boom'));
     });
   });
 
@@ -467,9 +469,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(tablesVmProvider.future);
-      final state = container.read(tablesVmProvider).value;
-      expect(state, isA<TablesUiLoading>());
+      await container.read(trajectoryTablesVmProvider.future);
+      final state = container.read(trajectoryTablesVmProvider).value;
+      expect(state, isA<TrajectoryTablesUiLoading>());
     });
   });
 

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────

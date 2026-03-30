@@ -8,18 +8,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/tables/tables_vm.dart';
+import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 import 'package:eballistica/features/tables/tables_screen.dart';
 import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
 
 // ── Fake ViewModel ────────────────────────────────────────────────────────────
 
-class _FakeTablesVM extends TablesViewModel {
-  final TablesUiState _initialState;
+class _FakeTablesVM extends TrajectoryTablesViewModel {
+  final TrajectoryTablesUiState _initialState;
   _FakeTablesVM(this._initialState);
 
   @override
-  Future<TablesUiState> build() async => _initialState;
+  Future<TrajectoryTablesUiState> build() async => _initialState;
 
   @override
   Future<void> recalculate() async {}
@@ -45,8 +45,10 @@ const _kMainTable = FormattedTableData(
   ],
 );
 
-Widget _scoped(TablesUiState state) => ProviderScope(
-  overrides: [tablesVmProvider.overrideWith(() => _FakeTablesVM(state))],
+Widget _scoped(TrajectoryTablesUiState state) => ProviderScope(
+  overrides: [
+    trajectoryTablesVmProvider.overrideWith(() => _FakeTablesVM(state)),
+  ],
   // TablesScreen lives inside a shell Scaffold in the real app;
   // wrap with Scaffold here so Material-dependent widgets (ListTile in
   // _DetailsSpoiler) have a valid Material ancestor.
@@ -58,7 +60,7 @@ Widget _scoped(TablesUiState state) => ProviderScope(
 void main() {
   group('TablesScreen — loading state', () {
     testWidgets('shows spinner for TablesUiLoading', (tester) async {
-      await tester.pumpWidget(_scoped(const TablesUiLoading()));
+      await tester.pumpWidget(_scoped(const TrajectoryTablesUiLoading()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -69,7 +71,7 @@ void main() {
       tester,
     ) async {
       // Before build() resolves the provider emits AsyncLoading — vmState == null
-      await tester.pumpWidget(_scoped(const TablesUiLoading()));
+      await tester.pumpWidget(_scoped(const TrajectoryTablesUiLoading()));
       // Don't pump — still in AsyncLoading
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
@@ -77,7 +79,7 @@ void main() {
 
   group('TablesScreen — empty state', () {
     testWidgets('shows table_view icon for TablesUiEmpty', (tester) async {
-      await tester.pumpWidget(_scoped(const TablesUiEmpty()));
+      await tester.pumpWidget(_scoped(const TrajectoryTablesUiEmpty()));
       await tester.pump();
 
       expect(find.text('No data'), findsOneWidget);
@@ -89,7 +91,10 @@ void main() {
     testWidgets('shows TrajectoryTable for TablesUiReady', (tester) async {
       await tester.pumpWidget(
         _scoped(
-          const TablesUiReady(details: _kSpoiler, mainTable: _kMainTable),
+          const TrajectoryTablesUiReady(
+            details: _kSpoiler,
+            mainTable: _kMainTable,
+          ),
         ),
       );
       await tester.pump();
@@ -103,7 +108,10 @@ void main() {
     ) async {
       await tester.pumpWidget(
         _scoped(
-          const TablesUiReady(details: _kSpoiler, mainTable: _kMainTable),
+          const TrajectoryTablesUiReady(
+            details: _kSpoiler,
+            mainTable: _kMainTable,
+          ),
         ),
       );
       await tester.pump();
@@ -116,7 +124,10 @@ void main() {
     testWidgets('shows header title Tables', (tester) async {
       await tester.pumpWidget(
         _scoped(
-          const TablesUiReady(details: _kSpoiler, mainTable: _kMainTable),
+          const TrajectoryTablesUiReady(
+            details: _kSpoiler,
+            mainTable: _kMainTable,
+          ),
         ),
       );
       await tester.pump();
@@ -127,7 +138,7 @@ void main() {
 
   group('TablesScreen — header', () {
     testWidgets('back button is present', (tester) async {
-      await tester.pumpWidget(_scoped(const TablesUiLoading()));
+      await tester.pumpWidget(_scoped(const TrajectoryTablesUiLoading()));
       await tester.pump();
 
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
@@ -136,7 +147,7 @@ void main() {
     testWidgets('configure and export icon buttons are present', (
       tester,
     ) async {
-      await tester.pumpWidget(_scoped(const TablesUiLoading()));
+      await tester.pumpWidget(_scoped(const TrajectoryTablesUiLoading()));
       await tester.pump();
 
       expect(find.byIcon(Icons.tune_outlined), findsOneWidget);
