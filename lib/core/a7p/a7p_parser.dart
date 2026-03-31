@@ -53,7 +53,7 @@ class A7pParser {
       projectile: projectile,
       mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
       powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
-      powderSensitivity: p.cTCoeff / 1000.0,
+      powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),
       usePowderSensitivity: p.cTCoeff != 0,
     );
 

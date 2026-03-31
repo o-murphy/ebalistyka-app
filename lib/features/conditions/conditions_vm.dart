@@ -116,9 +116,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   }
 
   Future<void> setDiffPowderTemp(bool value) async {
-    await ref
-        .read(shotProfileProvider.notifier)
-        .updateUseDiffPowderTemp(value);
+    await ref.read(shotProfileProvider.notifier).updateUseDiffPowderTemp(value);
   }
 
   Future<void> setCoriolis(bool value) async {
@@ -210,7 +208,8 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final currentMvDisp = Velocity(currentMvMps, Unit.mps).in_(units.velocity);
     final mvStr =
         '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
-    final sensStr = '${(powderSensitivity * 100.0).toStringAsFixed(2)} %/15°C';
+    final sensStr =
+        '${(powderSensitivity.in_(Unit.percent)).toStringAsFixed(2)} %/15°C';
 
     return ConditionsUiState(
       temperature: _field(

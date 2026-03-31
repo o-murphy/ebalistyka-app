@@ -27,3 +27,4 @@ Temperature temperatureFromJson(Map<String, dynamic> json) =>
 Pressure pressureFromJson(Map<String, dynamic> json) =>
     _parse(json, Pressure.new);
 Weight weightFromJson(Map<String, dynamic> json) => _parse(json, Weight.new);
+Ratio ratioFromJson(Map<String, dynamic> json) => _parse(json, Ratio.new);

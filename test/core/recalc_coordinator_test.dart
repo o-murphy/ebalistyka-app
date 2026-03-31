@@ -40,7 +40,7 @@ ShotProfile _makeProfile() {
     projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: 1.0,
+    powderSensitivity: Ratio(1.0, Unit.fraction),
     usePowderSensitivity: true,
   );
   final weapon = Weapon(
@@ -286,7 +286,9 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('profile usePowderSensitivity change triggers recalc', () async {
-      ctx.profileNotifier.push(_makeProfile().copyWith(usePowderSensitivity: true));
+      ctx.profileNotifier.push(
+        _makeProfile().copyWith(usePowderSensitivity: true),
+      );
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -295,7 +297,9 @@ void main() {
     });
 
     test('profile useDiffPowderTemp change triggers recalc', () async {
-      ctx.profileNotifier.push(_makeProfile().copyWith(useDiffPowderTemp: true));
+      ctx.profileNotifier.push(
+        _makeProfile().copyWith(useDiffPowderTemp: true),
+      );
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);

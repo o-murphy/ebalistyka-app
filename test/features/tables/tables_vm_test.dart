@@ -48,7 +48,7 @@ ShotProfile _makeProfile({double windMps = 3.0, double windDeg = 90.0}) {
     projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: 1.0,
+    powderSensitivity: Ratio(1.0, Unit.fraction),
     usePowderSensitivity: true,
   );
   final weapon = Weapon(

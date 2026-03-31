@@ -11,7 +11,7 @@ class Cartridge {
   final Projectile projectile;
   final Velocity mv;
   final Temperature powderTemp;
-  final double powderSensitivity;
+  final Ratio powderSensitivity;
   final bool usePowderSensitivity;
   final String? notes;
   final DateTime createdAt;
@@ -23,7 +23,7 @@ class Cartridge {
     required this.projectile,
     required this.mv,
     required this.powderTemp,
-    this.powderSensitivity = 0.0,
+    required this.powderSensitivity,
     this.usePowderSensitivity = false,
     this.notes,
     DateTime? createdAt,
@@ -36,7 +36,7 @@ class Cartridge {
     dm: projectile.dm,
     mv: mv,
     powderTemp: powderTemp,
-    tempModifier: powderSensitivity, // fix: / 100.0,
+    tempModifier: powderSensitivity.in_(Unit.fraction), // fix: / 100.0,
     usePowderSensitivity: usePowderSensitivity,
   );
 
@@ -45,7 +45,7 @@ class Cartridge {
     Projectile? projectile,
     Velocity? mv,
     Temperature? powderTemp,
-    double? powderSensitivity,
+    Ratio? powderSensitivity,
     bool? usePowderSensitivity,
     String? notes,
   }) => Cartridge(
@@ -67,7 +67,7 @@ class Cartridge {
     'projectile': projectile.toJson(),
     'mv': dimToJson(mv),
     'powderTemp': dimToJson(powderTemp),
-    'powderSensitivity': powderSensitivity,
+    'powderSensitivity': dimToJson(powderSensitivity),
     'usePowderSensitivity': usePowderSensitivity,
     if (notes != null) 'notes': notes,
     'createdAt': createdAt.toIso8601String(),
@@ -80,7 +80,9 @@ class Cartridge {
     projectile: Projectile.fromJson(json['projectile'] as Map<String, dynamic>),
     mv: velocityFromJson(json['mv'] as Map<String, dynamic>),
     powderTemp: temperatureFromJson(json['powderTemp'] as Map<String, dynamic>),
-    powderSensitivity: (json['powderSensitivity'] as num).toDouble(),
+    powderSensitivity: ratioFromJson(
+      json['powderSensitivity'] as Map<String, dynamic>,
+    ),
     usePowderSensitivity: json['usePowderSensitivity'] as bool,
     notes: json['notes'] as String?,
     createdAt: DateTime.parse(json['createdAt'] as String),

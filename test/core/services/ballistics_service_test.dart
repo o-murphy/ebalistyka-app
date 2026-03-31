@@ -42,6 +42,7 @@ ShotProfile _makeProfile({
     projectile: projectile,
     mv: Velocity(mvMps, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
+    powderSensitivity: Ratio(0.0, Unit.fraction),
   );
   final weapon = Weapon(
     sightHeight: Distance(38.0, Unit.millimeter),
@@ -329,6 +330,7 @@ void main() {
         projectile: projectile,
         mv: Velocity(10.0, Unit.mps), // extremely low velocity
         powderTemp: Temperature(15.0, Unit.celsius),
+        powderSensitivity: Ratio(0.0, Unit.fraction),
       );
       final weapon = Weapon(sightHeight: Distance(38.0, Unit.millimeter));
       final rifle = Rifle(name: 'Bad', weapon: weapon);
@@ -373,7 +375,10 @@ void main() {
           ),
           mv: Velocity(800, Unit.mps),
           powderTemp: Temperature(15, Unit.celsius),
-          powderSensitivity: 1.0, // 1.0 m/s per °C (stored as %)
+          powderSensitivity: Ratio(
+            1.0,
+            Unit.fraction,
+          ), // 1.0 m/s per °C (stored as %)
           usePowderSensitivity: true,
         ),
         conditions: Atmo(
