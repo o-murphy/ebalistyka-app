@@ -14,13 +14,14 @@ class RifleSelectScreen extends ConsumerStatefulWidget {
 }
 
 class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
-  final _fabKey = GlobalKey<_ExpandableFabState>();
-  late final _dimAnimation = _DeferredAnimation(_fabKey);
+  final _fabAnimValue = ValueNotifier<double>(0.0);
+  VoidCallback _closeFab = () {};
   final _pageController = PageController();
   int _currentPage = 0;
 
   @override
   void dispose() {
+    _fabAnimValue.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -118,7 +119,8 @@ class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
         return BaseScreen(
           title: _titleFor(state),
           floatingActionButton: _ExpandableFab(
-            key: _fabKey,
+            animationNotifier: _fabAnimValue,
+            onRegisterClose: (fn) => _closeFab = fn,
             onAdd: _onAdd,
             onEdit: () => _onEdit(profile),
             onDelete: () => _onDelete(profile),
@@ -136,13 +138,12 @@ class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
                       onPageChanged: _onPageChanged,
                       onSelect: _onSelect,
                     ),
-                    AnimatedBuilder(
-                      animation: _dimAnimation,
-                      builder: (context, child) {
-                        final value = _dimAnimation.value;
+                    ValueListenableBuilder<double>(
+                      valueListenable: _fabAnimValue,
+                      builder: (context, value, child) {
                         if (value == 0.0) return const SizedBox.shrink();
                         return GestureDetector(
-                          onTap: () => _fabKey.currentState?.close(),
+                          onTap: () => _closeFab(),
                           child: ColoredBox(
                             color: Colors.black.withValues(alpha: value * 0.4),
                             child: const SizedBox.expand(),
@@ -312,34 +313,10 @@ class _InfoRow extends StatelessWidget {
 
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
-/// Проксі-анімація що делегує до FAB state після першого frame.
-class _DeferredAnimation extends Animation<double>
-    with AnimationLocalListenersMixin, AnimationLocalStatusListenersMixin {
-  @override
-  void didRegisterListener() {}
-  @override
-  void didUnregisterListener() {}
-
-  _DeferredAnimation(this._key) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _key.currentState?.animation.addListener(notifyListeners);
-      _key.currentState?.animation.addStatusListener(notifyStatusListeners);
-    });
-  }
-
-  final GlobalKey<_ExpandableFabState> _key;
-
-  @override
-  double get value => _key.currentState?.animation.value ?? 0.0;
-
-  @override
-  AnimationStatus get status =>
-      _key.currentState?.animation.status ?? AnimationStatus.dismissed;
-}
-
 class _ExpandableFab extends StatefulWidget {
   const _ExpandableFab({
-    super.key,
+    required this.animationNotifier,
+    required this.onRegisterClose,
     required this.onAdd,
     required this.onEdit,
     required this.onDelete,
@@ -347,6 +324,8 @@ class _ExpandableFab extends StatefulWidget {
     required this.onExport,
   });
 
+  final ValueNotifier<double> animationNotifier;
+  final void Function(VoidCallback) onRegisterClose;
   final VoidCallback onAdd;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -376,10 +355,24 @@ class _ExpandableFabState extends State<_ExpandableFab>
       curve: Curves.fastOutSlowIn,
       reverseCurve: Curves.easeOutQuad,
     );
+    _expandAnimation.addListener(_onAnimationTick);
+    widget.onRegisterClose(close);
+  }
+
+  @override
+  void didUpdateWidget(_ExpandableFab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.onRegisterClose(close);
+  }
+
+  void _onAnimationTick() {
+    widget.animationNotifier.value = _expandAnimation.value;
   }
 
   @override
   void dispose() {
+    _expandAnimation.removeListener(_onAnimationTick);
+    widget.animationNotifier.value = 0.0;
     _controller.dispose();
     super.dispose();
   }
@@ -463,6 +456,7 @@ class _ExpandableFabState extends State<_ExpandableFab>
         AnimatedBuilder(
           animation: _controller,
           builder: (context, child) => FloatingActionButton(
+            heroTag: null,
             onPressed: _toggle,
             child: Transform.rotate(
               angle: _expandAnimation.value * 3.14159 / 2,
@@ -497,7 +491,7 @@ class _ActionButton extends StatelessWidget {
         Text(label, style: theme.textTheme.labelLarge),
         const SizedBox(width: 8),
         FloatingActionButton.small(
-          heroTag: label,
+          heroTag: null,
           onPressed: onPressed,
           backgroundColor: color,
           child: Icon(icon),
