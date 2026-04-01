@@ -6,29 +6,29 @@ import 'package:eballistica/core/providers/shot_profile_provider.dart';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-sealed class RifleSelectUiState {
-  const RifleSelectUiState();
+sealed class ProfilesUiState {
+  const ProfilesUiState();
 }
 
-class RifleSelectLoading extends RifleSelectUiState {
-  const RifleSelectLoading();
+class ProfilesLoading extends ProfilesUiState {
+  const ProfilesLoading();
 }
 
-class RifleSelectReady extends RifleSelectUiState {
+class ProfilesReady extends ProfilesUiState {
   final List<ShotProfile> profiles;
   final String? activeProfileId;
 
-  const RifleSelectReady({required this.profiles, this.activeProfileId});
+  const ProfilesReady({required this.profiles, this.activeProfileId});
 }
 
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
-class RifleSelectViewModel extends AsyncNotifier<RifleSelectUiState> {
+class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   @override
-  Future<RifleSelectUiState> build() async {
+  Future<ProfilesUiState> build() async {
     final profiles = await ref.watch(profileLibraryProvider.future);
     final activeProfile = ref.watch(shotProfileProvider).value;
-    return RifleSelectReady(
+    return ProfilesReady(
       profiles: profiles,
       activeProfileId: activeProfile?.id,
     );
@@ -60,6 +60,6 @@ class RifleSelectViewModel extends AsyncNotifier<RifleSelectUiState> {
 }
 
 final rifleSelectVmProvider =
-    AsyncNotifierProvider<RifleSelectViewModel, RifleSelectUiState>(
-      RifleSelectViewModel.new,
+    AsyncNotifierProvider<ProfilesViewModel, ProfilesUiState>(
+      ProfilesViewModel.new,
     );

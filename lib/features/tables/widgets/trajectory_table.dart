@@ -100,9 +100,9 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                       colIndex < row.cells.length
                           ? row.cells[colIndex].value
                           : '—',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(fontFamily: 'monospace'),
                     ),
                   ),
                 )
@@ -214,12 +214,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                   onTap: () => showDetail(t, pi),
                   cells: [
                     DataCell(
-                      Center(
-                        child: Text(
-                          t.distanceHeaders[pi],
-                          style: style,
-                        ),
-                      ),
+                      Center(child: Text(t.distanceHeaders[pi], style: style)),
                     ),
                     ...List.generate(
                       nMetrics,

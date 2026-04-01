@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 Expanded(
                                   child: FilledButton.tonal(
                                     onPressed: () =>
-                                        context.push(Routes.rifleSelect),
+                                        context.push(Routes.profiles),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,

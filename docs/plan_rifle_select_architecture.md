@@ -99,18 +99,61 @@ No new model is needed — clarify responsibilities in code comments and enforce
 #### `lib/features/home/sub_screens/rifle_select/rifle_select_vm.dart`
 - `AsyncNotifier<RifleSelectUiState>` with sealed state:
   - `RifleSelectLoading`
-  - `RifleSelectReady { List<ShotProfile> profiles, int activeIndex }`
+  - `RifleSelectReady { List<ShotProfile> profiles, String? activeProfileId }`
 - Actions: `selectProfile(id)`, `deleteProfile(id)`, `importFromA7p(file)`
+- Add `moveToFirst(id)` to `ProfileLibraryNotifier` — re-orders the persisted list
 
-#### `lib/features/home/sub_screens/rifle_select_screen.dart` (existing template)
+#### `lib/features/home/sub_screens/rifle_select_screen.dart`
 - Replace mock data with real `profileLibraryProvider`
 - FAB actions:
-  - **Add** → navigate to profile wizard
-  - **Edit** → navigate to profile wizard with existing profile
+  - **Add** → `Routes.profileAdd`
   - **Import** → file picker for `.a7p` → `a7p_parser.dart` → save to library
   - **Export** → serialize current profile → share
   - **Delete** → confirm dialog → `deleteProfile`
-- Selecting a card → `shotProfileProvider.notifier.selectProfile(id)` (sets all ballistic fields, preserves current conditions)
+- `PageView` initial page = index of `activeProfileId` in the list (not always 0)
+
+#### Profile card layout
+
+```
+┌──────────────────────────────────────┐
+│  ↑ scrollable ──────────────────── ↑ │
+│  ┌──────────────────────────────┐    │
+│  │  [Select/replace sight  ↗]  │    │  ← floating button top-right overlay
+│  │                              │    │
+│  │    <rifle image (future)>    │    │  ← placeholder AspectRatio box
+│  │                              │    │
+│  │  [Select/replace cart  ↙]   │    │  ← floating button bottom-left overlay
+│  └──────────────────────────────┘    │
+│  ┌──────────────────────────────┐    │
+│  │ Rifle             [edit btn] │    │
+│  │  name / sight height / twist │    │
+│  └──────────────────────────────┘    │
+│  ┌──────────────────────────────┐    │
+│  │ Cartridge         [edit btn] │    │
+│  │  name / MV / BC / weight     │    │
+│  └──────────────────────────────┘    │
+│  ┌──────────────────────────────┐    │
+│  │ Sight             [edit btn] │    │
+│  │  name / manufacturer         │    │
+│  └──────────────────────────────┘    │
+│  ↓ scrollable end ──────────────── ↓ │
+├──────────────────────────────────────┤
+│  [Select]          ← if !isActive    │  → selectProfile + moveToFirst + scroll to 0
+│  [Go to Calculations] ← if isActive  │  → Navigator.pop()
+└──────────────────────────────────────┘
+```
+
+#### Navigation from card buttons
+| Button | Route |
+|---|---|
+| Select/replace sight | `Routes.sightSelect` |
+| Select/replace cartridge | `Routes.cartridgeSelect` |
+| Edit rifle section | `Routes.profileEditRifle` |
+| Edit cartridge section | `Routes.profileEditCartridge` |
+| Edit sight section | `Routes.profileEditSight` |
+
+#### `ProfileLibraryNotifier.moveToFirst(String id)`
+Moves the selected profile to index 0 in the list and persists the new order. Called after `selectProfile` so the active profile is always on the first page next time the screen opens.
 
 ---
 
@@ -154,6 +197,64 @@ Move `useDiffPowderTemp` from `Cartridge` to `ShotProfile.useDiffPowderTemp`:
 
 ---
 
+---
+
+## Route Architecture
+
+### Navigation Tree
+
+```
+Profile  (/home/rifle-select)
+│  Paging view — each page = one user profile; card shows [Select Cartridge, Select Sight] buttons
+│
+├── Profile Add  (/home/rifle-select/profile-add)          FAB → Add
+│   │  List of user's rifles; buttons [Create, Select from collection]
+│   ├── Create Rifle Wizard  (.../rifle-create)
+│   └── Select Rifle from Collection  (.../rifle-collection)
+│
+├── Cartridge Select  (/home/rifle-select/cartridge-select)   card → Select Cartridge
+│   │  List of user's cartridges; buttons [Create, Select from collection]
+│   ├── Create Cartridge Wizard  (.../create)
+│   ├── Select Cartridge from Collection  (.../collection)
+│   └── [future] Projectile Select  (.../projectile-select)
+│       ├── Create Projectile Wizard  (.../create)
+│       └── Select Projectile from Collection  (.../collection)
+│
+├── Sight Select  (/home/rifle-select/sight-select)           card → Select Sight
+│   │  List of user's sights; buttons [Create, Select from collection]
+│   ├── Create Sight Wizard  (.../create)
+│   └── Select Sight from Collection  (.../collection)
+│
+├── Profile Edit Rifle  (/home/rifle-select/rifle-edit)       card → Edit Rifle
+├── Profile Edit Cartridge  (/home/rifle-select/cartridge-edit)  card → Edit Cartridge
+└── Profile Edit Sight  (/home/rifle-select/sight-edit)       card → Edit Sight
+```
+
+**Profile selection rule**: a profile can only be activated if both a rifle and a cartridge are bound. If the cartridge is deleted, the profile is disabled until a replacement is selected.
+
+Each select screen (Cartridge Select, Sight Select) also allows editing existing items in the user's collection.
+
+### Routes constants (`lib/router.dart`)
+
+| Constant | Path |
+|---|---|
+| `Routes.profiles` | `/home/rifle-select` |
+| `Routes.profileAdd` | `/home/rifle-select/profile-add` |
+| `Routes.profileAddRifleCreate` | `/home/rifle-select/profile-add/rifle-create` |
+| `Routes.profileAddRifleCollection` | `/home/rifle-select/profile-add/rifle-collection` |
+| `Routes.cartridgeSelect` | `/home/rifle-select/cartridge-select` |
+| `Routes.cartridgeCreate` | `/home/rifle-select/cartridge-select/create` |
+| `Routes.cartridgeCollection` | `/home/rifle-select/cartridge-select/collection` |
+| `Routes.projectileSelect` | `/home/rifle-select/cartridge-select/projectile-select` |
+| `Routes.sightSelect` | `/home/rifle-select/sight-select` |
+| `Routes.sightCreate` | `/home/rifle-select/sight-select/create` |
+| `Routes.sightCollection` | `/home/rifle-select/sight-select/collection` |
+| `Routes.profileEditRifle` | `/home/rifle-select/rifle-edit` |
+| `Routes.profileEditCartridge` | `/home/rifle-select/cartridge-edit` |
+| `Routes.profileEditSight` | `/home/rifle-select/sight-edit` |
+
+---
+
 ## Critical Files
 
 | File                                                              | Change                                                                              |
@@ -165,9 +266,10 @@ Move `useDiffPowderTemp` from `Cartridge` to `ShotProfile.useDiffPowderTemp`:
 | `lib/core/providers/shot_profile_provider.dart`                   | New update methods                                                                  |
 | `lib/features/conditions/conditions_vm.dart`                      | Read `useDiffPowderTemp` from `ShotProfile`, not `Cartridge`                        |
 | `lib/core/providers/profile_library_provider.dart`                | **NEW** — profile CRUD + persistence                                                |
-| `lib/features/home/sub_screens/rifle_select_screen.dart`          | Wire to real data                                                                   |
+| `lib/features/home/sub_screens/rifle_select_screen.dart`          | Wire to real data; profile paging                                                   |
 | `lib/features/home/sub_screens/rifle_select/rifle_select_vm.dart` | **NEW** — ViewModel                                                                 |
-| `lib/features/home/sub_screens/rifle_select/profile_wizard.dart`  | **NEW** — step wizard                                                               |
+| `lib/features/home/sub_screens/home_sub_screens.dart`             | Stub screens for all new routes                                                     |
+| `lib/router.dart`                                                 | Restructured home branch per new route tree                                         |
 
 ## Reusable Patterns
 

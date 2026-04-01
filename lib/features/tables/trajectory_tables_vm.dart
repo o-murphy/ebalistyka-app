@@ -126,12 +126,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     );
 
     final zeroDistM = profile.zeroDistance.in_(Unit.meter);
-    final mainTable = _buildTable(
-      filtered,
-      units,
-      cfg,
-      zeroDistM: zeroDistM,
-    );
+    final mainTable = _buildTable(filtered, units, cfg, zeroDistM: zeroDistM);
 
     // Zero crossings
     FormattedTableData? zeroCrossings;

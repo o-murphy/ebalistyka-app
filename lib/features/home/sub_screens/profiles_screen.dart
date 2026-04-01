@@ -1,19 +1,19 @@
 import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/unit.dart' show Unit;
-import 'package:eballistica/features/home/sub_screens/rifle_select/rifle_select_vm.dart';
+import 'package:eballistica/features/home/sub_screens/profiles/profiles_vm.dart';
+import 'package:eballistica/features/home/sub_screens/profiles/widgets/profile_card.dart';
 import 'package:eballistica/shared/widgets/base_screen.dart';
 import 'package:eballistica/shared/widgets/pages_dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RifleSelectScreen extends ConsumerStatefulWidget {
-  const RifleSelectScreen({super.key});
+class ProfilesScreen extends ConsumerStatefulWidget {
+  const ProfilesScreen({super.key});
 
   @override
-  ConsumerState<RifleSelectScreen> createState() => _RifleSelectScreenState();
+  ConsumerState<ProfilesScreen> createState() => _ProfilesScreenState();
 }
 
-class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
+class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   final _fabAnimValue = ValueNotifier<double>(0.0);
   VoidCallback _closeFab = () {};
   final _pageController = PageController();
@@ -28,27 +28,22 @@ class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
 
   void _onPageChanged(int page) => setState(() => _currentPage = page);
 
-  String _titleFor(RifleSelectUiState state) {
-    if (state is! RifleSelectReady || state.profiles.isEmpty) {
+  String _titleFor(ProfilesUiState state) {
+    if (state is! ProfilesReady || state.profiles.isEmpty) {
       return 'Select Profile';
     }
     final idx = _currentPage.clamp(0, state.profiles.length - 1);
     return state.profiles[idx].name;
   }
 
-  ShotProfile? _currentProfile(RifleSelectUiState state) {
-    if (state is! RifleSelectReady || state.profiles.isEmpty) return null;
+  ShotProfile? _currentProfile(ProfilesUiState state) {
+    if (state is! ProfilesReady || state.profiles.isEmpty) return null;
     final idx = _currentPage.clamp(0, state.profiles.length - 1);
     return state.profiles[idx];
   }
 
   Future<void> _onAdd() async {
     // TODO: navigate to profile wizard (Phase 5)
-  }
-
-  Future<void> _onEdit(ShotProfile? profile) async {
-    if (profile == null) return;
-    // TODO: navigate to profile wizard with existing profile (Phase 5)
   }
 
   Future<void> _onDelete(ShotProfile? profile) async {
@@ -121,12 +116,11 @@ class _RifleSelectScreenState extends ConsumerState<RifleSelectScreen> {
             animationNotifier: _fabAnimValue,
             onRegisterClose: (fn) => _closeFab = fn,
             onAdd: _onAdd,
-            onEdit: () => _onEdit(profile),
             onDelete: () => _onDelete(profile),
             onImport: _onImport,
             onExport: () => _onExport(profile),
           ),
-          body: state is RifleSelectReady && state.profiles.isNotEmpty
+          body: state is ProfilesReady && state.profiles.isNotEmpty
               ? Stack(
                   children: [
                     _ProfilePageView(
@@ -188,10 +182,13 @@ class _ProfilePageView extends StatelessWidget {
             onPageChanged: onPageChanged,
             children: profiles
                 .map(
-                  (p) => _ProfileCard(
-                    profile: p,
-                    isActive: p.id == activeProfileId,
-                    onSelect: () => onSelect(p),
+                  (p) => Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: ProfileCard(
+                      profile: p,
+                      isActive: p.id == activeProfileId,
+                      onSelect: () => onSelect(p),
+                    ),
                   ),
                 )
                 .toList(),
@@ -215,101 +212,6 @@ class _ProfilePageView extends StatelessWidget {
   }
 }
 
-// ── Profile Card ──────────────────────────────────────────────────────────────
-
-class _ProfileCard extends StatelessWidget {
-  const _ProfileCard({
-    required this.profile,
-    required this.isActive,
-    required this.onSelect,
-  });
-
-  final ShotProfile profile;
-  final bool isActive;
-  final VoidCallback onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Card(
-        color: isActive ? colorScheme.primaryContainer : null,
-        child: InkWell(
-          onTap: onSelect,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        profile.name,
-                        style: theme.textTheme.titleLarge,
-                      ),
-                    ),
-                    if (isActive)
-                      Icon(Icons.check_circle, color: colorScheme.primary),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                _InfoRow(
-                  icon: Icons.military_tech_outlined,
-                  label: profile.rifle.name,
-                ),
-                const SizedBox(height: 4),
-                _InfoRow(
-                  icon: Icons.grain_outlined,
-                  label: profile.cartridge.name,
-                ),
-                const SizedBox(height: 4),
-                _InfoRow(
-                  icon: Icons.my_location_outlined,
-                  label:
-                      '${profile.zeroDistance.in_(Unit.meter).toStringAsFixed(0)} m zero',
-                ),
-                const Spacer(),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton(
-                    onPressed: onSelect,
-                    child: const Text('Select'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Theme.of(context).colorScheme.outline),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        ),
-      ],
-    );
-  }
-}
-
 // ── FAB ───────────────────────────────────────────────────────────────────────
 
 class _ExpandableFab extends StatefulWidget {
@@ -317,7 +219,6 @@ class _ExpandableFab extends StatefulWidget {
     required this.animationNotifier,
     required this.onRegisterClose,
     required this.onAdd,
-    required this.onEdit,
     required this.onDelete,
     required this.onImport,
     required this.onExport,
@@ -326,7 +227,6 @@ class _ExpandableFab extends StatefulWidget {
   final ValueNotifier<double> animationNotifier;
   final void Function(VoidCallback) onRegisterClose;
   final VoidCallback onAdd;
-  final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onImport;
   final VoidCallback onExport;
@@ -430,14 +330,6 @@ class _ExpandableFabState extends State<_ExpandableFab>
                   },
                 ),
                 const SizedBox(height: 12),
-                _ActionButton(
-                  icon: Icons.edit_outlined,
-                  label: 'Edit',
-                  onPressed: () {
-                    _collapse();
-                    widget.onEdit();
-                  },
-                ),
                 const SizedBox(height: 12),
                 _ActionButton(
                   icon: Icons.add_outlined,

@@ -24,8 +24,16 @@ class TableHtmlExporter {
 
     if (Platform.isAndroid || Platform.isIOS) {
       await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'text/html', name: 'trajectory_table.html')],
-        subject: details != null ? '${details.rifleName} — Trajectory' : 'Trajectory',
+        [
+          XFile(
+            file.path,
+            mimeType: 'text/html',
+            name: 'trajectory_table.html',
+          ),
+        ],
+        subject: details != null
+            ? '${details.rifleName} — Trajectory'
+            : 'Trajectory',
       );
     } else {
       // Desktop: open HTML in the default browser
@@ -109,7 +117,8 @@ class TableHtmlExporter {
     }
 
     // Projectile
-    final hasProj = d.dragModel != null ||
+    final hasProj =
+        d.dragModel != null ||
         d.bc != null ||
         d.bulletLen != null ||
         d.bulletDiam != null ||
@@ -136,7 +145,8 @@ class TableHtmlExporter {
     }
 
     // Conditions
-    final hasCond = d.temperature != null ||
+    final hasCond =
+        d.temperature != null ||
         d.humidity != null ||
         d.pressure != null ||
         d.windSpeed != null ||
