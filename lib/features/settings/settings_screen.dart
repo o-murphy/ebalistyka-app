@@ -25,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           // ── Language ───────────────────────────────────────────────────
-          SectionHeader('Language'),
+          ListSectionTile('Language'),
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(_languageName(settings.languageCode)),
@@ -40,7 +40,7 @@ class SettingsScreen extends ConsumerWidget {
           // const Divider(height: 1),
 
           // ── Appearance ─────────────────────────────────────────────────
-          SectionHeader('Appearance'),
+          ListSectionTile('Appearance'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: _ThemeSelector(
@@ -52,7 +52,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Display settings ─────────────────────────────────────────────────
-          SectionHeader('Display settings'),
+          ListSectionTile('Display settings'),
           ListTile(
             leading: const Icon(Icons.straighten_outlined),
             title: const Text('Units of Measurement'),
@@ -80,7 +80,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Home screen props ─────────────────────────────────────────────────
-          SectionHeader('Main screen'),
+          ListSectionTile('Main screen'),
 
           _StepTile(
             icon: Icons.table_rows_outlined,
@@ -97,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Profiles ───────────────────────────────────────────────────
-          SectionHeader('Profiles'),
+          ListSectionTile('Profiles'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Row(
@@ -123,7 +123,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Links ──────────────────────────────────────────────────────
-          SectionHeader('Links'),
+          ListSectionTile('Links'),
           ListTile(
             leading: const Icon(Icons.code_outlined),
             title: const Text('GitHub'),
@@ -149,7 +149,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── About ──────────────────────────────────────────────────────
-          SectionHeader('About'),
+          ListSectionTile('About'),
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('Version'),

@@ -1,4 +1,5 @@
 import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:eballistica/shared/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,7 +7,6 @@ import 'package:eballistica/core/providers/settings_provider.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/settings/widgets/settings_helpers.dart';
 
 // ─── Table Configuration Screen ───────────────────────────────────────────────
 
@@ -28,7 +28,7 @@ class TableConfigScreen extends ConsumerWidget {
       body: ListView(
         children: [
           // ── Range ──────────────────────────────────────────────────────
-          const SettingsSectionLabel('Range'),
+          const ListSectionTile('Range'),
 
           _DistanceTile(
             icon: Icons.first_page_outlined,
@@ -61,7 +61,7 @@ class TableConfigScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Extra tables ───────────────────────────────────────────────
-          const SettingsSectionLabel('Extra'),
+          const ListSectionTile('Extra'),
 
           SwitchListTile(
             secondary: const Icon(Icons.swap_vert_outlined),
@@ -85,7 +85,7 @@ class TableConfigScreen extends ConsumerWidget {
           ),
 
           const Divider(height: 1),
-          const SettingsSectionLabel('Visible columns'),
+          const ListSectionTile('Visible columns'),
 
           for (final col in _columnDefs)
             if (!col.alwaysOn)
@@ -105,7 +105,7 @@ class TableConfigScreen extends ConsumerWidget {
               ),
 
           const Divider(height: 1),
-          const SettingsSectionLabel('Adjustment columns'),
+          const ListSectionTile('Adjustment columns'),
 
           SwitchListTile(
             title: const Text('MRAD', style: TextStyle(fontSize: 14)),

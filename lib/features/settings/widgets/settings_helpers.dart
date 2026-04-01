@@ -4,27 +4,6 @@ import 'package:eballistica/core/solver/unit.dart';
 
 // ─── Shared widgets for settings sub-screens ─────────────────────────────────
 
-class SettingsSectionLabel extends StatelessWidget {
-  const SettingsSectionLabel(this.text, {super.key});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Text(
-        text.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
-    );
-  }
-}
-
 class SettingsUnitTile extends StatelessWidget {
   const SettingsUnitTile({
     super.key,

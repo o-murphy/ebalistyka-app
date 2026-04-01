@@ -31,7 +31,7 @@ class ShotDetailsScreen extends ConsumerWidget {
 
     return ListView(
       children: [
-        const SectionHeader('Velocity'),
+        const ListSectionTile('Velocity'),
         _InfoTile(
           icon: Icons.speed_outlined,
           label: 'Current muzzle velocity',
@@ -53,7 +53,7 @@ class ShotDetailsScreen extends ConsumerWidget {
           value: state.velocityAtTarget,
         ),
         const Divider(height: 1),
-        const SectionHeader('Energy'),
+        const ListSectionTile('Energy'),
         _InfoTile(
           icon: Icons.bolt_outlined,
           label: 'Energy at muzzle',
@@ -65,14 +65,14 @@ class ShotDetailsScreen extends ConsumerWidget {
           value: state.energyAtTarget,
         ),
         const Divider(height: 1),
-        const SectionHeader('Stability'),
+        const ListSectionTile('Stability'),
         _InfoTile(
           icon: Icons.rotate_right_outlined,
           label: 'Gyroscopic stability factor',
           value: state.gyroscopicStability,
         ),
         const Divider(height: 1),
-        const SectionHeader('Trajectory'),
+        const ListSectionTile('Trajectory'),
         _InfoTile(
           icon: Icons.flag_outlined,
           label: 'Shot distance',
