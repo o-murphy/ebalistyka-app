@@ -39,9 +39,9 @@ class ProfileCard extends StatelessWidget {
                   ListSectionTile(
                     "Rifle",
                     trailing: IconButton(
-                      onPressed: () => debugPrint("Rifle edit"),
+                      onPressed: () => context.go(Routes.profileEditRifle),
                       icon: Icon(
-                        Icons.edit,
+                        Icons.edit_outlined,
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -57,9 +57,9 @@ class ProfileCard extends StatelessWidget {
                   ListSectionTile(
                     "Cartridge",
                     trailing: IconButton(
-                      onPressed: () => debugPrint("Cartridge edit"),
+                      onPressed: () => context.go(Routes.profileEditCartridge),
                       icon: Icon(
-                        Icons.edit,
+                        Icons.edit_outlined,
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -75,9 +75,9 @@ class ProfileCard extends StatelessWidget {
                   ListSectionTile(
                     "Sight",
                     trailing: IconButton(
-                      onPressed: () => debugPrint("Sight edit"),
+                      onPressed: () => context.go(Routes.profileEditSight),
                       icon: Icon(
-                        Icons.edit,
+                        Icons.edit_outlined,
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),

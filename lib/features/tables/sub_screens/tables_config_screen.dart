@@ -65,20 +65,14 @@ class TableConfigScreen extends ConsumerWidget {
 
           SwitchListTile(
             secondary: const Icon(Icons.swap_vert_outlined),
-            title: const Text(
-              'Show zero crossings table',
-              style: TextStyle(fontSize: 14),
-            ),
+            title: const Text('Show zero crossings table'),
             value: cfg.showZeros,
             onChanged: (v) => save(cfg.copyWith(showZeros: v)),
             dense: true,
           ),
           SwitchListTile(
             secondary: const Icon(Icons.speed_outlined),
-            title: const Text(
-              'Show subsonic transition',
-              style: TextStyle(fontSize: 14),
-            ),
+            title: const Text('Show subsonic transition'),
             value: cfg.showSubsonicTransition,
             onChanged: (v) => save(cfg.copyWith(showSubsonicTransition: v)),
             dense: true,
@@ -90,7 +84,7 @@ class TableConfigScreen extends ConsumerWidget {
           for (final col in _columnDefs)
             if (!col.alwaysOn)
               SwitchListTile(
-                title: Text(col.label, style: const TextStyle(fontSize: 14)),
+                title: Text(col.label),
                 value: !cfg.hiddenCols.contains(col.id),
                 onChanged: (v) {
                   final hidden = Set<String>.from(cfg.hiddenCols);
@@ -108,31 +102,31 @@ class TableConfigScreen extends ConsumerWidget {
           const ListSectionTile('Adjustment columns'),
 
           SwitchListTile(
-            title: const Text('MRAD', style: TextStyle(fontSize: 14)),
+            title: const Text('MRAD'),
             value: cfg.tableShowMrad,
             onChanged: (v) => save(cfg.copyWith(tableShowMrad: v)),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MOA', style: TextStyle(fontSize: 14)),
+            title: const Text('MOA'),
             value: cfg.tableShowMoa,
             onChanged: (v) => save(cfg.copyWith(tableShowMoa: v)),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MIL', style: TextStyle(fontSize: 14)),
+            title: const Text('MIL'),
             value: cfg.tableShowMil,
             onChanged: (v) => save(cfg.copyWith(tableShowMil: v)),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('cm/100m', style: TextStyle(fontSize: 14)),
+            title: const Text('cm/100m'),
             value: cfg.tableShowCmPer100m,
             onChanged: (v) => save(cfg.copyWith(tableShowCmPer100m: v)),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('in/100yd', style: TextStyle(fontSize: 14)),
+            title: const Text('in/100yd'),
             value: cfg.tableShowInPer100yd,
             onChanged: (v) => save(cfg.copyWith(tableShowInPer100yd: v)),
             dense: true,

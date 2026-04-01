@@ -69,10 +69,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SwitchListTile(
             secondary: const Icon(Icons.speed_outlined),
-            title: const Text(
-              'Show subsonic transition',
-              style: TextStyle(fontSize: 14),
-            ),
+            title: const Text('Show subsonic transition'),
             value: settings.showSubsonicTransition,
             onChanged: (v) => notifier.setSwitch('subsonicTransition', v),
             dense: true,
@@ -268,7 +265,7 @@ class _StepTile extends ConsumerWidget {
 
     return ListTile(
       leading: Icon(icon),
-      title: Text(label, style: const TextStyle(fontSize: 14)),
+      title: Text(label),
       trailing: Text(display, style: Theme.of(context).textTheme.bodyMedium),
       dense: true,
       onTap: () => _showDialog(context, distUnit, acc),

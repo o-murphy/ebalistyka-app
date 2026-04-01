@@ -350,7 +350,7 @@ class _ExpandableFabState extends State<_ExpandableFab>
             onPressed: _toggle,
             child: Transform.rotate(
               angle: _expandAnimation.value * 3.14159 / 2,
-              child: const Icon(Icons.edit),
+              child: const Icon(Icons.edit_outlined),
             ),
           ),
         ),

@@ -14,7 +14,7 @@ import 'package:eballistica/features/home/widgets/home_reticle_page.dart';
 import 'package:eballistica/features/home/widgets/home_table_page.dart';
 import 'package:eballistica/features/home/widgets/quick_actions_panel.dart';
 import 'package:eballistica/features/home/widgets/side_control_block.dart';
-import 'package:eballistica/shared/widgets/unit_value_field.dart';
+import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
 import 'package:eballistica/features/home/widgets/wind_indicator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
