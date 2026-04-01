@@ -100,6 +100,55 @@ class _ProfileControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 200, child: Card());
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      height: 200,
+      child: Card(
+        child: Stack(
+          children: [
+            // Основний контент
+            const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.control_point, size: 48),
+                  SizedBox(height: 8),
+                  Text('Profile Controls Area'),
+                ],
+              ),
+            ),
+
+            // Ліва верхня кнопка
+            Positioned(
+              top: 8,
+              left: 8,
+              child: FloatingActionButton(
+                mini: true,
+                heroTag: 'select_sight_button',
+                onPressed: () => debugPrint('Select/Replace sight'),
+                backgroundColor: colorScheme.secondaryContainer,
+                foregroundColor: colorScheme.onSecondaryContainer,
+                child: const Icon(Icons.my_location_outlined, size: 20),
+              ),
+            ),
+
+            // Права нижня кнопка
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: FloatingActionButton(
+                mini: true,
+                heroTag: 'select_cartridge_button',
+                onPressed: () => debugPrint('Select/Replace Cartridge'),
+                backgroundColor: colorScheme.primaryContainer,
+                foregroundColor: colorScheme.onPrimaryContainer,
+                child: const Icon(Icons.rocket_launch_outlined, size: 20),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

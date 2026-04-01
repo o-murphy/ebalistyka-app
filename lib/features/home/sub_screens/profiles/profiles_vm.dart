@@ -43,7 +43,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     await ref.read(shotProfileProvider.notifier).selectProfile(profile);
   }
 
-  Future<void> deleteProfile(String id) async {
+  Future<void> removeProfile(String id) async {
     await ref.read(profileLibraryProvider.notifier).delete(id);
   }
 

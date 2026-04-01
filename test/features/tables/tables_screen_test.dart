@@ -316,7 +316,7 @@ void main() {
 
       expect(find.text('RIFLE'), findsOneWidget);
       expect(find.text('PROJECTILE'), findsOneWidget);
-      expect(find.text('ATMOSPHERE'), findsOneWidget);
+      expect(find.text('CONDITIONS'), findsOneWidget);
     });
 
     testWidgets('renders rifle details correctly', (tester) async {
@@ -368,7 +368,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('RIFLE'), findsNothing);
-      expect(find.text('ATMOSPHERE'), findsNothing);
+      expect(find.text('CONDITIONS'), findsNothing);
     });
   });
 

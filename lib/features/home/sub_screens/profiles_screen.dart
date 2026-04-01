@@ -46,13 +46,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     // TODO: navigate to profile wizard (Phase 5)
   }
 
-  Future<void> _onDelete(ShotProfile? profile) async {
+  Future<void> _onRemove(ShotProfile? profile) async {
     if (profile == null) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete profile'),
-        content: Text('Delete "${profile.name}"?'),
+        title: const Text('Remove profile'),
+        content: Text('Remove "${profile.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -60,13 +60,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
+            child: const Text('Remove'),
           ),
         ],
       ),
     );
     if (confirmed == true) {
-      await ref.read(rifleSelectVmProvider.notifier).deleteProfile(profile.id);
+      await ref.read(rifleSelectVmProvider.notifier).removeProfile(profile.id);
       if (_currentPage > 0) {
         setState(() => _currentPage = _currentPage - 1);
         _pageController.animateToPage(
@@ -116,7 +116,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
             animationNotifier: _fabAnimValue,
             onRegisterClose: (fn) => _closeFab = fn,
             onAdd: _onAdd,
-            onDelete: () => _onDelete(profile),
+            onRemove: () => _onRemove(profile),
             onImport: _onImport,
             onExport: () => _onExport(profile),
           ),
@@ -219,7 +219,7 @@ class _ExpandableFab extends StatefulWidget {
     required this.animationNotifier,
     required this.onRegisterClose,
     required this.onAdd,
-    required this.onDelete,
+    required this.onRemove,
     required this.onImport,
     required this.onExport,
   });
@@ -227,7 +227,7 @@ class _ExpandableFab extends StatefulWidget {
   final ValueNotifier<double> animationNotifier;
   final void Function(VoidCallback) onRegisterClose;
   final VoidCallback onAdd;
-  final VoidCallback onDelete;
+  final VoidCallback onRemove;
   final VoidCallback onImport;
   final VoidCallback onExport;
 
@@ -304,11 +304,11 @@ class _ExpandableFabState extends State<_ExpandableFab>
               children: [
                 _ActionButton(
                   icon: Icons.delete_outline,
-                  label: 'Delete',
+                  label: 'Remove',
                   color: Theme.of(context).colorScheme.errorContainer,
                   onPressed: () {
                     _collapse();
-                    widget.onDelete();
+                    widget.onRemove();
                   },
                 ),
                 const SizedBox(height: 12),
@@ -329,7 +329,6 @@ class _ExpandableFabState extends State<_ExpandableFab>
                     widget.onImport();
                   },
                 ),
-                const SizedBox(height: 12),
                 const SizedBox(height: 12),
                 _ActionButton(
                   icon: Icons.add_outlined,

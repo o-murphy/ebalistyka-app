@@ -1,5 +1,6 @@
 import 'package:eballistica/features/tables/details_table_mv.dart';
 import 'package:eballistica/shared/widgets/empty_state.dart';
+import 'package:eballistica/shared/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,12 +30,6 @@ class DetailsTableContent extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    final sectionStyle = theme.textTheme.labelSmall?.copyWith(
-      color: cs.primary,
-      fontWeight: FontWeight.w700,
-      letterSpacing: 0.8,
-    );
-
     Widget row(String label, String value) => ListTile(
       dense: true,
       title: Text(label),
@@ -47,10 +42,7 @@ class DetailsTableContent extends StatelessWidget {
       ),
     );
 
-    Widget section(String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(title.toUpperCase(), style: sectionStyle),
-    );
+    Widget section(String title) => ListSectionTile(title);
 
     final items = <Widget>[];
 
