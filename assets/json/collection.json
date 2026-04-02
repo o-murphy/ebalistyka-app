@@ -23,7 +23,7 @@
         "image": "svg image / null",
         "verticalClickUnit": "unit (enum)",
         "horizontalClickUnit": "unit (enum)",
-        "cartridges/bullets": "lists of cartridges or bullets has same structure"
+        "cartridges/projectiles": "lists of cartridges or projectiles has same structure, but projectiles velocity and powder data and conditions can be empty or defaulted"
     },
     "calibers": [
         {
@@ -110,7 +110,7 @@
             "extra": {}
         }
     ],
-    "bullets": [
+    "projectiles": [
         {
             "id": 0,
             "vendor": "Black Hills",
@@ -119,7 +119,7 @@
             "dType": "G7",
             "bcG1": 0.78,
             "bcG7": 0.381,
-            "muzzleVelocity": 800.1,
+            "muzzleVelocity": null,
             "muzzleVelocityTemperature": 15.0,
             "powderTemperature": 15.0,
             "powderSensitivity": 0.0,
