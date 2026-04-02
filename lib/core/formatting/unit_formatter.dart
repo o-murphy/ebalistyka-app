@@ -19,6 +19,7 @@ abstract interface class UnitFormatter {
 
   String sightHeight(Distance dim); // "8.5 mm"
   String twist(Distance dim); // "1:10 inch"
+  String barrelLength(Distance dim); // "24.0 inch"
   String humidity(Ratio dim); // "50 %"
   String mach(double mach); // "0.85 M"
   String time(double seconds); // "1.234 s"
@@ -45,6 +46,7 @@ abstract interface class UnitFormatter {
   String get energySymbol;
   String get weightSymbol;
   String get sightHeightSymbol;
+  String get barrelLengthSymbol;
 
   /// Converts user input value (in display unit) back to raw storage unit.
   double inputToRaw(double displayValue, InputField field);
@@ -67,5 +69,6 @@ enum InputField {
   bulletWeight,
   bulletLength,
   bulletDiameter,
+  barrelLength,
   bc,
 }

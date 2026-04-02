@@ -27,12 +27,6 @@ class SelectRifleCollectionScreen extends StatelessWidget {
       const StubScreen(title: 'Rifle Collection');
 }
 
-class RifleEditScreen extends StatelessWidget {
-  const RifleEditScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Edit Rifle');
-}
-
 // ── Cartridge ─────────────────────────────────────────────────────────────────
 
 class CartridgeSelectScreen extends StatelessWidget {

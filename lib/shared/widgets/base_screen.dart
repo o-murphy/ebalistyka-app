@@ -7,6 +7,7 @@ class BaseScreen extends StatelessWidget {
     required this.body,
     this.actions,
     this.isSubscreen = false,
+    this.showBack = true,
     this.floatingActionButton,
     this.withTabs,
     super.key,
@@ -16,6 +17,7 @@ class BaseScreen extends StatelessWidget {
   final Widget body;
   final List<Widget>? actions;
   final bool isSubscreen;
+  final bool showBack;
   final Widget? floatingActionButton;
   final List<Tab>? withTabs;
 
@@ -26,6 +28,7 @@ class BaseScreen extends StatelessWidget {
         title: title,
         actions: actions,
         isSubscreen: isSubscreen,
+        showBack: showBack,
         withTabs: withTabs,
       ),
       body: SafeArea(child: body),

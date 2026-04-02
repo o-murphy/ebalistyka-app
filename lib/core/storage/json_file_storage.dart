@@ -293,6 +293,20 @@ class JsonFileStorage implements AppStorage {
     await _writeProfilesFile(list, activeId);
   }
 
+  // ── Built-in collection cache ──────────────────────────────────────────────
+
+  @override
+  Future<String?> loadCollectionJson() async {
+    final f = await _file('collection');
+    if (!await f.exists()) return null;
+    return f.readAsString();
+  }
+
+  @override
+  Future<void> saveCollectionJson(String json) async {
+    await (await _file('collection')).writeAsString(json);
+  }
+
   // ── Export / Import ────────────────────────────────────────────────────────
 
   @override

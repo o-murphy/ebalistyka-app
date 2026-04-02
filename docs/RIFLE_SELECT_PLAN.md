@@ -1,295 +1,544 @@
-# Rifle Select Screen — Design & Implementation Plan
+# Profiles & Selection Architecture
 
-## Поточний стан
-
-Вже реалізовано:
-- `rifle_select_screen.dart` — скелет: PageView, FAB speed-dial, картка профілю (мінімальна)
-- `rifle_select_vm.dart` — ViewModel з CRUD + `selectProfile` / `deleteProfile`
-- `profileLibraryProvider` — CRUD + persistence через `JsonFileStorage`
-- `library_provider.dart` — окремі провайдери для Rifle / Cartridge / Sight бібліотек
-- `app_storage.dart` + `json_file_storage.dart` — повний I/O шар (JSON файли у `~/.eBalistyka/`)
-- Seed data: 1 гвинтівка + 4 патрони в `seed_data.dart`
-- Phase 1–3 з `plan_rifle_select_architecture.md` — виконано
+> Об'єднаний документ (замінює `RIFLE_SELECT_PLAN.md` і `plan_profile_select_architecture.md`)
 
 ---
 
-## Концепція екрану
+## Поточний стан
 
-### Структура картки (прокручувана, одна на гвинтівку)
+### Реалізовано (Phase 1–4)
+- Phase 1 ✅ — Powder sensitivity: `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp`, `useDiffPowderTemp` у `ShotProfile`; `useDifferentPowderTemp` видалено з `Cartridge`
+- Phase 2 ✅ — Data ownership: межі відповідальності між ballistic / runtime / global даними
+- Phase 3 ✅ — Profile Library Provider + Storage refactor: `profiles.json` як `{activeProfileId, profiles:[...]}`, `moveToFirst`, backward-compat
+- Phase 4 ✅ — Profiles Screen: `ProfilesVm`, `ProfilesScreen`, `ProfileCardData`, `profile_card.dart`
+- `rifle_wizard_screen.dart` ✅ — базова структура (скелет)
+- `home_sub_screens.dart` ✅ — всі суб-екрани як заглушки (`StubScreen`)
+
+---
+
+## Storage Architecture
+
+### `~/.eBalistyka/profiles.json`
+
+```json
+{
+  "activeProfileId": "some-uuid",
+  "profiles": [
+    {
+      "id": "...",
+      "name": "...",
+      "rifle": { "id": "...", ... },
+      "cartridge": { "id": "...", ... },
+      "sight": { "id": "...", ... },
+      "conditions": { ... },
+      "winds": [...],
+      "lookAngle": 0.0,
+      "targetDistance": 100.0,
+      "zeroConditions": { ... }
+    }
+  ]
+}
+```
+
+Backward-compat: plain array `[...]` (старий формат) — читається без `activeProfileId`.
+
+### Глобальні файли
+
+```
+~/.eBalistyka/
+  profiles.json          ← бібліотека профілів (активний ID + список)
+  rifles.json            ← "My Rifles" юзера
+  cartridges.json        ← "My Cartridges" юзера
+  bullets.json           ← "My Bullets" юзера (окрема колекція)
+  sights.json            ← "My Sights" юзера
+  settings.json          ← AppSettings (одиниці, теми)
+  table_settings.json    ← TableSettings
+```
+
+---
+
+## Data Ownership
+
+| Дані | Належить | Редагується де |
+|---|---|---|
+| name, rifle, cartridge, sight | `ShotProfile` | Profile wizard / Edit screens |
+| zeroDistance, zeroConditions | `ShotProfile` | Profile wizard / Edit Zero |
+| zeroUsePowderSensitivity, zeroUseDiffPowderTemp | `ShotProfile` | Edit Zero |
+| conditions (Atmo) | `ShotProfile` (runtime, per-profile) | Conditions screen |
+| useDiffPowderTemp | `ShotProfile` (runtimeu, per-profile) | Conditions screen |
+| winds, lookAngle, targetDistance | `ShotProfile` (runtime, per-profile) | Home screen |
+| Rifle (вся модель) | `rifles.json` | Rifle Wizard |
+| Cartridge (вся модель) | `cartridges.json` | Cartridge/Bullet Wizard |
+| Sight (вся модель) | `sights.json` | Sight Wizard |
+| AppSettings, TableSettings | Global | Settings screen |
+
+---
+
+## Вбудована vs Користувацька колекції
+
+### Дві точки доступу
+
+**Вбудована колекція** (`builtin: true`) — поставляється з додатком (assets або тег git).
+Ніде не відображається у основних екранах. Доступна виключно через "From Collection" →
+`CollectionBrowserScreen`. При виборі — запис **копіюється** у бібліотеку юзера (новий UUID, `builtin: false`).
+
+**Бібліотека юзера** (`builtin: false`) — все що юзер створив, імпортував, або скопіював
+з вбудованої колекції. Саме ця бібліотека відображається скрізь.
+
+```
+My Rifles / My Cartridges / My Sights       Built-in Collection (hidden)
+─────────────────────────────               ──────────────────────────────
+ [My .338LM UKROP]  ←copy──────────────────  🔒 .338LM UKROP 250GR SMK
+ [Hornady 285 copy] ←copy──────────────────  🔒 Hornady 285GR ELD-M
+ [Imported from .a7p]                        🔒 ...
+
+  "From Collection" btn ─────────────────►  CollectionBrowserScreen
+```
+
+| Дія | Вбудована | Юзерська |
+|---|---|---|
+| Відображення у My Items | ❌ | ✅ |
+| Відображення у Collection Browser | ✅ (з 🔒) | ❌ |
+| "From Collection" | → копія до юзера | — |
+| Видалити | ❌ (read-only) | ✅ (з обмеженнями) |
+| Редагувати | ❌ | ✅ |
+
+---
+
+## Спільні використані об'єкти (Reference Sharing)
+
+Профіль зберігає **посилання** на об'єкт (по `id`) у відповідній бібліотеці (`rifles.json` тощо).
+Один і той самий Rifle / Cartridge / Sight може бути використаний кількома профілями одночасно.
+
+**Наслідки:**
+- Якщо юзер редагує Rifle в одному профілі → зміни відображаються у всіх профілях, що використовують цей Rifle.
+- Якщо Rifle видаляється — профілі, що його використовують, втрачають цей запис (broken ref).
+- **Не можна видалити** Rifle/Cartridge/Sight, якщо він у використанні хоч одним профілем.
+- Якщо юзер хоче незалежну копію — використовує "Duplicate" → новий UUID, зміни ізольовані.
+- При спробі редагувати або видалити об'єкт, що використовується кількома профілями → **попередження** з переліком профілів.
+
+---
+
+## Wizard Screen — Концепція (Повторно використовуваний)
+
+`RifleWizardScreen` — це **тимчасова форма вводу**, що перевикористовується у кількох flow.
+Аналогічна логіка застосовується для `CartridgeWizardScreen` (= Bullet) та `SightWizardScreen`.
+
+**Властивості wizard:**
+- Приймає початкові дані (або порожній стан для нового запису)
+- Дозволяє редагувати всі поля перед збереженням
+- Валідує введення (обов'язкові поля, constraints)
+- При натисканні "Save" — повертає результат у caller через `Navigator.pop(result)`
+- При натисканні "Discard" — повертає `null`, зміни відкидаються
+
+**Wizard не знає контексту виклику** — він просто редагує дані та повертає результат.
+Логіка того, що робити із результатом (зберегти у my rifles, прив'язати до профілю тощо) — у caller.
+
+---
+
+## Flow Branches — Rifle (приклад; аналогічно для Cartridge/Sight)
+
+### Flow 1: Новий профіль → Із колекції → Зберегти rifle у My Rifles
+
+```
+ProfilesScreen
+  └─ FAB Add
+      └─ Enter profile name dialog
+          └─ ProfileAddScreen
+              └─ My Rifles section
+                  └─ "From Collection" btn
+                      └─ RifleCollectionScreen (built-in browser)
+                          └─ "Select" btn (on item)
+                              └─ RifleWizardScreen (pre-filled з builtin даних)
+                                  └─ Save
+                                      ├─ copy rifle → rifles.json (My Rifles)
+                                      └─ create new ShotProfile → profiles.json
+```
+
+### Flow 2: Редагування rifle поточного профілю
+
+```
+ProfilesScreen (profile card)
+  └─ "Edit Rifle" btn
+      └─ RifleWizardScreen (pre-filled з поточного profile.rifle)
+          └─ Save
+              └─ update rifle у rifles.json
+              └─ update profile.rifle ref (якщо потрібно)
+```
+
+> Якщо rifle використовується іншими профілями → попередження + вибір: редагувати спільне або зробити копію.
+
+### Flow 3: Новий профіль → Створити новий rifle
+
+```
+ProfilesScreen
+  └─ FAB Add
+      └─ Enter profile name dialog
+          └─ ProfileAddScreen
+              └─ My Rifles section
+                  └─ "Create Rifle" btn
+                      └─ Enter rifle name dialog
+                          └─ RifleWizardScreen (порожній)
+                              └─ Save
+                                  ├─ save rifle → rifles.json
+                                  └─ create new ShotProfile → profiles.json
+```
+
+### Flow 4: Новий профіль → Вибрати з My Rifles
+
+```
+ProfilesScreen
+  └─ FAB Add
+      └─ Enter profile name dialog
+          └─ ProfileAddScreen
+              └─ My Rifles section
+                  └─ Select item (з My Rifles list)
+                      └─ Enter new rifle name dialog (якщо хоче копію) — або одразу прив'язати
+                          └─ RifleWizardScreen (pre-filled з вибраного)
+                              └─ Save
+                                  ├─ save rifle copy → rifles.json
+                                  └─ create new ShotProfile → profiles.json
+```
+
+> Примітка: якщо юзер вибирає наявний rifle без "Duplicate" — профіль буде share той самий об'єкт.
+
+---
+
+## Shared UI Components
+
+### Списки: My Items vs Collection Browser
+
+**My Rifles / My Cartridges / My Sights / My Bullets** — списки юзерських об'єктів.
+**RifleCollectionScreen / CartridgeCollectionScreen / ...** — браузер вбудованої колекції.
+
+Обидва типи списків використовують **спільний набір компонентів**:
+
+```
+ItemListView (generic, reusable)
+  └─ RifleTile      ← reusable tile for Rifle
+  └─ CartridgeTile  ← reusable tile for Cartridge
+  └─ BulletTile     ← reusable tile for Bullet
+  └─ SightTile      ← reusable tile for Sight
+```
+
+**Tile поведінка:**
+- Якщо `builtin: true` → показувати 🔒 іконку, **без cog btn**
+- Якщо `builtin: false` (user data) → показувати **cog btn** (⚙️) для налаштувань (edit / duplicate / delete)
+- Tap на tile (без cog) → вибір / копіювання в wizard
+
+---
+
+## Cartridge, Bullet, Sight — специфіка
+
+### Cartridge vs Bullet
+- **Cartridge** = повна модель (куля + гільза + порошок + MV + BC + ...)
+- **Bullet** = тільки куля (діаметр, вага, BC, drag model) — деякі поля не заповнені або defaulted
+- Обидва використовують **один і той самий `CartridgeWizardScreen`**, але з різним набором обов'язкових полів
+- Зберігаються у **різних колекціях** (`cartridges.json` vs `bullets.json`)
+- **Wizard детектує тип** через переданий параметр (`isProjectileOnly: bool`)
+
+### Фільтрація по калібру
+- Списки картриджів та куль (у виборі для профілю) **фільтруються по caliber поточного rifle**
+- Якщо rifle не вибрано — показуються всі
+
+### Sight
+- `SightWizardScreen` — окремий wizard, спрощена структура
+- Аналогічна логіка flow (select from collection / create / edit)
+
+---
+
+## Картка профілю (ProfileCard layout)
 
 ```
 ┌──────────────────────────────────────┐
 │                                      │
-│   [Placeholder / фото гвинтівки]     │  ← фіксована висота ~160px
-│       (future: image asset)          │     по краях: назва профілю
+│   [Placeholder / фото гвинтівки]     │  ← ~160px, назва профілю по краях
 │                                      │
 ├──────────────────────────────────────┤
-│  🔫 Cartridge   [назва патрону  ›]   │  ← tap → CartridgePickerScreen
-│  🔭 Sight       [назва прицілу  ›]   │  ← tap → SightPickerScreen (пізніше)
+│  🔫 Cartridge   [назва патрону  ›]   │  ← tap → CartridgeSelectScreen
+│  🔭 Sight       [назва прицілу  ›]   │  ← tap → SightSelectScreen
 ├──────────────────────────────────────┤
-│  ── Rifle ──────────────────────     │
+│  ── Rifle ─────────────────────      │
+│  Caliber        .338"                │
 │  Sight height   8.5 mm               │
 │  Twist          1:10 inch            │
-│                     [Edit Rifle ›]   │
+│                     [Edit Rifle ›]   │  ← → Flow 2
 ├──────────────────────────────────────┤
-│  ── Cartridge ──────────────────     │
+│  ── Cartridge ─────────────────      │
 │  MV             888 m/s              │
 │  Bullet         250 gr · .338"       │
 │  Drag model     G7 · BC 0.314        │
-│  Powder temp    29°C                 │
 │                  [Edit Cartridge ›]  │
 ├──────────────────────────────────────┤
-│  ── Zero ───────────────────────     │
+│  ── Zero ──────────────────────      │
 │  Distance       100 m                │
 │  Temperature    15°C · 1000 hPa      │
 │                     [Edit Zero ›]    │
 ├──────────────────────────────────────┤
-│              [  Select  ]            │  ← відображається тільки якщо
-│                                      │     профіль НЕ активний
+│              [  Select  ]            │  ← тільки якщо не активний
 └──────────────────────────────────────┘
 ```
 
-- Якщо профіль **активний** — кнопка "Select" замінюється на `✓ Active` + підсвічування картки
-- Скролиться вся картка у межах сторінки, FAB + dots indicator фіксовані поверх
+- Активний профіль: кнопка "Select" → `✓ Active` + підсвічування картки
+- PageView горизонтальний; картка скролиться вертикально всередині
 
 ---
 
-## Концепція "builtin" / user даних
-
-### Дві колекції — різні точки доступу
-
-**Вбудована колекція** (`builtin: true`) — набір профілів, патронів і прицілів, який
-наповнює розробник і поставляється разом із додатком.
-**Ніде не відображається напряму** в основних екранах.
-Доступна виключно через точки входу "Add from library" — окремий `LibraryBrowserScreen`
-для кожного типу сутності. При виборі запис **копіюється** у бібліотеку юзера
-(`builtin: false`, новий UUID).
-
-**Бібліотека юзера** (`builtin: false`) — все що юзер створив, імпортував, або скопіював
-з вбудованої колекції. Саме ця бібліотека відображається скрізь у додатку.
+## Route Architecture
 
 ```
-Rifle Select Screen                   Built-in Collection (hidden)
-─────────────────────────────         ──────────────────────────────────────
- [My .338LM UKROP]   ←copy──────────  🔒 .338LM UKROP 250GR SMK  (profile)
- [Hornady 285 copy]  ←copy──────────  🔒 Hornady 285GR ELD-M     (profile)
- [Imported from .a7p]                 🔒 ...
-                                      🔒 Hornady 250GR BTHP       (cartridge)
-  FAB → "Add from library" ────────►  🔒 Lapua 300GR SMK          (cartridge)
-  (ProfileLibraryBrowserScreen)       🔒 ...
-
-Cartridge Picker (у картці профілю)   🔒 NF ATACR 5-25x56         (sight, майбутнє)
- [My .338LM UKROP cart]               🔒 ...
- "Add from library" ──────────────►
-  (CartridgeLibraryBrowserScreen)
-
-Sight Picker (майбутнє)
- "Add from library" ──────────────►
-  (SightLibraryBrowserScreen)
+ProfilesScreen  (/home/rifle-select)
+│  PageView — кожна сторінка = один профіль
+│
+├── ProfileAddScreen  (/home/rifle-select/profile-add)        FAB → Add
+│   ├── My Rifles list  (вбудований у ProfileAddScreen або окремий sub-screen)
+│   │   ├── "From Collection" → RifleCollectionScreen  (.../rifle-collection)   [Flow 1]
+│   │   ├── "Create Rifle"   → RifleWizardScreen       (.../rifle-create)       [Flow 3]
+│   │   └── select item      → RifleWizardScreen       (.../rifle-wizard)       [Flow 4]
+│   │
+│   └── (аналогічно My Cartridges / My Sights після вибору rifle)
+│
+├── RifleWizardScreen  (/home/rifle-select/rifle-wizard)       [Flow 2 — edit]
+│
+├── CartridgeSelectScreen  (/home/rifle-select/cartridge-select)
+│   ├── My Cartridges list
+│   │   ├── "From Collection" → CartridgeCollectionScreen  (.../cartridge-collection)
+│   │   ├── "Create Cartridge" → CartridgeWizardScreen     (.../cartridge-create)
+│   │   └── select item        → CartridgeWizardScreen     (.../cartridge-wizard)
+│   └── My Bullets list  (tab або секція)
+│       ├── "From Collection" → BulletCollectionScreen      (.../bullet-collection)
+│       ├── "Create Bullet"   → CartridgeWizardScreen (isProjectileOnly) (.../bullet-create)
+│       └── select item       → CartridgeWizardScreen (isProjectileOnly) (.../bullet-wizard)
+│
+├── SightSelectScreen  (/home/rifle-select/sight-select)
+│   ├── "From Collection" → SightCollectionScreen  (.../sight-collection)
+│   ├── "Create Sight"    → SightWizardScreen      (.../sight-create)
+│   └── select item       → SightWizardScreen      (.../sight-wizard)
+│
+├── CartridgeWizardScreen  (/home/rifle-select/cartridge-edit)  [edit flow]
+├── SightWizardScreen      (/home/rifle-select/sight-edit)      [edit flow]
+└── ZeroEditScreen         (/home/rifle-select/zero-edit)
 ```
 
-### Дві окремі схеми даних
+### Routes constants
 
-**Вбудована колекція** зберігає мінімальний набір балістичних даних — по суті a7p-формат
-плюс небагато метаданих (виробник, калібр, посилання). Немає runtime-стану.
-Модель: `BuiltinProfile` (або просто парсується як `ShotProfile` без runtime полів при імпорті).
-
-**Бібліотека юзера** зберігає повний `ShotProfile` з ширшим набором параметрів:
-- всі балістичні дані (rifle, cartridge, sight, zero)
-- runtime-стан: `conditions`, `winds`, `lookAngle`, `targetDistance`
-- майбутнє: мітки, нотатки, дата останнього використання, тощо
-
-Юзер **ніколи не записує** нічого у вбудовану колекцію — вона read-only з його точки зору.
-Імпорт, створення, копіювання з builtin — все йде тільки у бібліотеку юзера.
-
-### Сховище — фізично окремі файли
-
-```
-~/.eBalistyka/
-  profiles.json          ← бібліотека юзера (повний ShotProfile)
-  cartridges.json        ← бібліотека юзера (повний Cartridge)
-  rifles.json            ← бібліотека юзера (повний Rifle)
-  sights.json            ← бібліотека юзера (повний Sight)
-  profile.json           ← поточний активний профіль
-
-assets/ (або завантажений по тегу)
-  builtin/
-    profiles.json        ← вбудована колекція (a7p-like + metadata)
-    cartridges.json      ← вбудована колекція патронів
-```
-
-`AppStorage` interface залишається без змін — додається окремий `BuiltinLibrarySource`
-(або `BuiltinStorage`) для читання вбудованих даних. Запис у builtin — недоступний з коду додатку.
-
-### Поведінка
-| Дія                              | Вбудована колекція                                         | Бібліотека юзера                 |
-|----------------------------------|------------------------------------------------------------|----------------------------------|
-| Відображення на Rifle Select     | ❌ Не відображається                                       | ✅ Відображається                 |
-| Відображення у LibraryBrowser    | ✅ Відображається (з 🔒 icon)                              | ❌ Не відображається              |
-| "Add from library"               | → конвертується у повний `ShotProfile`, зберігається у бібліотеці юзера | —          |
-| Видалити                         | Неможливо (read-only файл)                                 | Дозволено                        |
-| Редагувати                       | Неможливо                                                  | Редагує напряму                  |
-| Запис нових записів              | Тільки розробником (assets / оновлення по тегу)            | Юзером (create / import / copy)  |
+| Константа | Шлях |
+|---|---|
+| `Routes.profiles` | `/home/rifle-select` |
+| `Routes.profileAdd` | `/home/rifle-select/profile-add` |
+| `Routes.rifleWizard` | `/home/rifle-select/rifle-wizard` |
+| `Routes.rifleCollection` | `/home/rifle-select/rifle-collection` |
+| `Routes.cartridgeSelect` | `/home/rifle-select/cartridge-select` |
+| `Routes.cartridgeWizard` | `/home/rifle-select/cartridge-wizard` |
+| `Routes.cartridgeCollection` | `/home/rifle-select/cartridge-collection` |
+| `Routes.bulletWizard` | `/home/rifle-select/bullet-wizard` |
+| `Routes.bulletCollection` | `/home/rifle-select/bullet-collection` |
+| `Routes.sightSelect` | `/home/rifle-select/sight-select` |
+| `Routes.sightWizard` | `/home/rifle-select/sight-wizard` |
+| `Routes.sightCollection` | `/home/rifle-select/sight-collection` |
+| `Routes.cartridgeEdit` | `/home/rifle-select/cartridge-edit` |
+| `Routes.sightEdit` | `/home/rifle-select/sight-edit` |
+| `Routes.zeroEdit` | `/home/rifle-select/zero-edit` |
 
 ---
 
-## MVP — Мінімальний набір для функціонального екрану
+## Built-in Collection Asset
 
-### MVP не включає:
-- Wizard для ручного створення профілю
-- Редагування окремих полів rifle / cartridge / zero через форму
-- Sight picker
-- Export
+Файл: `assets/json/collection.json` (зареєстрований у `pubspec.yaml`)
 
-### MVP включає:
-
-**1. Seed profiles (2 × ShotProfile у profiles.json)**
-- `.338LM UKROP 250GR` — seedRifle + seedCartridgeUkrop250 + seedZeroConditions
-- `.338LM Hornady 285GR ELD-M` — seedRifle + seedCartridgeSts285EldM + seedZeroConditions
-- Обидва `builtin: true`
-
-**2. Картка профілю — повний layout** (за специфікацією вище)
-- Scrollable Card
-- Hero area (placeholder box)
-- Cartridge selector row (tap → CartridgePickerScreen)
-- Rifle / Cartridge / Zero секції з деталями
-- Select / Active кнопка
-
-**3. CartridgePickerScreen**
-- Список патронів з `cartridgeLibraryProvider`
-- Tap → оновлює cartridge у профілі через `rifleSelectVmProvider.notifier.swapCartridge(profileId, cartridge)`
-- Builtin позначки; пошук по назві
-
-**4. Import .a7p → збереження як новий профіль**
-- `file_picker` пакет (вже в TODO на екрані)
-- `A7pParser.fromPayload(...)` → `ShotProfile`
-- Зберігається у `profileLibraryProvider` з `builtin: false`
-
-**5. Delete профілю**
-- Вже реалізовано у VM та screen
-- Тільки якщо `!profile.builtin`
-
----
-
-## Реалізація — Кроки
-
-### Крок 1 — Поле `builtin` у моделях
-**Файли:** `rifle.dart`, `cartridge.dart`, `shot_profile.dart`, `sight.dart`
-- Додати `final bool builtin` (default `false`)
-- `toJson` / `fromJson`: `'builtin': builtin` — optional field, default false
-- `copyWith`: параметр `bool? builtin`
-- `seed_data.dart`: виставити `builtin: true` для всіх seed записів
-
-### Крок 2 — Seed profiles
-**Файл:** `seed_data.dart`
-- Додати 2 `ShotProfile` константи (`seedProfile338Ukrop`, `seedProfile338StsEldM`)
-- `ProfileLibraryNotifier.build()`: якщо порожньо — завантажити обидва seed профілі
-
-### Крок 3 — Повний layout картки
-**Файли:** `rifle_select_screen.dart`
-- Замінити `_ProfileCard` на scrollable варіант
-- `_HeroArea` widget (placeholder + назва)
-- `_SelectorRow` (Cartridge picker, Sight picker заглушка)
-- `_RifleSection`, `_CartridgeSection`, `_ZeroSection` — info rows + Edit кнопки (заглушки)
-- Логіка `isActive` → `Active` vs `Select` кнопка
-
-### Крок 4 — CartridgePickerScreen
-**Нові файли:**
-- `lib/features/home/sub_screens/cartridge_picker/cartridge_picker_screen.dart`
-- `lib/features/home/sub_screens/cartridge_picker/cartridge_picker_vm.dart`
-
-ViewModel: `AsyncNotifier<CartridgePickerUiState>` — завантажує `cartridgeLibraryProvider`
-Screen: `BaseScreen` + `ListView` + пошуковий рядок + tap → `Navigator.pop(cartridge)`
-
-`RifleSelectViewModel.swapCartridge(String profileId, Cartridge c)`:
-```dart
-Future<void> swapCartridge(String profileId, Cartridge c) async {
-  final profiles = ref.read(profileLibraryProvider).value ?? [];
-  final profile = profiles.firstWhere((p) => p.id == profileId);
-  final updated = profile.copyWith(cartridge: c);
-  await ref.read(profileLibraryProvider.notifier).save(updated);
+Структура:
+```
+{
+  "calibers": [...],         // список калібрів (id, diameter/caliber, caliberName)
+  "weapon": [...],           // built-in rifles (vendor, name, caliberId, rTwist, extra.barrelLength)
+  "cartridges": [...],       // built-in cartridges (повна балістична модель)
+  "projectiles": [...],      // built-in bullets (muzzleVelocity: null — юзер заповнює)
+  "sights": [...]            // built-in sights
 }
 ```
 
-### Крок 5 — Import .a7p
-**Файл:** `rifle_select_screen.dart`
-- `_onImport()`: `FilePicker.platform.pickFiles(type: FileType.any)` → читає bytes
-- Парсить через `A7pParser.fromPayload(...)` (вже є)
-- Зберігає через `rifleSelectVmProvider.notifier.saveProfile(parsed)`
-- Помилки — `SnackBar`
+> Секція `"units"` існує лише у dev-файлі як довідка для написання парсера.
+> В остаточній колекції її не буде — одиниці захардкоджені у парсері.
 
-**`pubspec.yaml`:** додати `file_picker: ^8.x`
+**Twist direction у колекції:** `rTwist` завжди позитивний (тільки правий твіст).
+Від'ємний `twist.raw` на моделі означає лівий твіст — тільки для користувацьких записів.
 
-### Крок 6 — Заборона видалення builtin
-**Файли:** `rifle_select_screen.dart`, `rifle_select_vm.dart`
-- `deleteProfile`: перевіряти `profile.builtin` — якщо true, показувати `SnackBar("Built-in profiles cannot be deleted")`
-- FAB `Delete` action: `enabled: !profile.builtin`
+**Стратегія завантаження:**
+1. `~/.eBalistyka/collection.json` — оновлена версія з мережі (якщо є)
+2. `assets/json/collection.json` — бандл (завжди доступний, fallback)
+
+**При копіюванні до юзера:** новий UUID, дані переносяться у відповідну модель (`Rifle`, `Cartridge`, `Projectile`, `Sight`).
 
 ---
 
-## Майбутні фази (після MVP)
+## Critical Files
 
-| Фаза | Що                                      | Залежить від          |
-|------|-----------------------------------------|-----------------------|
-| 6    | Edit Rifle form (1-page, Accept/Decline)| Крок 3 (картка)       |
-| 7    | Edit Cartridge form                     | Крок 3                |
-| 8    | Edit Zero Settings form                 | Крок 3                |
-| 9    | Profile Creation Wizard (покроковий)    | Фази 6-8              |
-| 10   | Sight Picker + Edit Sight               | Крок 3                |
-| 11   | Export .a7p                             | Крок 5                |
-| 12   | Оновлення вбудованої колекції           | Крок 1 (builtin flag)  |
-
-### Оновлення вбудованої колекції (майбутнє)
-Колекція — **офлайн за замовчуванням**, поставляється з додатком як початковий seed.
-Оновлення відбувається **всередині додатку**: додаток сам завантажує нову версію бібліотеки
-по git-тегу з репозиторію `a7p-lib` (бібліотека легка — лише JSON індекс + `.a7p` файли).
-
-Флоу оновлення:
-1. Додаток перевіряє останній тег `a7p-lib` (наприклад, `GET .../releases/latest`)
-2. Порівнює з локально збереженим тегом
-3. Якщо є новіший — пропонує юзеру оновити вбудовану колекцію (або тихо у фоні)
-4. Завантажує `profiles.json` → парсить → оновлює builtin записи локально
-
-Формат джерела — `a7p-lib` репозиторій:
-- `profiles.json` — індекс: id, діаметр, вага, калібр, постачальник
-- `gallery/<caliber>/<name>.a7p` — бінарні файли профілів
-- `gallery/<caliber>/<name>.meta.json` — метадані (drag model, виробник тощо)
-
-При оновленні: нові builtin записи **додаються**, наявні — **не перезаписуються**
-(щоб не зламати вибір юзера). Видалені з колекції — **залишаються** у юзера.
-
----
-
-## Файловий план (нові файли)
-
-```
-lib/
-  core/
-    models/
-      rifle.dart           ← + builtin field
-      cartridge.dart       ← + builtin field
-      shot_profile.dart    ← + builtin field
-      seed_data.dart       ← builtin: true + 2 seed profiles
-  features/
-    home/
-      sub_screens/
-        rifle_select_screen.dart        ← повний layout картки
-        rifle_select/
-          rifle_select_vm.dart          ← + swapCartridge()
-        cartridge_picker/
-          cartridge_picker_screen.dart  ← новий
-          cartridge_picker_vm.dart      ← новий
-```
+| Файл | Статус | Опис |
+|---|---|---|
+| `lib/core/models/shot_profile.dart` | ✅ | `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp`, `useDiffPowderTemp` |
+| `lib/core/models/cartridge.dart` | ✅ | Видалено `useDifferentPowderTemp` |
+| `lib/core/models/rifle.dart` | ✅ | `caliberDiameter?`, `barrelLength?`, getter `isRightHandTwist` |
+| `lib/core/models/sight.dart` | ✅ | Базова модель |
+| `lib/core/models/projectile.dart` | ✅ | Модель кулі |
+| `lib/core/models/field_constraints.dart` | ✅ | + `FC.barrelLength` (inch, 1–36, step 0.5) |
+| `lib/core/models/unit_settings.dart` | ✅ | + `barrelLength: Unit` (default inch) |
+| `lib/core/models/_storage.dart` | ✅ | + `weaponBarrelLength = Unit.inch` |
+| `lib/core/models/seed_data.dart` | ✅ | 3 seed-профілі у `seedShotProfiles` |
+| `lib/core/formatting/unit_formatter.dart` | ✅ | + `barrelLength()`, `barrelLengthSymbol`, `InputField.barrelLength` |
+| `lib/core/formatting/unit_formatter_impl.dart` | ✅ | Реалізація barrelLength |
+| `lib/core/services/ballistics_service_impl.dart` | ✅ | Уніфікована логіка порошкової чутливості |
+| `lib/core/a7p/a7p_parser.dart` | ✅ | `zeroUsePowderSensitivity` при імпорті |
+| `lib/core/storage/app_storage.dart` | ✅ | + `loadCollectionJson()`, `saveCollectionJson()` |
+| `lib/core/storage/json_file_storage.dart` | ✅ | + collection cache: `~/.eBalistyka/collection.json` |
+| `lib/core/collection/collection_parser.dart` | ✅ | `CollectionParser.parse()` + `BuiltinCollection` |
+| `lib/core/providers/shot_profile_provider.dart` | ✅ | `_update` → синхронізує `profileLibraryProvider` (runtime state bug fix) |
+| `lib/core/providers/profile_library_provider.dart` | ✅ | CRUD + `moveToFirst` + seed |
+| `lib/core/providers/builtin_collection_provider.dart` | ✅ | assets → fallback; `~/.eBalistyka/collection.json` → пріоритет |
+| `lib/core/providers/library_provider.dart` | ✅ | Rifle / Cartridge / Sight бібліотеки |
+| `lib/features/home/sub_screens/profiles/profiles_vm.dart` | ✅ | `ProfileCardData`, sealed state |
+| `lib/features/home/sub_screens/profiles_screen.dart` | ✅ | PageView, FAB |
+| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | Pure widget |
+| `lib/features/home/sub_screens/rifle_wizard_screen.dart` | 🔧 skeleton | Потребує реалізації — Phase 5 |
+| `lib/features/home/sub_screens/home_sub_screens.dart` | 🔲 stubs | Всі під-екрани — `StubScreen` |
+| `lib/router.dart` | ✅ | Дерево маршрутів (потребує оновлення під нові routes) |
+| `assets/json/collection.json` | ✅ | Вбудована колекція (зареєстрована у pubspec.yaml) |
 
 ---
 
-## Ключові рішення
+## Phases — Що залишилось
 
-| Питання                            | Рішення                                                              |
-|------------------------------------|----------------------------------------------------------------------|
-| Де зберігається `builtin`?         | У моделі як поле, serialized у JSON                                  |
-| Builtin + user в одному файлі?     | Так, поки що в одному `profiles.json`                                |
-| Картка → tap = select?             | Ні, тільки кнопка "Select" внизу картки                              |
-| Скролл картки vs PageView?         | PageView скролиться горизонтально, картка — вертикально всередині    |
-| NoSQL / JSON для сховища?          | JSON поки що достатньо; `AppStorage` interface дозволяє поміняти     |
-| Cartridge в профілі vs бібліотеці? | Профіль зберігає повний snapshot cartridge; зміна через picker → нова версія snapshot |
+### Phase 5 — Profile Add Screen + Rifle Selection
+
+**`ProfileAddScreen`** — вибір джерела rifle (My Rifles список + кнопки flows 1/3/4):
+- My Rifles `ListView` з `RifleTile` (cog для user data)
+- "From Collection" btn → `RifleCollectionScreen`
+- "Create Rifle" btn → ім'я dialog → `RifleWizardScreen` (порожній)
+- Tap на tile → `RifleWizardScreen` (pre-filled)
+
+**`RifleCollectionScreen`** — список builtin rifle (з 🔒):
+- Tap "Select" → `RifleWizardScreen` (pre-filled з builtin)
+
+**`RifleWizardScreen`** — реалізувати повністю:
+- Приймає `Rifle?` (null = новий)
+- Валідація полів
+- Save → `Navigator.pop(rifle)`
+- Discard → `Navigator.pop(null)`
+
+**Shared components:**
+- `RifleTile` widget (reusable, з cog для user data, 🔒 для builtin)
+- `ItemListView` generic wrapper
+
+---
+
+### Phase 6 — CartridgeSelectScreen + CartridgeWizardScreen
+
+- Аналогічно Phase 5, але для Cartridge і Bullet
+- `isProjectileOnly` параметр у wizard
+- Фільтрація по caliber поточного rifle
+- `CartridgeTile`, `BulletTile` (reusable)
+
+---
+
+### Phase 7 — SightSelectScreen + SightWizardScreen
+
+- Аналогічно Phase 5 для Sight
+- `SightTile` (reusable)
+
+---
+
+### Phase 8 — Edit Flows (Flow 2)
+
+- "Edit Rifle ›" у ProfileCard → `RifleWizardScreen` з поточними даними + логіка shared ref warning
+- "Edit Cartridge ›" → `CartridgeWizardScreen`
+- "Edit Sight ›" → `SightWizardScreen`
+- "Edit Zero ›" → `ZeroEditScreen`
+
+---
+
+### Phase 9 — Reference Sharing Logic
+
+- При видаленні: перевірити `usedBy` (скільки профілів використовують цей Rifle/Cartridge/Sight)
+- Якщо `usedBy.length > 0` → блокувати видалення з `SnackBar` / dialog
+- При редагуванні з кількох профілів → показати warning dialog з переліком профілів
+- "Duplicate" action у cog меню tile → копія з новим UUID
+
+---
+
+### Phase 10 — Built-in Collection Update (майбутнє)
+
+Колекція — офлайн за замовчуванням (assets). Оновлення в додатку:
+1. Перевірити останній тег `a7p-lib`
+2. Порівняти з локально збереженим
+3. Запропонувати оновлення (або тихо у фоні)
+4. Завантажити `profiles.json` / `.a7p` файли → оновити builtin локально
+
+Нові builtin **додаються**, наявні — **не перезаписуються**.
+
+---
+
+## Verification Checklist
+
+| # | Перевірка | Статус |
+|---|---|---|
+| 1 | Імпорт `.a7p` → `zeroUsePowderSensitivity` встановлюється коректно | ✅ |
+| 2 | Вибір профілю → Home показує rifle/cartridge/sight обраного профілю | ✅ |
+| 3 | Зміна conditions/winds → відновлюється при поверненні до профілю | ✅ fixed |
+| 4 | Conditions screen не перезаписує zero conditions | ✅ |
+| 5 | Балістичний розрахунок: уніфікована логіка порошкової чутливості | ✅ |
+| 6 | Видалення профілю → бібліотека оновлюється | ✅ |
+| 7 | Select профілю → `moveToFirst` → наступного разу активний перший | ✅ |
+| 8 | Фліккер при PageView scroll — виправлено унікальними `heroTag` | ✅ |
+| 9 | `collection.json` парситься у `BuiltinCollection` (rifles/cartridges/projectiles/sights) | ✅ |
+| 10 | `builtinCollectionProvider`: пріоритет `~/.eBalistyka/collection.json`, fallback assets | ✅ |
+| 11 | `Rifle.caliberDiameter` — зберігається/відновлюється, backward-compat | ✅ |
+| 12 | `Rifle.barrelLength` — optional, зберігається/відновлюється, backward-compat | ✅ |
+| 13 | `Rifle.isRightHandTwist` — getter від знаку `twist.raw` | ✅ |
+| 14 | Flow 1: builtin rifle → wizard → новий профіль + зберігається у My Rifles | 🔲 |
+| 15 | Flow 2: edit rifle → wizard → оновлюється у rifles.json | 🔲 |
+| 16 | Flow 3: create rifle → wizard → новий профіль | 🔲 |
+| 17 | Flow 4: select My Rifle → wizard → новий профіль | 🔲 |
+| 18 | Cartridge list фільтрується по `caliberDiameter` rifle | 🔲 |
+| 19 | Shared rifle — warning при редагуванні/видаленні | 🔲 |
+| 20 | Bullet wizard (`isProjectileOnly`) — різні required поля | 🔲 |
+
+---
+
+## Відомий баг — Incomplete Profile не обробляється
+
+### Симптом
+Якщо профіль не містить достатніх даних для розрахунку (наприклад, картридж з нульовим MV або
+відсутній sight) — Home, Conditions, Tables відображають некоректні/безглузді значення замість
+попередження.
+
+### Бажана поведінка
+- `ShotProfile` має метод/геттер `isReadyForCalculation` → `bool`
+- Якщо `false`: Home / Conditions / Tables показують мінімальну доступну інформацію
+  + банер/попередження "Profile incomplete — go to profiles to finish setup"
+- Розрахунок не запускається поки профіль не повний
+
+### Що перевіряти (орієнтовно)
+| Поле | Умова |
+|---|---|
+| `rifle.caliberDiameter` | не null, > 0 |
+| `rifle.sightHeight` | >= 0 |
+| `rifle.twist` | != 0 |
+| `cartridge.mv` | > 0 |
+| `cartridge.projectile.coefRows` | не порожній |
+| `cartridge.projectile.diameter` | > 0 |
+| `cartridge.projectile.weight` | > 0 |
+
+### Де реалізовувати
+- Геттер `isReadyForCalculation` у `ShotProfile`
+- `shotProfileProvider` або `recalcCoordinatorProvider` — блокує перерахунок якщо `!isReady`
+- Home / Conditions / Tables — показують `IncompleteBanner` якщо `!isReady`
+
+**Пріоритет:** після підключення всіх wizard flows.
+
+---
+
+## Reusable Patterns
+
+- `showUnitEditDialog()` / `UnitValueField` — для wizard
+- `BaseScreen` + `ScreenTopBar` — для wizard як route
+- Display model pattern (`ProfileCardData`) — форматування у ViewModel, widget лише відображає
+- `ItemListView<T>` + typed Tile widgets — для всіх списків (My Items + Collection Browser)

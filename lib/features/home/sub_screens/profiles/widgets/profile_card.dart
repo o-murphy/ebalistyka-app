@@ -11,12 +11,14 @@ class ProfileCard extends StatelessWidget {
     required this.data,
     required this.isActive,
     required this.onSelect,
+    required this.onEditRifle,
     super.key,
   });
 
   final ProfileCardData data;
   final bool isActive;
   final VoidCallback onSelect;
+  final VoidCallback onEditRifle;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class ProfileCard extends StatelessWidget {
                     title: Text(data.rifleName),
                     dense: true,
                     trailing: IconButton(
-                      onPressed: () => context.go(Routes.profileEditRifle),
+                      onPressed: onEditRifle,
                       icon: Icon(Icons.edit_outlined, size: 16),
                     ),
                   ),

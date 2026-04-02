@@ -57,6 +57,9 @@ class UnitFormatterImpl implements UnitFormatter {
   String twist(Distance dim) => '1:${_fmt(dim, FC.twist, _u.twist)}';
 
   @override
+  String barrelLength(Distance dim) => _fmt(dim, FC.barrelLength, _u.barrelLength);
+
+  @override
   String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
 
   @override
@@ -110,6 +113,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String get weightSymbol => _u.weight.symbol;
   @override
   String get sightHeightSymbol => _u.sightHeight.symbol;
+  @override
+  String get barrelLengthSymbol => _u.barrelLength.symbol;
 
   // --- Input conversion (for input dialogs) ---
 
@@ -157,6 +162,10 @@ class UnitFormatterImpl implements UnitFormatter {
         displayValue,
         _u.diameter,
       ).in_(Unit.millimeter),
+      InputField.barrelLength => Distance(
+        displayValue,
+        _u.barrelLength,
+      ).in_(Unit.inch),
       InputField.bc => displayValue, // dimensionless
     };
   }
@@ -196,6 +205,7 @@ class UnitFormatterImpl implements UnitFormatter {
         rawValue,
         Unit.millimeter,
       ).in_(_u.diameter),
+      InputField.barrelLength => Distance(rawValue, Unit.inch).in_(_u.barrelLength),
       InputField.bc => rawValue,
     };
   }

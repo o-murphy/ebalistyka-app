@@ -182,6 +182,14 @@ abstract final class FC {
     accuracy: 3,
   );
 
+  static const barrelLength = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 1.0,
+    maxRaw: 36.0,
+    stepRaw: 0.5,
+    accuracy: 1,
+  );
+
   // Display-only — trajectory output
 
   /// Bullet height / windage offset (linear). Raw stored in feet.

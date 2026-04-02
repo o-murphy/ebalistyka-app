@@ -25,6 +25,7 @@ final seedRifle = Rifle(
   description: 'Generic .338LM platform',
   sightHeight: Distance(8.5, Unit.millimeter),
   twist: Distance(10.0, Unit.inch),
+  caliberDiameter: Distance(0.338, Unit.inch),
 );
 
 // ── Sight ─────────────────────────────────────────────────────────────────────

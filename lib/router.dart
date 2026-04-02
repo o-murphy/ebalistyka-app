@@ -1,4 +1,6 @@
 import 'package:eballistica/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:eballistica/core/models/rifle.dart';
+import 'package:eballistica/features/home/sub_screens/rifle_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -106,7 +108,7 @@ final appRouter = GoRouter(
                       routes: [
                         GoRoute(
                           path: 'rifle-create',
-                          builder: (_, _) => const CreateRifleWizardScreen(),
+                          builder: (_, _) => const RifleWizardScreen(),
                         ),
                         GoRoute(
                           path: 'rifle-collection',
@@ -168,7 +170,8 @@ final appRouter = GoRouter(
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
                       path: 'rifle-edit',
-                      builder: (_, _) => const RifleEditScreen(),
+                      builder: (_, state) =>
+                          RifleWizardScreen(initial: state.extra as Rifle?),
                     ),
                     GoRoute(
                       path: 'cartridge-edit',

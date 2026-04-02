@@ -7,6 +7,7 @@ import 'package:eballistica/core/models/seed_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'package:eballistica/core/solver/unit.dart';
+import 'profile_library_provider.dart';
 import 'storage_provider.dart';
 
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
@@ -106,8 +107,10 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
     final current = state.value ?? seedShotProfile;
     final updated = fn(current);
     state = AsyncData(updated);
-    // Persists runtime state changes into the profile's entry in profiles.json
     await ref.read(appStorageProvider).saveProfile(updated);
+    // Sync profileLibraryProvider in-memory state so switching profiles
+    // restores the latest runtime state (conditions, winds, etc.)
+    await ref.read(profileLibraryProvider.notifier).save(updated);
   }
 }
 

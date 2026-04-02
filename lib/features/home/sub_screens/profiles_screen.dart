@@ -1,5 +1,8 @@
+import 'package:eballistica/core/models/rifle.dart';
+import 'package:eballistica/core/providers/profile_library_provider.dart';
 import 'package:eballistica/features/home/sub_screens/profiles/profiles_vm.dart';
 import 'package:eballistica/features/home/sub_screens/profiles/widgets/profile_card.dart';
+import 'package:eballistica/router.dart';
 import 'package:eballistica/shared/widgets/base_screen.dart';
 import 'package:eballistica/shared/widgets/pages_dots_indicator.dart';
 import 'package:flutter/material.dart';
@@ -90,6 +93,21 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     // TODO: serialize profile and share (Phase 5+)
   }
 
+  Future<void> _onEditRifle(ProfileCardData data) async {
+    final profiles = ref.read(profileLibraryProvider).value ?? [];
+    final profile = profiles.where((p) => p.id == data.id).firstOrNull;
+    if (profile == null) return;
+    final result = await context.push<Rifle?>(
+      Routes.profileEditRifle,
+      extra: profile.rifle,
+    );
+    if (result != null && mounted) {
+      await ref
+          .read(rifleSelectVmProvider.notifier)
+          .updateProfileRifle(data.id, result);
+    }
+  }
+
   Future<void> _onSelect(ProfileCardData profile) async {
     await ref.read(rifleSelectVmProvider.notifier).selectProfile(profile.id);
     if (mounted) context.pop();
@@ -130,6 +148,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       currentPage: _currentPage,
                       onPageChanged: _onPageChanged,
                       onSelect: _onSelect,
+                      onEditRifle: _onEditRifle,
                     ),
                     ValueListenableBuilder<double>(
                       valueListenable: _fabAnimValue,
@@ -163,6 +182,7 @@ class _ProfilePageView extends StatelessWidget {
     required this.currentPage,
     required this.onPageChanged,
     required this.onSelect,
+    required this.onEditRifle,
   });
 
   final List<ProfileCardData> profiles;
@@ -171,6 +191,7 @@ class _ProfilePageView extends StatelessWidget {
   final int currentPage;
   final void Function(int) onPageChanged;
   final void Function(ProfileCardData) onSelect;
+  final void Function(ProfileCardData) onEditRifle;
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +209,7 @@ class _ProfilePageView extends StatelessWidget {
                       data: p,
                       isActive: p.id == activeProfileId,
                       onSelect: () => onSelect(p),
+                      onEditRifle: () => onEditRifle(p),
                     ),
                   ),
                 )

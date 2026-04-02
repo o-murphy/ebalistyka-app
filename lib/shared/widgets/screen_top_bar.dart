@@ -7,6 +7,7 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.actions,
     this.isSubscreen = false,
+    this.showBack = true,
     this.withTabs,
     super.key,
   });
@@ -14,6 +15,7 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool isSubscreen;
+  final bool showBack;
   final List<Tab>? withTabs;
 
   @override
@@ -29,11 +31,15 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => isSubscreen ? context.pop() : context.go(Routes.home),
-        tooltip: 'Back',
-      ),
+      automaticallyImplyLeading: false,
+      leading: showBack
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () =>
+                  isSubscreen ? context.pop() : context.go(Routes.home),
+              tooltip: 'Back',
+            )
+          : null,
       actions: actions,
       bottom: (withTabs != null && withTabs!.isNotEmpty)
           ? TabBar(tabs: withTabs!)

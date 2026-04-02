@@ -7,6 +7,7 @@ abstract final class StorageUnits {
   // ── Weapon ────────────────────────────────────────────────────────────────
   static const weaponSightHeight = Unit.millimeter;
   static const weaponTwist = Unit.inch;
+  static const weaponBarrelLength = Unit.inch;
   static const weaponZeroElevation = Unit.radian;
 
   // ── Sight ─────────────────────────────────────────────────────────────────

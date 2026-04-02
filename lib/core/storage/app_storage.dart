@@ -32,6 +32,10 @@ abstract interface class AppStorage {
   Future<void> saveProfilesOrdered(List<ShotProfile> profiles);
   Future<void> deleteProfile(String id);
 
+  // Built-in collection cache (collection.json downloaded from network)
+  Future<String?> loadCollectionJson();
+  Future<void> saveCollectionJson(String json);
+
   // Import / Export
   Future<Map<String, dynamic>> exportAll();
   Future<void> importAll(Map<String, dynamic> data);

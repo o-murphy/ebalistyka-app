@@ -14,6 +14,7 @@ class UnitSettings {
   final Unit energy;
   final Unit sightHeight;
   final Unit twist;
+  final Unit barrelLength;
   final Unit time;
 
   const UnitSettings({
@@ -30,6 +31,7 @@ class UnitSettings {
     this.energy = Unit.joule,
     this.sightHeight = Unit.millimeter,
     this.twist = Unit.inch,
+    this.barrelLength = Unit.inch,
     this.time = Unit.second,
   });
 
@@ -47,6 +49,7 @@ class UnitSettings {
     Unit? energy,
     Unit? sightHeight,
     Unit? twist,
+    Unit? barrelLength,
     Unit? time,
   }) => UnitSettings(
     angular: angular ?? this.angular,
@@ -62,6 +65,7 @@ class UnitSettings {
     energy: energy ?? this.energy,
     sightHeight: sightHeight ?? this.sightHeight,
     twist: twist ?? this.twist,
+    barrelLength: barrelLength ?? this.barrelLength,
     time: time ?? this.time,
   );
 
@@ -79,6 +83,7 @@ class UnitSettings {
     'energy': energy.name,
     'sightHeight': sightHeight.name,
     'twist': twist.name,
+    'barrelLength': barrelLength.name,
     'time': time.name,
   };
 
@@ -103,6 +108,7 @@ class UnitSettings {
       energy: u('energy', Energy.rawUnit, Energy.accepts),
       sightHeight: u('sightHeight', Distance.rawUnit, Distance.accepts),
       twist: u('twist', Distance.rawUnit, Distance.accepts),
+      barrelLength: u('barrelLength', Distance.rawUnit, Distance.accepts),
       time: u('time', Time.rawUnit, Time.accepts),
     );
   }

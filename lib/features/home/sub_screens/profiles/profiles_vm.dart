@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/models/projectile.dart';
+import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';
 import 'package:eballistica/core/providers/profile_library_provider.dart';
@@ -96,7 +97,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       rifleName: profile.rifle.name,
       caliber: fmt.diameter(profile.cartridge.projectile.diameter),
       twist: fmt.twist(profile.rifle.twist),
-      twistDirection: profile.rifle.twist.raw > 0 ? 'right' : 'left',
+      twistDirection: profile.rifle.isRightHandTwist ? 'right' : 'left',
       cartridgeName: profile.cartridge.name,
       dragModel: dragModel,
       muzzleVelocity: fmt.velocity(profile.cartridge.mv),
@@ -128,6 +129,33 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
           : current.profiles;
       state = AsyncData(
         ProfilesReady(profiles: reordered, activeProfileId: id),
+      );
+    }
+  }
+
+  Future<void> updateProfileRifle(String profileId, Rifle rifle) async {
+    final profiles = ref.read(profileLibraryProvider).value ?? [];
+    final idx = profiles.indexWhere((p) => p.id == profileId);
+    if (idx < 0) return;
+    final updated = profiles[idx].copyWith(rifle: rifle);
+    await ref.read(profileLibraryProvider.notifier).save(updated);
+    // Sync active profile in shotProfileProvider if needed
+    final activeId = ref.read(shotProfileProvider).value?.id;
+    if (activeId == profileId) {
+      await ref.read(shotProfileProvider.notifier).selectRifle(rifle);
+    }
+    // Update VM state without full rebuild
+    final current = state.value;
+    if (current is ProfilesReady) {
+      final formatter = ref.read(unitFormatterProvider);
+      state = AsyncData(
+        ProfilesReady(
+          profiles: [
+            for (final p in current.profiles)
+              if (p.id == profileId) _buildCardData(updated, formatter) else p,
+          ],
+          activeProfileId: current.activeProfileId,
+        ),
       );
     }
   }

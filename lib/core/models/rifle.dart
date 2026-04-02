@@ -11,6 +11,11 @@ class Rifle {
   final Distance sightHeight;
   final Distance twist;
   final Angular zeroElevation;
+  // Caliber diameter (inches) — used for filtering cartridges by caliber.
+  // Optional: user-created rifles may not have this set.
+  final Distance? caliberDiameter;
+  // Barrel length — optional, must be > 0 if set.
+  final Distance? barrelLength;
   final String? notes;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -22,6 +27,8 @@ class Rifle {
     required this.sightHeight,
     required this.twist,
     Angular? zeroElevation,
+    this.caliberDiameter,
+    this.barrelLength,
     this.notes,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -29,6 +36,9 @@ class Rifle {
        zeroElevation = zeroElevation ?? Angular(0, Unit.radian),
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
+
+  /// Right-hand twist when positive, left-hand when negative.
+  bool get isRightHandTwist => twist.raw >= 0;
 
   Weapon toWeapon() => Weapon(
     sightHeight: sightHeight,
@@ -42,6 +52,8 @@ class Rifle {
     Distance? sightHeight,
     Distance? twist,
     Angular? zeroElevation,
+    Distance? caliberDiameter,
+    Distance? barrelLength,
     String? notes,
   }) => Rifle(
     id: id,
@@ -50,6 +62,8 @@ class Rifle {
     sightHeight: sightHeight ?? this.sightHeight,
     twist: twist ?? this.twist,
     zeroElevation: zeroElevation ?? this.zeroElevation,
+    caliberDiameter: caliberDiameter ?? this.caliberDiameter,
+    barrelLength: barrelLength ?? this.barrelLength,
     notes: notes ?? this.notes,
     createdAt: createdAt,
     updatedAt: DateTime.now(),
@@ -63,6 +77,10 @@ class Rifle {
       'sightHeight': sightHeight.in_(StorageUnits.weaponSightHeight),
       'twist': twist.in_(StorageUnits.weaponTwist),
       'zeroElevation': zeroElevation.in_(StorageUnits.weaponZeroElevation),
+      if (caliberDiameter != null)
+        'caliberDiameter': caliberDiameter!.in_(StorageUnits.projectileDiameter),
+      if (barrelLength != null)
+        'barrelLength': barrelLength!.in_(StorageUnits.weaponBarrelLength),
     },
     if (notes != null) 'notes': notes,
     'createdAt': createdAt.toIso8601String(),
@@ -71,6 +89,7 @@ class Rifle {
 
   factory Rifle.fromJson(Map<String, dynamic> json) {
     final w = json['weapon'] as Map;
+    final caliberRaw = w['caliberDiameter'] as num?;
     return Rifle(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -84,6 +103,15 @@ class Rifle {
         (w['zeroElevation'] as num).toDouble(),
         StorageUnits.weaponZeroElevation,
       ),
+      caliberDiameter: caliberRaw != null
+          ? Distance(caliberRaw.toDouble(), StorageUnits.projectileDiameter)
+          : null,
+      barrelLength: (w['barrelLength'] as num?) != null
+          ? Distance(
+              (w['barrelLength'] as num).toDouble(),
+              StorageUnits.weaponBarrelLength,
+            )
+          : null,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
