@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:eballistica/core/solver/shot.dart';
 import 'package:eballistica/core/solver/unit.dart';
+import 'package:eballistica/core/solver/munition.dart';
 import '_storage.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
@@ -83,6 +84,45 @@ class ShotProfile {
     latitudeDeg: latitudeDeg,
     azimuthDeg: azimuthDeg,
   );
+
+  Shot toZeroShot(Angular lookAngle, Weapon weapon) {
+    final zeroAmmo = Ammo(
+      dm: cartridge!.projectile.toDragModel(),
+      mv: cartridge!.mv,
+      powderTemp: conditions.powderTemp,
+      tempModifier: cartridge!.powderSensitivity.in_(Unit.fraction),
+      usePowderSensitivity: cartridge!.usePowderSensitivity,
+    );
+    final zeroAtmo = cartridge!.conditions ?? conditions;
+
+    return Shot(
+      weapon: weapon,
+      ammo: zeroAmmo,
+      lookAngle: lookAngle,
+      atmo: zeroAtmo.toAtmo(),
+      winds: const [],
+    );
+  }
+
+  Shot toCurrentShot() {
+    final currentAmmo = Ammo(
+      dm: cartridge!.projectile.toDragModel(),
+      mv: cartridge!.mv,
+      powderTemp: conditions.powderTemp,
+      tempModifier: cartridge!.powderSensitivity.in_(Unit.fraction),
+      usePowderSensitivity: usePowderSensitivity,
+    );
+
+    return Shot(
+      weapon: rifle.toWeapon(),
+      ammo: currentAmmo,
+      lookAngle: lookAngle,
+      atmo: conditions.toAtmo(),
+      winds: winds.map((w) => w.toWind()).toList(),
+      latitudeDeg: latitudeDeg,
+      azimuthDeg: azimuthDeg,
+    );
+  }
 
   // ── copyWith ──────────────────────────────────────────────────────────────
 
@@ -175,9 +215,9 @@ class ShotProfile {
         final oldZeroDistJson = json['zeroDistance'] as num?;
         final oldZeroCondJson = json['zeroConditions'] as Map?;
         final oldZeroUsePowderSens =
-            json['zeroUsePowderSensitivity'] as bool? ?? false;
-        final oldZeroUseDiffPowderTemp =
-            json['zeroUseDiffPowderTemp'] as bool? ?? false;
+            json['usePowderSensitivity'] as bool? ?? false;
+        final olduseDiffPowderTemp =
+            json['useDiffPowderTemp'] as bool? ?? false;
 
         inlineCartridge = Cartridge(
           id: baseCartridge.id,
@@ -193,11 +233,11 @@ class ShotProfile {
                   StorageUnits.profileZeroDistance,
                 )
               : baseCartridge.zeroDistance,
-          zeroConditions: oldZeroCondJson != null
+          conditions: oldZeroCondJson != null
               ? AtmoData.fromJson(oldZeroCondJson as Map<String, dynamic>)
-              : baseCartridge.zeroConditions,
-          zeroUsePowderSensitivity: oldZeroUsePowderSens,
-          zeroUseDiffPowderTemp: oldZeroUseDiffPowderTemp,
+              : baseCartridge.conditions,
+          usePowderSensitivity: oldZeroUsePowderSens,
+          useDiffPowderTemp: olduseDiffPowderTemp,
           notes: baseCartridge.notes,
           createdAt: baseCartridge.createdAt,
           updatedAt: baseCartridge.updatedAt,
