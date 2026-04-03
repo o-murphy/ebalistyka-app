@@ -7,7 +7,9 @@ import 'storage_provider.dart';
 /// Loads the built-in collection with the following priority:
 ///   1. ~/.eBalistyka/collection.json  — cached/updated version from network
 ///   2. assets/json/collection.json   — bundled fallback (always available)
-final builtinCollectionProvider = FutureProvider<BuiltinCollection>((ref) async {
+final builtinCollectionProvider = FutureProvider<BuiltinCollection>((
+  ref,
+) async {
   final storage = ref.read(appStorageProvider);
 
   final cached = await storage.loadCollectionJson();

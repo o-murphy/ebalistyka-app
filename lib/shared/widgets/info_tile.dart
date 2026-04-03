@@ -12,7 +12,7 @@ class InfoListTile extends StatelessWidget {
 
   final String label;
   final String value;
-  final IconData icon;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class InfoListTile extends StatelessWidget {
     final cs = theme.colorScheme;
     return ListTile(
       dense: true,
-      leading: Icon(icon, color: cs.onSurfaceVariant),
+      leading: icon != null ? Icon(icon, color: cs.onSurfaceVariant) : null,
       title: Text(label),
       trailing: Text(
         value,

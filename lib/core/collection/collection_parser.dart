@@ -36,8 +36,8 @@ abstract final class CollectionParser {
     final calibers = <int, double>{};
     for (final c in (map['calibers'] as List? ?? [])) {
       final cm = c as Map<String, dynamic>;
-      calibers[cm['id'] as int] =
-          ((cm['diameter'] ?? cm['caliber']) as num).toDouble();
+      calibers[cm['id'] as int] = ((cm['diameter'] ?? cm['caliber']) as num)
+          .toDouble();
     }
 
     return BuiltinCollection(
@@ -61,17 +61,20 @@ abstract final class CollectionParser {
   static Rifle _parseRifle(Map<String, dynamic> j, Map<int, double> calibers) {
     final caliberId = j['caliberId'] as int?;
     final diameterInch = caliberId != null ? calibers[caliberId] : null;
-    final barrelRaw = (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
+    final barrelRaw =
+        (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
     return Rifle(
       name: j['name'] as String,
       description: j['vendor'] as String?,
       // sightHeight is not in the collection — default to 0, user sets it in wizard
       sightHeight: Distance(0.0, Unit.millimeter),
       twist: Distance((j['rTwist'] as num).toDouble(), Unit.inch),
-      caliberDiameter:
-          diameterInch != null ? Distance(diameterInch, Unit.inch) : null,
-      barrelLength:
-          barrelRaw != null ? Distance(barrelRaw.toDouble(), Unit.inch) : null,
+      caliberDiameter: diameterInch != null
+          ? Distance(diameterInch, Unit.inch)
+          : null,
+      barrelLength: barrelRaw != null
+          ? Distance(barrelRaw.toDouble(), Unit.inch)
+          : null,
     );
   }
 
@@ -82,7 +85,8 @@ abstract final class CollectionParser {
     Map<int, double> calibers,
   ) {
     final caliberId = j['caliberId'] as int?;
-    final diameterInch = (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
+    final diameterInch =
+        (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
     final dType = _dragType(j['dType'] as String? ?? 'G1');
     final name = j['name'] as String;
 
@@ -115,7 +119,8 @@ abstract final class CollectionParser {
     Map<int, double> calibers,
   ) {
     final caliberId = j['caliberId'] as int?;
-    final diameterInch = (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
+    final diameterInch =
+        (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
     final dType = _dragType(j['dType'] as String? ?? 'G1');
     return _projectileFrom(
       j: j,
@@ -169,20 +174,21 @@ abstract final class CollectionParser {
       dragType: dType,
       weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
       diameter: Distance(diameterInch, Unit.inch),
-      length: Distance((j['bulletLength'] as num? ?? 0.0).toDouble(), Unit.inch),
+      length: Distance(
+        (j['bulletLength'] as num? ?? 0.0).toDouble(),
+        Unit.inch,
+      ),
       coefRows: coefRows,
     );
   }
 
-  static List<CoeficientRow> _multiBC(List table) => table
-      .map((r) {
-        final row = r as Map<String, dynamic>;
-        return CoeficientRow(
-          bcCd: (row['bc'] as num).toDouble(),
-          mv: (row['v'] as num).toDouble(), // m/s
-        );
-      })
-      .toList();
+  static List<CoeficientRow> _multiBC(List table) => table.map((r) {
+    final row = r as Map<String, dynamic>;
+    return CoeficientRow(
+      bcCd: (row['bc'] as num).toDouble(),
+      mv: (row['v'] as num).toDouble(), // m/s
+    );
+  }).toList();
 
   static DragModelType _dragType(String raw) => switch (raw.toUpperCase()) {
     'G7' => DragModelType.g7,

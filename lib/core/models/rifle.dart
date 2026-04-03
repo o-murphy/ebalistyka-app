@@ -78,7 +78,9 @@ class Rifle {
       'twist': twist.in_(StorageUnits.weaponTwist),
       'zeroElevation': zeroElevation.in_(StorageUnits.weaponZeroElevation),
       if (caliberDiameter != null)
-        'caliberDiameter': caliberDiameter!.in_(StorageUnits.projectileDiameter),
+        'caliberDiameter': caliberDiameter!.in_(
+          StorageUnits.projectileDiameter,
+        ),
       if (barrelLength != null)
         'barrelLength': barrelLength!.in_(StorageUnits.weaponBarrelLength),
     },

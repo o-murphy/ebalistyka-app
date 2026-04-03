@@ -57,7 +57,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String twist(Distance dim) => '1:${_fmt(dim, FC.twist, _u.twist)}';
 
   @override
-  String barrelLength(Distance dim) => _fmt(dim, FC.barrelLength, _u.barrelLength);
+  String barrelLength(Distance dim) =>
+      _fmt(dim, FC.barrelLength, _u.barrelLength);
 
   @override
   String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
@@ -205,7 +206,10 @@ class UnitFormatterImpl implements UnitFormatter {
         rawValue,
         Unit.millimeter,
       ).in_(_u.diameter),
-      InputField.barrelLength => Distance(rawValue, Unit.inch).in_(_u.barrelLength),
+      InputField.barrelLength => Distance(
+        rawValue,
+        Unit.inch,
+      ).in_(_u.barrelLength),
       InputField.bc => rawValue,
     };
   }
