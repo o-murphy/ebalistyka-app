@@ -334,7 +334,8 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final zeroAtmo = c.zeroConditions ?? profile.conditions;
     final r = profile.rifle;
     final proj = c.projectile;
-    final zeroUsePowderSens = c.zeroUsePowderSensitivity && c.usePowderSensitivity;
+    final zeroUsePowderSens =
+        c.zeroUsePowderSensitivity && c.usePowderSensitivity;
     return [
       r.sightHeight.in_(Unit.meter),
       r.twist.in_(Unit.inch),

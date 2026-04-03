@@ -86,8 +86,7 @@ class Cartridge {
         : (zeroConditions ?? this.zeroConditions),
     zeroUsePowderSensitivity:
         zeroUsePowderSensitivity ?? this.zeroUsePowderSensitivity,
-    zeroUseDiffPowderTemp:
-        zeroUseDiffPowderTemp ?? this.zeroUseDiffPowderTemp,
+    zeroUseDiffPowderTemp: zeroUseDiffPowderTemp ?? this.zeroUseDiffPowderTemp,
     notes: notes ?? this.notes,
     createdAt: createdAt,
     updatedAt: DateTime.now(),
@@ -115,7 +114,9 @@ class Cartridge {
 
   factory Cartridge.fromJson(Map<String, dynamic> json) {
     final typeStr = json['type'] as String?;
-    final type = typeStr == 'bullet' ? CartridgeType.bullet : CartridgeType.cartridge;
+    final type = typeStr == 'bullet'
+        ? CartridgeType.bullet
+        : CartridgeType.cartridge;
 
     final zeroCondJson = json['zeroConditions'] as Map?;
 
@@ -123,7 +124,9 @@ class Cartridge {
       id: json['id'] as String,
       name: json['name'] as String,
       type: type,
-      projectile: Projectile.fromJson(json['projectile'] as Map<String, dynamic>),
+      projectile: Projectile.fromJson(
+        json['projectile'] as Map<String, dynamic>,
+      ),
       mv: Velocity((json['mv'] as num).toDouble(), StorageUnits.cartridgeMv),
       powderTemp: Temperature(
         (json['powderTemp'] as num).toDouble(),

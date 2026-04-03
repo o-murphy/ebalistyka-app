@@ -150,7 +150,7 @@ class UnitFormatterImpl implements UnitFormatter {
         displayValue,
         _u.velocity,
       ).in_(Unit.mps),
-      InputField.lookAngle => displayValue, // always degrees
+      InputField.lookAngle => displayValue,
       InputField.sightHeight => Distance(
         displayValue,
         _u.sightHeight,
@@ -176,8 +176,7 @@ class UnitFormatterImpl implements UnitFormatter {
         displayValue,
         _u.torque,
       ).in_(Unit.newtonMeter),
-      _ => displayValue,
-      InputField.bc => displayValue, // dimensionless
+      InputField.bc => displayValue,
     };
   }
 
@@ -221,7 +220,6 @@ class UnitFormatterImpl implements UnitFormatter {
         Unit.inch,
       ).in_(_u.barrelLength),
       InputField.torque => Torque(rawValue, Unit.newtonMeter).in_(_u.torque),
-      _ => rawValue,
       InputField.bc => rawValue,
     };
   }

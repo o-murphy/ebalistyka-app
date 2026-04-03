@@ -13,7 +13,7 @@
 - Phase 4 ✅ — Profiles Screen: `ProfilesVm`, `ProfilesScreen`, `ProfileCardData`, `profile_card.dart`
 - `rifle_wizard_screen.dart` ✅ — повністю реалізований
 - `home_sub_screens.dart` 🔲 — всі під-екрани як заглушки (`StubScreen`)
-- Phase 5 ✅ - документ не оновлено, перед фазою 6 оновити!
+- Phase 5 ✅ - Зроблено, але: Один тест ламається - виправити! Цей документ окумент не оновлено - перед фазою 6 оновити!
 ---
 
 ## Storage Architecture
@@ -95,19 +95,19 @@ Backward-compat: при читанні старого формату (`profiles.
 
 ## Data Ownership
 
-| Дані | Належить | Редагується де |
-|---|---|---|
-| name, rifle | `ShotProfile` | Profile wizard |
-| cartridgeId, sightId | `ShotProfile` | Profile card (вибір з бібліотеки) |
-| conditions (Atmo) | `ShotProfile` (runtime, per-profile) | Conditions screen |
-| usePowderSensitivity, useDiffPowderTemp | `ShotProfile` (runtime, per-profile) | Conditions screen |
-| winds, lookAngle, targetDistance | `ShotProfile` (runtime, per-profile) | Home screen |
-| zeroDistance, zeroConditions | `Cartridge` | Cartridge wizard |
-| zeroUsePowderSensitivity, zeroUseDiffPowderTemp | `Cartridge` | Cartridge wizard |
-| Rifle (вся модель) | embedded у `ShotProfile` | Rifle wizard (з profile card) |
-| Cartridge (вся модель) | `cartridges.json` | Cartridge wizard |
-| Sight (вся модель) | `sights.json` | Sight wizard |
-| AppSettings | Global | Settings screen |
+| Дані                                            | Належить                             | Редагується де                    |
+| ----------------------------------------------- | ------------------------------------ | --------------------------------- |
+| name, rifle                                     | `ShotProfile`                        | Profile wizard                    |
+| cartridgeId, sightId                            | `ShotProfile`                        | Profile card (вибір з бібліотеки) |
+| conditions (Atmo)                               | `ShotProfile` (runtime, per-profile) | Conditions screen                 |
+| usePowderSensitivity, useDiffPowderTemp         | `ShotProfile` (runtime, per-profile) | Conditions screen                 |
+| winds, lookAngle, targetDistance                | `ShotProfile` (runtime, per-profile) | Home screen                       |
+| zeroDistance, zeroConditions                    | `Cartridge`                          | Cartridge wizard                  |
+| zeroUsePowderSensitivity, zeroUseDiffPowderTemp | `Cartridge`                          | Cartridge wizard                  |
+| Rifle (вся модель)                              | embedded у `ShotProfile`             | Rifle wizard (з profile card)     |
+| Cartridge (вся модель)                          | `cartridges.json`                    | Cartridge wizard                  |
+| Sight (вся модель)                              | `sights.json`                        | Sight wizard                      |
+| AppSettings                                     | Global                               | Settings screen                   |
 
 ---
 
@@ -242,14 +242,14 @@ My Cartridges / My Sights              Built-in Collection (hidden)
 
 Приймає `Rifle?` (null = новий вручну). Повертає `Rifle` через `Navigator.pop(rifle)`.
 
-| Поле | Новий вручну | Copy from collection | Edit existing |
-|---|---|---|---|
-| name | редагується | редагується | редагується |
-| caliberDiameter | редагується | **readonly** | **readonly** |
-| sightHeight | редагується | редагується | редагується |
-| twist | редагується | редагується | редагується |
-| twistDirection | редагується | редагується | редагується |
-| barrelLength | редагується (optional) | редагується (optional) | редагується (optional) |
+| Поле            | Новий вручну           | Copy from collection   | Edit existing          |
+| --------------- | ---------------------- | ---------------------- | ---------------------- |
+| name            | редагується            | редагується            | редагується            |
+| caliberDiameter | редагується            | **readonly**           | **readonly**           |
+| sightHeight     | редагується            | редагується            | редагується            |
+| twist           | редагується            | редагується            | редагується            |
+| twistDirection  | редагується            | редагується            | редагується            |
+| barrelLength    | редагується (optional) | редагується (optional) | редагується (optional) |
 
 > Twist direction: позитивне значення = правий твіст, від'ємне = лівий. Це стосується як вбудованої колекції так і користувацьких записів.
 
@@ -444,24 +444,24 @@ ProfilesScreen  (/home/profiles)
 
 ### Routes constants
 
-| Константа | Шлях |
-|---|---|
-| `Routes.profiles` | `/home/profiles` |
-| `Routes.profileAdd` | `/home/profiles/profile-add` |
-| `Routes.rifleCreate` | `/home/profiles/profile-add/rifle-create` |
-| `Routes.rifleCollection` | `/home/profiles/profile-add/rifle-collection` |
-| `Routes.rifleEdit` | `/home/profiles/rifle-edit` |
-| `Routes.cartridgeSelect` | `/home/profiles/cartridge-select` |
-| `Routes.cartridgeCreate` | `/home/profiles/cartridge-select/cartridge-create` |
-| `Routes.bulletCreate` | `/home/profiles/cartridge-select/bullet-create` |
+| Константа                    | Шлях                                                   |
+| ---------------------------- | ------------------------------------------------------ |
+| `Routes.profiles`            | `/home/profiles`                                       |
+| `Routes.profileAdd`          | `/home/profiles/profile-add`                           |
+| `Routes.rifleCreate`         | `/home/profiles/profile-add/rifle-create`              |
+| `Routes.rifleCollection`     | `/home/profiles/profile-add/rifle-collection`          |
+| `Routes.rifleEdit`           | `/home/profiles/rifle-edit`                            |
+| `Routes.cartridgeSelect`     | `/home/profiles/cartridge-select`                      |
+| `Routes.cartridgeCreate`     | `/home/profiles/cartridge-select/cartridge-create`     |
+| `Routes.bulletCreate`        | `/home/profiles/cartridge-select/bullet-create`        |
 | `Routes.cartridgeCollection` | `/home/profiles/cartridge-select/cartridge-collection` |
-| `Routes.cartridgeWizard` | `/home/profiles/cartridge-select/cartridge-wizard` |
-| `Routes.cartridgeEdit` | `/home/profiles/cartridge-edit` |
-| `Routes.sightSelect` | `/home/profiles/sight-select` |
-| `Routes.sightCreate` | `/home/profiles/sight-select/sight-create` |
-| `Routes.sightCollection` | `/home/profiles/sight-select/sight-collection` |
-| `Routes.sightWizard` | `/home/profiles/sight-select/sight-wizard` |
-| `Routes.sightEdit` | `/home/profiles/sight-edit` |
+| `Routes.cartridgeWizard`     | `/home/profiles/cartridge-select/cartridge-wizard`     |
+| `Routes.cartridgeEdit`       | `/home/profiles/cartridge-edit`                        |
+| `Routes.sightSelect`         | `/home/profiles/sight-select`                          |
+| `Routes.sightCreate`         | `/home/profiles/sight-select/sight-create`             |
+| `Routes.sightCollection`     | `/home/profiles/sight-select/sight-collection`         |
+| `Routes.sightWizard`         | `/home/profiles/sight-select/sight-wizard`             |
+| `Routes.sightEdit`           | `/home/profiles/sight-edit`                            |
 
 ---
 
@@ -492,33 +492,33 @@ ProfilesScreen  (/home/profiles)
 
 ## Critical Files
 
-| Файл | Статус | Опис |
-|---|---|---|
-| `lib/core/models/shot_profile.dart` | 🔧 потребує рефакторингу | Додати `cartridgeId?`, `sightId?`, `cartridge?`, `sight?`; видалити `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp` |
-| `lib/core/models/cartridge.dart` | 🔧 потребує рефакторингу | Додати `CartridgeType`, `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp` |
-| `lib/core/models/rifle.dart` | ✅ | `caliberDiameter?`, `barrelLength?`, getter `isRightHandTwist` |
-| `lib/core/models/sight.dart` | ✅ | Базова модель |
-| `lib/core/models/projectile.dart` | ✅ | Модель кулі |
-| `lib/core/models/field_constraints.dart` | ✅ | `FC.barrelLength` |
-| `lib/core/models/unit_settings.dart` | ✅ | `barrelLength: Unit` |
-| `lib/core/models/seed_data.dart` | 🔧 потребує рефакторингу | Оновити seed профілі під нову структуру |
-| `lib/core/formatting/unit_formatter.dart` | ✅ | `barrelLength()` |
-| `lib/core/services/ballistics_service_impl.dart` | 🔧 потребує рефакторингу | Zero дані тепер з `cartridge`, не з `profile` |
-| `lib/core/a7p/a7p_parser.dart` | 🔧 потребує рефакторингу | Zero дані → `Cartridge` |
-| `lib/core/storage/app_storage.dart` | 🔧 потребує рефакторингу | Перейти на `data.json`; видалити rifles CRUD; об'єднати profiles/cartridges/sights в один файл |
-| `lib/core/storage/json_file_storage.dart` | 🔧 потребує рефакторингу | Аналогічно; backward-compat міграція зі старих окремих файлів |
-| `lib/core/collection/collection_parser.dart` | 🔧 потребує рефакторингу | `CartridgeType`, zero дані в cartridge |
-| `lib/core/providers/shot_profile_provider.dart` | 🔧 потребує рефакторингу | Resolve cartridge/sight при завантаженні активного профілю |
-| `lib/core/providers/profile_library_provider.dart` | ✅ | CRUD + `moveToFirst` + seed |
-| `lib/core/providers/library_provider.dart` | 🔧 потребує рефакторингу | Видалити `rifleLibraryProvider`; залишити `cartridgeLibraryProvider`, `sightLibraryProvider` |
-| `lib/core/providers/builtin_collection_provider.dart` | ✅ | assets → fallback |
-| `lib/features/home/sub_screens/profiles/profiles_vm.dart` | 🔧 потребує рефакторингу | `ProfileCardData` під нову структуру |
-| `lib/features/home/sub_screens/profiles_screen.dart` | ✅ | PageView, FAB |
-| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | 🔧 потребує рефакторингу | Навігація через callbacks, не `context.go` у widget |
-| `lib/features/home/sub_screens/rifle_wizard_screen.dart` | ✅ | Повністю реалізований |
-| `lib/features/home/sub_screens/home_sub_screens.dart` | 🔲 stubs | Всі під-екрани — `StubScreen` |
-| `lib/router.dart` | 🔧 потребує оновлення | Нові routes константи |
-| `assets/json/collection.json` | ✅ | Вбудована колекція |
+| Файл                                                               | Статус                  | Опис                                                                                                                                                      |
+| ------------------------------------------------------------------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/core/models/shot_profile.dart`                                | 🔧 потребує рефакторингу | Додати `cartridgeId?`, `sightId?`, `cartridge?`, `sight?`; видалити `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp` |
+| `lib/core/models/cartridge.dart`                                   | 🔧 потребує рефакторингу | Додати `CartridgeType`, `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp`                                             |
+| `lib/core/models/rifle.dart`                                       | ✅                       | `caliberDiameter?`, `barrelLength?`, getter `isRightHandTwist`                                                                                            |
+| `lib/core/models/sight.dart`                                       | ✅                       | Базова модель                                                                                                                                             |
+| `lib/core/models/projectile.dart`                                  | ✅                       | Модель кулі                                                                                                                                               |
+| `lib/core/models/field_constraints.dart`                           | ✅                       | `FC.barrelLength`                                                                                                                                         |
+| `lib/core/models/unit_settings.dart`                               | ✅                       | `barrelLength: Unit`                                                                                                                                      |
+| `lib/core/models/seed_data.dart`                                   | 🔧 потребує рефакторингу | Оновити seed профілі під нову структуру                                                                                                                   |
+| `lib/core/formatting/unit_formatter.dart`                          | ✅                       | `barrelLength()`                                                                                                                                          |
+| `lib/core/services/ballistics_service_impl.dart`                   | 🔧 потребує рефакторингу | Zero дані тепер з `cartridge`, не з `profile`                                                                                                             |
+| `lib/core/a7p/a7p_parser.dart`                                     | 🔧 потребує рефакторингу | Zero дані → `Cartridge`                                                                                                                                   |
+| `lib/core/storage/app_storage.dart`                                | 🔧 потребує рефакторингу | Перейти на `data.json`; видалити rifles CRUD; об'єднати profiles/cartridges/sights в один файл                                                            |
+| `lib/core/storage/json_file_storage.dart`                          | 🔧 потребує рефакторингу | Аналогічно; backward-compat міграція зі старих окремих файлів                                                                                             |
+| `lib/core/collection/collection_parser.dart`                       | 🔧 потребує рефакторингу | `CartridgeType`, zero дані в cartridge                                                                                                                    |
+| `lib/core/providers/shot_profile_provider.dart`                    | 🔧 потребує рефакторингу | Resolve cartridge/sight при завантаженні активного профілю                                                                                                |
+| `lib/core/providers/profile_library_provider.dart`                 | ✅                       | CRUD + `moveToFirst` + seed                                                                                                                               |
+| `lib/core/providers/library_provider.dart`                         | 🔧 потребує рефакторингу | Видалити `rifleLibraryProvider`; залишити `cartridgeLibraryProvider`, `sightLibraryProvider`                                                              |
+| `lib/core/providers/builtin_collection_provider.dart`              | ✅                       | assets → fallback                                                                                                                                         |
+| `lib/features/home/sub_screens/profiles/profiles_vm.dart`          | 🔧 потребує рефакторингу | `ProfileCardData` під нову структуру                                                                                                                      |
+| `lib/features/home/sub_screens/profiles_screen.dart`               | ✅                       | PageView, FAB                                                                                                                                             |
+| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | 🔧 потребує рефакторингу | Навігація через callbacks, не `context.go` у widget                                                                                                       |
+| `lib/features/home/sub_screens/rifle_wizard_screen.dart`           | ✅                       | Повністю реалізований                                                                                                                                     |
+| `lib/features/home/sub_screens/home_sub_screens.dart`              | 🔲 stubs                 | Всі під-екрани — `StubScreen`                                                                                                                             |
+| `lib/router.dart`                                                  | 🔧 потребує оновлення    | Нові routes константи                                                                                                                                     |
+| `assets/json/collection.json`                                      | ✅                       | Вбудована колекція                                                                                                                                        |
 
 ---
 
@@ -611,31 +611,31 @@ ProfilesScreen  (/home/profiles)
 
 ## Verification Checklist
 
-| # | Перевірка | Статус |
-|---|---|---|
-| 1 | Імпорт `.a7p` → zero дані зберігаються в `Cartridge` | 🔲 |
-| 2 | Вибір профілю → Home показує rifle/cartridge/sight обраного профілю | ✅ |
-| 3 | Зміна conditions/winds → відновлюється при поверненні до профілю | ✅ |
-| 4 | Conditions screen не перезаписує zero conditions | ✅ |
-| 5 | Балістичний розрахунок: zero дані беруться з `cartridge`, не з `profile` | 🔲 |
-| 6 | Видалення профілю → бібліотека оновлюється | ✅ |
-| 7 | Select профілю → `moveToFirst` → наступного разу активний перший | ✅ |
-| 8 | Фліккер при PageView scroll — виправлено унікальними `heroTag` | ✅ |
-| 9 | `collection.json` парситься у `BuiltinCollection` | ✅ |
-| 10 | `builtinCollectionProvider`: пріоритет `~/.eBalistyka/collection.json`, fallback assets | ✅ |
-| 11 | `Rifle.caliberDiameter` — зберігається/відновлюється, backward-compat | ✅ |
-| 12 | `Rifle.barrelLength` — optional, backward-compat | ✅ |
-| 13 | `Rifle.isRightHandTwist` — getter від знаку `twist.raw` | ✅ |
-| 14 | Broken ref cartridgeId → обнулення + toast | 🔲 |
-| 15 | Broken ref sightId → обнулення + toast | 🔲 |
-| 16 | `isReadyForCalculation` — блокує розрахунок, показує `IncompleteBanner` | 🔲 |
-| 17 | Flow 1: новий профіль → rifle wizard → профіль без cartridge/sight | 🔲 |
-| 18 | Flow 2: вибір cartridge → прив'язується до профілю | 🔲 |
-| 19 | Flow 3: вибір sight → прив'язується до профілю | 🔲 |
-| 20 | Flow 4: edit rifle → оновлюється embedded у профілі | 🔲 |
-| 21 | Flow 5: duplicate profile → новий UUID, rifle копіюється, ids ті самі | 🔲 |
-| 22 | Bullet `type: bullet` → MV required у wizard | 🔲 |
-| 23 | Cartridge list фільтрується по `caliberDiameter` rifle (optional) | 🔲 |
+| #   | Перевірка                                                                               | Статус |
+| --- | --------------------------------------------------------------------------------------- | ------ |
+| 1   | Імпорт `.a7p` → zero дані зберігаються в `Cartridge`                                    | 🔲      |
+| 2   | Вибір профілю → Home показує rifle/cartridge/sight обраного профілю                     | ✅      |
+| 3   | Зміна conditions/winds → відновлюється при поверненні до профілю                        | ✅      |
+| 4   | Conditions screen не перезаписує zero conditions                                        | ✅      |
+| 5   | Балістичний розрахунок: zero дані беруться з `cartridge`, не з `profile`                | 🔲      |
+| 6   | Видалення профілю → бібліотека оновлюється                                              | ✅      |
+| 7   | Select профілю → `moveToFirst` → наступного разу активний перший                        | ✅      |
+| 8   | Фліккер при PageView scroll — виправлено унікальними `heroTag`                          | ✅      |
+| 9   | `collection.json` парситься у `BuiltinCollection`                                       | ✅      |
+| 10  | `builtinCollectionProvider`: пріоритет `~/.eBalistyka/collection.json`, fallback assets | ✅      |
+| 11  | `Rifle.caliberDiameter` — зберігається/відновлюється, backward-compat                   | ✅      |
+| 12  | `Rifle.barrelLength` — optional, backward-compat                                        | ✅      |
+| 13  | `Rifle.isRightHandTwist` — getter від знаку `twist.raw`                                 | ✅      |
+| 14  | Broken ref cartridgeId → обнулення + toast                                              | 🔲      |
+| 15  | Broken ref sightId → обнулення + toast                                                  | 🔲      |
+| 16  | `isReadyForCalculation` — блокує розрахунок, показує `IncompleteBanner`                 | 🔲      |
+| 17  | Flow 1: новий профіль → rifle wizard → профіль без cartridge/sight                      | 🔲      |
+| 18  | Flow 2: вибір cartridge → прив'язується до профілю                                      | 🔲      |
+| 19  | Flow 3: вибір sight → прив'язується до профілю                                          | 🔲      |
+| 20  | Flow 4: edit rifle → оновлюється embedded у профілі                                     | 🔲      |
+| 21  | Flow 5: duplicate profile → новий UUID, rifle копіюється, ids ті самі                   | 🔲      |
+| 22  | Bullet `type: bullet` → MV required у wizard                                            | 🔲      |
+| 23  | Cartridge list фільтрується по `caliberDiameter` rifle (optional)                       | 🔲      |
 
 ---
 

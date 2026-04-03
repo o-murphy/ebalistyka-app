@@ -108,9 +108,7 @@ class ShotProfile {
     id: id,
     name: name ?? this.name,
     rifle: rifle ?? this.rifle,
-    cartridgeId: clearCartridge
-        ? null
-        : (cartridge?.id ?? cartridgeId),
+    cartridgeId: clearCartridge ? null : (cartridge?.id ?? cartridgeId),
     cartridge: clearCartridge ? null : (cartridge ?? this.cartridge),
     sightId: clearSight ? null : (sight?.id ?? sightId),
     sight: clearSight ? null : (sight ?? this.sight),
