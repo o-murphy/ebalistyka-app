@@ -124,7 +124,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       cfg.stepM,
     );
 
-    final zeroDistM = profile.zeroDistance.in_(Unit.meter);
+    final zeroDistM = profile.cartridge!.zeroDistance.in_(Unit.meter);
     final mainTable = _buildTable(filtered, units, cfg, zeroDistM: zeroDistM);
 
     // Zero crossings
@@ -330,13 +330,11 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   // ── Zero key ───────────────────────────────────────────────────────────────
 
   List<double> _buildZeroKey(ShotProfile profile) {
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+    final c = profile.cartridge!;
+    final zeroAtmo = c.zeroConditions ?? profile.conditions;
     final r = profile.rifle;
-    final c = profile.cartridge;
     final proj = c.projectile;
-    final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        c.usePowderSensitivity;
+    final zeroUsePowderSens = c.zeroUsePowderSensitivity && c.usePowderSensitivity;
     return [
       r.sightHeight.in_(Unit.meter),
       r.twist.in_(Unit.inch),
@@ -354,10 +352,10 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       zeroAtmo.temperature.in_(Unit.celsius),
       zeroAtmo.humidity,
       zeroAtmo.powderTemp.in_(Unit.celsius),
-      profile.zeroDistance.in_(Unit.meter),
+      c.zeroDistance.in_(Unit.meter),
       profile.lookAngle.in_(Unit.radian),
       zeroUsePowderSens ? 1.0 : 0.0,
-      profile.zeroUseDiffPowderTemp ? 1.0 : 0.0,
+      c.zeroUseDiffPowderTemp ? 1.0 : 0.0,
     ];
   }
 }

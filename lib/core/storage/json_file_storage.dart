@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'app_storage.dart';
@@ -135,31 +134,6 @@ class JsonFileStorage implements AppStorage {
 
   @override
   Future<void> saveSettings(AppSettings s) => _writeMap('settings', s.toJson());
-
-  // ── Rifles ─────────────────────────────────────────────────────────────────
-
-  @override
-  Future<List<Rifle>> loadRifles() async =>
-      (await _readList('rifles')).map(Rifle.fromJson).toList();
-
-  @override
-  Future<void> saveRifle(Rifle r) async {
-    final list = await _readList('rifles');
-    final idx = list.indexWhere((m) => m['id'] == r.id);
-    if (idx >= 0) {
-      list[idx] = r.toJson();
-    } else {
-      list.add(r.toJson());
-    }
-    await _writeList('rifles', list);
-  }
-
-  @override
-  Future<void> deleteRifle(String id) async {
-    final list = await _readList('rifles');
-    list.removeWhere((m) => m['id'] == id);
-    await _writeList('rifles', list);
-  }
 
   // ── Cartridges ─────────────────────────────────────────────────────────────
 
@@ -342,7 +316,6 @@ class JsonFileStorage implements AppStorage {
     final (profilesList, activeProfileId) = await _readProfilesFile();
     return {
       'settings': await _readMap('settings') ?? {},
-      'rifles': await _readList('rifles'),
       'cartridges': await _readList('cartridges'),
       'sights': await _readList('sights'),
       'activeProfileId': activeProfileId,
@@ -363,26 +336,6 @@ class JsonFileStorage implements AppStorage {
           );
         }
         await _writeMap('settings', s);
-      }
-
-      if (data.containsKey('rifles')) {
-        final r = data['rifles'];
-        if (r is! List) {
-          throw StorageException(
-            'Invalid rifles: expected List, got ${r.runtimeType}',
-          );
-        }
-        final rifles = <Map<String, dynamic>>[];
-        for (int i = 0; i < r.length; i++) {
-          final item = r[i];
-          if (item is! Map<String, dynamic>) {
-            throw StorageException(
-              'Invalid rifle at index $i: expected Map, got ${item.runtimeType}',
-            );
-          }
-          rifles.add(item);
-        }
-        await _writeList('rifles', rifles);
       }
 
       if (data.containsKey('cartridges')) {

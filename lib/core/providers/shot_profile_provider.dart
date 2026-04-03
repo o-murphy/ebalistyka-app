@@ -7,6 +7,7 @@ import 'package:eballistica/core/models/seed_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'package:eballistica/core/solver/unit.dart';
+import 'library_provider.dart';
 import 'profile_library_provider.dart';
 import 'storage_provider.dart';
 
@@ -30,10 +31,107 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
     // Clamp look angle to ±45° — corrupted values cause zero-finding to fail.
     final laDeg = loaded.lookAngle.in_(Unit.degree);
     if (laDeg.abs() > 45) {
-      return loaded.copyWith(lookAngle: Angular(0.0, Unit.degree));
+      loaded = loaded.copyWith(lookAngle: Angular(0.0, Unit.degree));
     }
-    return loaded;
+
+    return _resolve(loaded);
   }
+
+  // ── Resolve cartridge/sight з бібліотеки ──────────────────────────────────
+
+  Future<ShotProfile> _resolve(ShotProfile profile) async {
+    final storage = ref.read(appStorageProvider);
+
+    // Якщо cartridge вже вбудований (backward-compat або seed) — зберегти у бібліотеці.
+    Cartridge? cartridge = profile.cartridge;
+    String? cartridgeId = profile.cartridgeId;
+
+    if (cartridge != null && cartridgeId != null) {
+      // Inline cartridge з backward-compat fromJson або seed: зберегти у бібліотеку,
+      // щоб далі воно було доступне через cartridgeLibraryProvider.
+      await storage.saveCartridge(cartridge);
+      await ref.read(cartridgeLibraryProvider.notifier).save(cartridge);
+    } else if (cartridgeId != null) {
+      // Стандартний шлях: lookup по id.
+      final cartridges = await storage.loadCartridges();
+      final found = cartridges.where((c) => c.id == cartridgeId);
+      if (found.isNotEmpty) {
+        cartridge = found.first;
+      } else {
+        // Broken ref → обнуляємо id
+        cartridgeId = null;
+        cartridge = null;
+        // TODO: show toast "Cartridge not found, please select again"
+      }
+    }
+
+    // Sight
+    Sight? sight = profile.sight;
+    String? sightId = profile.sightId;
+
+    if (sight != null && sightId != null) {
+      await storage.saveSight(sight);
+      await ref.read(sightLibraryProvider.notifier).save(sight);
+    } else if (sightId != null) {
+      final sights = await storage.loadSights();
+      final found = sights.where((s) => s.id == sightId);
+      if (found.isNotEmpty) {
+        sight = found.first;
+      } else {
+        sightId = null;
+        sight = null;
+        // TODO: show toast "Sight not found, please select again"
+      }
+    }
+
+    // Якщо refs змінились — зберегти оновлений профіль (без inline об'єктів)
+    if (cartridgeId != profile.cartridgeId || sightId != profile.sightId) {
+      final cleaned = ShotProfile(
+        id: profile.id,
+        name: profile.name,
+        rifle: profile.rifle,
+        cartridgeId: cartridgeId,
+        cartridge: cartridge,
+        sightId: sightId,
+        sight: sight,
+        conditions: profile.conditions,
+        winds: profile.winds,
+        lookAngle: profile.lookAngle,
+        latitudeDeg: profile.latitudeDeg,
+        azimuthDeg: profile.azimuthDeg,
+        usePowderSensitivity: profile.usePowderSensitivity,
+        useDiffPowderTemp: profile.useDiffPowderTemp,
+        targetDistance: profile.targetDistance,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
+      );
+      await storage.saveProfile(cleaned);
+      await ref.read(profileLibraryProvider.notifier).save(cleaned);
+      return cleaned;
+    }
+
+    return ShotProfile(
+      id: profile.id,
+      name: profile.name,
+      rifle: profile.rifle,
+      cartridgeId: cartridgeId,
+      cartridge: cartridge,
+      sightId: sightId,
+      sight: sight,
+      conditions: profile.conditions,
+      winds: profile.winds,
+      lookAngle: profile.lookAngle,
+      latitudeDeg: profile.latitudeDeg,
+      azimuthDeg: profile.azimuthDeg,
+      usePowderSensitivity: profile.usePowderSensitivity,
+      useDiffPowderTemp: profile.useDiffPowderTemp,
+      targetDistance: profile.targetDistance,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    );
+  }
+
+  // ── Public API ────────────────────────────────────────────────────────────
 
   Future<void> selectRifle(Rifle r) => _update((p) => p.copyWith(rifle: r));
 
@@ -54,29 +152,11 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   Future<void> updateTargetDistance(double meters) =>
       _update((p) => p.copyWith(targetDistance: Distance(meters, Unit.meter)));
 
-  Future<void> updateZeroDistance(double meters) =>
-      _update((p) => p.copyWith(zeroDistance: Distance(meters, Unit.meter)));
-
-  Future<void> updateZeroConditions(AtmoData? atmo) => _update(
-    (p) => atmo != null
-        ? p.copyWith(zeroConditions: atmo)
-        : p.copyWith(clearZeroConditions: true),
-  );
-
   Future<void> updateUsePowderSensitivity(bool value) =>
       _update((p) => p.copyWith(usePowderSensitivity: value));
 
   Future<void> updateUseDiffPowderTemp(bool value) =>
       _update((p) => p.copyWith(useDiffPowderTemp: value));
-
-  Future<void> updateZeroUsePowderSensitivity(bool? value) => _update(
-    (p) => value != null
-        ? p.copyWith(zeroUsePowderSensitivity: value)
-        : p.copyWith(clearZeroUsePowderSensitivity: true),
-  );
-
-  Future<void> updateZeroUseDiffPowderTemp(bool value) =>
-      _update((p) => p.copyWith(zeroUseDiffPowderTemp: value));
 
   Future<void> updateWindSpeed(double mps) => _update((p) {
     final existing = p.winds;
@@ -99,8 +179,9 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
 
   /// Switches to [profile], restoring its own stored runtime state.
   Future<void> selectProfile(ShotProfile profile) async {
-    state = AsyncData(profile);
-    await ref.read(appStorageProvider).saveActiveProfileId(profile.id);
+    final resolved = await _resolve(profile);
+    state = AsyncData(resolved);
+    await ref.read(appStorageProvider).saveActiveProfileId(resolved.id);
   }
 
   Future<void> _update(ShotProfile Function(ShotProfile) fn) async {

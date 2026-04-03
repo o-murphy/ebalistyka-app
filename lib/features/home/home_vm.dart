@@ -284,7 +284,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     return HomeUiReady(
       rifleName: profile.rifle.name,
-      cartridgeName: profile.cartridge.name,
+      cartridgeName: profile.cartridge?.name ?? '',
       windAngleDeg: windDirDeg,
       tempDisplay: tempStr,
       altDisplay: altStr,
@@ -307,8 +307,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   String _buildCartridgeInfoLine(ShotProfile profile, UnitFormatter fmt) {
-    final proj = profile.cartridge.projectile;
-    final mvStr = fmt.velocity(profile.cartridge.mv);
+    final proj = profile.cartridge!.projectile;
+    final mvStr = fmt.velocity(profile.cartridge!.mv);
     final bcAcc = FC.ballisticCoefficient.accuracy;
     final firstBc = proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0;
     final dragStr = switch (proj.dragType) {
@@ -516,13 +516,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   // ── Zero key (logic for detecting zero-relevant changes) ───────────────────
 
   List<double> _buildZeroKey(ShotProfile profile) {
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+    final c = profile.cartridge!;
+    final zeroAtmo = c.zeroConditions ?? profile.conditions;
     final r = profile.rifle;
-    final c = profile.cartridge;
     final proj = c.projectile;
-    final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        c.usePowderSensitivity;
+    final zeroUsePowderSens = c.zeroUsePowderSensitivity && c.usePowderSensitivity;
     return [
       r.sightHeight.in_(Unit.meter),
       r.twist.in_(Unit.inch),
@@ -540,10 +538,10 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       zeroAtmo.temperature.in_(Unit.celsius),
       zeroAtmo.humidity,
       zeroAtmo.powderTemp.in_(Unit.celsius),
-      profile.zeroDistance.in_(Unit.meter),
+      c.zeroDistance.in_(Unit.meter),
       profile.lookAngle.in_(Unit.radian),
       zeroUsePowderSens ? 1.0 : 0.0,
-      profile.zeroUseDiffPowderTemp ? 1.0 : 0.0,
+      c.zeroUseDiffPowderTemp ? 1.0 : 0.0,
     ];
   }
 }

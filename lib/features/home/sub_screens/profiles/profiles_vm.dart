@@ -80,29 +80,42 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 
   ProfileCardData _buildCardData(ShotProfile profile, UnitFormatter fmt) {
-    final proj = profile.cartridge.projectile;
-    final bcAcc = FC.ballisticCoefficient.accuracy;
-    final firstBc = proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0;
-    final dragModel = switch (proj.dragType) {
-      DragModelType.g1 =>
-        proj.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragModelType.g7 =>
-        proj.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragModelType.custom => 'CUSTOM',
-    };
+    final cartridge = profile.cartridge;
+    final sight = profile.sight;
+
+    String dragModel = '—';
+    String caliber = '—';
+    String muzzleVelocity = '—';
+    String weight = '—';
+
+    if (cartridge != null) {
+      final proj = cartridge.projectile;
+      final bcAcc = FC.ballisticCoefficient.accuracy;
+      final firstBc = proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0;
+      dragModel = switch (proj.dragType) {
+        DragModelType.g1 =>
+          proj.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
+        DragModelType.g7 =>
+          proj.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
+        DragModelType.custom => 'CUSTOM',
+      };
+      caliber = fmt.diameter(proj.diameter);
+      muzzleVelocity = fmt.velocity(cartridge.mv);
+      weight = fmt.weight(proj.weight);
+    }
 
     return ProfileCardData(
       id: profile.id,
       name: profile.name,
       rifleName: profile.rifle.name,
-      caliber: fmt.diameter(profile.cartridge.projectile.diameter),
+      caliber: caliber,
       twist: fmt.twist(profile.rifle.twist),
       twistDirection: profile.rifle.isRightHandTwist ? 'right' : 'left',
-      cartridgeName: profile.cartridge.name,
+      cartridgeName: cartridge?.name ?? 'Not selected',
       dragModel: dragModel,
-      muzzleVelocity: fmt.velocity(profile.cartridge.mv),
-      weight: fmt.weight(profile.cartridge.projectile.weight),
-      sightName: profile.sight.name,
+      muzzleVelocity: muzzleVelocity,
+      weight: weight,
+      sightName: sight?.name ?? 'Not selected',
     );
   }
 

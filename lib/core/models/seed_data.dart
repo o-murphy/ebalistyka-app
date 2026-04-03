@@ -37,6 +37,16 @@ final seedSight = Sight(
   zeroElevation: Angular(0.0, Unit.radian),
 );
 
+// ── Seed zero conditions ───────────────────────────────────────────────────────
+
+final _seedZeroConditions = AtmoData(
+  altitude: Distance(0.0, Unit.meter),
+  temperature: Temperature(15.0, Unit.celsius),
+  pressure: Pressure(1000.0, Unit.hPa),
+  humidity: 0.02,
+  powderTemp: Temperature(15.0, Unit.celsius),
+);
+
 // ── Projectiles ───────────────────────────────────────────────────────────────
 // 338LM_UKROP_250GR_SMK_G7 — single BC G7 0.314 @ 888 m/s
 
@@ -104,6 +114,10 @@ final seedCartridgeUkrop250 = Cartridge(
   powderTemp: Temperature(29.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
   usePowderSensitivity: true,
+  zeroDistance: Distance(100.0, Unit.meter),
+  zeroConditions: _seedZeroConditions,
+  zeroUsePowderSensitivity: true,
+  zeroUseDiffPowderTemp: false,
 );
 
 final seedCartridgeHornady250 = Cartridge(
@@ -114,6 +128,10 @@ final seedCartridgeHornady250 = Cartridge(
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
   usePowderSensitivity: true,
+  zeroDistance: Distance(100.0, Unit.meter),
+  zeroConditions: _seedZeroConditions,
+  zeroUsePowderSensitivity: true,
+  zeroUseDiffPowderTemp: false,
 );
 
 final seedCartridgeLapua300 = Cartridge(
@@ -124,6 +142,10 @@ final seedCartridgeLapua300 = Cartridge(
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.123, Unit.fraction),
   usePowderSensitivity: true,
+  zeroDistance: Distance(100.0, Unit.meter),
+  zeroConditions: _seedZeroConditions,
+  zeroUsePowderSensitivity: true,
+  zeroUseDiffPowderTemp: false,
 );
 
 final seedCartridgeSts285EldM = Cartridge(
@@ -134,6 +156,10 @@ final seedCartridgeSts285EldM = Cartridge(
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
   usePowderSensitivity: true,
+  zeroDistance: Distance(100.0, Unit.meter),
+  zeroConditions: _seedZeroConditions,
+  zeroUsePowderSensitivity: true,
+  zeroUseDiffPowderTemp: false,
 );
 
 final seedCartridges = [
@@ -144,58 +170,52 @@ final seedCartridges = [
 ];
 
 // ── Default Shot Profiles ─────────────────────────────────────────────────────
-
-final _seedZeroConditions = AtmoData(
-  altitude: Distance(0.0, Unit.meter),
-  temperature: Temperature(15.0, Unit.celsius),
-  pressure: Pressure(1000.0, Unit.hPa),
-  humidity: 0.02,
-  powderTemp: Temperature(15.0, Unit.celsius),
-);
+// Профілі посилаються на картриджі та приціл через IDs.
+// Resolved об'єкти передаються inline для shotProfileProvider fallback.
 
 final seedShotProfile = ShotProfile(
   id: 'seed-profile-default',
   name: '.338LM UKROP 250GR SMK',
   rifle: seedRifle,
-  sight: seedSight,
+  cartridgeId: seedCartridgeUkrop250.id,
   cartridge: seedCartridgeUkrop250,
-  zeroConditions: _seedZeroConditions,
+  sightId: seedSight.id,
+  sight: seedSight,
   conditions: _seedZeroConditions,
   winds: [],
   lookAngle: Angular(0.0, Unit.degree),
   usePowderSensitivity: true,
   useDiffPowderTemp: false,
-  zeroUseDiffPowderTemp: false,
 );
 
 final seedShotProfileHornady = ShotProfile(
   id: 'seed-profile-hornady-250',
   name: '.338LM Hornady 250GR BTHP',
   rifle: seedRifle,
-  sight: seedSight,
+  cartridgeId: seedCartridgeHornady250.id,
   cartridge: seedCartridgeHornady250,
-  zeroConditions: _seedZeroConditions,
+  sightId: seedSight.id,
+  sight: seedSight,
   conditions: _seedZeroConditions,
   winds: [],
   lookAngle: Angular(0.0, Unit.degree),
   usePowderSensitivity: true,
   useDiffPowderTemp: false,
-  zeroUseDiffPowderTemp: false,
 );
 
 final seedShotProfileLapua300 = ShotProfile(
   id: 'seed-profile-lapua-300',
   name: '.338LM Lapua 300GR SMK',
   rifle: seedRifle,
-  sight: seedSight,
+  cartridgeId: seedCartridgeLapua300.id,
   cartridge: seedCartridgeLapua300,
-  zeroConditions: _seedZeroConditions,
+  sightId: seedSight.id,
+  sight: seedSight,
   conditions: _seedZeroConditions,
   winds: [],
   lookAngle: Angular(0.0, Unit.degree),
   usePowderSensitivity: true,
   useDiffPowderTemp: false,
-  zeroUseDiffPowderTemp: false,
 );
 
 final seedShotProfiles = [

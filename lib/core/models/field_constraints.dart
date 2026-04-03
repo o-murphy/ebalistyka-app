@@ -267,4 +267,14 @@ abstract final class FC {
     stepRaw: 1.0,
     accuracy: 0,
   );
+
+  static const torque = FieldConstraints(
+    rawUnit: Unit.hPa,
+    minRaw: 300.0,
+    maxRaw: 1500.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+
+  static const torqueConvertor = torque;
 }

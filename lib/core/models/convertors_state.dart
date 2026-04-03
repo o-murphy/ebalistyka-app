@@ -11,6 +11,8 @@ class ConvertorsState {
   // Додаємо для температури
   final double temperatureValueFahrenheit; // Базова одиниця - Fahrenheit
   final Unit temperatureUnit;
+  final double torqueValueNewtonMeter; // Базова одиниця - N·m
+  final Unit torqueUnit;
 
   const ConvertorsState({
     this.lengthValueInch = 100.0,
@@ -21,6 +23,8 @@ class ConvertorsState {
     this.pressureUnit = Unit.hPa,
     this.temperatureValueFahrenheit = 68.0, // 68°F = 20°C
     this.temperatureUnit = Unit.celsius, // За замовчуванням показуємо в Celsius
+    this.torqueValueNewtonMeter = 100.0, // 100 N·m за замовчуванням
+    this.torqueUnit = Unit.newtonMeter,
   });
 
   ConvertorsState copyWith({
@@ -32,6 +36,8 @@ class ConvertorsState {
     Unit? pressureUnit,
     double? temperatureValueFahrenheit,
     Unit? temperatureUnit,
+    double? torqueValueNewtonMeter,
+    Unit? torqueUnit,
   }) {
     return ConvertorsState(
       lengthValueInch: lengthValueInch ?? this.lengthValueInch,
@@ -43,6 +49,9 @@ class ConvertorsState {
       temperatureValueFahrenheit:
           temperatureValueFahrenheit ?? this.temperatureValueFahrenheit,
       temperatureUnit: temperatureUnit ?? this.temperatureUnit,
+      torqueValueNewtonMeter:
+          torqueValueNewtonMeter ?? this.torqueValueNewtonMeter,
+      torqueUnit: torqueUnit ?? this.torqueUnit,
     );
   }
 
@@ -55,6 +64,8 @@ class ConvertorsState {
     'pressureUnit': pressureUnit.name,
     'temperatureValue': temperatureValueFahrenheit,
     'temperatureUnit': temperatureUnit.name,
+    'torqueValue': torqueValueNewtonMeter,
+    'torqueUnit': torqueUnit.name,
   };
 
   factory ConvertorsState.fromJson(Map<String, dynamic> json) {
@@ -77,6 +88,8 @@ class ConvertorsState {
       pressureUnit: u('pressureUnit', Unit.hPa, Pressure.accepts),
       temperatureValueFahrenheit: d('temperatureValue', 68.0),
       temperatureUnit: u('temperatureUnit', Unit.celsius, Temperature.accepts),
+      torqueValueNewtonMeter: d('torqueValue', 100.0),
+      torqueUnit: u('torqueUnit', Unit.newtonMeter, Torque.accepts),
     );
   }
 }

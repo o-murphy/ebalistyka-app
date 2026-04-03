@@ -40,6 +40,8 @@ ShotProfile _makeProfile({
     mv: Velocity(mvMps, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
     powderSensitivity: Ratio(0.0, Unit.fraction),
+    zeroDistance: Distance(zeroDistM, Unit.meter),
+    zeroConditions: zeroConditions,
   );
   final rifle = Rifle(
     name: 'Test Rifle',
@@ -54,8 +56,10 @@ ShotProfile _makeProfile({
   return ShotProfile(
     name: 'Test Shot',
     rifle: rifle,
-    sight: sight,
+    cartridgeId: cartridge.id,
     cartridge: cartridge,
+    sightId: sight.id,
+    sight: sight,
     conditions:
         conditions ??
         AtmoData(
@@ -67,8 +71,6 @@ ShotProfile _makeProfile({
         ),
     winds: winds,
     lookAngle: Angular(0, Unit.degree),
-    zeroDistance: Distance(zeroDistM, Unit.meter),
-    zeroConditions: zeroConditions,
     targetDistance: Distance(targetDistM, Unit.meter),
   );
 }
@@ -336,6 +338,7 @@ void main() {
         mv: Velocity(10.0, Unit.mps), // extremely low velocity
         powderTemp: Temperature(15.0, Unit.celsius),
         powderSensitivity: Ratio(0.0, Unit.fraction),
+        zeroDistance: Distance(3000.0, Unit.meter), // impossible zero
       );
       final rifle = Rifle(
         name: 'Bad',
@@ -350,8 +353,10 @@ void main() {
       final badProfile = ShotProfile(
         name: 'Bad Shot',
         rifle: rifle,
-        sight: sight,
+        cartridgeId: cartridge.id,
         cartridge: cartridge,
+        sightId: sight.id,
+        sight: sight,
         conditions: AtmoData(
           altitude: Distance(0, Unit.meter),
           temperature: Temperature(15.0, Unit.celsius),
@@ -360,7 +365,6 @@ void main() {
           powderTemp: Temperature(15.0, Unit.celsius),
         ),
         lookAngle: Angular(0, Unit.degree),
-        zeroDistance: Distance(3000.0, Unit.meter), // impossible zero
       );
 
       expect(

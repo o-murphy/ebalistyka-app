@@ -24,6 +24,7 @@ abstract interface class UnitFormatter {
   String mach(double mach); // "0.85 M"
   String time(double seconds); // "1.234 s"
   String powderSensitivity(Ratio dim); // "2.00 %"
+  String torque(Torque dim);
 
   // --- Raw numbers (without units, for sliders/input fields) ---
   double rawVelocity(Velocity dim);
@@ -35,6 +36,7 @@ abstract interface class UnitFormatter {
   double rawEnergy(Energy dim);
   double rawWeight(Weight dim);
   double rawSightHeight(Distance dim);
+  double rawTorque(Torque dim);
 
   // --- Current unit symbols ---
   String get velocitySymbol;
@@ -70,5 +72,6 @@ enum InputField {
   bulletLength,
   bulletDiameter,
   barrelLength,
+  torque,
   bc,
 }

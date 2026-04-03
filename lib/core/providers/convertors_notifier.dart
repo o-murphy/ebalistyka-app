@@ -61,6 +61,18 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(current.copyWith(temperatureUnit: unit));
   }
 
+  Future<void> updateTorqueValue(double? valueInNewtonMeter) async {
+    if (valueInNewtonMeter != null && valueInNewtonMeter >= 0) {
+      final current = state.value ?? const ConvertorsState();
+      await _save(current.copyWith(torqueValueNewtonMeter: valueInNewtonMeter));
+    }
+  }
+
+  Future<void> updateTorqueUnit(Unit unit) async {
+    final current = state.value ?? const ConvertorsState();
+    await _save(current.copyWith(torqueUnit: unit));
+  }
+
   Future<void> _save(ConvertorsState newState) async {
     state = AsyncData(newState);
     await ref.read(appStorageProvider).saveConvertorsState(newState);

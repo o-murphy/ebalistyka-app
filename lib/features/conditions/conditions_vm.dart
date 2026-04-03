@@ -193,15 +193,15 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
     // MV at powder temp
     final cartridge = profile.cartridge;
-    final refMvMps = cartridge.mv.in_(Unit.mps);
-    final refPowderTempC = cartridge.powderTemp.in_(Unit.celsius);
-    final powderSensitivity = cartridge.powderSensitivity;
+    final refMvMps = cartridge?.mv.in_(Unit.mps) ?? 0.0;
+    final refPowderTempC = cartridge?.powderTemp.in_(Unit.celsius) ?? 15.0;
+    final powderSensitivity = cartridge?.powderSensitivity;
 
     double mvAtTempC(double tCurC) => velocityForPowderTemp(
       refMvMps,
       refPowderTempC,
       tCurC,
-      powderSensitivity.in_(Unit.fraction),
+      powderSensitivity?.in_(Unit.fraction) ?? 0.0,
     );
 
     final currentMvMps = mvAtTempC(powderTempRaw);
@@ -209,7 +209,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final mvStr =
         '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     final sensStr =
-        '${(powderSensitivity.in_(Unit.percent)).toStringAsFixed(2)} %/15°C';
+        '${(powderSensitivity?.in_(Unit.percent) ?? 0.0).toStringAsFixed(2)} %/15°C';
 
     return ConditionsUiState(
       temperature: _field(

@@ -31,15 +31,16 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   final (profile, stepM, cachedZeroElevRad) = args;
   try {
     final calc = Calculator();
-    final baseAmmo = profile.cartridge.toAmmo();
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+    final cartridge = profile.cartridge!;
+    final baseAmmo = cartridge.toAmmo();
+    final zeroAtmo = cartridge.zeroConditions ?? profile.conditions;
 
-    // Per-profile flags — zero and current may differ.
+    // Per-profile flag controls current-shot sensitivity.
+    // Per-cartridge flag controls zero sensitivity.
     final currentUsePowderSens =
         profile.usePowderSensitivity && baseAmmo.usePowderSensitivity;
     final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        baseAmmo.usePowderSensitivity;
+        cartridge.zeroUsePowderSensitivity && baseAmmo.usePowderSensitivity;
 
     final currentAmmo = _makeAmmo(baseAmmo, currentUsePowderSens);
     final zeroAmmo = _makeAmmo(baseAmmo, zeroUsePowderSens);
@@ -59,7 +60,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
           atmo: zeroAtmo.toAtmo(),
           winds: const [],
         );
-        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+        calc.setWeaponZero(zeroShot, cartridge.zeroDistance);
       } catch (_) {
         zeroShot = Shot(
           weapon: weapon,
@@ -68,7 +69,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
           atmo: zeroAtmo.toAtmo(),
           winds: const [],
         );
-        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+        calc.setWeaponZero(zeroShot, cartridge.zeroDistance);
       }
       freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
     }
@@ -107,14 +108,14 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
   final internalStepM = chartStepM < 1.0 ? chartStepM : 1.0;
   try {
     final calc = Calculator();
-    final baseAmmo = profile.cartridge.toAmmo();
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
+    final cartridge = profile.cartridge!;
+    final baseAmmo = cartridge.toAmmo();
+    final zeroAtmo = cartridge.zeroConditions ?? profile.conditions;
 
     final currentUsePowderSens =
         profile.usePowderSensitivity && baseAmmo.usePowderSensitivity;
     final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        baseAmmo.usePowderSensitivity;
+        cartridge.zeroUsePowderSensitivity && baseAmmo.usePowderSensitivity;
 
     final currentAmmo = _makeAmmo(baseAmmo, currentUsePowderSens);
     final zeroAmmo = _makeAmmo(baseAmmo, zeroUsePowderSens);
@@ -132,7 +133,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
         atmo: zeroAtmo.toAtmo(),
         winds: const [],
       );
-      calc.setWeaponZero(zeroShot, profile.zeroDistance);
+      calc.setWeaponZero(zeroShot, cartridge.zeroDistance);
       freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
     }
 

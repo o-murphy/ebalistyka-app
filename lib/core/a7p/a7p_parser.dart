@@ -43,15 +43,6 @@ class A7pParser {
       coefRows: _parseCoefRows(p),
     );
 
-    final cartridge = Cartridge(
-      name: p.cartridgeName,
-      projectile: projectile,
-      mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
-      powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
-      powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),
-      usePowderSensitivity: p.cTCoeff != 0,
-    );
-
     final zeroConds = _buildAtmoData(
       altitudeM: 0,
       pressureHPa: p.cZeroAirPressure / 10.0,
@@ -69,19 +60,33 @@ class A7pParser {
     );
 
     final zeroDist = _zeroDistance(p);
+    final hasPowderSens = p.cTCoeff != 0;
+    final zeroUseDiffPowderTemp = p.cZeroPTemperature != p.cZeroAirTemperature;
+
+    final cartridge = Cartridge(
+      name: p.cartridgeName,
+      projectile: projectile,
+      mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
+      powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
+      powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),
+      usePowderSensitivity: hasPowderSens,
+      zeroDistance: zeroDist,
+      zeroConditions: zeroConds,
+      zeroUsePowderSensitivity: hasPowderSens,
+      zeroUseDiffPowderTemp: zeroUseDiffPowderTemp,
+    );
 
     return ShotProfile(
       name: p.profileName,
       rifle: rifle,
-      sight: sight,
+      cartridgeId: cartridge.id,
       cartridge: cartridge,
+      sightId: sight.id,
+      sight: sight,
       conditions: currentConds,
       lookAngle: Angular(0, Unit.radian),
-      zeroDistance: zeroDist,
-      zeroConditions: zeroConds,
-      usePowderSensitivity: p.cTCoeff != 0,
+      usePowderSensitivity: hasPowderSens,
       useDiffPowderTemp: false,
-      zeroUseDiffPowderTemp: p.cZeroPTemperature != p.cZeroAirTemperature,
     );
   }
 

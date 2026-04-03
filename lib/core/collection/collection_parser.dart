@@ -92,6 +92,7 @@ abstract final class CollectionParser {
 
     return Cartridge(
       name: name,
+      type: CartridgeType.cartridge,
       projectile: _projectileFrom(
         j: j,
         name: name,
@@ -109,6 +110,8 @@ abstract final class CollectionParser {
         Unit.fraction,
       ),
       usePowderSensitivity: j['usePowderSensitivity'] as bool? ?? false,
+      zeroUsePowderSensitivity: j['zeroUsePowderSensitivity'] as bool? ?? false,
+      zeroUseDiffPowderTemp: j['zeroUseDiffPowderTemp'] as bool? ?? false,
     );
   }
 

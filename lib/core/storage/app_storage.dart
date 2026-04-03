@@ -1,7 +1,6 @@
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/convertors_state.dart';
-import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 
@@ -9,11 +8,6 @@ abstract interface class AppStorage {
   // Settings
   Future<AppSettings?> loadSettings();
   Future<void> saveSettings(AppSettings s);
-
-  // Rifles
-  Future<List<Rifle>> loadRifles();
-  Future<void> saveRifle(Rifle r);
-  Future<void> deleteRifle(String id);
 
   // Cartridges
   Future<List<Cartridge>> loadCartridges();

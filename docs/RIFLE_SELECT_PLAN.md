@@ -13,7 +13,7 @@
 - Phase 4 ✅ — Profiles Screen: `ProfilesVm`, `ProfilesScreen`, `ProfileCardData`, `profile_card.dart`
 - `rifle_wizard_screen.dart` ✅ — повністю реалізований
 - `home_sub_screens.dart` 🔲 — всі під-екрани як заглушки (`StubScreen`)
-
+- Phase 5 ✅ - документ не оновлено, перед фазою 6 оновити!
 ---
 
 ## Storage Architecture
@@ -524,7 +524,7 @@ ProfilesScreen  (/home/profiles)
 
 ## Phases — Що залишилось
 
-### Phase 5 — Рефакторинг моделей і провайдерів
+### Phase 5 — Рефакторинг моделей і провайдерів 
 
 **Мета:** привести моделі і провайдери у відповідність до нової архітектури перед реалізацією UI.
 

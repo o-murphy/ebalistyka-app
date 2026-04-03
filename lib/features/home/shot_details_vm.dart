@@ -112,7 +112,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     UnitFormatter formatter,
     HitResult hit,
   ) {
-    final cartridge = profile.cartridge;
+    final cartridge = profile.cartridge!;
     final targetDistM = profile.targetDistance.in_(Unit.meter);
     final traj = hit.trajectory;
     final atTarget = hit.getAtDistance(Distance(targetDistM, Unit.meter));
@@ -124,10 +124,9 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     final currentPowderSensOn =
         profile.usePowderSensitivity && cartridge.usePowderSensitivity;
     final zeroPowderSensOn =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        cartridge.usePowderSensitivity;
+        cartridge.zeroUsePowderSensitivity && cartridge.usePowderSensitivity;
     final currentUseDiffTemp = currentPowderSensOn && profile.useDiffPowderTemp;
-    final zeroUseDiffTemp = zeroPowderSensOn && profile.zeroUseDiffPowderTemp;
+    final zeroUseDiffTemp = zeroPowderSensOn && cartridge.zeroUseDiffPowderTemp;
 
     double mvAtTempC(double tCurC) => velocityForPowderTemp(
       refMvMps,
@@ -144,7 +143,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
         ? mvAtTempC(currentPowderTempC)
         : refMvMps;
 
-    final zeroAtmo = profile.zeroConditions ?? conditions;
+    final zeroAtmo = cartridge.zeroConditions ?? conditions;
     final zeroPowderTempC = zeroUseDiffTemp
         ? zeroAtmo.powderTemp.in_(Unit.celsius)
         : zeroAtmo.temperature.in_(Unit.celsius);

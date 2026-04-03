@@ -73,6 +73,9 @@ class UnitFormatterImpl implements UnitFormatter {
   String powderSensitivity(Ratio dim) =>
       _fmt(dim, FC.powderSensitivity, Unit.percent);
 
+  @override
+  String torque(Torque dim) => _fmt(dim, FC.torque, _u.torque);
+
   // --- Raw numbers ---
 
   @override
@@ -93,6 +96,8 @@ class UnitFormatterImpl implements UnitFormatter {
   double rawWeight(Weight dim) => dim.in_(_u.weight);
   @override
   double rawSightHeight(Distance dim) => dim.in_(_u.sightHeight);
+  @override
+  double rawTorque(Torque dim) => dim.in_(_u.torque);
 
   // --- Symbols ---
 
@@ -167,6 +172,11 @@ class UnitFormatterImpl implements UnitFormatter {
         displayValue,
         _u.barrelLength,
       ).in_(Unit.inch),
+      InputField.torque => Torque(
+        displayValue,
+        _u.torque,
+      ).in_(Unit.newtonMeter),
+      _ => displayValue,
       InputField.bc => displayValue, // dimensionless
     };
   }
@@ -210,6 +220,8 @@ class UnitFormatterImpl implements UnitFormatter {
         rawValue,
         Unit.inch,
       ).in_(_u.barrelLength),
+      InputField.torque => Torque(rawValue, Unit.newtonMeter).in_(_u.torque),
+      _ => rawValue,
       InputField.bc => rawValue,
     };
   }

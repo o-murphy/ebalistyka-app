@@ -18,6 +18,7 @@ abstract final class StorageUnits {
   static const cartridgeMv = Unit.mps;
   static const cartridgePowderTemp = Unit.celsius;
   static const cartridgePowderSensitivity = Unit.fraction;
+  static const cartridgeZeroDistance = Unit.meter;
 
   // ── Projectile / DragModel ────────────────────────────────────────────────
   static const projectileWeight = Unit.grain;

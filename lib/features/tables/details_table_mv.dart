@@ -61,7 +61,7 @@ class DetailsTableData {
 DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
   final units = settings.units;
   final rifle = profile.rifle;
-  final cart = profile.cartridge;
+  final cart = profile.cartridge!;
   final proj = cart.projectile;
   final conds = profile.conditions;
   final winds = profile.winds;
@@ -75,10 +75,9 @@ DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
   final currentPowderSensOn =
       profile.usePowderSensitivity && cart.usePowderSensitivity;
   final zeroPowderSensOn =
-      (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-      cart.usePowderSensitivity;
+      cart.zeroUsePowderSensitivity && cart.usePowderSensitivity;
   final currentUseDiffTemp = currentPowderSensOn && profile.useDiffPowderTemp;
-  final zeroUseDiffTemp = zeroPowderSensOn && profile.zeroUseDiffPowderTemp;
+  final zeroUseDiffTemp = zeroPowderSensOn && cart.zeroUseDiffPowderTemp;
 
   final refMvMps = cart.mv.in_(Unit.mps);
   final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
@@ -91,7 +90,7 @@ DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
   );
 
   // Zero MV
-  final zeroAtmo = profile.zeroConditions ?? conds;
+  final zeroAtmo = cart.zeroConditions ?? conds;
   final zeroPowderTempC = zeroUseDiffTemp
       ? zeroAtmo.powderTemp.in_(Unit.celsius)
       : zeroAtmo.temperature.in_(Unit.celsius);
@@ -145,7 +144,7 @@ DetailsTableData _buildDetails(ShotProfile profile, AppSettings settings) {
         : null,
     zeroMv: fmtV(zeroMvMps),
     currentMv: fmtV(currentMvMps),
-    zeroDist: fmtWithAcc(profile.zeroDistance, units.distance, FC.zeroDistance),
+    zeroDist: fmtWithAcc(cart.zeroDistance, units.distance, FC.zeroDistance),
     bulletLen: lenInch > 0
         ? fmtWithAcc(proj.length, units.length, FC.bulletLength)
         : null,

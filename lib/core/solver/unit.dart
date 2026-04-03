@@ -52,7 +52,10 @@ enum Unit {
   millisecond(82, "millisecond", "ms"),
   microsecond(83, "microsecond", "µs"),
   nanosecond(84, "nanosecond", "ns"),
-  picosecond(85, "picosecond", "ps");
+  picosecond(85, "picosecond", "ps"),
+  newtonMeter(90, "newton-meter", "N·m"),
+  footPoundTorque(91, "foot-pound", "ft·lb"),
+  inchPound(92, "inch-pound", "in·lb");
 
   const Unit(this.id, this.label, this.symbol);
   final int id;
@@ -127,6 +130,7 @@ abstract class Dimension<T extends Dimension<T>> {
     if (id >= 60 && id < 70) return Velocity(val, units);
     if (id >= 70 && id < 80) return Weight(val, units);
     if (id >= 80 && id < 90) return Time(val, units);
+    if (id >= 90 && id < 100) return Torque(val, units); // Додаємо Torque
 
     throw Exception('Unit ID $id is not supported for casting');
   }
@@ -330,6 +334,25 @@ class Weight extends Dimension<Weight> {
 
   @override
   Weight _create(double value, Unit unit) => Weight(value, unit);
+}
+
+class Torque extends Dimension<Torque> {
+  Torque(super.value, super.unit);
+
+  static const rawUnit = Unit.newtonMeter;
+  static bool accepts(Unit u) => u.id >= 90 && u.id < 100;
+
+  static final _conversionFactors = <Unit, double>{
+    Unit.newtonMeter: 1.0,
+    Unit.footPoundTorque: 1.0 / 1.3558179483314, // 1 N·m = 0.737562 ft·lb
+    Unit.inchPound: 1.0 / 0.112984829, // 1 N·m = 8.85075 in·lb
+  };
+
+  @override
+  Map<Unit, double> get conversionFactors => _conversionFactors;
+
+  @override
+  Torque _create(double value, Unit unit) => Torque(value, unit);
 }
 
 class Ratio extends Dimension<Ratio> {

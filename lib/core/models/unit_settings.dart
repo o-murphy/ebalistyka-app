@@ -16,6 +16,7 @@ class UnitSettings {
   final Unit twist;
   final Unit barrelLength;
   final Unit time;
+  final Unit torque;
 
   const UnitSettings({
     this.angular = Unit.degree,
@@ -33,6 +34,7 @@ class UnitSettings {
     this.twist = Unit.inch,
     this.barrelLength = Unit.inch,
     this.time = Unit.second,
+    this.torque = Unit.newtonMeter,
   });
 
   UnitSettings copyWith({
@@ -51,6 +53,7 @@ class UnitSettings {
     Unit? twist,
     Unit? barrelLength,
     Unit? time,
+    Unit? torque,
   }) => UnitSettings(
     angular: angular ?? this.angular,
     distance: distance ?? this.distance,
@@ -67,6 +70,7 @@ class UnitSettings {
     twist: twist ?? this.twist,
     barrelLength: barrelLength ?? this.barrelLength,
     time: time ?? this.time,
+    torque: torque ?? this.torque,
   );
 
   Map<String, dynamic> toJson() => {
@@ -85,6 +89,7 @@ class UnitSettings {
     'twist': twist.name,
     'barrelLength': barrelLength.name,
     'time': time.name,
+    'torque': torque.name,
   };
 
   factory UnitSettings.fromJson(Map<String, dynamic> json) {
@@ -110,6 +115,7 @@ class UnitSettings {
       twist: u('twist', Distance.rawUnit, Distance.accepts),
       barrelLength: u('barrelLength', Distance.rawUnit, Distance.accepts),
       time: u('time', Time.rawUnit, Time.accepts),
+      torque: u('torque', Torque.rawUnit, Torque.accepts),
     );
   }
 }
