@@ -48,7 +48,6 @@ class LengthConvertorScreen extends ConsumerWidget {
               state.centimeters.decimals,
               state.centimeters.symbol,
             ),
-            icon: null,
           ),
           InfoListTile(
             label: '${state.meters.label} (${state.meters.symbol})',
@@ -57,7 +56,6 @@ class LengthConvertorScreen extends ConsumerWidget {
               state.meters.decimals,
               state.meters.symbol,
             ),
-            icon: null,
           ),
 
           ListSectionTile('Imperial'),
@@ -68,7 +66,6 @@ class LengthConvertorScreen extends ConsumerWidget {
               state.inches.decimals,
               state.inches.symbol,
             ),
-            icon: null,
           ),
           InfoListTile(
             label: '${state.feet.label} (${state.feet.symbol})',
@@ -77,7 +74,6 @@ class LengthConvertorScreen extends ConsumerWidget {
               state.feet.decimals,
               state.feet.symbol,
             ),
-            icon: null,
           ),
           InfoListTile(
             label: '${state.yards.label} (${state.yards.symbol})',
@@ -86,7 +82,6 @@ class LengthConvertorScreen extends ConsumerWidget {
               state.yards.decimals,
               state.yards.symbol,
             ),
-            icon: null,
           ),
           const SizedBox(height: 16),
         ],

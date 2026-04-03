@@ -23,11 +23,17 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(current.copyWith(lengthUnit: unit));
   }
 
-  // Для майбутніх конверторів
-  // Future<void> updateWeightValue(double? valueInGrams) async { ... }
-  // Future<void> updateWeightUnit(Unit unit) async { ... }
-  // Future<void> updateTemperatureValue(double? valueInCelsius) async { ... }
-  // Future<void> updateTemperatureUnit(Unit unit) async { ... }
+  Future<void> updateWeightValue(double? valueInGrains) async {
+    if (valueInGrains != null && valueInGrains >= 0) {
+      final current = state.value ?? const ConvertorsState();
+      await _save(current.copyWith(weightValueGrain: valueInGrains));
+    }
+  }
+
+  Future<void> updateWeightUnit(Unit unit) async {
+    final current = state.value ?? const ConvertorsState();
+    await _save(current.copyWith(weightUnit: unit));
+  }
 
   Future<void> _save(ConvertorsState newState) async {
     state = AsyncData(newState);

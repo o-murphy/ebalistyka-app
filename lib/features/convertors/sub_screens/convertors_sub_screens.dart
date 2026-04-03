@@ -1,4 +1,5 @@
 export 'package:eballistica/features/convertors/sub_screens/length_convertor_screen.dart';
+export 'package:eballistica/features/convertors/sub_screens/weight_convertor_screen.dart';
 
 import 'package:eballistica/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +16,6 @@ class VelocityConvertorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Velocity Convertor');
-}
-
-class WeightConvertorScreen extends StatelessWidget {
-  const WeightConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Weight Convertor');
 }
 
 class PressureConvertorScreen extends StatelessWidget {

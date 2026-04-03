@@ -6,7 +6,7 @@ class InfoListTile extends StatelessWidget {
   const InfoListTile({
     required this.label,
     required this.value,
-    required this.icon,
+    this.icon,
     super.key,
   });
 
