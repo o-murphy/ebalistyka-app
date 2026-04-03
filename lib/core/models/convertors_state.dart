@@ -1,7 +1,5 @@
 import 'package:eballistica/core/solver/unit.dart';
 
-// В файлі convertors_state.dart
-
 class ConvertorsState {
   final double lengthValueInch;
   final Unit lengthUnit;
@@ -10,13 +8,19 @@ class ConvertorsState {
   final double pressureValueMmHg; // Базова одиниця - mmHg
   final Unit pressureUnit;
 
+  // Додаємо для температури
+  final double temperatureValueFahrenheit; // Базова одиниця - Fahrenheit
+  final Unit temperatureUnit;
+
   const ConvertorsState({
     this.lengthValueInch = 100.0,
     this.lengthUnit = Unit.inch,
     this.weightValueGrain = 100.0,
     this.weightUnit = Unit.grain,
-    this.pressureValueMmHg = 1013.0, // Стандартний тиск 1013 hPa = 760 mmHg
-    this.pressureUnit = Unit.hPa, // За замовчуванням показуємо в hPa
+    this.pressureValueMmHg = 1013.0,
+    this.pressureUnit = Unit.hPa,
+    this.temperatureValueFahrenheit = 68.0, // 68°F = 20°C
+    this.temperatureUnit = Unit.celsius, // За замовчуванням показуємо в Celsius
   });
 
   ConvertorsState copyWith({
@@ -26,6 +30,8 @@ class ConvertorsState {
     Unit? weightUnit,
     double? pressureValueMmHg,
     Unit? pressureUnit,
+    double? temperatureValueFahrenheit,
+    Unit? temperatureUnit,
   }) {
     return ConvertorsState(
       lengthValueInch: lengthValueInch ?? this.lengthValueInch,
@@ -34,6 +40,9 @@ class ConvertorsState {
       weightUnit: weightUnit ?? this.weightUnit,
       pressureValueMmHg: pressureValueMmHg ?? this.pressureValueMmHg,
       pressureUnit: pressureUnit ?? this.pressureUnit,
+      temperatureValueFahrenheit:
+          temperatureValueFahrenheit ?? this.temperatureValueFahrenheit,
+      temperatureUnit: temperatureUnit ?? this.temperatureUnit,
     );
   }
 
@@ -44,6 +53,8 @@ class ConvertorsState {
     'weightUnit': weightUnit.name,
     'pressureValue': pressureValueMmHg,
     'pressureUnit': pressureUnit.name,
+    'temperatureValue': temperatureValueFahrenheit,
+    'temperatureUnit': temperatureUnit.name,
   };
 
   factory ConvertorsState.fromJson(Map<String, dynamic> json) {
@@ -64,6 +75,8 @@ class ConvertorsState {
       weightUnit: u('weightUnit', Unit.grain, Weight.accepts),
       pressureValueMmHg: d('pressureValue', 1013.0),
       pressureUnit: u('pressureUnit', Unit.hPa, Pressure.accepts),
+      temperatureValueFahrenheit: d('temperatureValue', 68.0),
+      temperatureUnit: u('temperatureUnit', Unit.celsius, Temperature.accepts),
     );
   }
 }

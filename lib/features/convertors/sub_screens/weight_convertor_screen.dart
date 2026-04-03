@@ -38,33 +38,23 @@ class WeightConvertorScreen extends ConsumerWidget {
           const Divider(height: 24),
 
           ListSectionTile('Metric'),
-          InfoListTile(
-            label: '${state.grams.label} (${state.grams.symbol})',
-            value: state
-                .grams
-                .formattedValue, // Використовуємо вже відформатоване значення
-          ),
-          InfoListTile(
-            label: '${state.kilograms.label} (${state.kilograms.symbol})',
-            value: state.kilograms.formattedValue,
-          ),
+          _buildInfoTile(state.grams),
+          _buildInfoTile(state.kilograms),
 
           ListSectionTile('Imperial'),
-          InfoListTile(
-            label: '${state.grains.label} (${state.grains.symbol})',
-            value: state.grains.formattedValue,
-          ),
-          InfoListTile(
-            label: '${state.pounds.label} (${state.pounds.symbol})',
-            value: state.pounds.formattedValue,
-          ),
-          InfoListTile(
-            label: '${state.ounces.label} (${state.ounces.symbol})',
-            value: state.ounces.formattedValue,
-          ),
+          _buildInfoTile(state.grains),
+          _buildInfoTile(state.pounds),
+          _buildInfoTile(state.ounces),
           const SizedBox(height: 16),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoTile(WeightField field) {
+    return InfoListTile(
+      label: '${field.label} (${field.symbol})',
+      value: field.formattedValue,
     );
   }
 }

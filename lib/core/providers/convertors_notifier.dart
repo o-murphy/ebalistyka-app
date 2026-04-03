@@ -47,6 +47,20 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(current.copyWith(pressureUnit: unit));
   }
 
+  Future<void> updateTemperatureValue(double? valueInFahrenheit) async {
+    if (valueInFahrenheit != null) {
+      final current = state.value ?? const ConvertorsState();
+      await _save(
+        current.copyWith(temperatureValueFahrenheit: valueInFahrenheit),
+      );
+    }
+  }
+
+  Future<void> updateTemperatureUnit(Unit unit) async {
+    final current = state.value ?? const ConvertorsState();
+    await _save(current.copyWith(temperatureUnit: unit));
+  }
+
   Future<void> _save(ConvertorsState newState) async {
     state = AsyncData(newState);
     await ref.read(appStorageProvider).saveConvertorsState(newState);

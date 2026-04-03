@@ -247,8 +247,24 @@ abstract final class FC {
   static const convertorLength = FieldConstraints(
     rawUnit: Unit.inch,
     minRaw: 0.0,
-    maxRaw: 9999,
+    maxRaw: 9999.0,
     stepRaw: 0.1,
     accuracy: 3,
+  );
+
+  static const convertorWeight = FieldConstraints(
+    rawUnit: Unit.grain,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 1,
+  );
+
+  static const convertorPressure = FieldConstraints(
+    rawUnit: Unit.hPa,
+    minRaw: 300.0,
+    maxRaw: 1500.0,
+    stepRaw: 1.0,
+    accuracy: 0,
   );
 }

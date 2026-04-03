@@ -1,13 +1,7 @@
-// В файлі weight_convertor_vm.dart
-
 import 'package:eballistica/core/providers/convertors_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/providers/formatter_provider.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/solver/unit.dart';
-
-// В файлі weight_convertor_vm.dart
 
 class WeightField {
   final String label;
@@ -30,7 +24,7 @@ class WeightConvertorUiState {
   final WeightField kilograms;
   final WeightField grains;
   final WeightField pounds;
-  final WeightField ounces; // Додаємо унції
+  final WeightField ounces;
   final double? rawValue;
   final Unit inputUnit;
 
@@ -39,15 +33,13 @@ class WeightConvertorUiState {
     required this.kilograms,
     required this.grains,
     required this.pounds,
-    required this.ounces, // Додаємо
+    required this.ounces,
     required this.rawValue,
     required this.inputUnit,
   });
 }
 
 class WeightConvertorViewModel extends Notifier<WeightConvertorUiState> {
-  UnitFormatter get _formatter => ref.read(unitFormatterProvider);
-
   @override
   WeightConvertorUiState build() {
     final convertorsState = ref.watch(convertorStateProvider);
@@ -92,18 +84,18 @@ class WeightConvertorViewModel extends Notifier<WeightConvertorUiState> {
       maxRaw: maxInGrains.convert(Unit.grain, unit),
       stepRaw: _getStepForUnit(unit),
       rawUnit: unit,
-      accuracy: FC.bulletWeight.accuracyFor(unit),
+      accuracy: FC.convertorWeight.accuracyFor(unit),
     );
   }
 
   double _getStepForUnit(Unit unit) {
-    final baseStep = FC.bulletWeight.stepRaw;
+    final baseStep = FC.convertorWeight.stepRaw;
     return baseStep.convert(Unit.grain, unit);
   }
 
-  String _formatWeight(double value, Unit unit) {
-    final weight = Weight(value, unit);
-    return _formatter.weight(weight);
+  String _formatValue(double value, int decimals, String symbol) {
+    if (value.isNaN || value.isInfinite) return '— $symbol';
+    return '${value.toStringAsFixed(decimals)} $symbol';
   }
 
   WeightConvertorUiState _buildState(double rawGrains, Unit inputUnit) {
@@ -113,49 +105,67 @@ class WeightConvertorViewModel extends Notifier<WeightConvertorUiState> {
     final kilogramsRaw = grainsRaw.convert(Unit.grain, Unit.kilogram);
     final grainsRawValue = grainsRaw.convert(Unit.grain, Unit.grain);
     final poundsRaw = grainsRaw.convert(Unit.grain, Unit.pound);
-    final ouncesRaw = grainsRaw.convert(
-      Unit.grain,
-      Unit.ounce,
-    ); // Додаємо конвертацію в унції
+    final ouncesRaw = grainsRaw.convert(Unit.grain, Unit.ounce);
+
+    final gramsAccuracy = FC.convertorWeight.accuracyFor(Unit.gram);
+    final kilogramsAccuracy = FC.convertorWeight.accuracyFor(Unit.kilogram);
+    final grainsAccuracy = FC.convertorWeight.accuracyFor(Unit.grain);
+    final poundsAccuracy = FC.convertorWeight.accuracyFor(Unit.pound);
+    final ouncesAccuracy = FC.convertorWeight.accuracyFor(Unit.ounce);
 
     return WeightConvertorUiState(
       rawValue: _getDisplayValue(rawGrains, inputUnit),
       inputUnit: inputUnit,
       grams: WeightField(
         label: 'Grams',
-        formattedValue: _formatWeight(gramsRaw, Unit.gram),
+        formattedValue: _formatValue(gramsRaw, gramsAccuracy, Unit.gram.symbol),
         value: gramsRaw,
         symbol: Unit.gram.symbol,
-        decimals: FC.bulletWeight.accuracyFor(Unit.gram),
+        decimals: gramsAccuracy,
       ),
       kilograms: WeightField(
         label: 'Kilograms',
-        formattedValue: _formatWeight(kilogramsRaw, Unit.kilogram),
+        formattedValue: _formatValue(
+          kilogramsRaw,
+          kilogramsAccuracy,
+          Unit.kilogram.symbol,
+        ),
         value: kilogramsRaw,
         symbol: Unit.kilogram.symbol,
-        decimals: FC.bulletWeight.accuracyFor(Unit.kilogram),
+        decimals: kilogramsAccuracy,
       ),
       grains: WeightField(
         label: 'Grains',
-        formattedValue: _formatWeight(grainsRawValue, Unit.grain),
+        formattedValue: _formatValue(
+          grainsRawValue,
+          grainsAccuracy,
+          Unit.grain.symbol,
+        ),
         value: grainsRawValue,
         symbol: Unit.grain.symbol,
-        decimals: FC.bulletWeight.accuracyFor(Unit.grain),
+        decimals: grainsAccuracy,
       ),
       pounds: WeightField(
         label: 'Pounds',
-        formattedValue: _formatWeight(poundsRaw, Unit.pound),
+        formattedValue: _formatValue(
+          poundsRaw,
+          poundsAccuracy,
+          Unit.pound.symbol,
+        ),
         value: poundsRaw,
         symbol: Unit.pound.symbol,
-        decimals: FC.bulletWeight.accuracyFor(Unit.pound),
+        decimals: poundsAccuracy,
       ),
       ounces: WeightField(
-        // Додаємо поле для унцій
         label: 'Ounces',
-        formattedValue: _formatWeight(ouncesRaw, Unit.ounce),
+        formattedValue: _formatValue(
+          ouncesRaw,
+          ouncesAccuracy,
+          Unit.ounce.symbol,
+        ),
         value: ouncesRaw,
         symbol: Unit.ounce.symbol,
-        decimals: FC.bulletWeight.accuracyFor(Unit.ounce),
+        decimals: ouncesAccuracy,
       ),
     );
   }

@@ -1,7 +1,5 @@
 import 'package:eballistica/core/providers/convertors_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/providers/formatter_provider.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/solver/unit.dart';
 
@@ -9,7 +7,7 @@ import 'package:eballistica/core/solver/unit.dart';
 
 class LengthField {
   final String label;
-  final String formattedValue;
+  final String formattedValue; // Вже відформатований рядок
   final double value;
   final String symbol;
   final int decimals;
@@ -46,8 +44,6 @@ class LengthConvertorUiState {
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
-  UnitFormatter get _formatter => ref.read(unitFormatterProvider);
-
   @override
   LengthConvertorUiState build() {
     final convertorsState = ref.watch(convertorStateProvider);
@@ -92,19 +88,18 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
       maxRaw: maxInInches.convert(Unit.inch, unit),
       stepRaw: _getStepForUnit(unit),
       rawUnit: unit,
-      accuracy: FC.convertorLength.accuracyFor(unit), // Використовуємо FC
+      accuracy: FC.convertorLength.accuracyFor(unit),
     );
   }
 
   double _getStepForUnit(Unit unit) {
-    // Використовуємо крок з FC як основу
     final baseStep = FC.convertorLength.stepRaw;
     return baseStep.convert(Unit.inch, unit);
   }
 
-  String _formatLength(double value, Unit unit) {
-    final distance = Distance(value, unit);
-    return _formatter.length(distance);
+  String _formatValue(double value, int decimals, String symbol) {
+    if (value.isNaN || value.isInfinite) return '— $symbol';
+    return '${value.toStringAsFixed(decimals)} $symbol';
   }
 
   LengthConvertorUiState _buildState(double rawInches, Unit inputUnit) {
@@ -116,43 +111,57 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
     final feetRaw = inchesRaw.convert(Unit.inch, Unit.foot);
     final yardsRaw = inchesRaw.convert(Unit.inch, Unit.yard);
 
+    final cmAccuracy = FC.convertorLength.accuracyFor(Unit.centimeter);
+    final mAccuracy = FC.convertorLength.accuracyFor(Unit.meter);
+    final inAccuracy = FC.convertorLength.accuracyFor(Unit.inch);
+    final ftAccuracy = FC.convertorLength.accuracyFor(Unit.foot);
+    final ydAccuracy = FC.convertorLength.accuracyFor(Unit.yard);
+
     return LengthConvertorUiState(
       rawValue: _getDisplayValue(rawInches, inputUnit),
       inputUnit: inputUnit,
       centimeters: LengthField(
         label: 'Centimeters',
-        formattedValue: _formatLength(centimetersRaw, Unit.centimeter),
+        formattedValue: _formatValue(
+          centimetersRaw,
+          cmAccuracy,
+          Unit.centimeter.symbol,
+        ),
         value: centimetersRaw,
         symbol: Unit.centimeter.symbol,
-        decimals: FC.convertorLength.accuracyFor(Unit.centimeter),
+        decimals: cmAccuracy,
       ),
       meters: LengthField(
         label: 'Meters',
-        formattedValue: _formatLength(metersRaw, Unit.meter),
+        formattedValue: _formatValue(metersRaw, mAccuracy, Unit.meter.symbol),
         value: metersRaw,
         symbol: Unit.meter.symbol,
-        decimals: FC.convertorLength.accuracyFor(Unit.meter),
+        decimals: mAccuracy,
       ),
       inches: LengthField(
         label: 'Inches',
-        formattedValue: _formatLength(inchesRawValue, Unit.inch),
+        formattedValue: _formatValue(
+          inchesRawValue,
+          inAccuracy,
+          Unit.inch.symbol,
+        ),
         value: inchesRawValue,
         symbol: Unit.inch.symbol,
-        decimals: FC.convertorLength.accuracyFor(Unit.inch),
+        decimals: inAccuracy,
       ),
       feet: LengthField(
         label: 'Feet',
-        formattedValue: _formatLength(feetRaw, Unit.foot),
+        formattedValue: _formatValue(feetRaw, ftAccuracy, Unit.foot.symbol),
         value: feetRaw,
         symbol: Unit.foot.symbol,
-        decimals: FC.convertorLength.accuracyFor(Unit.foot),
+        decimals: ftAccuracy,
       ),
       yards: LengthField(
         label: 'Yards',
-        formattedValue: _formatLength(yardsRaw, Unit.yard),
+        formattedValue: _formatValue(yardsRaw, ydAccuracy, Unit.yard.symbol),
         value: yardsRaw,
         symbol: Unit.yard.symbol,
-        decimals: FC.convertorLength.accuracyFor(Unit.yard),
+        decimals: ydAccuracy,
       ),
     );
   }

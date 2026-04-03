@@ -39,41 +39,24 @@ class PressureConvertorScreen extends ConsumerWidget {
           const Divider(height: 24),
 
           ListSectionTile('Common'),
-          InfoListTile(
-            label: '${state.atm.label} (${state.atm.symbol})',
-            value: state.atm.formattedValue,
-            icon: null,
-          ),
-          InfoListTile(
-            label: '${state.hPa.label} (${state.hPa.symbol})',
-            value: state.hPa.formattedValue,
-            icon: null,
-          ),
-          InfoListTile(
-            label: '${state.bar.label} (${state.bar.symbol})',
-            value: state.bar.formattedValue,
-            icon: null,
-          ),
+          _buildInfoTile(state.atm),
+          _buildInfoTile(state.hPa),
+          _buildInfoTile(state.bar),
 
           ListSectionTile('Imperial'),
-          InfoListTile(
-            label: '${state.psi.label} (${state.psi.symbol})',
-            value: state.psi.formattedValue,
-            icon: null,
-          ),
-          InfoListTile(
-            label: '${state.inHg.label} (${state.inHg.symbol})',
-            value: state.inHg.formattedValue,
-            icon: null,
-          ),
-          InfoListTile(
-            label: '${state.mmHg.label} (${state.mmHg.symbol})',
-            value: state.mmHg.formattedValue,
-            icon: null,
-          ),
+          _buildInfoTile(state.psi),
+          _buildInfoTile(state.inHg),
+          _buildInfoTile(state.mmHg),
           const SizedBox(height: 16),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoTile(PressureField field) {
+    return InfoListTile(
+      label: '${field.label} (${field.symbol})',
+      value: field.formattedValue,
     );
   }
 }
