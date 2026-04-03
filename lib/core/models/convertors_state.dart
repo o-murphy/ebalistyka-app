@@ -7,12 +7,15 @@ class ConvertorsState {
   final Unit weightUnit;
   final double pressureValueMmHg; // Базова одиниця - mmHg
   final Unit pressureUnit;
-
-  // Додаємо для температури
   final double temperatureValueFahrenheit; // Базова одиниця - Fahrenheit
   final Unit temperatureUnit;
   final double torqueValueNewtonMeter; // Базова одиниця - N·m
   final Unit torqueUnit;
+  final double anglesConvertorDistanceValueMeter; // Базова одиниця - meter
+  final Unit anglesConvertorDistanceUnit;
+  final double anglesConvertorAngularValueMil; // Базова одиниця - mil
+  final Unit anglesConvertorAngularUnit;
+  final Unit anglesConvertorOutputUnit; // Додати це поле
 
   const ConvertorsState({
     this.lengthValueInch = 100.0,
@@ -21,10 +24,15 @@ class ConvertorsState {
     this.weightUnit = Unit.grain,
     this.pressureValueMmHg = 1013.0,
     this.pressureUnit = Unit.hPa,
-    this.temperatureValueFahrenheit = 68.0, // 68°F = 20°C
-    this.temperatureUnit = Unit.celsius, // За замовчуванням показуємо в Celsius
-    this.torqueValueNewtonMeter = 100.0, // 100 N·m за замовчуванням
+    this.temperatureValueFahrenheit = 68.0,
+    this.temperatureUnit = Unit.celsius,
+    this.torqueValueNewtonMeter = 100.0,
     this.torqueUnit = Unit.newtonMeter,
+    this.anglesConvertorDistanceValueMeter = 100.0,
+    this.anglesConvertorDistanceUnit = Unit.meter,
+    this.anglesConvertorAngularValueMil = 1.0,
+    this.anglesConvertorAngularUnit = Unit.mil,
+    this.anglesConvertorOutputUnit = Unit.centimeter,
   });
 
   ConvertorsState copyWith({
@@ -38,6 +46,11 @@ class ConvertorsState {
     Unit? temperatureUnit,
     double? torqueValueNewtonMeter,
     Unit? torqueUnit,
+    double? anglesConvertorDistanceValueMeter,
+    Unit? anglesConvertorDistanceUnit,
+    double? anglesConvertorAngularValueMil,
+    Unit? anglesConvertorAngularUnit,
+    Unit? anglesConvertorOutputUnit,
   }) {
     return ConvertorsState(
       lengthValueInch: lengthValueInch ?? this.lengthValueInch,
@@ -52,6 +65,17 @@ class ConvertorsState {
       torqueValueNewtonMeter:
           torqueValueNewtonMeter ?? this.torqueValueNewtonMeter,
       torqueUnit: torqueUnit ?? this.torqueUnit,
+      anglesConvertorDistanceValueMeter:
+          anglesConvertorDistanceValueMeter ??
+          this.anglesConvertorDistanceValueMeter,
+      anglesConvertorDistanceUnit:
+          anglesConvertorDistanceUnit ?? this.anglesConvertorDistanceUnit,
+      anglesConvertorAngularValueMil:
+          anglesConvertorAngularValueMil ?? this.anglesConvertorAngularValueMil,
+      anglesConvertorAngularUnit:
+          anglesConvertorAngularUnit ?? this.anglesConvertorAngularUnit,
+      anglesConvertorOutputUnit:
+          anglesConvertorOutputUnit ?? this.anglesConvertorOutputUnit,
     );
   }
 
@@ -66,6 +90,11 @@ class ConvertorsState {
     'temperatureUnit': temperatureUnit.name,
     'torqueValue': torqueValueNewtonMeter,
     'torqueUnit': torqueUnit.name,
+    'anglesConvertorDistanceValue': anglesConvertorDistanceValueMeter,
+    'anglesConvertorDistanceUnit': anglesConvertorDistanceUnit.name,
+    'anglesConvertorAngularValue': anglesConvertorAngularValueMil,
+    'anglesConvertorAngularUnit': anglesConvertorAngularUnit.name,
+    'anglesConvertorOutputUnit': anglesConvertorOutputUnit.name,
   };
 
   factory ConvertorsState.fromJson(Map<String, dynamic> json) {
@@ -90,6 +119,26 @@ class ConvertorsState {
       temperatureUnit: u('temperatureUnit', Unit.celsius, Temperature.accepts),
       torqueValueNewtonMeter: d('torqueValue', 100.0),
       torqueUnit: u('torqueUnit', Unit.newtonMeter, Torque.accepts),
+      anglesConvertorDistanceValueMeter: d(
+        'anglesConvertorDistanceValue',
+        100.0,
+      ),
+      anglesConvertorDistanceUnit: u(
+        'anglesConvertorDistanceUnit',
+        Unit.meter,
+        Distance.accepts,
+      ),
+      anglesConvertorAngularValueMil: d('anglesConvertorAngularValue', 1.0),
+      anglesConvertorAngularUnit: u(
+        'anglesConvertorAngularUnit',
+        Unit.mil,
+        Angular.accepts,
+      ),
+      anglesConvertorOutputUnit: u(
+        'anglesConvertorOutputUnit',
+        Unit.centimeter,
+        Distance.accepts,
+      ),
     );
   }
 }
