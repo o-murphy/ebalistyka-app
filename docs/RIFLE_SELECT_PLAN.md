@@ -222,7 +222,7 @@ ItemListView (generic, reusable)
 ```
 
 **Tile поведінка:**
-- Якщо `builtin: true` → показувати 🔒 іконку, **без cog btn**
+- Якщо `builtin: true` → **без cog btn**
 - Якщо `builtin: false` (user data) → показувати **cog btn** (⚙️) для налаштувань (edit / duplicate / delete)
 - Tap на tile (без cog) → вибір / копіювання в wizard
 
