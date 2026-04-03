@@ -243,4 +243,12 @@ abstract final class FC {
     stepRaw: 1.0,
     accuracy: 0,
   );
+
+  static const convertorLength = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 0.0,
+    maxRaw: 9999,
+    stepRaw: 0.1,
+    accuracy: 3,
+  );
 }

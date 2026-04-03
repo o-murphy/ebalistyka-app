@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:eballistica/core/models/convertors_state.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:eballistica/core/models/app_settings.dart';
@@ -307,6 +308,33 @@ class JsonFileStorage implements AppStorage {
     await (await _file('collection')).writeAsString(json);
   }
 
+  // ── Convertors State ─────────────────────────────────────────────────────────
+
+  @override
+  Future<ConvertorsState?> loadConvertorsState() async {
+    try {
+      final map = await _readMap('convertors');
+      if (map == null) return null;
+
+      return ConvertorsState.fromJson(map);
+    } on StorageException {
+      rethrow;
+    } catch (e, st) {
+      throw StorageException('Failed to load convertors state', e, st);
+    }
+  }
+
+  @override
+  Future<void> saveConvertorsState(ConvertorsState state) async {
+    try {
+      await _writeMap('convertors', state.toJson());
+    } on StorageException {
+      rethrow;
+    } catch (e, st) {
+      throw StorageException('Failed to save convertors state', e, st);
+    }
+  }
+
   // ── Export / Import ────────────────────────────────────────────────────────
 
   @override
@@ -319,6 +347,7 @@ class JsonFileStorage implements AppStorage {
       'sights': await _readList('sights'),
       'activeProfileId': activeProfileId,
       'profiles': profilesList,
+      'convertors': await _readMap('convertors') ?? {},
     };
   }
 
@@ -415,6 +444,22 @@ class JsonFileStorage implements AppStorage {
         }
         final activeId = data['activeProfileId'] as String?;
         await _writeProfilesFile(profiles, activeId);
+      }
+
+      // Додаємо імпорт для convertors
+      if (data.containsKey('convertors') && data['convertors'] != null) {
+        final c = data['convertors'];
+        if (c is! Map<String, dynamic>) {
+          throw StorageException(
+            'Invalid convertors: expected Map, got ${c.runtimeType}',
+          );
+        }
+        try {
+          ConvertorsState.fromJson(c); // Валідація
+          await _writeMap('convertors', c);
+        } catch (e) {
+          throw StorageException('Invalid convertors state format: $e');
+        }
       }
     } catch (e, st) {
       if (e is StorageException) rethrow;

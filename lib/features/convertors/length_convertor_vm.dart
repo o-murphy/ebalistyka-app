@@ -1,3 +1,4 @@
+import 'package:eballistica/core/providers/convertors_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';
@@ -45,99 +46,60 @@ class LengthConvertorUiState {
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
-  double? _rawInches; // Завжди зберігаємо в дюймах (raw unit для Distance)
-  Unit _inputUnit = Unit.centimeter;
-
   UnitFormatter get _formatter => ref.read(unitFormatterProvider);
 
   @override
   LengthConvertorUiState build() {
-    // 100 см = 39.37 дюймів
-    _rawInches = 100.0.convert(Unit.centimeter, Unit.inch);
-    return _buildState();
+    final convertorsState = ref.watch(convertorStateProvider);
+    return _buildState(
+      convertorsState.lengthValueInch,
+      convertorsState.lengthUnit,
+    );
   }
 
   void updateRawValue(double? rawValueInInputUnit) {
+    final convertorsState = ref.read(convertorStateProvider);
+
     if (rawValueInInputUnit == null) {
-      _rawInches = null;
-      state = _buildState();
+      ref.read(convertorsProvider.notifier).updateLengthValue(null);
       return;
     }
 
-    // Конвертуємо з поточної одиниці вводу в дюйми
-    final inchesValue = rawValueInInputUnit.convert(_inputUnit, Unit.inch);
+    final inchesValue = rawValueInInputUnit.convert(
+      convertorsState.lengthUnit,
+      Unit.inch,
+    );
     if (inchesValue >= 0) {
-      _rawInches = inchesValue;
-      state = _buildState();
+      ref.read(convertorsProvider.notifier).updateLengthValue(inchesValue);
     }
   }
 
   void changeInputUnit(Unit newUnit) {
-    if (_inputUnit == newUnit) return;
-
-    // Конвертуємо поточне значення зі старої одиниці в нову
-    if (_rawInches != null) {
-      final valueInNewUnit = _rawInches!.convert(Unit.inch, newUnit);
-      // Залишаємо _rawInches незмінним
-    }
-
-    _inputUnit = newUnit;
-    state = _buildState();
+    ref.read(convertorsProvider.notifier).updateLengthUnit(newUnit);
   }
 
-  double? _getDisplayValue() {
-    if (_rawInches == null) return null;
-    return _rawInches!.convert(Unit.inch, _inputUnit);
+  double? _getDisplayValue(double? rawInches, Unit inputUnit) {
+    if (rawInches == null) return null;
+    return rawInches.convert(Unit.inch, inputUnit);
   }
 
   FieldConstraints getConstraintsForUnit(Unit unit) {
     final minInInches = 0.0;
-    final maxInInches = 1000000.0.convert(
-      Unit.centimeter,
-      Unit.inch,
-    ); // 10 км в дюймах
+    final maxInInches = 1000000.0.convert(Unit.centimeter, Unit.inch);
 
     return FieldConstraints(
       minRaw: minInInches.convert(Unit.inch, unit),
       maxRaw: maxInInches.convert(Unit.inch, unit),
       stepRaw: _getStepForUnit(unit),
       rawUnit: unit,
-      accuracy: _getAccuracyForUnit(unit),
+      accuracy: FC.convertorLength.accuracyFor(unit), // Використовуємо FC
     );
   }
 
   double _getStepForUnit(Unit unit) {
-    switch (unit) {
-      case Unit.centimeter:
-        return 0.1;
-      case Unit.meter:
-        return 0.01;
-      case Unit.inch:
-        return 0.1;
-      case Unit.foot:
-        return 0.1;
-      case Unit.yard:
-        return 0.1;
-      default:
-        return 1.0;
-    }
-  }
-
-  int _getAccuracyForUnit(Unit unit) {
-    switch (unit) {
-      case Unit.centimeter:
-        return 1;
-      case Unit.meter:
-        return 3;
-      case Unit.inch:
-        return 2;
-      case Unit.foot:
-        return 2;
-      case Unit.yard:
-        return 2;
-      default:
-        return 2;
-    }
+    // Використовуємо крок з FC як основу
+    final baseStep = FC.convertorLength.stepRaw;
+    return baseStep.convert(Unit.inch, unit);
   }
 
   String _formatLength(double value, Unit unit) {
@@ -145,8 +107,8 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
     return _formatter.length(distance);
   }
 
-  LengthConvertorUiState _buildState() {
-    final inchesRaw = _rawInches ?? 0.0;
+  LengthConvertorUiState _buildState(double rawInches, Unit inputUnit) {
+    final inchesRaw = rawInches;
 
     final centimetersRaw = inchesRaw.convert(Unit.inch, Unit.centimeter);
     final metersRaw = inchesRaw.convert(Unit.inch, Unit.meter);
@@ -155,42 +117,42 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
     final yardsRaw = inchesRaw.convert(Unit.inch, Unit.yard);
 
     return LengthConvertorUiState(
-      rawValue: _getDisplayValue(),
-      inputUnit: _inputUnit,
+      rawValue: _getDisplayValue(rawInches, inputUnit),
+      inputUnit: inputUnit,
       centimeters: LengthField(
         label: 'Centimeters',
         formattedValue: _formatLength(centimetersRaw, Unit.centimeter),
         value: centimetersRaw,
         symbol: Unit.centimeter.symbol,
-        decimals: FC.bulletLength.accuracyFor(Unit.centimeter),
+        decimals: FC.convertorLength.accuracyFor(Unit.centimeter),
       ),
       meters: LengthField(
         label: 'Meters',
         formattedValue: _formatLength(metersRaw, Unit.meter),
         value: metersRaw,
         symbol: Unit.meter.symbol,
-        decimals: FC.bulletLength.accuracyFor(Unit.meter),
+        decimals: FC.convertorLength.accuracyFor(Unit.meter),
       ),
       inches: LengthField(
         label: 'Inches',
         formattedValue: _formatLength(inchesRawValue, Unit.inch),
         value: inchesRawValue,
         symbol: Unit.inch.symbol,
-        decimals: FC.bulletLength.accuracyFor(Unit.inch),
+        decimals: FC.convertorLength.accuracyFor(Unit.inch),
       ),
       feet: LengthField(
         label: 'Feet',
         formattedValue: _formatLength(feetRaw, Unit.foot),
         value: feetRaw,
         symbol: Unit.foot.symbol,
-        decimals: FC.bulletLength.accuracyFor(Unit.foot),
+        decimals: FC.convertorLength.accuracyFor(Unit.foot),
       ),
       yards: LengthField(
         label: 'Yards',
         formattedValue: _formatLength(yardsRaw, Unit.yard),
         value: yardsRaw,
         symbol: Unit.yard.symbol,
-        decimals: FC.bulletLength.accuracyFor(Unit.yard),
+        decimals: FC.convertorLength.accuracyFor(Unit.yard),
       ),
     );
   }

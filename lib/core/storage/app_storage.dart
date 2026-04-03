@@ -1,5 +1,6 @@
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/cartridge.dart';
+import 'package:eballistica/core/models/convertors_state.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
@@ -35,6 +36,10 @@ abstract interface class AppStorage {
   // Built-in collection cache (collection.json downloaded from network)
   Future<String?> loadCollectionJson();
   Future<void> saveCollectionJson(String json);
+
+  // Convertors State
+  Future<ConvertorsState?> loadConvertorsState();
+  Future<void> saveConvertorsState(ConvertorsState state);
 
   // Import / Export
   Future<Map<String, dynamic>> exportAll();
