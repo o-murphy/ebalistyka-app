@@ -1,5 +1,6 @@
 export 'shot_details_screen.dart';
 export 'profiles_screen.dart';
+export 'my_cartridges_screen.dart';
 
 import 'package:eballistica/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +30,8 @@ class SelectRifleCollectionScreen extends StatelessWidget {
 
 // ── Cartridge ─────────────────────────────────────────────────────────────────
 
-class CartridgeSelectScreen extends StatelessWidget {
-  const CartridgeSelectScreen({super.key});
+class SelectCartridgeCollectionScreen extends StatelessWidget {
+  const SelectCartridgeCollectionScreen({super.key});
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Select Cartridge');
@@ -41,13 +42,6 @@ class CreateCartridgeWizardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Create Cartridge');
-}
-
-class SelectCartridgeCollectionScreen extends StatelessWidget {
-  const SelectCartridgeCollectionScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Cartridge Collection');
 }
 
 class CartridgeEditScreen extends StatelessWidget {

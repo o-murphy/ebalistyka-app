@@ -49,6 +49,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     // TODO: navigate to profile wizard (Phase 5)
   }
 
+  Future<void> _onDuplicate() async {
+    // TODO: make profile copy with name input dialog
+  }
+
   Future<void> _onRemove(ProfileCardData? profile) async {
     if (profile == null) return;
     final confirmed = await showDialog<bool>(
@@ -134,6 +138,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
             animationNotifier: _fabAnimValue,
             onRegisterClose: (fn) => _closeFab = fn,
             onAdd: _onAdd,
+            onDuplicate: _onDuplicate,
             onRemove: () => _onRemove(profile),
             onImport: _onImport,
             onExport: () => _onExport(profile),
@@ -241,6 +246,7 @@ class _ExpandableFab extends StatefulWidget {
     required this.animationNotifier,
     required this.onRegisterClose,
     required this.onAdd,
+    required this.onDuplicate,
     required this.onRemove,
     required this.onImport,
     required this.onExport,
@@ -249,6 +255,7 @@ class _ExpandableFab extends StatefulWidget {
   final ValueNotifier<double> animationNotifier;
   final void Function(VoidCallback) onRegisterClose;
   final VoidCallback onAdd;
+  final VoidCallback onDuplicate;
   final VoidCallback onRemove;
   final VoidCallback onImport;
   final VoidCallback onExport;
@@ -349,6 +356,15 @@ class _ExpandableFabState extends State<_ExpandableFab>
                   onPressed: () {
                     _collapse();
                     widget.onImport();
+                  },
+                ),
+                const SizedBox(height: 12),
+                _ActionButton(
+                  icon: Icons.copy_outlined,
+                  label: 'Duplicate',
+                  onPressed: () {
+                    _collapse();
+                    widget.onDuplicate();
                   },
                 ),
                 const SizedBox(height: 12),

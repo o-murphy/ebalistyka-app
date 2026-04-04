@@ -148,3 +148,17 @@ class Cartridge {
     );
   }
 }
+
+extension CartridgeExtension on Cartridge {
+  static Cartridge mock(String id, String name) {
+    final proj = Projectile(name: name);
+    return Cartridge(
+      id: id, // Додайте id, якщо його немає в моделі
+      name: name,
+      projectile: proj,
+      mv: Velocity(800, Unit.mps),
+      powderTemp: Temperature(20, Unit.celsius),
+      powderSensitivity: Ratio(0, Unit.fraction),
+    );
+  }
+}

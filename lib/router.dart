@@ -120,7 +120,7 @@ final appRouter = GoRouter(
                     // ── Cartridge select ────────────────────────────────────
                     GoRoute(
                       path: 'cartridge-select',
-                      builder: (_, _) => const CartridgeSelectScreen(),
+                      builder: (_, _) => const MyCartridgesCollectionScreen(),
                       routes: [
                         GoRoute(
                           path: 'create',
