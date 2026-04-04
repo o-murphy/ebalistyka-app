@@ -79,10 +79,12 @@ DetailsTableData _buildDetails(
 
   // Powder sensitivity — separate flags for zero and current
   final currentPowderSensOn = conditions.usePowderSensitivity;
-  final zeroPowderSensOn = cart.usePowderSensitivity;
+  // Zero conditions from cartridge
+  final zeroConditions = cart.zeroConditions;
+  final zeroPowderSensOn = zeroConditions.usePowderSensitivity;
   final currentUseDiffTemp =
       currentPowderSensOn && conditions.useDiffPowderTemp;
-  final zeroUseDiffTemp = zeroPowderSensOn && cart.useDiffPowderTemp;
+  final zeroUseDiffTemp = zeroPowderSensOn && zeroConditions.useDiffPowderTemp;
 
   final refMvMps = cart.mv.in_(Unit.mps);
   final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
@@ -94,8 +96,8 @@ DetailsTableData _buildDetails(
     cart.powderSensitivity.in_(Unit.fraction),
   );
 
-  // Zero MV
-  final zeroAtmo = cart.atmo ?? atmo;
+  // Zero MV - використовуємо zeroConditions замість cart.atmo
+  final zeroAtmo = zeroConditions.atmo;
   final zeroPowderTempC = zeroUseDiffTemp
       ? zeroAtmo.powderTemp.in_(Unit.celsius)
       : zeroAtmo.temperature.in_(Unit.celsius);
@@ -150,7 +152,11 @@ DetailsTableData _buildDetails(
         : null,
     zeroMv: fmtV(zeroMvMps),
     currentMv: fmtV(currentMvMps),
-    zeroDist: fmtWithAcc(cart.zeroDistance, units.distance, FC.zeroDistance),
+    zeroDist: fmtWithAcc(
+      zeroConditions.distance,
+      units.distance,
+      FC.zeroDistance,
+    ),
     bulletLen: lenInch > 0
         ? fmtWithAcc(proj.length, units.length, FC.bulletLength)
         : null,
@@ -176,15 +182,14 @@ DetailsTableData _buildDetails(
       final p = atmo.pressure.in_(units.pressure);
       return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
     }(),
-    windSpeed: winds.isNotEmpty
-        ? () {
-            final ws = winds.first.velocity.in_(units.velocity);
-            return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
-          }()
-        : null,
-    windDir: winds.isNotEmpty
-        ? '${winds.first.directionFrom.in_(Unit.degree).toStringAsFixed(0)}°'
-        : null,
+    windSpeed: () {
+      final ws =
+          (winds.isNotEmpty ? winds.first.velocity : Velocity(0.0, Unit.mps))
+              .in_(units.velocity);
+      return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+    }(),
+    windDir:
+        '${(winds.isNotEmpty ? winds.first.directionFrom : Angular(0.0, Unit.degree)).in_(Unit.degree).toStringAsFixed(0)}°',
   );
 }
 
