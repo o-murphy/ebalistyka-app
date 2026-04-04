@@ -1,5 +1,5 @@
 // ── Profile Card ──────────────────────────────────────────────────────────────
-import 'package:eballistica/features/home/sub_screens/profiles/profiles_vm.dart';
+import 'package:eballistica/features/home/profiles_vm.dart';
 import 'package:eballistica/router.dart';
 import 'package:eballistica/shared/widgets/info_tile.dart';
 import 'package:eballistica/shared/widgets/list_section_tile.dart';
