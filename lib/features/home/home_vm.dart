@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -137,8 +139,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     try {
       final opts = TargetCalcOptions(
-        targetDistM: conditions.distance.in_(Unit.meter),
-        chartStepM: settings.chartDistanceStep,
+        targetDistM:
+            conditions.distance.in_(Unit.meter) + 2 * settings.homeTableStep,
+        stepM: math.min(settings.chartDistanceStep, settings.homeTableStep),
       );
 
       final zeroKey = _buildZeroKey(profile, conditions);
@@ -247,7 +250,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required BallisticsResult result,
   }) {
     final hit = result.hitResult;
-    final traj = hit.trajectory;
     final targetM = conditions.distance.in_(Unit.meter);
 
     final windDirDeg = conditions.winds.isNotEmpty
@@ -279,7 +281,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final adjustment = _buildAdjustment(hit, targetM, settings);
     final tableData = _buildHomeTable(hit, targetM, settings, formatter);
-    final chartData = _buildChartData(traj, settings);
+    final chartData = _buildChartData(hit, targetM, settings);
     final autoIndex = _closestIndex(chartData.points, targetM);
     final autoInfo = autoIndex != null
         ? _buildPointInfo(chartData.points[autoIndex], formatter)
@@ -332,7 +334,10 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final diamInch = proj.diameter.in_(Unit.inch);
     final lenInch = proj.length.in_(Unit.inch);
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-      final currentShot = profile.toCurrentShot(conditions);
+      final currentShot = profile.toCurrentShot(
+        conditions,
+        profile.rifle.toWeapon(),
+      );
       final sg = currentShot.calculateStabilityCoefficient();
       sgStr = 'Sg ${sg.toStringAsFixed(2)}';
     }
@@ -485,25 +490,39 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     return best;
   }
 
-  ChartData _buildChartData(List<TrajectoryData> traj, AppSettings settings) {
-    final points = traj.map((td) {
-      final isZero = (td.flag & TrajFlag.zero.value) != 0;
-      final isMach = (td.flag & TrajFlag.mach.value) != 0;
-      return ChartPoint(
-        distanceM: td.distance.in_(Unit.meter),
-        heightCm: td.height.in_(Unit.centimeter),
-        velocityMps: td.velocity.in_(Unit.mps),
-        mach: td.mach,
-        energyJ: td.energy.in_(Unit.joule),
-        time: td.time,
-        dropAngleMil: td.dropAngle.in_(Unit.mil),
-        windageAngleMil: td.windageAngle.in_(Unit.mil),
-        isZeroCrossing: isZero,
-        isSubsonic: isMach || td.mach < 1.0,
-      );
-    }).toList();
+  ChartData _buildChartData(
+    HitResult hit,
+    double targetM,
+    AppSettings settings,
+  ) {
+    final step = settings.chartDistanceStep;
 
-    return ChartData(points: points, snapDistM: settings.chartDistanceStep);
+    // Генеруємо всі точки по кроках до targetM
+    final points = List.generate((targetM / step).ceil() + 1, (i) => i * step)
+        .where((d) => d <= targetM) // фільтр по цілі
+        .map((d) {
+          final td = hit.getAtDistance(Distance(d, Unit.meter));
+
+          final isZero = (td.flag & TrajFlag.zero.value) != 0;
+          final isMach = (td.flag & TrajFlag.mach.value) != 0;
+
+          return ChartPoint(
+            distanceM: td.distance.in_(Unit.meter),
+            heightCm: td.height.in_(Unit.centimeter),
+            velocityMps: td.velocity.in_(Unit.mps),
+            mach: td.mach,
+            energyJ: td.energy.in_(Unit.joule),
+            time: td.time,
+            dropAngleMil: td.dropAngle.in_(Unit.mil),
+            windageAngleMil: td.windageAngle.in_(Unit.mil),
+            isZeroCrossing: isZero,
+            isSubsonic: isMach || td.mach < 1.0,
+          );
+        })
+        .whereType<ChartPoint>() // прибираємо null
+        .toList();
+
+    return ChartData(points: points, snapDistM: step);
   }
 
   HomeChartPointInfo _buildPointInfo(ChartPoint point, UnitFormatter fmt) {

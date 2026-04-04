@@ -1,4 +1,5 @@
 import 'package:eballistica/core/models/conditions_data.dart';
+import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show compute;
 
 import 'package:eballistica/core/domain/ballistics_service.dart';
@@ -43,8 +44,8 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
     }
 
     final result = calc.fire(
-      shot: profile.toCurrentShot(conditions),
-      trajectoryRange: Distance(2000.0, Unit.meter),
+      shot: profile.toCurrentShot(conditions, weapon),
+      trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
       trajectoryStep: Distance(stepM, Unit.meter),
       filterFlags:
           BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
@@ -62,9 +63,8 @@ typedef _HomeCalcArgs = (ShotProfile, Conditions, double, double, double?);
 typedef _HomeCalcResult = (HitResult?, double?);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
-  final (profile, conditions, targetDistM, chartStepM, cachedZeroElevRad) =
-      args;
-  final internalStepM = chartStepM < 1.0 ? chartStepM : 1.0;
+  final (profile, conditions, targetDistM, stepM, cachedZeroElevRad) = args;
+  final internalStepM = stepM < 1.0 ? stepM : 1.0;
   try {
     final calc = Calculator();
     final cartridge = profile.cartridge!;
@@ -89,7 +89,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
     }
 
-    final shot = profile.toCurrentShot(conditions);
+    final shot = profile.toCurrentShot(conditions, weapon);
 
     final targetElev = calc.barrelElevationForTarget(
       shot,
@@ -162,7 +162,7 @@ class BallisticsServiceImpl implements BallisticsService {
       profile,
       conditions,
       opts.targetDistM,
-      opts.chartStepM,
+      opts.stepM,
       cachedZeroElevRad,
     ));
     if (hit == null) throw StateError('Target calculation returned null');
