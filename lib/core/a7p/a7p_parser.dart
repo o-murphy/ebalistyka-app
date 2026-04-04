@@ -51,14 +51,6 @@ class A7pParser {
       powderTempC: p.cZeroPTemperature.toDouble(),
     );
 
-    final currentConds = _buildAtmoData(
-      altitudeM: 0,
-      pressureHPa: p.cZeroAirPressure / 10.0,
-      tempC: p.cZeroAirTemperature.toDouble(),
-      humidity: p.cZeroAirHumidity.toDouble(),
-      powderTempC: p.cZeroPTemperature.toDouble(),
-    );
-
     final zeroDist = _zeroDistance(p);
     final hasPowderSens = p.cTCoeff != 0;
     final useDiffPowderTemp = p.cZeroPTemperature != p.cZeroAirTemperature;
@@ -70,7 +62,7 @@ class A7pParser {
       powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
       powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),
       zeroDistance: zeroDist,
-      conditions: zeroConds,
+      atmo: zeroConds,
       usePowderSensitivity: hasPowderSens,
       useDiffPowderTemp: useDiffPowderTemp,
     );
@@ -82,10 +74,6 @@ class A7pParser {
       cartridge: cartridge,
       sightId: sight.id,
       sight: sight,
-      conditions: currentConds,
-      lookAngle: Angular(0, Unit.radian),
-      usePowderSensitivity: hasPowderSens,
-      useDiffPowderTemp: false,
     );
   }
 

@@ -28,7 +28,7 @@ class AtmoData {
     powderTemperature: powderTemp,
   );
 
-  static AtmoData icao() {
+  factory AtmoData.icao() {
     final atmo = Atmo.icao();
     return AtmoData(
       altitude: atmo.altitude,
@@ -36,6 +36,22 @@ class AtmoData {
       temperature: atmo.temperature,
       humidity: atmo.humidity,
       powderTemp: atmo.powderTemp,
+    );
+  }
+
+  AtmoData copyWith({
+    Distance? altitude,
+    Pressure? pressure,
+    Temperature? temperature,
+    double? humidity,
+    Temperature? powderTemp,
+  }) {
+    return AtmoData(
+      altitude: altitude ?? this.altitude,
+      pressure: pressure ?? this.pressure,
+      temperature: temperature ?? this.temperature,
+      humidity: humidity ?? this.humidity,
+      powderTemp: powderTemp ?? this.powderTemp,
     );
   }
 
@@ -128,10 +144,10 @@ class Conditions {
     this.latitudeDeg,
     this.azimuthDeg,
     AtmoData? atmo,
-    Distance? targetDistance,
+    Distance? distance,
     Angular? lookAngle,
   }) : atmo = atmo ?? AtmoData.icao(),
-       distance = targetDistance ?? Distance(100.0, Unit.meter),
+       distance = distance ?? Distance(100.0, Unit.meter),
        lookAngle = lookAngle ?? Angular(0.0, Unit.radian);
 
   Atmo toAtmo() => Atmo(
@@ -154,6 +170,30 @@ class Conditions {
     if (azimuthDeg != null) 'azimuthDeg': azimuthDeg,
   };
 
+  Conditions copyWith({
+    AtmoData? atmo,
+    List<WindData>? winds,
+    Angular? lookAngle,
+    double? latitudeDeg,
+    double? azimuthDeg,
+    bool? usePowderSensitivity,
+    bool? useDiffPowderTemp,
+    bool? useCoriolis,
+    Distance? distance,
+  }) {
+    return Conditions(
+      atmo: atmo ?? this.atmo,
+      winds: winds ?? this.winds,
+      lookAngle: lookAngle ?? this.lookAngle,
+      latitudeDeg: latitudeDeg ?? this.latitudeDeg,
+      azimuthDeg: azimuthDeg ?? this.azimuthDeg,
+      usePowderSensitivity: usePowderSensitivity ?? this.usePowderSensitivity,
+      useDiffPowderTemp: useDiffPowderTemp ?? this.useDiffPowderTemp,
+      useCoriolis: useCoriolis ?? this.useCoriolis,
+      distance: distance ?? this.distance,
+    );
+  }
+
   static Conditions fromJson(Map<String, dynamic> json) {
     final atmo = json['atmo'] as Map;
 
@@ -168,7 +208,7 @@ class Conditions {
       ),
       latitudeDeg: (json['latitudeDeg'] as num?)?.toDouble(),
       azimuthDeg: (json['azimuthDeg'] as num?)?.toDouble(),
-      targetDistance: json['targetDistance'] != null
+      distance: json['targetDistance'] != null
           ? Distance(
               (json['targetDistance'] as num).toDouble(),
               StorageUnits.profileTargetDistance,
