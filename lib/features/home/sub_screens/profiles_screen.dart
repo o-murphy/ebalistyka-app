@@ -1,5 +1,5 @@
 import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/providers/profile_library_provider.dart';
+import 'package:eballistica/core/providers/library_provider.dart';
 import 'package:eballistica/features/home/profiles_vm.dart';
 import 'package:eballistica/features/home/sub_screens/profiles/widgets/profile_card.dart';
 import 'package:eballistica/router.dart';

@@ -6,7 +6,6 @@ import 'package:eballistica/core/models/seed_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'library_provider.dart';
-import 'profile_library_provider.dart';
 import 'storage_provider.dart';
 
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {

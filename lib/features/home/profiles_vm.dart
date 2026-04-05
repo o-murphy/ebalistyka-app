@@ -6,7 +6,7 @@ import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';
-import 'package:eballistica/core/providers/profile_library_provider.dart';
+import 'package:eballistica/core/providers/library_provider.dart';
 import 'package:eballistica/core/providers/shot_profile_provider.dart';
 
 // ── Display model ─────────────────────────────────────────────────────────────
