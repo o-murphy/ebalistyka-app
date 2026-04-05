@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:eballistica/core/models/cartridge.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:riverpod/riverpod.dart';
 
@@ -12,7 +13,6 @@ import 'package:eballistica/core/providers/shot_conditions_provider.dart';
 import 'package:eballistica/core/providers/shot_profile_provider.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/models/projectile.dart' show DragModelType;
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/solver/trajectory_data.dart';
@@ -316,23 +316,23 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     Conditions conditions,
     UnitFormatter fmt,
   ) {
-    final proj = profile.cartridge!.projectile;
+    final cart = profile.cartridge!;
     final mvStr = fmt.velocity(profile.cartridge!.mv);
     final bcAcc = FC.ballisticCoefficient.accuracy;
-    final firstBc = proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0;
-    final dragStr = switch (proj.dragType) {
+    final firstBc = cart.coefRows.isNotEmpty ? cart.coefRows.first.bcCd : 0.0;
+    final dragStr = switch (cart.dragType) {
       DragModelType.g1 =>
-        proj.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
+        cart.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
       DragModelType.g7 =>
-        proj.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
+        cart.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
       DragModelType.custom => 'CUSTOM',
     };
 
     String? sgStr;
     final twistInch = profile.rifle.twist.in_(Unit.inch);
-    final weightGr = proj.weight.in_(Unit.grain);
-    final diamInch = proj.diameter.in_(Unit.inch);
-    final lenInch = proj.length.in_(Unit.inch);
+    final weightGr = cart.weight.in_(Unit.grain);
+    final diamInch = cart.diameter.in_(Unit.inch);
+    final lenInch = cart.length.in_(Unit.inch);
     if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
       final currentShot = profile.toCurrentShot(
         conditions,
@@ -548,7 +548,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final zeroConditions = c.zeroConditions;
     final zeroAtmo = zeroConditions.atmo;
     final r = profile.rifle;
-    final proj = c.projectile;
 
     return [
       r.sightHeight.in_(Unit.meter),
@@ -556,11 +555,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       c.mv.in_(Unit.mps),
       c.powderTemp.in_(Unit.celsius),
       c.powderSensitivity.in_(Unit.fraction),
-      proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0,
-      proj.weight.in_(Unit.gram),
-      proj.diameter.in_(Unit.inch),
-      proj.length.in_(Unit.inch),
-      proj.coefRows.length.toDouble(),
+      c.coefRows.isNotEmpty ? c.coefRows.first.bcCd : 0.0,
+      c.weight.in_(Unit.gram),
+      c.diameter.in_(Unit.inch),
+      c.length.in_(Unit.inch),
+      c.coefRows.length.toDouble(),
       zeroAtmo.altitude.in_(Unit.meter),
       zeroAtmo.pressure.in_(Unit.hPa),
       zeroAtmo.temperature.in_(Unit.celsius),

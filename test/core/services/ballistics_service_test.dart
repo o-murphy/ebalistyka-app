@@ -8,7 +8,6 @@ import 'package:test/test.dart';
 import 'package:eballistica/core/domain/ballistics_service.dart';
 import 'package:eballistica/core/services/ballistics_service_impl.dart';
 import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
@@ -19,17 +18,14 @@ import 'package:eballistica/core/solver/unit.dart';
 
 /// Realistic .308 Win profile for testing.
 ShotProfile _makeProfile() {
-  final projectile = Projectile(
+  final cartridge = Cartridge(
+    name: 'Test .308',
+    projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
     weight: Weight(175, Unit.grain),
     diameter: Distance(7.62, Unit.millimeter),
     length: Distance(31.0, Unit.millimeter),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-  );
-  final cartridge = Cartridge(
-    name: 'Test .308',
-    projectileName: 'Test 175gr',
-    projectile: projectile,
     mv: Velocity(800.0, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
     powderSensitivity: Ratio(0.0, Unit.fraction),
@@ -362,17 +358,14 @@ void main() {
   group('BallisticsService — error handling', () {
     test('throws CalculationException for invalid profile', () async {
       // BC must be positive, zero MV will cause issues in zeroing
-      final projectile = Projectile(
+      final cartridge = Cartridge(
+        name: 'Bad',
+        projectileName: 'Bad',
         dragType: DragModelType.g7,
         weight: Weight(1, Unit.grain),
         diameter: Distance(7.62, Unit.millimeter),
         length: Distance(31.0, Unit.millimeter),
         coefRows: [CoeficientRow(bcCd: 0.001, mv: 0.0)],
-      );
-      final cartridge = Cartridge(
-        name: 'Bad',
-        projectileName: 'Bad',
-        projectile: projectile,
         mv: Velocity(10.0, Unit.mps), // extremely low velocity
         powderTemp: Temperature(15.0, Unit.celsius),
         powderSensitivity: Ratio(0.0, Unit.fraction),
@@ -425,7 +418,12 @@ void main() {
       // Cartridge with powder sensitivity
       final sensitiveCartridge = Cartridge(
         name: 'Temp Sens',
-        projectile: profile.cartridge!.projectile,
+        projectileName: profile.cartridge!.projectileName,
+        dragType: profile.cartridge!.dragType,
+        weight: profile.cartridge!.weight,
+        length: profile.cartridge!.length,
+        diameter: profile.cartridge!.diameter,
+        coefRows: profile.cartridge!.coefRows,
         mv: Velocity(800, Unit.mps),
         powderTemp: Temperature(15, Unit.celsius),
         powderSensitivity: Ratio(1.0, Unit.fraction), // 1% per 15°C

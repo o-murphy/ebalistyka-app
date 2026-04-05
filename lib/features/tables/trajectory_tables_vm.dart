@@ -353,7 +353,6 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final zeroConditions = c.zeroConditions;
     final zeroAtmo = zeroConditions.atmo;
     final r = profile.rifle;
-    final proj = c.projectile;
 
     return [
       r.sightHeight.in_(Unit.meter),
@@ -361,11 +360,11 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       c.mv.in_(Unit.mps),
       c.powderTemp.in_(Unit.celsius),
       c.powderSensitivity.in_(Unit.fraction),
-      proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0,
-      proj.weight.in_(Unit.gram),
-      proj.diameter.in_(Unit.inch),
-      proj.length.in_(Unit.inch),
-      proj.coefRows.length.toDouble(),
+      c.coefRows.isNotEmpty ? c.coefRows.first.bcCd : 0.0,
+      c.weight.in_(Unit.gram),
+      c.diameter.in_(Unit.inch),
+      c.length.in_(Unit.inch),
+      c.coefRows.length.toDouble(),
       zeroAtmo.altitude.in_(Unit.meter),
       zeroAtmo.pressure.in_(Unit.hPa),
       zeroAtmo.temperature.in_(Unit.celsius),

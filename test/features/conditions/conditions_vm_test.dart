@@ -12,7 +12,6 @@ import 'package:eballistica/core/providers/shot_conditions_provider.dart';
 import 'package:eballistica/core/providers/shot_profile_provider.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
@@ -23,17 +22,14 @@ import 'package:eballistica/features/conditions/conditions_vm.dart';
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
 ShotProfile _makeProfile() {
-  final projectile = Projectile(
+  final cartridge = Cartridge(
+    name: 'Test .308',
+    projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
     weight: Weight(175, Unit.grain),
     diameter: Distance(7.62, Unit.millimeter),
     length: Distance(31.0, Unit.millimeter),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-  );
-  final cartridge = Cartridge(
-    name: 'Test .308',
-    projectileName: 'Test 175gr',
-    projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
     powderSensitivity: Ratio(1.0, Unit.fraction),

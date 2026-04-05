@@ -1,3 +1,4 @@
+import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,7 +7,6 @@ import 'package:eballistica/core/providers/shot_conditions_provider.dart';
 import 'package:eballistica/core/providers/shot_profile_provider.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/models/projectile.dart' show DragModelType;
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/solver/munition.dart'
     show velocityForPowderTemp;
@@ -68,14 +68,13 @@ DetailsTableData _buildDetails(
   final units = settings.units;
   final rifle = profile.rifle;
   final cart = profile.cartridge!;
-  final proj = cart.projectile;
   final atmo = conditions.atmo;
   final winds = conditions.winds;
 
   final twistInch = rifle.twist.in_(Unit.inch);
-  final weightGr = proj.weight.in_(Unit.grain);
-  final diamInch = proj.diameter.in_(Unit.inch);
-  final lenInch = proj.length.in_(Unit.inch);
+  final weightGr = cart.weight.in_(Unit.grain);
+  final diamInch = cart.diameter.in_(Unit.inch);
+  final lenInch = cart.length.in_(Unit.inch);
 
   // Powder sensitivity — separate flags for zero and current
   final currentPowderSensOn = conditions.usePowderSensitivity;
@@ -120,8 +119,8 @@ DetailsTableData _buildDetails(
   final sd = (weightGr > 0 && diamInch > 0)
       ? (weightGr / 7000.0) / (diamInch * diamInch)
       : null;
-  final displayBc = (!proj.isMultiBC && proj.coefRows.isNotEmpty)
-      ? proj.coefRows.first.bcCd
+  final displayBc = (!cart.isMultiBC && cart.coefRows.isNotEmpty)
+      ? cart.coefRows.first.bcCd
       : 0.0;
   final ff = (sd != null && displayBc > 0) ? sd / displayBc : null;
 
@@ -137,7 +136,7 @@ DetailsTableData _buildDetails(
   return DetailsTableData(
     rifleName: rifle.name,
     caliber: diamInch > 0
-        ? fmtWithAcc(proj.diameter, units.diameter, FC.bulletDiameter)
+        ? fmtWithAcc(cart.diameter, units.diameter, FC.bulletDiameter)
         : null,
     twist: twistInch > 0
         ? () {
@@ -145,7 +144,7 @@ DetailsTableData _buildDetails(
             return '1:${tw.toStringAsFixed(FC.twist.accuracyFor(units.twist))} ${units.twist.symbol}';
           }()
         : null,
-    dragModel: switch (proj.dragType) {
+    dragModel: switch (cart.dragType) {
       DragModelType.g1 => 'G1',
       DragModelType.g7 => 'G7',
       DragModelType.custom => 'Custom',
@@ -161,10 +160,10 @@ DetailsTableData _buildDetails(
       FC.zeroDistance,
     ),
     bulletLen: lenInch > 0
-        ? fmtWithAcc(proj.length, units.length, FC.bulletLength)
+        ? fmtWithAcc(cart.length, units.length, FC.bulletLength)
         : null,
     bulletDiam: diamInch > 0
-        ? fmtWithAcc(proj.diameter, units.diameter, FC.bulletDiameter)
+        ? fmtWithAcc(cart.diameter, units.diameter, FC.bulletDiameter)
         : null,
     bulletWeight: weightGr > 0
         ? () {

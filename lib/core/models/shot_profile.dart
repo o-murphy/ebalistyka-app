@@ -39,16 +39,16 @@ class ShotProfile {
   bool get isReadyForCalculation =>
       cartridge != null &&
       cartridge!.mv.in_(Unit.mps) > 0 &&
-      cartridge!.projectile.coefRows.isNotEmpty &&
-      cartridge!.projectile.diameter.in_(Unit.inch) > 0 &&
-      cartridge!.projectile.weight.in_(Unit.grain) > 0 &&
+      cartridge!.coefRows.isNotEmpty &&
+      cartridge!.diameter.in_(Unit.inch) > 0 &&
+      cartridge!.weight.in_(Unit.grain) > 0 &&
       rifle.twist.in_(Unit.inch) != 0;
 
   // ── toShot ────────────────────────────────────────────────────────────────
 
   Shot toZeroShot(Angular lookAngle, Weapon weapon) {
     final zeroAmmo = Ammo(
-      dm: cartridge!.projectile.toDragModel(),
+      dm: cartridge!.toDragModel(),
       mv: cartridge!.mv,
       powderTemp: cartridge!.powderTemp,
       tempModifier: cartridge!.powderSensitivity.in_(Unit.fraction),
@@ -68,7 +68,7 @@ class ShotProfile {
 
   Shot toCurrentShot(Conditions conditions, Weapon weapon) {
     final currentAmmo = Ammo(
-      dm: cartridge!.projectile.toDragModel(),
+      dm: cartridge!.toDragModel(),
       mv: cartridge!.mv,
       powderTemp: cartridge!.powderTemp,
       tempModifier: cartridge!.powderSensitivity.in_(Unit.fraction),

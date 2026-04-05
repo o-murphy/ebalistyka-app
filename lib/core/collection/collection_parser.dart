@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'package:eballistica/core/solver/unit.dart';
@@ -10,7 +9,7 @@ import 'package:eballistica/core/solver/unit.dart';
 class BuiltinCollection {
   final List<Rifle> rifles;
   final List<Cartridge> cartridges;
-  final List<Projectile> projectiles;
+  final List<Cartridge> projectiles;
   final List<Sight> sights;
 
   const BuiltinCollection({
@@ -48,7 +47,7 @@ abstract final class CollectionParser {
           .map((c) => _parseCartridge(c as Map<String, dynamic>, calibers))
           .toList(),
       projectiles: (map['projectiles'] as List? ?? [])
-          .map((p) => _parseProjectile(p as Map<String, dynamic>, calibers))
+          .map((p) => _parseCartridge(p as Map<String, dynamic>, calibers))
           .toList(),
       sights: (map['sights'] as List? ?? [])
           .map((s) => _parseSight(s as Map<String, dynamic>))
@@ -95,17 +94,34 @@ abstract final class CollectionParser {
         ? Conditions.fromJson(zeroConditionsJson)
         : Conditions.withDefaults();
 
+    final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
+    final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
+
+    final List<CoeficientRow> coefRows;
+    if (dType == DragModelType.g7 && useMultiG7) {
+      coefRows = _multiBC(j['multiBCtableG7'] as List? ?? []);
+    } else if (dType == DragModelType.g1 && useMultiG1) {
+      coefRows = _multiBC(j['multiBCtableG1'] as List? ?? []);
+    } else {
+      final bc = dType == DragModelType.g7
+          ? (j['bcG7'] as num? ?? 0.0).toDouble()
+          : (j['bcG1'] as num? ?? 0.0).toDouble();
+      coefRows = [CoeficientRow(bcCd: bc, mv: 0.0)];
+    }
+
     return Cartridge(
       name: name,
       vendor: j['vendor'] as String?,
       projectileName: j['projectileName'] as String?,
       type: CartridgeType.cartridge,
-      projectile: _projectileFrom(
-        j: j,
-        name: name,
-        diameterInch: diameterInch,
-        dType: dType,
+      dragType: dType,
+      weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
+      diameter: Distance(diameterInch, Unit.inch),
+      length: Distance(
+        (j['bulletLength'] as num? ?? 0.0).toDouble(),
+        Unit.inch,
       ),
+      coefRows: coefRows,
       mv: Velocity((j['muzzleVelocity'] as num).toDouble(), Unit.mps),
       powderTemp: Temperature(
         (j['powderTemperature'] as num? ?? 15.0).toDouble(),
@@ -116,24 +132,6 @@ abstract final class CollectionParser {
         Unit.fraction,
       ),
       zeroConditions: zeroConditions,
-    );
-  }
-
-  // ── Projectile (bullet-only) ───────────────────────────────────────────────
-
-  static Projectile _parseProjectile(
-    Map<String, dynamic> j,
-    Map<int, double> calibers,
-  ) {
-    final caliberId = j['caliberId'] as int?;
-    final diameterInch =
-        (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
-    final dType = _dragType(j['dType'] as String? ?? 'G1');
-    return _projectileFrom(
-      j: j,
-      name: j['name'] as String,
-      diameterInch: diameterInch,
-      dType: dType,
     );
   }
 
@@ -150,39 +148,6 @@ abstract final class CollectionParser {
   );
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-
-  static Projectile _projectileFrom({
-    required Map<String, dynamic> j,
-    required String name,
-    required double diameterInch,
-    required DragModelType dType,
-  }) {
-    final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
-    final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
-
-    final List<CoeficientRow> coefRows;
-    if (dType == DragModelType.g7 && useMultiG7) {
-      coefRows = _multiBC(j['multiBCtableG7'] as List? ?? []);
-    } else if (dType == DragModelType.g1 && useMultiG1) {
-      coefRows = _multiBC(j['multiBCtableG1'] as List? ?? []);
-    } else {
-      final bc = dType == DragModelType.g7
-          ? (j['bcG7'] as num? ?? 0.0).toDouble()
-          : (j['bcG1'] as num? ?? 0.0).toDouble();
-      coefRows = [CoeficientRow(bcCd: bc, mv: 0.0)];
-    }
-
-    return Projectile(
-      dragType: dType,
-      weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
-      diameter: Distance(diameterInch, Unit.inch),
-      length: Distance(
-        (j['bulletLength'] as num? ?? 0.0).toDouble(),
-        Unit.inch,
-      ),
-      coefRows: coefRows,
-    );
-  }
 
   static List<CoeficientRow> _multiBC(List table) => table.map((r) {
     final row = r as Map<String, dynamic>;

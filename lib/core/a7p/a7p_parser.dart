@@ -1,6 +1,5 @@
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
@@ -34,14 +33,6 @@ class A7pParser {
       zeroElevation: rifle.zeroElevation,
     );
 
-    final projectile = Projectile(
-      dragType: _dragType(p.bcType),
-      weight: Weight(p.bWeight / 10.0, Unit.grain),
-      diameter: Distance(p.bDiameter / 1000.0, Unit.inch),
-      length: Distance(p.bLength / 1000.0, Unit.inch),
-      coefRows: _parseCoefRows(p),
-    );
-
     // Будуємо zeroConditions
     final zeroAtmo = _buildAtmoData(
       altitudeM: 0,
@@ -66,7 +57,11 @@ class A7pParser {
     final cartridge = Cartridge(
       name: p.cartridgeName,
       projectileName: p.bulletName,
-      projectile: projectile,
+      dragType: _dragType(p.bcType),
+      weight: Weight(p.bWeight / 10.0, Unit.grain),
+      diameter: Distance(p.bDiameter / 1000.0, Unit.inch),
+      length: Distance(p.bLength / 1000.0, Unit.inch),
+      coefRows: _parseCoefRows(p),
       mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
       powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
       powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),

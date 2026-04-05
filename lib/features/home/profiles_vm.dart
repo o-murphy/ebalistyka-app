@@ -1,9 +1,9 @@
 // profiles_vm.dart
+import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';
@@ -110,19 +110,24 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     String weight = '—';
 
     if (cartridge != null) {
-      final proj = cartridge.projectile;
       final bcAcc = FC.ballisticCoefficient.accuracy;
-      final firstBc = proj.coefRows.isNotEmpty ? proj.coefRows.first.bcCd : 0.0;
-      dragModel = switch (proj.dragType) {
+      final firstBc = cartridge.coefRows.isNotEmpty
+          ? cartridge.coefRows.first.bcCd
+          : 0.0;
+      dragModel = switch (cartridge.dragType) {
         DragModelType.g1 =>
-          proj.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
+          cartridge.isMultiBC
+              ? 'G1 Multi'
+              : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
         DragModelType.g7 =>
-          proj.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
+          cartridge.isMultiBC
+              ? 'G7 Multi'
+              : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
         DragModelType.custom => 'CUSTOM',
       };
-      caliber = fmt.diameter(proj.diameter);
+      caliber = fmt.diameter(cartridge.diameter);
       muzzleVelocity = fmt.velocity(cartridge.mv);
-      weight = fmt.weight(proj.weight);
+      weight = fmt.weight(cartridge.weight);
     }
 
     return ProfileCardData(

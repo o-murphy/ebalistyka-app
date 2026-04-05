@@ -11,7 +11,6 @@
 import 'package:eballistica/core/solver/unit.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
-import 'projectile.dart';
 import 'rifle.dart';
 import 'shot_profile.dart';
 import 'sight.dart';
@@ -58,47 +57,11 @@ final _seedZeroConditions = Conditions.withDefaults(
 // ── Projectiles ───────────────────────────────────────────────────────────────
 // 338LM_UKROP_250GR_SMK_G7 — single BC G7 0.314 @ 888 m/s
 
-final _projUkrop250 = Projectile(
-  dragType: DragModelType.g7,
-  weight: Weight(250.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.555, Unit.inch),
-  coefRows: [CoeficientRow(bcCd: 0.314, mv: 888.0)],
-);
-
 // 338LM_HORNADY_250GR_BTHP_G7 — single BC G7 0.322 @ 885 m/s
-
-final _projHornady250 = Projectile(
-  dragType: DragModelType.g7,
-  weight: Weight(250.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.567, Unit.inch),
-  coefRows: [CoeficientRow(bcCd: 0.322, mv: 885.0)],
-);
 
 // 338LM_LAPUA_300GR_SMK_G7 — single BC G7 0.381 @ 825 m/s
 
-final _projLapua300 = Projectile(
-  dragType: DragModelType.g7,
-  weight: Weight(300.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.700, Unit.inch),
-  coefRows: [CoeficientRow(bcCd: 0.381, mv: 825.0)],
-);
-
 // 338LM_STS_285GR_ELD_M_G7MBC — multi-BC G7
-
-final _projSts285EldM = Projectile(
-  dragType: DragModelType.g7,
-  weight: Weight(285.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.746, Unit.inch),
-  coefRows: [
-    CoeficientRow(bcCd: 0.417, mv: 765.0),
-    CoeficientRow(bcCd: 0.409, mv: 680.0),
-    CoeficientRow(bcCd: 0.400, mv: 595.0),
-  ],
-);
 
 // ── Cartridges ────────────────────────────────────────────────────────────────
 // Тепер використовуємо zeroConditions замість окремих полів
@@ -106,7 +69,11 @@ final _projSts285EldM = Projectile(
 final seedCartridgeUkrop250 = Cartridge(
   id: 'seed-cart-ukrop-250-smk',
   name: '.338LM UKROP 250GR SMK',
-  projectile: _projUkrop250,
+  dragType: DragModelType.g7,
+  weight: Weight(250.0, Unit.grain),
+  diameter: Distance(0.338, Unit.inch),
+  length: Distance(1.555, Unit.inch),
+  coefRows: [CoeficientRow(bcCd: 0.314, mv: 888.0)],
   mv: Velocity(888.0, Unit.mps),
   powderTemp: Temperature(29.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
@@ -116,7 +83,11 @@ final seedCartridgeUkrop250 = Cartridge(
 final seedCartridgeHornady250 = Cartridge(
   id: 'seed-cart-hornady-250-bthp',
   name: '.338LM Hornady 250GR BTHP',
-  projectile: _projHornady250,
+  dragType: DragModelType.g7,
+  weight: Weight(250.0, Unit.grain),
+  diameter: Distance(0.338, Unit.inch),
+  length: Distance(1.567, Unit.inch),
+  coefRows: [CoeficientRow(bcCd: 0.322, mv: 885.0)],
   mv: Velocity(885.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
@@ -126,7 +97,11 @@ final seedCartridgeHornady250 = Cartridge(
 final seedCartridgeLapua300 = Cartridge(
   id: 'seed-cart-lapua-300-smk',
   name: '.338LM Lapua 300GR SMK',
-  projectile: _projLapua300,
+  dragType: DragModelType.g7,
+  weight: Weight(300.0, Unit.grain),
+  diameter: Distance(0.338, Unit.inch),
+  length: Distance(1.700, Unit.inch),
+  coefRows: [CoeficientRow(bcCd: 0.381, mv: 825.0)],
   mv: Velocity(825.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.123, Unit.fraction),
@@ -136,7 +111,15 @@ final seedCartridgeLapua300 = Cartridge(
 final seedCartridgeSts285EldM = Cartridge(
   id: 'seed-cart-sts-285-eld-m',
   name: '.338LM Hornady 285GR ELD-M',
-  projectile: _projSts285EldM,
+  dragType: DragModelType.g7,
+  weight: Weight(285.0, Unit.grain),
+  diameter: Distance(0.338, Unit.inch),
+  length: Distance(1.746, Unit.inch),
+  coefRows: [
+    CoeficientRow(bcCd: 0.417, mv: 765.0),
+    CoeficientRow(bcCd: 0.409, mv: 680.0),
+    CoeficientRow(bcCd: 0.400, mv: 595.0),
+  ],
   mv: Velocity(810.0, Unit.mps),
   powderTemp: Temperature(15.0, Unit.celsius),
   powderSensitivity: Ratio(0.02, Unit.fraction),
