@@ -17,8 +17,6 @@ class Rifle {
   // Barrel length — optional, must be > 0 if set.
   final Distance? barrelLength;
   final String? notes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   Rifle({
     String? id,
@@ -30,12 +28,8 @@ class Rifle {
     this.caliberDiameter,
     this.barrelLength,
     this.notes,
-    DateTime? createdAt,
-    DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
-       zeroElevation = zeroElevation ?? Angular(0, Unit.radian),
-       createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+       zeroElevation = zeroElevation ?? Angular(0, Unit.radian);
 
   /// Right-hand twist when positive, left-hand when negative.
   bool get isRightHandTwist => twist.raw >= 0;
@@ -65,8 +59,6 @@ class Rifle {
     caliberDiameter: caliberDiameter ?? this.caliberDiameter,
     barrelLength: barrelLength ?? this.barrelLength,
     notes: notes ?? this.notes,
-    createdAt: createdAt,
-    updatedAt: DateTime.now(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -85,8 +77,6 @@ class Rifle {
         'barrelLength': barrelLength!.in_(StorageUnits.weaponBarrelLength),
     },
     if (notes != null) 'notes': notes,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
   };
 
   factory Rifle.fromJson(Map<String, dynamic> json) {
@@ -115,8 +105,6 @@ class Rifle {
             )
           : null,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 }

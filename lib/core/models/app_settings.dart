@@ -4,6 +4,7 @@ import 'table_config.dart';
 import 'unit_settings.dart';
 
 export 'table_config.dart';
+export 'unit_settings.dart';
 
 enum AdjustmentFormat { arrows, signs, letters }
 

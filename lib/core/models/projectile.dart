@@ -31,8 +31,6 @@ class Projectile {
   final Distance length;
   final List<CoeficientRow> coefRows;
   final String? notes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   Projectile({
     String? id,
@@ -44,15 +42,11 @@ class Projectile {
     Distance? length,
     List<CoeficientRow>? coefRows,
     this.notes,
-    DateTime? createdAt,
-    DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
        weight = weight ?? Weight(0, Unit.grain),
        diameter = diameter ?? Distance(0, Unit.inch),
        length = length ?? Distance(0, Unit.inch),
-       coefRows = coefRows ?? const [],
-       createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+       coefRows = coefRows ?? const [];
 
   /// True when G1/G7 with multiple BC breakpoints (velocity-dependent BC).
   bool get isMultiBC => dragType != DragModelType.custom && coefRows.length > 1;
@@ -124,8 +118,6 @@ class Projectile {
     length: length ?? this.length,
     coefRows: coefRows ?? this.coefRows,
     notes: notes ?? this.notes,
-    createdAt: createdAt,
-    updatedAt: DateTime.now(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -138,8 +130,6 @@ class Projectile {
     'length': length.in_(StorageUnits.projectileLength),
     'coefRows': coefRows.map((r) => r.toJson()).toList(),
     if (notes != null) 'notes': notes,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
   };
 
   factory Projectile.fromJson(Map<String, dynamic> json) {
@@ -173,8 +163,6 @@ class Projectile {
       ),
       coefRows: coefRows,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 }

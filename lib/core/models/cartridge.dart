@@ -21,8 +21,6 @@ class Cartridge {
   final Conditions zeroConditions;
 
   final String? notes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   Cartridge({
     String? id,
@@ -34,12 +32,8 @@ class Cartridge {
     required this.powderSensitivity,
     Conditions? zeroConditions,
     this.notes,
-    DateTime? createdAt,
-    DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
-       zeroConditions = zeroConditions ?? Conditions.withDefaults(),
-       createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+       zeroConditions = zeroConditions ?? Conditions.withDefaults();
 
   Ammo toAmmo() => Ammo(
     dm: projectile.toDragModel(),
@@ -67,8 +61,6 @@ class Cartridge {
     powderSensitivity: powderSensitivity ?? this.powderSensitivity,
     zeroConditions: zeroConditions ?? this.zeroConditions,
     notes: notes ?? this.notes,
-    createdAt: createdAt,
-    updatedAt: DateTime.now(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -83,8 +75,6 @@ class Cartridge {
     ),
     'zeroConditions': zeroConditions.toJson(),
     if (notes != null) 'notes': notes,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
   };
 
   factory Cartridge.fromJson(Map<String, dynamic> json) {
@@ -143,8 +133,6 @@ class Cartridge {
       ),
       zeroConditions: zeroConditions,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 }

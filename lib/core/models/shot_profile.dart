@@ -24,9 +24,6 @@ class ShotProfile {
   final Cartridge? cartridge;
   final Sight? sight;
 
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
   ShotProfile({
     String? id,
     required this.name,
@@ -35,11 +32,7 @@ class ShotProfile {
     this.sightId,
     this.cartridge,
     this.sight,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) : id = id ?? const Uuid().v4(),
-       createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4();
 
   // ── isReadyForCalculation ─────────────────────────────────────────────────
 
@@ -109,8 +102,6 @@ class ShotProfile {
     cartridge: clearCartridge ? null : (cartridge ?? this.cartridge),
     sightId: clearSight ? null : (sight?.id ?? sightId),
     sight: clearSight ? null : (sight ?? this.sight),
-    createdAt: createdAt,
-    updatedAt: DateTime.now(),
   );
 
   // ── JSON ──────────────────────────────────────────────────────────────────
@@ -120,8 +111,6 @@ class ShotProfile {
     'rifle': rifle.toJson(),
     if (cartridgeId != null) 'cartridgeId': cartridgeId,
     if (sightId != null) 'sightId': sightId,
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
   };
 
   factory ShotProfile.fromJson(Map<String, dynamic> json) {
@@ -159,8 +148,6 @@ class ShotProfile {
       cartridge: inlineCartridge,
       sightId: resolvedSightId,
       sight: inlineSight,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 }

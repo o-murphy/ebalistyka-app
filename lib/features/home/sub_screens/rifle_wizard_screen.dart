@@ -93,7 +93,6 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
       barrelLength: (_hasBarrelLength && _barrelLengthRaw != null)
           ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit)
           : null,
-      createdAt: widget.initial?.createdAt,
     );
   }
 

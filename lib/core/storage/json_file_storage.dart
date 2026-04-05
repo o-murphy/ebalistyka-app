@@ -359,7 +359,7 @@ class JsonFileStorage implements AppStorage {
             'Invalid conditions: expected Map, got ${s.runtimeType}',
           );
         }
-        await _writeMap('settings', s);
+        await _writeMap('conditions', s);
       }
 
       if (data.containsKey('cartridges')) {

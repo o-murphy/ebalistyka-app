@@ -86,8 +86,6 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
         cartridge: cartridge,
         sightId: sightId,
         sight: sight,
-        createdAt: profile.createdAt,
-        updatedAt: profile.updatedAt,
       );
       await storage.saveProfile(cleaned);
       await ref.read(profileLibraryProvider.notifier).save(cleaned);
@@ -102,8 +100,6 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
       cartridge: cartridge,
       sightId: sightId,
       sight: sight,
-      createdAt: profile.createdAt,
-      updatedAt: profile.updatedAt,
     );
   }
 
