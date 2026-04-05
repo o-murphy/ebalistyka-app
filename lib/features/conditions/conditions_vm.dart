@@ -1,6 +1,5 @@
+import 'package:riverpod/riverpod.dart';
 import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';

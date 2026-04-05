@@ -154,7 +154,7 @@ final appRouter = GoRouter(
                     // ── Sight select ────────────────────────────────────────
                     GoRoute(
                       path: 'sight-select',
-                      builder: (_, _) => const SightSelectScreen(),
+                      builder: (_, _) => const MySightsCollectionScreen(),
                       routes: [
                         GoRoute(
                           path: 'create',

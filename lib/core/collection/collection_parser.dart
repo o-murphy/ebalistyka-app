@@ -97,11 +97,12 @@ abstract final class CollectionParser {
 
     return Cartridge(
       name: name,
+      vendor: j['vendor'] as String?,
+      projectileName: j['projectileName'] as String?,
       type: CartridgeType.cartridge,
       projectile: _projectileFrom(
         j: j,
         name: name,
-        vendor: j['vendor'] as String?,
         diameterInch: diameterInch,
         dType: dType,
       ),
@@ -131,7 +132,6 @@ abstract final class CollectionParser {
     return _projectileFrom(
       j: j,
       name: j['name'] as String,
-      vendor: j['vendor'] as String?,
       diameterInch: diameterInch,
       dType: dType,
     );
@@ -154,7 +154,6 @@ abstract final class CollectionParser {
   static Projectile _projectileFrom({
     required Map<String, dynamic> j,
     required String name,
-    required String? vendor,
     required double diameterInch,
     required DragModelType dType,
   }) {
@@ -174,8 +173,6 @@ abstract final class CollectionParser {
     }
 
     return Projectile(
-      name: name,
-      manufacturer: vendor,
       dragType: dType,
       weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
       diameter: Distance(diameterInch, Unit.inch),

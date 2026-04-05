@@ -1,4 +1,5 @@
 import 'package:eballistica/core/models/cartridge.dart';
+import 'package:eballistica/core/models/sight.dart';
 
 abstract interface class CollectionItem<T> {
   String get id;
@@ -13,4 +14,14 @@ class CartridgeCollectionItem extends CollectionItem<Cartridge> {
 
   @override
   final Cartridge ref;
+}
+
+class SightCollectionItem extends CollectionItem<Sight> {
+  SightCollectionItem({required this.ref});
+
+  @override
+  String get id => ref.id;
+
+  @override
+  final Sight ref;
 }

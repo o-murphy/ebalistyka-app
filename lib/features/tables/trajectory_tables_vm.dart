@@ -1,5 +1,4 @@
 import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

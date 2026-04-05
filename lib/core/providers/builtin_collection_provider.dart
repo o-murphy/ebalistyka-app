@@ -1,6 +1,6 @@
 import 'package:eballistica/core/providers/storage_provider.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:eballistica/core/collection/collection_parser.dart';
 

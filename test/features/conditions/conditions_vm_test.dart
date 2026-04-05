@@ -3,7 +3,7 @@
 // No FFI required — uses only Riverpod container with provider overrides.
 //   flutter test test/viewmodels/conditions_vm_test.dart
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eballistica/core/formatting/unit_formatter.dart';
@@ -17,7 +17,6 @@ import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
 import 'package:eballistica/core/solver/unit.dart';
 import 'package:eballistica/features/conditions/conditions_vm.dart';
 
@@ -25,7 +24,6 @@ import 'package:eballistica/features/conditions/conditions_vm.dart';
 
 ShotProfile _makeProfile() {
   final projectile = Projectile(
-    name: 'Test 175gr',
     dragType: DragModelType.g7,
     weight: Weight(175, Unit.grain),
     diameter: Distance(7.62, Unit.millimeter),
@@ -34,6 +32,7 @@ ShotProfile _makeProfile() {
   );
   final cartridge = Cartridge(
     name: 'Test .308',
+    projectileName: 'Test 175gr',
     projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),

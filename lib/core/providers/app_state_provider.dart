@@ -1,13 +1,14 @@
 // app_state.dart
 import 'package:eballistica/core/providers/storage_provider.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
 import 'package:eballistica/core/models/app_settings.dart';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/models/convertors_state.dart';
-import 'package:eballistica/core/models/seed_data.dart'; // Додайте цей імпорт
+import 'package:eballistica/core/models/seed_data.dart';
+import 'package:flutter/material.dart' show debugPrint;
+import 'package:riverpod/riverpod.dart'; // Додайте цей імпорт
 
 class AppState {
   // ВСІ дані в одному місці
@@ -71,7 +72,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<AppState> build() async {
     final storage = ref.read(appStorageProvider);
 
-    print('AppStateNotifier: Loading data from storage...');
+    debugPrint('AppStateNotifier: Loading data from storage...');
 
     // Завантажуємо дані
     var cartridges = await storage.loadCartridges();
@@ -88,7 +89,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
     // Seed sights
     if (sights.isEmpty) {
-      print('AppStateNotifier: No sights found, adding seed sights...');
+      debugPrint('AppStateNotifier: No sights found, adding seed sights...');
       sights = [seedSight]; // seedSights має бути List<Sight> абощо
       for (final sight in sights) {
         await storage.saveSight(sight);
@@ -97,7 +98,9 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
     // Seed cartridges
     if (cartridges.isEmpty) {
-      print('AppStateNotifier: No cartridges found, adding seed cartridges...');
+      debugPrint(
+        'AppStateNotifier: No cartridges found, adding seed cartridges...',
+      );
       cartridges = seedCartridges; // seedCartridges має бути List<Cartridge>
       for (final cartridge in cartridges) {
         await storage.saveCartridge(cartridge);
@@ -106,7 +109,9 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
     // Seed profiles
     if (profiles.isEmpty) {
-      print('AppStateNotifier: No profiles found, adding seed profiles...');
+      debugPrint(
+        'AppStateNotifier: No profiles found, adding seed profiles...',
+      );
       profiles =
           seedShotProfiles; // seedShotProfiles має бути List<ShotProfile>
       for (final profile in profiles) {
@@ -120,10 +125,10 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       }
     }
 
-    print(
+    debugPrint(
       'AppStateNotifier: Loaded ${cartridges.length} cartridges, ${sights.length} sights, ${profiles.length} profiles',
     );
-    print('AppStateNotifier: Active profile ID: $activeProfileId');
+    debugPrint('AppStateNotifier: Active profile ID: $activeProfileId');
 
     return AppState(
       cartridges: cartridges,

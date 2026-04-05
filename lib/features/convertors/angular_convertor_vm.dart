@@ -1,5 +1,5 @@
 import 'package:eballistica/core/providers/convertors_notifier.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/solver/unit.dart';
 

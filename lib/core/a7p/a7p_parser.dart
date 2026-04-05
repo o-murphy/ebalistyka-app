@@ -35,7 +35,6 @@ class A7pParser {
     );
 
     final projectile = Projectile(
-      name: p.bulletName,
       dragType: _dragType(p.bcType),
       weight: Weight(p.bWeight / 10.0, Unit.grain),
       diameter: Distance(p.bDiameter / 1000.0, Unit.inch),
@@ -66,6 +65,7 @@ class A7pParser {
 
     final cartridge = Cartridge(
       name: p.cartridgeName,
+      projectileName: p.bulletName,
       projectile: projectile,
       mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
       powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),

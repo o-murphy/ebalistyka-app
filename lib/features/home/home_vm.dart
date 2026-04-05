@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show listEquals;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:eballistica/core/domain/ballistics_service.dart';
 import 'package:eballistica/core/formatting/unit_formatter.dart';
@@ -342,7 +342,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       sgStr = 'Sg ${sg.toStringAsFixed(2)}';
     }
 
-    return '${proj.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
+    return '${profile.cartridge!.projectileName ?? profile.cartridge!.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
   }
 
   AdjustmentData _buildAdjustment(

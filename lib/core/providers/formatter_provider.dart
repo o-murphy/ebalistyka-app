@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/formatting/unit_formatter_impl.dart';

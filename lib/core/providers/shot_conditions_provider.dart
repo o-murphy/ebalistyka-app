@@ -1,7 +1,7 @@
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/providers/app_state_provider.dart'; // Змінений імпорт
 import 'package:eballistica/core/solver/unit.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
   @override

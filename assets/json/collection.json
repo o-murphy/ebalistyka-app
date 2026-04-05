@@ -121,6 +121,7 @@
             "id": 0,
             "vendor": "Black Hills",
             "name": "Black Hills 300gr. Sierra MatchKing",
+            "projectileName": null,
             "image": null,
             "dType": "G7",
             "bcG1": 0.78,

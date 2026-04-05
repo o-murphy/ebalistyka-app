@@ -1,6 +1,7 @@
 export 'shot_details_screen.dart';
 export 'profiles_screen.dart';
 export 'my_cartridges_screen.dart';
+export 'my_sights_screen.dart';
 
 import 'package:eballistica/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,12 +76,6 @@ class SelectProjectileCollectionScreen extends StatelessWidget {
 }
 
 // ── Sight ─────────────────────────────────────────────────────────────────────
-
-class SightSelectScreen extends StatelessWidget {
-  const SightSelectScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Select Sight');
-}
 
 class CreateSightWizardScreen extends StatelessWidget {
   const CreateSightWizardScreen({super.key});

@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:eballistica/core/providers/settings_provider.dart';
 import 'package:eballistica/core/providers/shot_conditions_provider.dart'; // ← додати

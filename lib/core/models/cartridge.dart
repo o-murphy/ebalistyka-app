@@ -11,6 +11,8 @@ enum CartridgeType { cartridge, bullet }
 class Cartridge {
   final String id;
   final String name;
+  final String? projectileName;
+  final String? vendor;
   final CartridgeType type;
   final Projectile projectile;
   final Velocity mv;
@@ -25,6 +27,8 @@ class Cartridge {
   Cartridge({
     String? id,
     required this.name,
+    this.projectileName,
+    this.vendor,
     this.type = CartridgeType.cartridge,
     required this.projectile,
     required this.mv,
@@ -44,6 +48,8 @@ class Cartridge {
 
   Cartridge copyWith({
     String? name,
+    String? projectileName,
+    String? vendor,
     CartridgeType? type,
     Projectile? projectile,
     Velocity? mv,
@@ -54,6 +60,8 @@ class Cartridge {
   }) => Cartridge(
     id: id,
     name: name ?? this.name,
+    projectileName: projectileName ?? this.projectileName,
+    vendor: vendor ?? this.vendor,
     type: type ?? this.type,
     projectile: projectile ?? this.projectile,
     mv: mv ?? this.mv,
@@ -66,6 +74,8 @@ class Cartridge {
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
+    if (projectileName != null) 'vendor': projectileName,
+    if (vendor != null) 'vendor': vendor,
     'type': type.name,
     'projectile': projectile.toJson(),
     'mv': mv.in_(StorageUnits.cartridgeMv),
@@ -118,6 +128,8 @@ class Cartridge {
     return Cartridge(
       id: json['id'] as String,
       name: json['name'] as String,
+      projectileName: json['projectileName'] as String?,
+      vendor: json['vendor'] as String?,
       type: type,
       projectile: Projectile.fromJson(
         json['projectile'] as Map<String, dynamic>,
@@ -139,7 +151,7 @@ class Cartridge {
 
 extension CartridgeExtension on Cartridge {
   static Cartridge mock(String id, String name) {
-    final proj = Projectile(name: name);
+    final proj = Projectile();
     return Cartridge(
       id: id, // Додайте id, якщо його немає в моделі
       name: name,

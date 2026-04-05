@@ -20,7 +20,6 @@ import 'package:eballistica/core/solver/unit.dart';
 /// Realistic .308 Win profile for testing.
 ShotProfile _makeProfile() {
   final projectile = Projectile(
-    name: 'Test 175gr',
     dragType: DragModelType.g7,
     weight: Weight(175, Unit.grain),
     diameter: Distance(7.62, Unit.millimeter),
@@ -29,6 +28,7 @@ ShotProfile _makeProfile() {
   );
   final cartridge = Cartridge(
     name: 'Test .308',
+    projectileName: 'Test 175gr',
     projectile: projectile,
     mv: Velocity(800.0, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
@@ -363,7 +363,6 @@ void main() {
     test('throws CalculationException for invalid profile', () async {
       // BC must be positive, zero MV will cause issues in zeroing
       final projectile = Projectile(
-        name: 'Bad',
         dragType: DragModelType.g7,
         weight: Weight(1, Unit.grain),
         diameter: Distance(7.62, Unit.millimeter),
@@ -372,6 +371,7 @@ void main() {
       );
       final cartridge = Cartridge(
         name: 'Bad',
+        projectileName: 'Bad',
         projectile: projectile,
         mv: Velocity(10.0, Unit.mps), // extremely low velocity
         powderTemp: Temperature(15.0, Unit.celsius),

@@ -1,5 +1,4 @@
 import 'package:eballistica/core/solver/unit.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:eballistica/core/solver/drag_model.dart';
 import 'package:eballistica/core/solver/drag_tables.dart';
@@ -22,28 +21,19 @@ class CoeficientRow {
 }
 
 class Projectile {
-  final String id;
-  final String name;
-  final String? manufacturer;
   final DragModelType dragType;
   final Weight weight;
   final Distance diameter;
   final Distance length;
   final List<CoeficientRow> coefRows;
-  final String? notes;
 
   Projectile({
-    String? id,
-    required this.name,
-    this.manufacturer,
     this.dragType = DragModelType.custom,
     Weight? weight,
     Distance? diameter,
     Distance? length,
     List<CoeficientRow>? coefRows,
-    this.notes,
-  }) : id = id ?? const Uuid().v4(),
-       weight = weight ?? Weight(0, Unit.grain),
+  }) : weight = weight ?? Weight(0, Unit.grain),
        diameter = diameter ?? Distance(0, Unit.inch),
        length = length ?? Distance(0, Unit.inch),
        coefRows = coefRows ?? const [];
@@ -100,8 +90,6 @@ class Projectile {
   }
 
   Projectile copyWith({
-    String? name,
-    String? manufacturer,
     DragModelType? dragType,
     Weight? weight,
     Distance? diameter,
@@ -109,27 +97,19 @@ class Projectile {
     List<CoeficientRow>? coefRows,
     String? notes,
   }) => Projectile(
-    id: id,
-    name: name ?? this.name,
-    manufacturer: manufacturer ?? this.manufacturer,
     dragType: dragType ?? this.dragType,
     weight: weight ?? this.weight,
     diameter: diameter ?? this.diameter,
     length: length ?? this.length,
     coefRows: coefRows ?? this.coefRows,
-    notes: notes ?? this.notes,
   );
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    if (manufacturer != null) 'manufacturer': manufacturer,
     'dragType': dragType.name,
     'weight': weight.in_(StorageUnits.projectileWeight),
     'diameter': diameter.in_(StorageUnits.projectileDiameter),
     'length': length.in_(StorageUnits.projectileLength),
     'coefRows': coefRows.map((r) => r.toJson()).toList(),
-    if (notes != null) 'notes': notes,
   };
 
   factory Projectile.fromJson(Map<String, dynamic> json) {
@@ -145,9 +125,6 @@ class Projectile {
         [];
 
     return Projectile(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      manufacturer: json['manufacturer'] as String?,
       dragType: dragType,
       weight: Weight(
         (json['weight'] as num).toDouble(),
@@ -162,7 +139,6 @@ class Projectile {
         StorageUnits.projectileLength,
       ),
       coefRows: coefRows,
-      notes: json['notes'] as String?,
     );
   }
 }

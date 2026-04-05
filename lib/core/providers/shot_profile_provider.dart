@@ -1,5 +1,5 @@
+import 'package:riverpod/riverpod.dart';
 import 'package:eballistica/core/providers/app_state_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/seed_data.dart';
@@ -13,7 +13,7 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
 
     return appState.when(
       loading: () => seedShotProfile,
-      error: (_, __) => seedShotProfile,
+      error: (_, _) => seedShotProfile,
       data: (state) {
         final activeId = state.activeProfileId;
         final profiles = state.profiles;

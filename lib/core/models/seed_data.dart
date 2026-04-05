@@ -59,9 +59,6 @@ final _seedZeroConditions = Conditions.withDefaults(
 // 338LM_UKROP_250GR_SMK_G7 — single BC G7 0.314 @ 888 m/s
 
 final _projUkrop250 = Projectile(
-  id: 'seed-proj-ukrop-250-smk',
-  name: 'UKROP 250GR SMK',
-  manufacturer: 'Ukrop / Zbroyar',
   dragType: DragModelType.g7,
   weight: Weight(250.0, Unit.grain),
   diameter: Distance(0.338, Unit.inch),
@@ -72,9 +69,6 @@ final _projUkrop250 = Projectile(
 // 338LM_HORNADY_250GR_BTHP_G7 — single BC G7 0.322 @ 885 m/s
 
 final _projHornady250 = Projectile(
-  id: 'seed-proj-hornady-250-bthp',
-  name: 'Hornady 250GR BTHP',
-  manufacturer: 'Hornady',
   dragType: DragModelType.g7,
   weight: Weight(250.0, Unit.grain),
   diameter: Distance(0.338, Unit.inch),
@@ -85,9 +79,6 @@ final _projHornady250 = Projectile(
 // 338LM_LAPUA_300GR_SMK_G7 — single BC G7 0.381 @ 825 m/s
 
 final _projLapua300 = Projectile(
-  id: 'seed-proj-lapua-300-smk',
-  name: 'Lapua 300GR SMK',
-  manufacturer: 'Lapua',
   dragType: DragModelType.g7,
   weight: Weight(300.0, Unit.grain),
   diameter: Distance(0.338, Unit.inch),
@@ -98,9 +89,6 @@ final _projLapua300 = Projectile(
 // 338LM_STS_285GR_ELD_M_G7MBC — multi-BC G7
 
 final _projSts285EldM = Projectile(
-  id: 'seed-proj-sts-285-eld-m',
-  name: 'Hornady 285GR ELD-M',
-  manufacturer: 'Hornady / STS',
   dragType: DragModelType.g7,
   weight: Weight(285.0, Unit.grain),
   diameter: Distance(0.338, Unit.inch),

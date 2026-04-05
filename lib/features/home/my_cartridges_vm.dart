@@ -1,7 +1,7 @@
 // sights_view_model.dart
 import 'package:eballistica/core/models/sight.dart';
 import 'package:eballistica/core/providers/app_state_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 sealed class SightsUiState {
   const SightsUiState();
@@ -31,14 +31,11 @@ class SightsViewModel extends AsyncNotifier<SightsUiState> {
     final current = state.value;
     if (current is SightsReady) {
       state = AsyncData(
-        SightsReady(
-          sights: current.sights.where((s) => s.id != id).toList(),
-        ),
+        SightsReady(sights: current.sights.where((s) => s.id != id).toList()),
       );
     }
   }
 }
 
-final sightsViewModelProvider = AsyncNotifierProvider<SightsViewModel, SightsUiState>(
-  SightsViewModel.new,
-);
+final sightsViewModelProvider =
+    AsyncNotifierProvider<SightsViewModel, SightsUiState>(SightsViewModel.new);

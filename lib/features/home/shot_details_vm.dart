@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'package:eballistica/core/models/conditions_data.dart';
 import 'package:eballistica/core/solver/munition.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'package:eballistica/core/domain/ballistics_service.dart';
 import 'package:eballistica/core/formatting/unit_formatter.dart';

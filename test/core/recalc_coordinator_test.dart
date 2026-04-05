@@ -3,7 +3,7 @@
 // No FFI required — uses only Riverpod container with provider overrides.
 //   flutter test test/recalc_coordinator_test.dart
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:eballistica/core/providers/recalc_coordinator.dart';
@@ -26,7 +26,6 @@ import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
 
 ShotProfile _makeProfile() {
   final projectile = Projectile(
-    name: 'Test 175gr',
     dragType: DragModelType.g7,
     weight: Weight(175, Unit.grain),
     diameter: Distance(7.62, Unit.millimeter),
@@ -35,6 +34,7 @@ ShotProfile _makeProfile() {
   );
   final cartridge = Cartridge(
     name: 'Test .308',
+    projectileName: 'Test 175gr',
     projectile: projectile,
     mv: Velocity(800, Unit.mps),
     powderTemp: Temperature(15.0, Unit.celsius),
