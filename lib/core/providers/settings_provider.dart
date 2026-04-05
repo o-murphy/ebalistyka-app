@@ -1,87 +1,101 @@
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
 import 'package:eballistica/core/solver/unit.dart';
-import 'storage_provider.dart';
 
 class SettingsNotifier extends AsyncNotifier<AppSettings> {
   @override
   Future<AppSettings> build() async {
-    final storage = ref.read(appStorageProvider);
-    return await storage.loadSettings() ?? const AppSettings();
+    // Отримуємо налаштування з глобального стану
+    final appState = await ref.watch(appStateProvider.future);
+    return appState.settings ?? const AppSettings();
   }
 
   Future<void> setUnit(String key, Unit unit) async {
     final current = state.value ?? const AppSettings();
-    await _save(
-      current.copyWith(units: _setUnitByKey(current.units, key, unit)),
+    final newSettings = current.copyWith(
+      units: _setUnitByKey(current.units, key, unit),
     );
+    await _save(newSettings);
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    await _save((state.value ?? const AppSettings()).copyWith(themeMode: mode));
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      themeMode: mode,
+    );
+    await _save(newSettings);
   }
 
   Future<void> setLanguage(String code) async {
-    await _save(
-      (state.value ?? const AppSettings()).copyWith(languageCode: code),
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      languageCode: code,
     );
+    await _save(newSettings);
   }
 
   Future<void> setSwitch(String key, bool value) async {
     final s = state.value ?? const AppSettings();
-    await _save(switch (key) {
+    final newSettings = switch (key) {
       'coriolis' => s.copyWith(enableCoriolis: value),
       'derivation' => s.copyWith(enableDerivation: value),
       'aerodynamicJump' => s.copyWith(enableAerodynamicJump: value),
       'pressureFromAltitude' => s.copyWith(pressureDependsOnAltitude: value),
       'subsonicTransition' => s.copyWith(showSubsonicTransition: value),
       _ => s,
-    });
+    };
+    await _save(newSettings);
   }
 
-  /// Update the full TableConfig at once.
   Future<void> updateTableConfig(TableConfig config) async {
-    await _save(
-      (state.value ?? const AppSettings()).copyWith(tableConfig: config),
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      tableConfig: config,
     );
+    await _save(newSettings);
   }
 
   Future<void> setChartDistanceStep(double step) async {
-    await _save(
-      (state.value ?? const AppSettings()).copyWith(chartDistanceStep: step),
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      chartDistanceStep: step,
     );
+    await _save(newSettings);
   }
 
   Future<void> setHomeTableStep(double step) async {
-    await _save(
-      (state.value ?? const AppSettings()).copyWith(homeTableStep: step),
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      homeTableStep: step,
     );
+    await _save(newSettings);
   }
 
   Future<void> setAdjustmentFormat(AdjustmentFormat format) async {
-    await _save(
-      (state.value ?? const AppSettings()).copyWith(adjustmentFormat: format),
+    final newSettings = (state.value ?? const AppSettings()).copyWith(
+      adjustmentFormat: format,
     );
+    await _save(newSettings);
   }
 
   Future<void> setAdjustmentToggle(String key, bool value) async {
     final s = state.value ?? const AppSettings();
-    await _save(switch (key) {
+    final newSettings = switch (key) {
       'showMrad' => s.copyWith(showMrad: value),
       'showMoa' => s.copyWith(showMoa: value),
       'showMil' => s.copyWith(showMil: value),
       'showCmPer100m' => s.copyWith(showCmPer100m: value),
       'showInPer100yd' => s.copyWith(showInPer100yd: value),
       _ => s,
-    });
+    };
+    await _save(newSettings);
   }
 
-  Future<void> _save(AppSettings s) async {
-    state = AsyncData(s);
-    await ref.read(appStorageProvider).saveSettings(s);
+  Future<void> _save(AppSettings newSettings) async {
+    // Оновлюємо локальний стан
+    state = AsyncData(newSettings);
+
+    // Оновлюємо глобальний стан
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.saveSettings(newSettings);
   }
 
   UnitSettings _setUnitByKey(UnitSettings u, String key, Unit unit) =>

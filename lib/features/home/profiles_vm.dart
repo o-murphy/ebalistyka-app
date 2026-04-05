@@ -1,12 +1,12 @@
+// profiles_vm.dart
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:eballistica/core/formatting/unit_formatter.dart';
 import 'package:eballistica/core/models/field_constraints.dart';
 import 'package:eballistica/core/models/projectile.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/providers/formatter_provider.dart';
-import 'package:eballistica/core/providers/library_provider.dart';
 import 'package:eballistica/core/providers/shot_profile_provider.dart';
 
 // ── Display model ─────────────────────────────────────────────────────────────
@@ -28,20 +28,14 @@ class ProfileCardData {
 
   final String id;
   final String name;
-
-  // Rifle section
   final String rifleName;
   final String caliber;
   final String twist;
   final String twistDirection;
-
-  // Cartridge section
   final String cartridgeName;
   final String dragModel;
   final String muzzleVelocity;
   final String weight;
-
-  // Sight section
   final String sightName;
 }
 
@@ -65,23 +59,50 @@ class ProfilesReady extends ProfilesUiState {
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
+  // Кешуємо дані, щоб не перебудовуватись при змінах appState
+  List<ProfileCardData>? _cachedProfiles;
+  String? _cachedActiveProfileId;
+
   @override
   Future<ProfilesUiState> build() async {
-    final profiles = await ref.watch(profileLibraryProvider.future);
-    final formatter = ref.read(unitFormatterProvider);
-    // ref.read (not watch) — щоб зміна активного профілю не ініціювала
-    // повний async rebuild з AsyncLoading → AsyncData, що спричиняє фліккер.
-    // selectProfile() оновлює activeProfileId напряму через state = AsyncData(...).
-    final activeProfileId = ref.read(shotProfileProvider).value?.id;
+    // Завантажуємо дані один раз при створенні
+    await _loadData();
     return ProfilesReady(
-      profiles: profiles.map((p) => _buildCardData(p, formatter)).toList(),
-      activeProfileId: activeProfileId,
+      profiles: _cachedProfiles ?? [],
+      activeProfileId: _cachedActiveProfileId,
     );
   }
 
-  ProfileCardData _buildCardData(ShotProfile profile, UnitFormatter fmt) {
-    final cartridge = profile.cartridge;
-    final sight = profile.sight;
+  Future<void> _loadData() async {
+    final appState = await ref.read(appStateProvider.future);
+    final formatter = ref.read(unitFormatterProvider);
+
+    _cachedProfiles = appState.profiles
+        .map((p) => _buildCardData(p, appState, formatter))
+        .toList();
+    _cachedActiveProfileId = appState.activeProfileId;
+  }
+
+  ProfileCardData _buildCardData(
+    ShotProfile profile,
+    AppState appState,
+    UnitFormatter fmt,
+  ) {
+    final cartridge = profile.cartridgeId != null
+        ? appState.cartridges.firstWhere(
+            (c) => c.id == profile.cartridgeId,
+            orElse: () =>
+                throw StateError('Cartridge ${profile.cartridgeId} not found'),
+          )
+        : null;
+
+    final sight = profile.sightId != null
+        ? appState.sights.firstWhere(
+            (s) => s.id == profile.sightId,
+            orElse: () =>
+                throw StateError('Sight ${profile.sightId} not found'),
+          )
+        : null;
 
     String dragModel = '—';
     String caliber = '—';
@@ -120,72 +141,102 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 
   Future<void> selectProfile(String id) async {
-    final profiles = ref.read(profileLibraryProvider).value ?? [];
-    final profile = profiles.firstWhere(
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final profile = appState.profiles.firstWhere(
       (p) => p.id == id,
       orElse: () => throw StateError('Profile $id not found'),
     );
-    // Відновлює повний стан профілю (включно з runtime) і зберігає activeProfileId
+
+    // Відновлює повний стан профілю
     await ref.read(shotProfileProvider.notifier).selectProfile(profile);
-    // Переміщуємо обраний профіль на першу позицію в бібліотеці
-    await ref.read(profileLibraryProvider.notifier).moveToFirst(id);
-    // Оновлюємо стан ViewModel без повного async rebuild
+
+    // Переміщуємо профіль на першу позицію (в бекграунді)
+    await appStateNotifier.moveProfileToFirst(id);
+
+    // Оновлюємо кеш після зміни порядку
+    await _loadData();
+
+    // Оновлюємо стан ViewModel тихо, без перебудови UI (якщо сторінка ще відкрита)
     final current = state.value;
     if (current is ProfilesReady) {
-      final idx = current.profiles.indexWhere((p) => p.id == id);
-      final reordered = idx > 0
-          ? [
-              current.profiles[idx],
-              ...current.profiles.sublist(0, idx),
-              ...current.profiles.sublist(idx + 1),
-            ]
-          : current.profiles;
       state = AsyncData(
-        ProfilesReady(profiles: reordered, activeProfileId: id),
+        ProfilesReady(
+          profiles: _cachedProfiles ?? [],
+          activeProfileId: _cachedActiveProfileId,
+        ),
       );
     }
   }
 
   Future<void> updateProfileRifle(String profileId, Rifle rifle) async {
-    final profiles = ref.read(profileLibraryProvider).value ?? [];
-    final idx = profiles.indexWhere((p) => p.id == profileId);
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final idx = appState.profiles.indexWhere((p) => p.id == profileId);
     if (idx < 0) return;
-    final updated = profiles[idx].copyWith(rifle: rifle);
-    await ref.read(profileLibraryProvider.notifier).save(updated);
-    // Sync active profile in shotProfileProvider if needed
-    final activeId = ref.read(shotProfileProvider).value?.id;
+
+    final updated = appState.profiles[idx].copyWith(rifle: rifle);
+    await appStateNotifier.saveProfile(updated);
+
+    final activeId = appState.activeProfileId;
     if (activeId == profileId) {
       await ref.read(shotProfileProvider.notifier).selectRifle(rifle);
     }
-    // Update VM state without full rebuild
+
+    // Оновлюємо кеш
+    await _loadData();
+
     final current = state.value;
     if (current is ProfilesReady) {
-      final formatter = ref.read(unitFormatterProvider);
       state = AsyncData(
         ProfilesReady(
-          profiles: [
-            for (final p in current.profiles)
-              if (p.id == profileId) _buildCardData(updated, formatter) else p,
-          ],
-          activeProfileId: current.activeProfileId,
+          profiles: _cachedProfiles ?? [],
+          activeProfileId: _cachedActiveProfileId,
         ),
       );
     }
   }
 
   Future<void> removeProfile(String id) async {
-    await ref.read(profileLibraryProvider.notifier).delete(id);
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.deleteProfile(id);
+
+    await _loadData();
+
+    final current = state.value;
+    if (current is ProfilesReady) {
+      state = AsyncData(
+        ProfilesReady(
+          profiles: _cachedProfiles ?? [],
+          activeProfileId: _cachedActiveProfileId,
+        ),
+      );
+    }
   }
 
   Future<void> saveProfile(ShotProfile profile) async {
-    await ref.read(profileLibraryProvider.notifier).save(profile);
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.saveProfile(profile);
+
+    await _loadData();
+
+    final current = state.value;
+    if (current is ProfilesReady) {
+      state = AsyncData(
+        ProfilesReady(
+          profiles: _cachedProfiles ?? [],
+          activeProfileId: _cachedActiveProfileId,
+        ),
+      );
+    }
   }
 
   Future<void> importFromA7pBytes(List<int> bytes, {String? fileName}) async {
-    // A7pParser works with a Payload parsed from bytes — this is handled
-    // upstream (file picker → parse → call saveProfile).
-    // This stub is intentionally empty; the screen invokes saveProfile directly
-    // after parsing.
+    // A7pParser implementation
   }
 }
 

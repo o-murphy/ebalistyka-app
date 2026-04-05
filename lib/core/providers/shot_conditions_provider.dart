@@ -1,13 +1,14 @@
 import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/providers/storage_provider.dart';
+import 'package:eballistica/core/providers/app_state_provider.dart'; // Змінений імпорт
 import 'package:eballistica/core/solver/unit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
   @override
   Future<Conditions> build() async {
-    final storage = ref.read(appStorageProvider);
-    final conditions = await storage.loadConditions();
+    // Отримуємо умови з глобального стану
+    final appState = await ref.watch(appStateProvider.future);
+    final conditions = appState.conditions;
 
     Conditions loaded = conditions ?? Conditions.withDefaults();
     final laDeg = loaded.lookAngle.in_(Unit.degree);
@@ -97,9 +98,13 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
     );
   }
 
-  Future<void> _save(Conditions c) async {
-    state = AsyncData(c);
-    await ref.read(appStorageProvider).saveConditions(c);
+  Future<void> _save(Conditions newConditions) async {
+    // Оновлюємо локальний стан
+    state = AsyncData(newConditions);
+
+    // Оновлюємо глобальний стан через appStateProvider
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.saveConditions(newConditions);
   }
 }
 

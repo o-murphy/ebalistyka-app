@@ -1,81 +1,82 @@
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:eballistica/core/models/cartridge.dart';
 import 'package:eballistica/core/models/rifle.dart';
 import 'package:eballistica/core/models/seed_data.dart';
 import 'package:eballistica/core/models/shot_profile.dart';
 import 'package:eballistica/core/models/sight.dart';
-import 'library_provider.dart';
-import 'storage_provider.dart';
 
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   @override
   Future<ShotProfile> build() async {
-    final storage = ref.read(appStorageProvider);
-    final activeId = await storage.loadActiveProfileId();
-    final profiles = await storage.loadProfiles();
+    final appState = ref.watch(appStateProvider);
 
-    ShotProfile loaded;
-    if (activeId != null) {
-      final matches = profiles.where((p) => p.id == activeId);
-      loaded = matches.isNotEmpty
-          ? matches.first
-          : (profiles.isNotEmpty ? profiles.first : seedShotProfile);
-    } else {
-      loaded = profiles.isNotEmpty ? profiles.first : seedShotProfile;
-    }
+    return appState.when(
+      loading: () => seedShotProfile,
+      error: (_, __) => seedShotProfile,
+      data: (state) {
+        final activeId = state.activeProfileId;
+        final profiles = state.profiles;
 
-    return _resolve(loaded);
+        if (activeId != null) {
+          final matches = profiles.where((p) => p.id == activeId);
+          if (matches.isNotEmpty) {
+            return _resolve(matches.first, state);
+          }
+        }
+
+        return profiles.isNotEmpty
+            ? _resolve(profiles.first, state)
+            : seedShotProfile;
+      },
+    );
   }
 
-  // ── Resolve cartridge/sight з бібліотеки ──────────────────────────────────
-
-  Future<ShotProfile> _resolve(ShotProfile profile) async {
-    final storage = ref.read(appStorageProvider);
-
-    // Якщо cartridge вже вбудований (backward-compat або seed) — зберегти у бібліотеці.
-    Cartridge? cartridge = profile.cartridge;
+  // ---- Resolve cartridge/sight з глобального стану ----
+  ShotProfile _resolve(ShotProfile profile, AppState appState) {
     String? cartridgeId = profile.cartridgeId;
+    Cartridge? cartridge = profile.cartridge;
+    String? sightId = profile.sightId;
+    Sight? sight = profile.sight;
 
-    if (cartridge != null && cartridgeId != null) {
-      // Inline cartridge з backward-compat fromJson або seed: зберегти у бібліотеку,
-      // щоб далі воно було доступне через cartridgeLibraryProvider.
-      await storage.saveCartridge(cartridge);
-      await ref.read(cartridgeLibraryProvider.notifier).save(cartridge);
-    } else if (cartridgeId != null) {
-      // Стандартний шлях: lookup по id.
-      final cartridges = await storage.loadCartridges();
-      final found = cartridges.where((c) => c.id == cartridgeId);
+    // Якщо є вбудований cartridge (backward-compat) - зберігаємо в глобальний стан
+    if (cartridge != null && cartridgeId == null) {
+      // Створюємо ID якщо немає
+      cartridgeId = cartridge.id;
+      _saveCartridgeToGlobalState(cartridge);
+    }
+
+    // Шукаємо cartridge в глобальному стані
+    if (cartridgeId != null) {
+      final found = appState.cartridges.where((c) => c.id == cartridgeId);
       if (found.isNotEmpty) {
         cartridge = found.first;
       } else {
-        // Broken ref → обнуляємо id
+        // Зламаний референс - обнуляємо
         cartridgeId = null;
         cartridge = null;
-        // TODO: show toast "Cartridge not found, please select again"
+        // TODO: show toast "Cartridge not found"
       }
     }
 
-    // Sight
-    Sight? sight = profile.sight;
-    String? sightId = profile.sightId;
+    // Аналогічно для sight
+    if (sight != null && sightId == null) {
+      sightId = sight.id;
+      _saveSightToGlobalState(sight);
+    }
 
-    if (sight != null && sightId != null) {
-      await storage.saveSight(sight);
-      await ref.read(sightLibraryProvider.notifier).save(sight);
-    } else if (sightId != null) {
-      final sights = await storage.loadSights();
-      final found = sights.where((s) => s.id == sightId);
+    if (sightId != null) {
+      final found = appState.sights.where((s) => s.id == sightId);
       if (found.isNotEmpty) {
         sight = found.first;
       } else {
         sightId = null;
         sight = null;
-        // TODO: show toast "Sight not found, please select again"
+        // TODO: show toast "Sight not found"
       }
     }
 
-    // Якщо refs змінились — зберегти оновлений профіль (без inline об'єктів)
+    // Якщо референси змінились - зберігаємо оновлений профіль
     if (cartridgeId != profile.cartridgeId || sightId != profile.sightId) {
       final cleaned = ShotProfile(
         id: profile.id,
@@ -86,8 +87,7 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
         sightId: sightId,
         sight: sight,
       );
-      await storage.saveProfile(cleaned);
-      await ref.read(profileLibraryProvider.notifier).save(cleaned);
+      _saveProfileToGlobalState(cleaned);
       return cleaned;
     }
 
@@ -102,8 +102,23 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
     );
   }
 
-  // ── Public API ────────────────────────────────────────────────────────────
+  // ---- Допоміжні методи для роботи з глобальним станом ----
+  Future<void> _saveCartridgeToGlobalState(Cartridge cartridge) async {
+    final notifier = ref.read(appStateProvider.notifier);
+    await notifier.saveCartridge(cartridge);
+  }
 
+  Future<void> _saveSightToGlobalState(Sight sight) async {
+    final notifier = ref.read(appStateProvider.notifier);
+    await notifier.saveSight(sight);
+  }
+
+  Future<void> _saveProfileToGlobalState(ShotProfile profile) async {
+    final notifier = ref.read(appStateProvider.notifier);
+    await notifier.saveProfile(profile);
+  }
+
+  // ---- Public API ----
   Future<void> selectRifle(Rifle r) => _update((p) => p.copyWith(rifle: r));
 
   Future<void> selectSight(Sight s) => _update((p) => p.copyWith(sight: s));
@@ -111,21 +126,24 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   Future<void> selectCartridge(Cartridge c) =>
       _update((p) => p.copyWith(cartridge: c));
 
-  /// Switches to [profile], restoring its own stored runtime state.
   Future<void> selectProfile(ShotProfile profile) async {
-    final resolved = await _resolve(profile);
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final resolved = _resolve(profile, appState);
     state = AsyncData(resolved);
-    await ref.read(appStorageProvider).saveActiveProfileId(resolved.id);
+
+    final notifier = ref.read(appStateProvider.notifier);
+    await notifier.saveActiveProfileId(resolved.id);
   }
 
   Future<void> _update(ShotProfile Function(ShotProfile) fn) async {
     final current = state.value ?? seedShotProfile;
     final updated = fn(current);
     state = AsyncData(updated);
-    await ref.read(appStorageProvider).saveProfile(updated);
-    // Sync profileLibraryProvider in-memory state so switching profiles
-    // restores the latest runtime state (conditions, winds, etc.)
-    await ref.read(profileLibraryProvider.notifier).save(updated);
+
+    final notifier = ref.read(appStateProvider.notifier);
+    await notifier.saveProfile(updated);
   }
 }
 

@@ -1,43 +1,44 @@
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/providers/library_provider.dart';
+// sights_view_model.dart
+import 'package:eballistica/core/models/sight.dart';
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-sealed class CartridgesUiState {
-  const CartridgesUiState();
+sealed class SightsUiState {
+  const SightsUiState();
 }
 
-class CartridgesLoading extends CartridgesUiState {
-  const CartridgesLoading();
+class SightsLoading extends SightsUiState {
+  const SightsLoading();
 }
 
-class CartridgesReady extends CartridgesUiState {
-  final List<Cartridge> cartridges;
+class SightsReady extends SightsUiState {
+  final List<Sight> sights;
 
-  const CartridgesReady({required this.cartridges});
+  const SightsReady({required this.sights});
 }
 
-class CartridgesViewModel extends AsyncNotifier<CartridgesUiState> {
+class SightsViewModel extends AsyncNotifier<SightsUiState> {
   @override
-  Future<CartridgesUiState> build() async {
-    final cartridges = await ref.watch(cartridgeLibraryProvider.future);
-    return CartridgesReady(cartridges: cartridges);
+  Future<SightsUiState> build() async {
+    final appState = await ref.watch(appStateProvider.future);
+    return SightsReady(sights: appState.sights);
   }
 
-  Future<void> deleteCartridge(String id) async {
-    await ref.read(cartridgeLibraryProvider.notifier).delete(id);
+  Future<void> deleteSight(String id) async {
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.deleteSight(id);
 
     final current = state.value;
-    if (current is CartridgesReady) {
+    if (current is SightsReady) {
       state = AsyncData(
-        CartridgesReady(
-          cartridges: current.cartridges.where((c) => c.id != id).toList(),
+        SightsReady(
+          sights: current.sights.where((s) => s.id != id).toList(),
         ),
       );
     }
   }
 }
 
-final cartridgesViewModelProvider =
-    AsyncNotifierProvider<CartridgesViewModel, CartridgesUiState>(
-      CartridgesViewModel.new,
-    );
+final sightsViewModelProvider = AsyncNotifierProvider<SightsViewModel, SightsUiState>(
+  SightsViewModel.new,
+);

@@ -1,14 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/models/convertors_state.dart';
+import 'package:eballistica/core/providers/app_state_provider.dart'; // Змінений імпорт
 import 'package:eballistica/core/solver/unit.dart';
-import 'storage_provider.dart';
 
 class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   @override
   Future<ConvertorsState> build() async {
-    final storage = ref.read(appStorageProvider);
-    final saved = await storage.loadConvertorsState();
-    return saved ?? const ConvertorsState();
+    // Отримуємо стан конвертора з глобального стану
+    final appState = await ref.watch(appStateProvider.future);
+    return appState.convertors ?? const ConvertorsState();
   }
 
   Future<void> updateLengthValue(double? valueInInches) async {
@@ -105,8 +105,12 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   }
 
   Future<void> _save(ConvertorsState newState) async {
+    // Оновлюємо локальний стан
     state = AsyncData(newState);
-    await ref.read(appStorageProvider).saveConvertorsState(newState);
+
+    // Оновлюємо глобальний стан через appStateProvider
+    final appStateNotifier = ref.read(appStateProvider.notifier);
+    await appStateNotifier.saveConvertorsState(newState);
   }
 }
 

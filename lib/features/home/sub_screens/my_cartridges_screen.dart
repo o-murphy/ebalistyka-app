@@ -1,4 +1,4 @@
-import 'package:eballistica/features/home/my_cartridges_vm.dart';
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eballistica/core/models/collection_item.dart';
 import 'package:eballistica/features/home/sub_screens/profiles/widgets/collection_body.dart';
@@ -19,45 +19,40 @@ class MyCartridgesCollectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cartridgesState = ref.watch(cartridgesViewModelProvider);
+    final appStateAsync = ref.watch(appStateProvider);
+    final cartridges = ref.watch(cartridgesProvider);
 
     return BaseScreen(
       title: "My Cartridges",
       isSubscreen: true,
-      body: cartridgesState.when(
+      body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
-        data: (state) {
-          // Приводимо state до CartridgesReady
-          final readyState = state as CartridgesReady;
-          final cartridges = readyState.cartridges;
-
-          return BaseCollectionBody(
-            tiles: cartridges
-                .map(
-                  (item) => CollectionItemTile(
-                    key: ValueKey(item.id),
-                    body: Center(child: Text(item.name)),
-                    item: CartridgeCollectionItem(ref: item),
-                    onSelect: () => debugPrint("item id: ${item.id} selected"),
-                    onEdit: () => debugPrint(
-                      "routes to item wizard screen id: ${item.id} selected",
-                    ),
+        data: (_) => BaseCollectionBody(
+          tiles: cartridges
+              .map(
+                (item) => CollectionItemTile(
+                  key: ValueKey(item.id),
+                  body: Center(child: Text(item.name)),
+                  item: CartridgeCollectionItem(ref: item),
+                  onSelect: () => debugPrint("item id: ${item.id} selected"),
+                  onEdit: () => debugPrint(
+                    "routes to item wizard screen id: ${item.id} selected",
                   ),
-                )
-                .toList(),
-            bottom: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildButton("Select cart from collection"),
-                const SizedBox(height: 8),
-                _buildButton("Select bullet from collection"),
-                const SizedBox(height: 8),
-                _buildButton("Create cartridge"),
-              ],
-            ),
-          );
-        },
+                ),
+              )
+              .toList(),
+          bottom: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildButton("Select cart from collection"),
+              const SizedBox(height: 8),
+              _buildButton("Select bullet from collection"),
+              const SizedBox(height: 8),
+              _buildButton("Create cartridge"),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/providers/library_provider.dart';
+import 'package:eballistica/core/providers/app_state_provider.dart';
 import 'package:eballistica/features/home/profiles_vm.dart';
 import 'package:eballistica/features/home/sub_screens/profiles/widgets/profile_card.dart';
 import 'package:eballistica/router.dart';
@@ -98,9 +98,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   }
 
   Future<void> _onEditRifle(ProfileCardData data) async {
-    final profiles = ref.read(profileLibraryProvider).value ?? [];
-    final profile = profiles.where((p) => p.id == data.id).firstOrNull;
+    // Отримуємо профіль з глобального стану
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final profile = appState.profiles.where((p) => p.id == data.id).firstOrNull;
     if (profile == null) return;
+
     final result = await context.push<Rifle?>(
       Routes.profileEditRifle,
       extra: profile.rifle,
@@ -120,6 +124,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   @override
   Widget build(BuildContext context) {
     final vmState = ref.watch(rifleSelectVmProvider);
+
+    ref.listen(appStateProvider, (previous, next) {
+      // Нічого не робимо - ігноруємо оновлення
+    });
 
     return vmState.when(
       loading: () => BaseScreen(
