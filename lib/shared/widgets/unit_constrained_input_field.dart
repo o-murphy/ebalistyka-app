@@ -1,7 +1,7 @@
 // ── Reusable input field ─────────────────────────────────────────────────────
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:flutter/material.dart';
 

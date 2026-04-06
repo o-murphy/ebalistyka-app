@@ -8,8 +8,8 @@ import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/solver/munition.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/munition.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 // ── Data classes ─────────────────────────────────────────────────────────────
 

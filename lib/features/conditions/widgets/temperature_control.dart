@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 // ─── Large temperature control (big ± buttons + tap-to-edit dialog) ───────────
 

@@ -1,7 +1,7 @@
 // Canonical units used for JSON persistence.
 // One constant per serialized field — changing any entry is a breaking storage format change.
 
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 abstract final class StorageUnits {
   // ── Weapon ────────────────────────────────────────────────────────────────

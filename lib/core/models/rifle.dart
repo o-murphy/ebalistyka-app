@@ -1,5 +1,5 @@
-import 'package:ebalistyka/core/solver/munition.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/munition.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:uuid/uuid.dart';
 
 import '_storage.dart';

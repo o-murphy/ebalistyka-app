@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 class ConvertorsState {
   final double lengthValueInch;

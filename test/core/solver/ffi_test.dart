@@ -8,8 +8,8 @@
 //   BCLIBC_FFI_PATH=/path/to/libbclibc_ffi.so dart test test/ffi_test.dart
 
 import 'package:test/test.dart';
-import 'package:ebalistyka/core/solver/ffi/bclibc_ffi.dart';
-import 'package:ebalistyka/core/solver/ffi/bclibc_bindings.g.dart';
+import 'package:bclibc_ffi/solver/ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/solver/ffi/bclibc_bindings.g.dart';
 
 // ---------------------------------------------------------------------------
 // Minimal G7 drag table (same points as the WASM test fixture)

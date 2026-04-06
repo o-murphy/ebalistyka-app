@@ -33,6 +33,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.0"
+  bclibc_ffi:
+    dependency: "direct main"
+    description:
+      path: "packages/bclibc_ffi"
+      relative: true
+    source: path
+    version: "0.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -161,7 +168,7 @@ packages:
     source: hosted
     version: "1.3.3"
   ffi:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: ffi
       sha256: "6d7fd89431262d8f3125e81b50d3847a091d846eafcd4fdb88dd06f36d705a45"
@@ -169,7 +176,7 @@ packages:
     source: hosted
     version: "2.2.0"
   ffigen:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: ffigen
       sha256: b7803707faeec4ce3c1b0c2274906504b796e3b70ad573577e72333bd1c9b3ba

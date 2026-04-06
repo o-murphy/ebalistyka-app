@@ -2,7 +2,7 @@ import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 class PressureConvertorUiState {
   final GenericConvertorField mmHg;

@@ -1,7 +1,7 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/convertors_state.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart'; // Змінений імпорт
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   @override

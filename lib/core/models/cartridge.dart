@@ -1,9 +1,9 @@
-import 'package:ebalistyka/core/solver/drag_model.dart';
-import 'package:ebalistyka/core/solver/drag_tables.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/drag_model.dart';
+import 'package:bclibc_ffi/solver/drag_tables.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:ebalistyka/core/solver/munition.dart';
+import 'package:bclibc_ffi/solver/munition.dart';
 import '_storage.dart';
 import 'conditions_data.dart';
 

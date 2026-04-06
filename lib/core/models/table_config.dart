@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 // ─── Table Configuration Model ────────────────────────────────────────────────
 //

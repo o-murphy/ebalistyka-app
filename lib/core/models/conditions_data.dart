@@ -1,5 +1,5 @@
-import 'package:ebalistyka/core/solver/conditions.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/conditions.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 
 import '_storage.dart';
 

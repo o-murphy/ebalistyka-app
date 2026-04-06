@@ -45,13 +45,13 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_definitions(${TARGET} PRIVATE "$<$<CONFIG:Debug>:_DEBUG>")
 endfunction()
 
-# ============================================================================
-# bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
-# ============================================================================
-add_subdirectory(
-    "${CMAKE_CURRENT_SOURCE_DIR}/../external/bclibc"
-    "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
-)
+# # ============================================================================
+# # bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
+# # ============================================================================
+# add_subdirectory(
+#     "${CMAKE_CURRENT_SOURCE_DIR}/../external/bclibc"
+#     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
+# )
 
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")

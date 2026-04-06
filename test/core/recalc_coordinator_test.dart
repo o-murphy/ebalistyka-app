@@ -16,7 +16,7 @@ import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/sight.dart';
-import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
