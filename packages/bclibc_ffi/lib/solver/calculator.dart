@@ -11,13 +11,8 @@
 
 import 'dart:math' as math;
 
-import 'package:bclibc_ffi/solver/conditions.dart';
-import 'package:bclibc_ffi/solver/constants.dart';
 import 'package:bclibc_ffi/bclibc_bindings.g.dart';
 import 'package:bclibc_ffi/bclibc_ffi.dart';
-import 'package:bclibc_ffi/solver/shot.dart';
-import 'package:bclibc_ffi/solver/trajectory_data.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
 
 // ---------------------------------------------------------------------------
 // Default config constants (mirror TS DEFAULT_CONFIG)

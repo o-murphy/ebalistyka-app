@@ -84,6 +84,8 @@ abstract class Dimension<T extends Dimension<T>> {
   double get raw => _value;
   Unit get units => _units;
 
+  String get name => _units.name;
+
   double in_(Unit unit) => _fromRaw(_value, unit);
 
   T to(Unit unit) => _create(in_(unit), unit);
@@ -139,6 +141,16 @@ abstract class Dimension<T extends Dimension<T>> {
 class Angular extends Dimension<Angular> {
   Angular(super.value, super.unit);
 
+  factory Angular.radian(double value) => Angular(value, Unit.radian);
+  factory Angular.degree(double value) => Angular(value, Unit.degree);
+  factory Angular.moa(double value) => Angular(value, Unit.moa);
+  factory Angular.mil(double value) => Angular(value, Unit.mil);
+  factory Angular.mRad(double value) => Angular(value, Unit.mRad);
+  factory Angular.thousandth(double value) => Angular(value, Unit.thousandth);
+  factory Angular.inPer100Yd(double value) => Angular(value, Unit.inPer100Yd);
+  factory Angular.cmPer100m(double value) => Angular(value, Unit.cmPer100m);
+  factory Angular.oClock(double value) => Angular(value, Unit.oClock);
+
   static const rawUnit = Unit.radian;
   static bool accepts(Unit u) => u.id >= 0 && u.id < 10;
 
@@ -173,6 +185,9 @@ class Angular extends Dimension<Angular> {
 class Energy extends Dimension<Energy> {
   Energy(super.value, super.unit);
 
+  factory Energy.footPound(double value) => Energy(value, Unit.footPound);
+  factory Energy.joule(double value) => Energy(value, Unit.joule);
+
   static const rawUnit = Unit.footPound;
   static bool accepts(Unit u) => u.id >= 30 && u.id < 40;
 
@@ -190,6 +205,18 @@ class Energy extends Dimension<Energy> {
 
 class Distance extends Dimension<Distance> {
   Distance(super.value, super.unit);
+
+  factory Distance.inch(double value) => Distance(value, Unit.inch);
+  factory Distance.foot(double value) => Distance(value, Unit.foot);
+  factory Distance.yard(double value) => Distance(value, Unit.yard);
+  factory Distance.mile(double value) => Distance(value, Unit.mile);
+  factory Distance.nauticalMile(double value) =>
+      Distance(value, Unit.nauticalMile);
+  factory Distance.line(double value) => Distance(value, Unit.line);
+  factory Distance.millimeter(double value) => Distance(value, Unit.millimeter);
+  factory Distance.centimeter(double value) => Distance(value, Unit.inch);
+  factory Distance.meter(double value) => Distance(value, Unit.meter);
+  factory Distance.kilometer(double value) => Distance(value, Unit.kilometer);
 
   static const rawUnit = Unit.inch;
   static bool accepts(Unit u) => u.id >= 10 && u.id < 20;
@@ -217,6 +244,13 @@ class Distance extends Dimension<Distance> {
 class Pressure extends Dimension<Pressure> {
   Pressure(super.value, super.unit);
 
+  factory Pressure.mmHg(double value) => Pressure(value, Unit.mmHg);
+  factory Pressure.inHg(double value) => Pressure(value, Unit.inHg);
+  factory Pressure.bar(double value) => Pressure(value, Unit.bar);
+  factory Pressure.hPa(double value) => Pressure(value, Unit.hPa);
+  factory Pressure.psi(double value) => Pressure(value, Unit.psi);
+  factory Pressure.atm(double value) => Pressure(value, Unit.atm);
+
   static const rawUnit = Unit.mmHg;
   static bool accepts(Unit u) => u.id >= 40 && u.id < 50;
 
@@ -238,6 +272,12 @@ class Pressure extends Dimension<Pressure> {
 
 class Temperature extends Dimension<Temperature> {
   Temperature(super.value, super.unit);
+
+  factory Temperature.fahrenheit(double value) =>
+      Temperature(value, Unit.fahrenheit);
+  factory Temperature.rankin(double value) => Temperature(value, Unit.rankin);
+  factory Temperature.celsius(double value) => Temperature(value, Unit.celsius);
+  factory Temperature.kelvin(double value) => Temperature(value, Unit.kelvin);
 
   static const rawUnit = Unit.fahrenheit;
   static bool accepts(Unit u) => u.id >= 50 && u.id < 60;
@@ -274,6 +314,13 @@ class Temperature extends Dimension<Temperature> {
 class Time extends Dimension<Time> {
   Time(super.value, super.unit);
 
+  factory Time.second(double value) => Time(value, Unit.second);
+  factory Time.minute(double value) => Time(value, Unit.minute);
+  factory Time.millisecond(double value) => Time(value, Unit.millisecond);
+  factory Time.microsecond(double value) => Time(value, Unit.microsecond);
+  factory Time.nanosecond(double value) => Time(value, Unit.nanosecond);
+  factory Time.picosecond(double value) => Time(value, Unit.picosecond);
+
   static const rawUnit = Unit.second;
   static bool accepts(Unit u) => u.id >= 80 && u.id < 90;
 
@@ -296,6 +343,12 @@ class Time extends Dimension<Time> {
 class Velocity extends Dimension<Velocity> {
   Velocity(super.value, super.unit);
 
+  factory Velocity.mps(double value) => Velocity(value, Unit.mps);
+  factory Velocity.kmh(double value) => Velocity(value, Unit.kmh);
+  factory Velocity.fps(double value) => Velocity(value, Unit.fps);
+  factory Velocity.mph(double value) => Velocity(value, Unit.mph);
+  factory Velocity.kt(double value) => Velocity(value, Unit.kt);
+
   static const rawUnit = Unit.mps;
   static bool accepts(Unit u) => u.id >= 60 && u.id < 70;
 
@@ -316,6 +369,13 @@ class Velocity extends Dimension<Velocity> {
 
 class Weight extends Dimension<Weight> {
   Weight(super.value, super.unit);
+
+  factory Weight.grain(double value) => Weight(value, Unit.grain);
+  factory Weight.ounce(double value) => Weight(value, Unit.ounce);
+  factory Weight.gram(double value) => Weight(value, Unit.gram);
+  factory Weight.pound(double value) => Weight(value, Unit.pound);
+  factory Weight.kilogram(double value) => Weight(value, Unit.kilogram);
+  factory Weight.newton(double value) => Weight(value, Unit.newton);
 
   static const rawUnit = Unit.grain;
   static bool accepts(Unit u) => u.id >= 70 && u.id < 80;
@@ -339,6 +399,11 @@ class Weight extends Dimension<Weight> {
 class Torque extends Dimension<Torque> {
   Torque(super.value, super.unit);
 
+  factory Torque.newtonMeter(double value) => Torque(value, Unit.newtonMeter);
+  factory Torque.footPoundTorque(double value) =>
+      Torque(value, Unit.footPoundTorque);
+  factory Torque.inchPound(double value) => Torque(value, Unit.inchPound);
+
   static const rawUnit = Unit.newtonMeter;
   static bool accepts(Unit u) => u.id >= 90 && u.id < 100;
 
@@ -357,6 +422,11 @@ class Torque extends Dimension<Torque> {
 
 class Ratio extends Dimension<Ratio> {
   Ratio(super.value, super.unit);
+
+  factory Ratio.scalar(double value) => Ratio(value, Unit.scalar);
+  factory Ratio.percent(double value) => Ratio(value, Unit.percent);
+  factory Ratio.permille(double value) => Ratio(value, Unit.permille);
+  factory Ratio.fraction(double value) => Ratio(value, Unit.fraction);
 
   static const rawUnit = Unit.scalar;
   static bool accepts(Unit u) => u.id < 0; // All negative IDs
