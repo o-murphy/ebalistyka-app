@@ -32,8 +32,6 @@ final seedRifle = Rifle(
 final seedSight = Sight(
   id: 'seed-sight-generic',
   name: 'Generic Long-Range Scope',
-  sightHeight: Distance.millimeter(0.0),
-  zeroElevation: Angular.radian(0.0),
 );
 
 // ── Seed zero conditions ───────────────────────────────────────────────────────

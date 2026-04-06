@@ -1,4 +1,4 @@
-.PHONY: native ffigen test format clean
+.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -21,6 +21,18 @@ native:
 #   macOS:   brew install llvm
 ffigen:
 	cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml
+
+objectbox-setup:
+	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
+
+objectbox:
+	cd packages/ebalistyka_db && dart run build_runner build
+
+objectbox-clean:
+	cd packages/ebalistyka_db && dart run build_runner clean
+
+objectbox-admin:
+	cd packages/ebalistyka_db && ./admin.sh
 
 # Run all tests (native must be built first)
 test: native

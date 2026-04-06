@@ -36,11 +36,7 @@ ShotProfile _makeProfile() {
     sightHeight: Distance.millimeter(38.0),
     twist: Distance.inch(11.0),
   );
-  final sight = Sight(
-    name: 'Test Scope',
-    sightHeight: Distance.millimeter(38.0),
-    zeroElevation: Angular.radian(0),
-  );
+  final sight = Sight(name: 'Test Scope');
   return ShotProfile(
     name: 'Test Shot',
     rifle: rifle,
@@ -376,11 +372,7 @@ void main() {
         sightHeight: Distance.millimeter(38.0),
         twist: Distance.inch(0.0),
       );
-      final sight = Sight(
-        name: 'Bad',
-        sightHeight: Distance.millimeter(38.0),
-        zeroElevation: Angular.radian(0),
-      );
+      final sight = Sight(name: 'Bad');
       final badProfile = ShotProfile(
         name: 'Bad Shot',
         rifle: rifle,

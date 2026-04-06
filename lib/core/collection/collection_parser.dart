@@ -137,15 +137,8 @@ abstract final class CollectionParser {
 
   // ── Sight ──────────────────────────────────────────────────────────────────
 
-  static Sight _parseSight(Map<String, dynamic> j) => Sight(
-    name: j['name'] as String,
-    manufacturer: j['vendor'] as String?,
-    sightHeight: Distance(
-      (j['sightHeight'] as num? ?? 0.0).toDouble(),
-      Unit.inch,
-    ),
-    zeroElevation: Angular.radian(0.0),
-  );
+  static Sight _parseSight(Map<String, dynamic> j) =>
+      Sight(name: j['name'] as String, manufacturer: j['vendor'] as String?);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 

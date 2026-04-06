@@ -23,15 +23,11 @@ class A7pParser {
   static ShotProfile _parseProfile(Profile p) {
     final rifle = Rifle(
       name: p.profileName,
-      sightHeight: Distance(p.scHeight.toDouble(), Unit.millimeter),
-      twist: Distance(p.rTwist / 100.0, Unit.inch),
+      sightHeight: Distance.millimeter(p.scHeight.toDouble()),
+      twist: Distance.inch(p.rTwist / 100.0),
     );
 
-    final sight = Sight(
-      name: p.profileName,
-      sightHeight: rifle.sightHeight,
-      zeroElevation: rifle.zeroElevation,
-    );
+    final sight = Sight(name: p.profileName);
 
     // Будуємо zeroConditions
     final zeroAtmo = _buildAtmoData(
@@ -58,13 +54,13 @@ class A7pParser {
       name: p.cartridgeName,
       projectileName: p.bulletName,
       dragType: _dragType(p.bcType),
-      weight: Weight(p.bWeight / 10.0, Unit.grain),
-      diameter: Distance(p.bDiameter / 1000.0, Unit.inch),
-      length: Distance(p.bLength / 1000.0, Unit.inch),
+      weight: Weight.grain(p.bWeight / 10.0),
+      diameter: Distance.inch(p.bDiameter / 1000.0),
+      length: Distance.inch(p.bLength / 1000.0),
       coefRows: _parseCoefRows(p),
-      mv: Velocity(p.cMuzzleVelocity / 10.0, Unit.mps),
-      powderTemp: Temperature(p.cZeroTemperature.toDouble(), Unit.celsius),
-      powderSensitivity: Ratio(p.cTCoeff / 1000.0, Unit.fraction),
+      mv: Velocity.mps(p.cMuzzleVelocity / 10.0),
+      powderTemp: Temperature.celsius(p.cZeroTemperature.toDouble()),
+      powderSensitivity: Ratio.fraction(p.cTCoeff / 1000.0),
       zeroConditions: zeroConditions,
     );
 

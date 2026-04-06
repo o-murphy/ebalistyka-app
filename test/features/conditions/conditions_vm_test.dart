@@ -40,11 +40,7 @@ ShotProfile _makeProfile() {
     sightHeight: Distance.millimeter(38.0),
     twist: Distance.inch(11.0),
   );
-  final sight = Sight(
-    name: 'Test Scope',
-    sightHeight: Distance.millimeter(38.0),
-    zeroElevation: Angular.radian(0),
-  );
+  final sight = Sight(name: 'Test Scope');
   return ShotProfile(
     name: 'Test Shot',
     rifle: rifle,
