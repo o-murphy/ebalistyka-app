@@ -51,6 +51,7 @@ dependencies:
   sticky_headers: ^0.3.0
   data_table_2: ^2.7.2
   riverpod: ^3.2.1
+  objectbox_flutter_libs: any
 
 dev_dependencies:
   flutter_test:
