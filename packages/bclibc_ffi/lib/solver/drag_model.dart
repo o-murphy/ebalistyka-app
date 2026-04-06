@@ -50,9 +50,9 @@ class DragModel {
     Distance? diameter,
     Distance? length,
   }) : dragTable = makeDataPoints(dragTable),
-       weight = weight ?? Weight(0, Unit.grain),
-       diameter = diameter ?? Distance(0, Unit.inch),
-       length = length ?? Distance(0, Unit.inch) {
+       weight = weight ?? Weight.grain(0),
+       diameter = diameter ?? Distance.inch(0),
+       length = length ?? Distance.inch(0) {
     if (this.dragTable.isEmpty) {
       throw ArgumentError('Received empty drag table');
     }
@@ -130,8 +130,8 @@ DragModel createDragModelMultiBC({
   Distance? diameter,
   Distance? length,
 }) {
-  final wObj = weight ?? Weight(0, Unit.grain);
-  final dObj = diameter ?? Distance(0, Unit.inch);
+  final wObj = weight ?? Weight.grain(0);
+  final dObj = diameter ?? Distance.inch(0);
 
   final double bc = (wObj.raw > 0 && dObj.raw > 0)
       ? calculateSectionalDensity(wObj.in_(Unit.grain), dObj.in_(Unit.inch))

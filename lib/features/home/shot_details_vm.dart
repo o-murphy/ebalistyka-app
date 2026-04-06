@@ -128,7 +128,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     final cartridge = profile.cartridge!;
     final targetDistM = conditions.distance.in_(Unit.meter);
     final traj = hit.trajectory;
-    final atTarget = hit.getAtDistance(Distance(targetDistM, Unit.meter));
+    final atTarget = hit.getAtDistance(Distance.meter(targetDistM));
 
     // MV Logic with powder sensitivity
     final refMvMps = cartridge.mv.in_(Unit.mps);
@@ -189,11 +189,11 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     }
 
     return ShotDetailsReady(
-      currentMv: formatter.velocity(Velocity(currentMvMps, Unit.mps)),
-      zeroMv: formatter.velocity(Velocity(zeroMvMps, Unit.mps)),
+      currentMv: formatter.velocity(Velocity.mps(currentMvMps)),
+      zeroMv: formatter.velocity(Velocity.mps(zeroMvMps)),
       speedOfSound: soundSpeedFps == null
           ? '—'
-          : formatter.velocity(Velocity(soundSpeedFps, Unit.fps)),
+          : formatter.velocity(Velocity.fps(soundSpeedFps)),
       velocityAtTarget: formatter.velocity(atTarget.velocity),
       energyAtMuzzle: firstPoint == null
           ? '—'

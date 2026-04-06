@@ -127,55 +127,40 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   double inputToRaw(double displayValue, InputField field) {
     return switch (field) {
-      InputField.velocity => Velocity(displayValue, _u.velocity).in_(Unit.mps),
-      InputField.distance => Distance(
-        displayValue,
+      InputField.velocity => displayValue.convert(_u.velocity, Unit.mps),
+      InputField.distance => displayValue.convert(_u.distance, Unit.meter),
+      InputField.targetDistance => displayValue.convert(
         _u.distance,
-      ).in_(Unit.meter),
-      InputField.targetDistance => Distance(
-        displayValue,
-        _u.distance,
-      ).in_(Unit.meter),
-      InputField.zeroDistance => Distance(
-        displayValue,
-        _u.distance,
-      ).in_(Unit.meter),
-      InputField.temperature => Temperature(
-        displayValue,
+        Unit.meter,
+      ),
+      InputField.zeroDistance => displayValue.convert(_u.distance, .meter),
+      InputField.temperature => displayValue.convert(
         _u.temperature,
-      ).in_(Unit.celsius),
-      InputField.pressure => Pressure(displayValue, _u.pressure).in_(Unit.hPa),
+        Unit.celsius,
+      ),
+      InputField.pressure => displayValue.convert(_u.pressure, Unit.hPa),
       InputField.humidity => displayValue / 100.0,
-      InputField.windVelocity => Velocity(
-        displayValue,
-        _u.velocity,
-      ).in_(Unit.mps),
+      InputField.windVelocity => displayValue.convert(_u.velocity, Unit.mps),
       InputField.lookAngle => displayValue,
-      InputField.sightHeight => Distance(
-        displayValue,
+      InputField.sightHeight => displayValue.convert(
         _u.sightHeight,
-      ).in_(Unit.millimeter),
-      InputField.twist => Distance(displayValue, _u.twist).in_(Unit.inch),
-      InputField.bulletWeight => Weight(
-        displayValue,
-        _u.weight,
-      ).in_(Unit.grain),
-      InputField.bulletLength => Distance(
-        displayValue,
+        Unit.millimeter,
+      ),
+      InputField.twist => displayValue.convert(_u.twist, Unit.inch),
+      InputField.bulletWeight => displayValue.convert(_u.weight, Unit.grain),
+      InputField.bulletLength => displayValue.convert(
         _u.length,
-      ).in_(Unit.millimeter),
-      InputField.bulletDiameter => Distance(
-        displayValue,
+        Unit.millimeter,
+      ),
+      InputField.bulletDiameter => displayValue.convert(
         _u.diameter,
-      ).in_(Unit.millimeter),
-      InputField.barrelLength => Distance(
-        displayValue,
+        Unit.millimeter,
+      ),
+      InputField.barrelLength => displayValue.convert(
         _u.barrelLength,
-      ).in_(Unit.inch),
-      InputField.torque => Torque(
-        displayValue,
-        _u.torque,
-      ).in_(Unit.newtonMeter),
+        Unit.inch,
+      ),
+      InputField.torque => displayValue.convert(_u.torque, Unit.newtonMeter),
       InputField.bc => displayValue,
     };
   }
@@ -183,43 +168,28 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   double rawToInput(double rawValue, InputField field) {
     return switch (field) {
-      InputField.velocity => Velocity(rawValue, Unit.mps).in_(_u.velocity),
-      InputField.distance => Distance(rawValue, Unit.meter).in_(_u.distance),
-      InputField.targetDistance => Distance(
-        rawValue,
-        Unit.meter,
-      ).in_(_u.distance),
-      InputField.zeroDistance => Distance(
-        rawValue,
-        Unit.meter,
-      ).in_(_u.distance),
-      InputField.temperature => Temperature(
-        rawValue,
-        Unit.celsius,
-      ).in_(_u.temperature),
-      InputField.pressure => Pressure(rawValue, Unit.hPa).in_(_u.pressure),
+      InputField.velocity => rawValue.convert(Unit.mps, _u.velocity),
+      InputField.distance => rawValue.convert(Unit.meter, _u.distance),
+      InputField.targetDistance => rawValue.convert(Unit.meter, _u.distance),
+      InputField.zeroDistance => rawValue.convert(Unit.meter, _u.distance),
+      InputField.temperature => rawValue.convert(Unit.celsius, _u.temperature),
+      InputField.pressure => rawValue.convert(Unit.hPa, _u.pressure),
       InputField.humidity => rawValue * 100.0,
-      InputField.windVelocity => Velocity(rawValue, Unit.mps).in_(_u.velocity),
+      InputField.windVelocity => rawValue.convert(Unit.mps, _u.velocity),
       InputField.lookAngle => rawValue,
-      InputField.sightHeight => Distance(
-        rawValue,
+      InputField.sightHeight => rawValue.convert(
         Unit.millimeter,
-      ).in_(_u.sightHeight),
-      InputField.twist => Distance(rawValue, Unit.inch).in_(_u.twist),
-      InputField.bulletWeight => Weight(rawValue, Unit.grain).in_(_u.weight),
-      InputField.bulletLength => Distance(
-        rawValue,
+        _u.sightHeight,
+      ),
+      InputField.twist => rawValue.convert(Unit.inch, _u.twist),
+      InputField.bulletWeight => rawValue.convert(Unit.grain, _u.weight),
+      InputField.bulletLength => rawValue.convert(Unit.millimeter, _u.length),
+      InputField.bulletDiameter => rawValue.convert(
         Unit.millimeter,
-      ).in_(_u.length),
-      InputField.bulletDiameter => Distance(
-        rawValue,
-        Unit.millimeter,
-      ).in_(_u.diameter),
-      InputField.barrelLength => Distance(
-        rawValue,
-        Unit.inch,
-      ).in_(_u.barrelLength),
-      InputField.torque => Torque(rawValue, Unit.newtonMeter).in_(_u.torque),
+        _u.diameter,
+      ),
+      InputField.barrelLength => rawValue.convert(Unit.inch, _u.barrelLength),
+      InputField.torque => rawValue.convert(Unit.newtonMeter, _u.torque),
       InputField.bc => rawValue,
     };
   }

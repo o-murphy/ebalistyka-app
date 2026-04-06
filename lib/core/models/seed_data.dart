@@ -22,9 +22,9 @@ final seedRifle = Rifle(
   id: 'seed-rifle-338lm',
   name: '.338 Lapua Magnum',
   description: 'Generic .338LM platform',
-  sightHeight: Distance(8.5, Unit.millimeter),
-  twist: Distance(10.0, Unit.inch),
-  caliberDiameter: Distance(0.338, Unit.inch),
+  sightHeight: Distance.millimeter(8.5),
+  twist: Distance.inch(10.0),
+  caliberDiameter: Distance.inch(0.338),
 );
 
 // ── Sight ─────────────────────────────────────────────────────────────────────
@@ -32,24 +32,24 @@ final seedRifle = Rifle(
 final seedSight = Sight(
   id: 'seed-sight-generic',
   name: 'Generic Long-Range Scope',
-  sightHeight: Distance(0.0, Unit.millimeter),
-  zeroElevation: Angular(0.0, Unit.radian),
+  sightHeight: Distance.millimeter(0.0),
+  zeroElevation: Angular.radian(0.0),
 );
 
 // ── Seed zero conditions ───────────────────────────────────────────────────────
 
 final _seedZeroAtmo = AtmoData(
-  altitude: Distance(0.0, Unit.meter),
-  temperature: Temperature(15.0, Unit.celsius),
-  pressure: Pressure(1000.0, Unit.hPa),
+  altitude: Distance.meter(0.0),
+  temperature: Temperature.celsius(15.0),
+  pressure: Pressure.hPa(1000.0),
   humidity: 0.02,
-  powderTemp: Temperature(15.0, Unit.celsius),
+  powderTemp: Temperature.celsius(15.0),
 );
 
 final _seedZeroConditions = Conditions.withDefaults(
   atmo: _seedZeroAtmo,
   winds: const [],
-  lookAngle: Angular(0.0, Unit.degree),
+  lookAngle: Angular.degree(0.0),
   usePowderSensitivity: false,
   useDiffPowderTemp: false,
 );
@@ -70,13 +70,13 @@ final seedCartridgeUkrop250 = Cartridge(
   id: 'seed-cart-ukrop-250-smk',
   name: '.338LM UKROP 250GR SMK',
   dragType: DragModelType.g7,
-  weight: Weight(250.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.555, Unit.inch),
+  weight: Weight.grain(250.0),
+  diameter: Distance.inch(0.338),
+  length: Distance.inch(1.555),
   coefRows: [CoeficientRow(bcCd: 0.314, mv: 888.0)],
-  mv: Velocity(888.0, Unit.mps),
-  powderTemp: Temperature(29.0, Unit.celsius),
-  powderSensitivity: Ratio(0.02, Unit.fraction),
+  mv: Velocity.mps(888.0),
+  powderTemp: Temperature.celsius(29.0),
+  powderSensitivity: Ratio.fraction(0.02),
   zeroConditions: _seedZeroConditions, // ← використовуємо Conditions
 );
 
@@ -84,13 +84,13 @@ final seedCartridgeHornady250 = Cartridge(
   id: 'seed-cart-hornady-250-bthp',
   name: '.338LM Hornady 250GR BTHP',
   dragType: DragModelType.g7,
-  weight: Weight(250.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.567, Unit.inch),
+  weight: Weight.grain(250.0),
+  diameter: Distance.inch(0.338),
+  length: Distance.inch(1.567),
   coefRows: [CoeficientRow(bcCd: 0.322, mv: 885.0)],
-  mv: Velocity(885.0, Unit.mps),
-  powderTemp: Temperature(15.0, Unit.celsius),
-  powderSensitivity: Ratio(0.02, Unit.fraction),
+  mv: Velocity.mps(885.0),
+  powderTemp: Temperature.celsius(15.0),
+  powderSensitivity: Ratio.fraction(0.02),
   zeroConditions: _seedZeroConditions,
 );
 
@@ -98,13 +98,13 @@ final seedCartridgeLapua300 = Cartridge(
   id: 'seed-cart-lapua-300-smk',
   name: '.338LM Lapua 300GR SMK',
   dragType: DragModelType.g7,
-  weight: Weight(300.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.700, Unit.inch),
+  weight: Weight.grain(300.0),
+  diameter: Distance.inch(0.338),
+  length: Distance.inch(1.700),
   coefRows: [CoeficientRow(bcCd: 0.381, mv: 825.0)],
-  mv: Velocity(825.0, Unit.mps),
-  powderTemp: Temperature(15.0, Unit.celsius),
-  powderSensitivity: Ratio(0.123, Unit.fraction),
+  mv: Velocity.mps(825.0),
+  powderTemp: Temperature.celsius(15.0),
+  powderSensitivity: Ratio.fraction(0.123),
   zeroConditions: _seedZeroConditions,
 );
 
@@ -112,17 +112,17 @@ final seedCartridgeSts285EldM = Cartridge(
   id: 'seed-cart-sts-285-eld-m',
   name: '.338LM Hornady 285GR ELD-M',
   dragType: DragModelType.g7,
-  weight: Weight(285.0, Unit.grain),
-  diameter: Distance(0.338, Unit.inch),
-  length: Distance(1.746, Unit.inch),
+  weight: Weight.grain(285.0),
+  diameter: Distance.inch(0.338),
+  length: Distance.inch(1.746),
   coefRows: [
     CoeficientRow(bcCd: 0.417, mv: 765.0),
     CoeficientRow(bcCd: 0.409, mv: 680.0),
     CoeficientRow(bcCd: 0.400, mv: 595.0),
   ],
-  mv: Velocity(810.0, Unit.mps),
-  powderTemp: Temperature(15.0, Unit.celsius),
-  powderSensitivity: Ratio(0.02, Unit.fraction),
+  mv: Velocity.mps(810.0),
+  powderTemp: Temperature.celsius(15.0),
+  powderSensitivity: Ratio.fraction(0.02),
   zeroConditions: _seedZeroConditions,
 );
 
@@ -176,21 +176,21 @@ final seedShotProfiles = [
 
 final seedConditions = Conditions.withDefaults(
   atmo: AtmoData(
-    altitude: Distance(150.0, Unit.meter),
-    temperature: Temperature(20.0, Unit.celsius),
-    pressure: Pressure(1013.25, Unit.hPa),
+    altitude: Distance.meter(150.0),
+    temperature: Temperature.celsius(20.0),
+    pressure: Pressure.hPa(1013.25),
     humidity: 0.50,
-    powderTemp: Temperature(20.0, Unit.celsius),
+    powderTemp: Temperature.celsius(20.0),
   ),
   winds: [
     WindData(
-      velocity: Velocity(3.0, Unit.mps),
-      directionFrom: Angular(90.0, Unit.degree),
-      untilDistance: Distance(9999.0, Unit.meter),
+      velocity: Velocity.mps(3.0),
+      directionFrom: Angular.degree(90.0),
+      untilDistance: Distance.meter(9999.0),
     ),
   ],
-  lookAngle: Angular(0.0, Unit.degree),
-  distance: Distance(300.0, Unit.meter),
+  lookAngle: Angular.degree(0.0),
+  distance: Distance.meter(300.0),
   usePowderSensitivity: false,
   useDiffPowderTemp: false,
   useCoriolis: false,

@@ -31,24 +31,24 @@ ShotProfile _makeProfile() {
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
+    weight: Weight.grain(175),
+    diameter: Distance.millimeter(7.62),
+    length: Distance.millimeter(31.0),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity(800, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(1.0, Unit.fraction),
+    mv: Velocity.mps(800),
+    powderTemp: Temperature.celsius(15.0),
+    powderSensitivity: Ratio.fraction(1.0),
     zeroConditions: Conditions.withDefaults(usePowderSensitivity: true),
   );
   final rifle = Rifle(
     name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
+    sightHeight: Distance.millimeter(38.0),
+    twist: Distance.inch(11.0),
   );
   final sight = Sight(
     name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
+    sightHeight: Distance.millimeter(38.0),
+    zeroElevation: Angular.radian(0),
   );
   return ShotProfile(
     name: 'Test Shot',
@@ -71,21 +71,21 @@ Conditions _makeConditions({
 }) {
   return Conditions(
     atmo: AtmoData(
-      temperature: Temperature(tempC, Unit.celsius),
-      altitude: Distance(altM, Unit.meter),
-      pressure: Pressure(pressHPa, Unit.hPa),
+      temperature: Temperature.celsius(tempC),
+      altitude: Distance.meter(altM),
+      pressure: Pressure.hPa(pressHPa),
       humidity: humidity,
-      powderTemp: Temperature(powderTempC, Unit.celsius),
+      powderTemp: Temperature.celsius(powderTempC),
     ),
     winds: [
       WindData(
-        velocity: Velocity(windMps, Unit.mps),
-        directionFrom: Angular(windDeg, Unit.degree),
-        untilDistance: Distance(9999.0, Unit.meter),
+        velocity: Velocity.mps(windMps),
+        directionFrom: Angular.degree(windDeg),
+        untilDistance: Distance.meter(9999.0),
       ),
     ],
-    lookAngle: Angular(0, Unit.degree),
-    distance: Distance(300.0, Unit.meter),
+    lookAngle: Angular.degree(0),
+    distance: Distance.meter(300.0),
     usePowderSensitivity: usePowderSensitivity,
     useDiffPowderTemp: useDiffPowderTemp,
     useCoriolis: false,
@@ -114,10 +114,10 @@ List<TrajectoryData> _makeTraj({
       TrajectoryData(
         time: t,
         distance: Distance(d * 3.28084, Unit.foot),
-        velocity: Velocity(vFps, Unit.fps),
+        velocity: Velocity.fps(vFps),
         mach: m,
-        height: Distance(hFt, Unit.foot),
-        slantHeight: Distance(hFt, Unit.foot),
+        height: Distance.foot(hFt),
+        slantHeight: Distance.foot(hFt),
         dropAngle: Angular(d > 0 ? hFt / (d * 3.28084) * 1000 : 0, Unit.mil),
         windage: Distance(d * 0.0005, Unit.foot),
         windageAngle: Angular(
@@ -125,11 +125,11 @@ List<TrajectoryData> _makeTraj({
           Unit.mil,
         ),
         slantDistance: Distance(d * 3.28084, Unit.foot),
-        angle: Angular(0, Unit.mil),
+        angle: Angular.mil(0),
         densityRatio: 1.0,
         drag: 0.3,
         energy: Energy(3000 - d * 1.2, Unit.footPound),
-        ogw: Weight(500, Unit.grain),
+        ogw: Weight.grain(500),
         flag: flag,
       ),
     );
@@ -141,7 +141,7 @@ BallisticsResult _makeResult() {
   final profile = _makeProfile();
   final conditions = _makeConditions();
   final shot = profile.toCurrentShot(conditions, profile.rifle.toWeapon());
-  shot.relativeAngle = Angular(0.002, Unit.radian);
+  shot.relativeAngle = Angular.radian(0.002);
   final traj = _makeTraj();
   final hit = HitResult(shot, traj);
   return BallisticsResult(hitResult: hit, zeroElevationRad: 0.002);

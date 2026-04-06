@@ -5,9 +5,9 @@
 //
 // Usage:
 //   final calc = Calculator();
-//   final elev = calc.barrelElevationForTarget(shot, Distance(1000, Unit.meter));
-//   calc.setWeaponZero(shot, Distance(100, Unit.meter));
-//   final result = calc.fire(shot: shot, trajectoryRange: Distance(1000, Unit.meter));
+//   final elev = calc.barrelElevationForTarget(shot, Distance.meter(1000));
+//   calc.setWeaponZero(shot, Distance.meter(100));
+//   final result = calc.fire(shot: shot, trajectoryRange: Distance.meter(1000));
 
 import 'dart:math' as math;
 
@@ -73,7 +73,7 @@ class Calculator {
   Angular setWeaponZero(Shot shot, Distance zeroDistance) {
     final elev = barrelElevationForTarget(shot, zeroDistance);
     shot.weapon.zeroElevation = elev;
-    shot.relativeAngle = Angular(0, Unit.radian);
+    shot.relativeAngle = Angular.radian(0);
     return elev;
   }
 

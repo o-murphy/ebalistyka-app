@@ -29,7 +29,7 @@ class Rifle {
     this.barrelLength,
     this.notes,
   }) : id = id ?? const Uuid().v4(),
-       zeroElevation = zeroElevation ?? Angular(0, Unit.radian);
+       zeroElevation = zeroElevation ?? Angular.radian(0);
 
   /// Right-hand twist when positive, left-hand when negative.
   bool get isRightHandTwist => twist.raw >= 0;

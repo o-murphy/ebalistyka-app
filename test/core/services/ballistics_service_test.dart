@@ -22,26 +22,24 @@ ShotProfile _makeProfile() {
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
+    weight: Weight.grain(175),
+    diameter: Distance.millimeter(7.62),
+    length: Distance.millimeter(31.0),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity(800.0, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(0.0, Unit.fraction),
-    zeroConditions: Conditions.withDefaults(
-      distance: Distance(100.0, Unit.meter),
-    ),
+    mv: Velocity.mps(800.0),
+    powderTemp: Temperature.celsius(15.0),
+    powderSensitivity: Ratio.fraction(0.0),
+    zeroConditions: Conditions.withDefaults(distance: Distance.meter(100.0)),
   );
   final rifle = Rifle(
     name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
+    sightHeight: Distance.millimeter(38.0),
+    twist: Distance.inch(11.0),
   );
   final sight = Sight(
     name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
+    sightHeight: Distance.millimeter(38.0),
+    zeroElevation: Angular.radian(0),
   );
   return ShotProfile(
     name: 'Test Shot',
@@ -62,15 +60,15 @@ Conditions _makeConditions({
 }) {
   return Conditions(
     atmo: AtmoData(
-      altitude: Distance(altM, Unit.meter),
-      temperature: Temperature(tempC, Unit.celsius),
-      pressure: Pressure(pressHPa, Unit.hPa),
+      altitude: Distance.meter(altM),
+      temperature: Temperature.celsius(tempC),
+      pressure: Pressure.hPa(pressHPa),
       humidity: humidity,
-      powderTemp: Temperature(powderTempC, Unit.celsius),
+      powderTemp: Temperature.celsius(powderTempC),
     ),
     winds: winds,
-    lookAngle: Angular(0, Unit.degree),
-    distance: Distance(targetM, Unit.meter),
+    lookAngle: Angular.degree(0),
+    distance: Distance.meter(targetM),
     usePowderSensitivity: false,
     useDiffPowderTemp: false,
     useCoriolis: false,
@@ -301,9 +299,9 @@ void main() {
       final conditions = _makeConditions(
         winds: [
           WindData(
-            velocity: Velocity(5.0, Unit.mps),
-            directionFrom: Angular(90.0, Unit.degree),
-            untilDistance: Distance(2000.0, Unit.meter),
+            velocity: Velocity.mps(5.0),
+            directionFrom: Angular.degree(90.0),
+            untilDistance: Distance.meter(2000.0),
           ),
         ],
       );
@@ -325,9 +323,9 @@ void main() {
       final windConditions = _makeConditions(
         winds: [
           WindData(
-            velocity: Velocity(10.0, Unit.mps),
-            directionFrom: Angular(90.0, Unit.degree),
-            untilDistance: Distance(2000.0, Unit.meter),
+            velocity: Velocity.mps(10.0),
+            directionFrom: Angular.degree(90.0),
+            untilDistance: Distance.meter(2000.0),
           ),
         ],
       );
@@ -362,26 +360,26 @@ void main() {
         name: 'Bad',
         projectileName: 'Bad',
         dragType: DragModelType.g7,
-        weight: Weight(1, Unit.grain),
-        diameter: Distance(7.62, Unit.millimeter),
-        length: Distance(31.0, Unit.millimeter),
+        weight: Weight.grain(1),
+        diameter: Distance.millimeter(7.62),
+        length: Distance.millimeter(31.0),
         coefRows: [CoeficientRow(bcCd: 0.001, mv: 0.0)],
-        mv: Velocity(10.0, Unit.mps), // extremely low velocity
-        powderTemp: Temperature(15.0, Unit.celsius),
-        powderSensitivity: Ratio(0.0, Unit.fraction),
+        mv: Velocity.mps(10.0), // extremely low velocity
+        powderTemp: Temperature.celsius(15.0),
+        powderSensitivity: Ratio.fraction(0.0),
         zeroConditions: Conditions.withDefaults(
-          distance: Distance(3000.0, Unit.meter), // impossible zero
+          distance: Distance.meter(3000.0), // impossible zero
         ),
       );
       final rifle = Rifle(
         name: 'Bad',
-        sightHeight: Distance(38.0, Unit.millimeter),
-        twist: Distance(0.0, Unit.inch),
+        sightHeight: Distance.millimeter(38.0),
+        twist: Distance.inch(0.0),
       );
       final sight = Sight(
         name: 'Bad',
-        sightHeight: Distance(38.0, Unit.millimeter),
-        zeroElevation: Angular(0, Unit.radian),
+        sightHeight: Distance.millimeter(38.0),
+        zeroElevation: Angular.radian(0),
       );
       final badProfile = ShotProfile(
         name: 'Bad Shot',
@@ -408,11 +406,11 @@ void main() {
 
       // Створюємо умови для обнулення (стандартні)
       final zeroConditions = AtmoData(
-        temperature: Temperature(15.0, Unit.celsius),
-        altitude: Distance(0, Unit.meter),
-        pressure: Pressure(1013.25, Unit.hPa),
+        temperature: Temperature.celsius(15.0),
+        altitude: Distance.meter(0),
+        pressure: Pressure.hPa(1013.25),
         humidity: 0.0,
-        powderTemp: Temperature(15.0, Unit.celsius),
+        powderTemp: Temperature.celsius(15.0),
       );
 
       // Cartridge with powder sensitivity
@@ -424,12 +422,12 @@ void main() {
         length: profile.cartridge!.length,
         diameter: profile.cartridge!.diameter,
         coefRows: profile.cartridge!.coefRows,
-        mv: Velocity(800, Unit.mps),
-        powderTemp: Temperature(15, Unit.celsius),
-        powderSensitivity: Ratio(1.0, Unit.fraction), // 1% per 15°C
+        mv: Velocity.mps(800),
+        powderTemp: Temperature.celsius(15),
+        powderSensitivity: Ratio.fraction(1.0), // 1% per 15°C
         zeroConditions: Conditions.withDefaults(
           usePowderSensitivity: true,
-          distance: Distance(100, Unit.meter),
+          distance: Distance.meter(100),
           atmo: zeroConditions,
           useDiffPowderTemp: true, // ← додаємо умови обнулення
         ),

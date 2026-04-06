@@ -7,9 +7,9 @@ class Weapon {
   Angular zeroElevation;
 
   Weapon({Distance? sightHeight, Distance? twist, Angular? zeroElevation})
-    : sightHeight = sightHeight ?? Distance(0, Unit.inch),
-      twist = twist ?? Distance(0, Unit.inch),
-      zeroElevation = zeroElevation ?? Angular(0, Unit.radian);
+    : sightHeight = sightHeight ?? Distance.inch(0),
+      twist = twist ?? Distance.inch(0),
+      zeroElevation = zeroElevation ?? Angular.radian(0);
 
   @override
   String toString() =>
@@ -29,8 +29,8 @@ class Ammo {
     Temperature? powderTemp,
     this.tempModifier = 0.0,
     this.usePowderSensitivity = false,
-  }) : mv = mv ?? Velocity(0, Unit.mps),
-       powderTemp = powderTemp ?? Temperature(15, Unit.celsius);
+  }) : mv = mv ?? Velocity.mps(0),
+       powderTemp = powderTemp ?? Temperature.celsius(15);
 
   double calcPowderSens(Velocity otherVelocity, Temperature otherTemperature) {
     final double v0 = mv.in_(Unit.mps);
@@ -66,7 +66,7 @@ class Ammo {
       tempModifier,
     );
 
-    return Velocity(adjustedMv, Unit.mps);
+    return Velocity.mps(adjustedMv);
   }
 
   @override

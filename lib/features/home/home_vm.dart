@@ -214,8 +214,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     await ref.read(shotConditionsProvider.notifier).updateWinds([
       WindData(
         velocity: _currentWindVelocity(),
-        directionFrom: Angular(degrees, Unit.degree),
-        untilDistance: Distance(9999.0, Unit.meter),
+        directionFrom: Angular.degree(degrees),
+        untilDistance: Distance.meter(9999.0),
       ),
     ]);
   }
@@ -239,7 +239,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   Velocity _currentWindVelocity() {
     final conditions = ref.read(shotConditionsProvider).value;
     final winds = conditions?.winds ?? const <WindData>[];
-    return winds.isNotEmpty ? winds.first.velocity : Velocity(0, Unit.mps);
+    return winds.isNotEmpty ? winds.first.velocity : Velocity.mps(0);
   }
 
   HomeUiReady _buildReadyState({
@@ -265,7 +265,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final windMps = conditions.winds.isNotEmpty
         ? conditions.winds.first.velocity.in_(Unit.mps)
         : 0.0;
-    final windSpeedDisplay = formatter.velocity(Velocity(windMps, Unit.mps));
+    final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
     final lookAngleDisplay =
@@ -352,7 +352,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   ) {
     final elevAngle = hit.shot.relativeAngle;
     final point = hit.trajectory.isNotEmpty
-        ? hit.getAtDistance(Distance(targetM, Unit.meter))
+        ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windAngle = point?.windageAngle;
 
@@ -408,12 +408,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     ];
 
     final points = dists
-        .map((d) => d < 0 ? null : hit.getAtDistance(Distance(d, Unit.meter)))
+        .map((d) => d < 0 ? null : hit.getAtDistance(Distance.meter(d)))
         .toList();
 
     final distHeaders = dists.map<String>((m) {
       if (m < 0) return '—';
-      final disp = Distance(m, Unit.meter).in_(units.distance);
+      final disp = Distance.meter(m).in_(units.distance);
       return disp.toStringAsFixed(distAcc);
     }).toList();
 
@@ -501,7 +501,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final points = List.generate((targetM / step).ceil() + 1, (i) => i * step)
         .where((d) => d <= targetM) // фільтр по цілі
         .map((d) {
-          final td = hit.getAtDistance(Distance(d, Unit.meter));
+          final td = hit.getAtDistance(Distance.meter(d));
 
           final isZero = (td.flag & TrajFlag.zero.value) != 0;
           final isMach = (td.flag & TrajFlag.mach.value) != 0;

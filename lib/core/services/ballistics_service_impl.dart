@@ -7,7 +7,6 @@ import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:bclibc_ffi/bclibc_ffi.dart';
 
-
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
 // (profile, conditions, stepM, cachedZeroElevationRad?)
@@ -28,14 +27,14 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+      weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
       Shot zeroShot;
       try {
         zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       } catch (_) {
-        zeroShot = profile.toZeroShot(Angular(0.0, Unit.radian), weapon);
+        zeroShot = profile.toZeroShot(Angular.radian(0.0), weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       }
       freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
@@ -44,7 +43,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
     final result = calc.fire(
       shot: profile.toCurrentShot(conditions, weapon),
       trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
-      trajectoryStep: Distance(stepM, Unit.meter),
+      trajectoryStep: Distance.meter(stepM),
       filterFlags:
           BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
           BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
@@ -74,14 +73,14 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+      weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
       Shot zeroShot;
       try {
         zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       } catch (_) {
-        zeroShot = profile.toZeroShot(Angular(0.0, Unit.radian), weapon);
+        zeroShot = profile.toZeroShot(Angular.radian(0.0), weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       }
       freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
@@ -90,17 +89,17 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
 
     final targetElev = calc.barrelElevationForTarget(
       shot,
-      Distance(targetDistM, Unit.meter),
+      Distance.meter(targetDistM),
     );
     final holdRad =
         targetElev.in_(Unit.radian) -
         shot.weapon.zeroElevation.in_(Unit.radian);
-    shot.relativeAngle = Angular(holdRad, Unit.radian);
+    shot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
       shot: shot,
-      trajectoryRange: Distance(targetDistM, Unit.meter),
-      trajectoryStep: Distance(internalStepM, Unit.meter),
+      trajectoryRange: Distance.meter(targetDistM),
+      trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
           BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
           BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,

@@ -13,7 +13,7 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
     Conditions loaded = conditions ?? Conditions.withDefaults();
     final laDeg = loaded.lookAngle.in_(Unit.degree);
     if (laDeg.abs() > 45) {
-      loaded = loaded.copyWith(lookAngle: Angular(0.0, Unit.degree));
+      loaded = loaded.copyWith(lookAngle: Angular.degree(0.0));
     }
 
     return loaded;
@@ -34,13 +34,13 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
   Future<void> updateLookAngle(double degrees) async {
     final current = state.value;
     if (current == null) return;
-    await _save(current.copyWith(lookAngle: Angular(degrees, Unit.degree)));
+    await _save(current.copyWith(lookAngle: Angular.degree(degrees)));
   }
 
   Future<void> updateTargetDistance(double meters) async {
     final current = state.value;
     if (current == null) return;
-    await _save(current.copyWith(distance: Distance(meters, Unit.meter)));
+    await _save(current.copyWith(distance: Distance.meter(meters)));
   }
 
   Future<void> updateUsePowderSensitivity(bool value) async {
@@ -80,16 +80,16 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
     final existing = current.winds;
     final dir = existing.isNotEmpty
         ? existing.first.directionFrom
-        : Angular(0.0, Unit.degree);
+        : Angular.degree(0.0);
     final until = existing.isNotEmpty
         ? existing.first.untilDistance
-        : Distance(9999.0, Unit.meter);
+        : Distance.meter(9999.0);
 
     await _save(
       current.copyWith(
         winds: [
           WindData(
-            velocity: Velocity(mps, Unit.mps),
+            velocity: Velocity.mps(mps),
             directionFrom: dir,
             untilDistance: until,
           ),

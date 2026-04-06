@@ -65,10 +65,10 @@ abstract final class CollectionParser {
     return Rifle(
       name: j['name'] as String,
       description: j['vendor'] as String?,
-      sightHeight: Distance(0.0, Unit.millimeter),
-      twist: Distance((j['rTwist'] as num).toDouble(), Unit.inch),
+      sightHeight: Distance.millimeter(0.0),
+      twist: Distance.inch((j['rTwist'] as num).toDouble()),
       caliberDiameter: diameterInch != null
-          ? Distance(diameterInch, Unit.inch)
+          ? Distance.inch(diameterInch)
           : null,
       barrelLength: barrelRaw != null
           ? Distance(barrelRaw.toDouble(), Unit.inch)
@@ -116,7 +116,7 @@ abstract final class CollectionParser {
       type: CartridgeType.cartridge,
       dragType: dType,
       weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
-      diameter: Distance(diameterInch, Unit.inch),
+      diameter: Distance.inch(diameterInch),
       length: Distance(
         (j['bulletLength'] as num? ?? 0.0).toDouble(),
         Unit.inch,
@@ -144,7 +144,7 @@ abstract final class CollectionParser {
       (j['sightHeight'] as num? ?? 0.0).toDouble(),
       Unit.inch,
     ),
-    zeroElevation: Angular(0.0, Unit.radian),
+    zeroElevation: Angular.radian(0.0),
   );
 
   // ── Helpers ────────────────────────────────────────────────────────────────

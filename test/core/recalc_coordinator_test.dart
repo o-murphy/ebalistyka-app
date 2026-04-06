@@ -29,24 +29,24 @@ ShotProfile _makeProfile() {
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
+    weight: Weight.grain(175),
+    diameter: Distance.millimeter(7.62),
+    length: Distance.millimeter(31.0),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity(800, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(1.0, Unit.fraction),
+    mv: Velocity.mps(800),
+    powderTemp: Temperature.celsius(15.0),
+    powderSensitivity: Ratio.fraction(1.0),
     zeroConditions: Conditions.withDefaults(useDiffPowderTemp: true),
   );
   final rifle = Rifle(
     name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
+    sightHeight: Distance.millimeter(38.0),
+    twist: Distance.inch(11.0),
   );
   final sight = Sight(
     name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
+    sightHeight: Distance.millimeter(38.0),
+    zeroElevation: Angular.radian(0),
   );
   return ShotProfile(
     name: 'Test Shot',
@@ -300,8 +300,8 @@ void main() {
     test('conditions change triggers all providers', () async {
       final newConditions = Conditions(
         atmo: AtmoData.icao(),
-        distance: Distance(200, Unit.meter),
-        lookAngle: Angular(5, Unit.degree),
+        distance: Distance.meter(200),
+        lookAngle: Angular.degree(5),
         winds: [],
         usePowderSensitivity: true,
         useDiffPowderTemp: false,
@@ -333,9 +333,9 @@ void main() {
       final newConditions = current.copyWith(
         winds: [
           WindData(
-            velocity: Velocity(5.0, Unit.mps),
-            directionFrom: Angular(90, Unit.degree),
-            untilDistance: Distance(9999, Unit.meter),
+            velocity: Velocity.mps(5.0),
+            directionFrom: Angular.degree(90),
+            untilDistance: Distance.meter(9999),
           ),
         ],
       );

@@ -60,9 +60,9 @@ class Cartridge {
     Conditions? zeroConditions,
     this.notes,
   }) : id = id ?? const Uuid().v4(),
-       weight = weight ?? Weight(0, Unit.grain),
-       diameter = diameter ?? Distance(0, Unit.inch),
-       length = length ?? Distance(0, Unit.inch),
+       weight = weight ?? Weight.grain(0),
+       diameter = diameter ?? Distance.inch(0),
+       length = length ?? Distance.inch(0),
        coefRows = coefRows ?? const [],
        zeroConditions = zeroConditions ?? Conditions.withDefaults();
 
@@ -196,7 +196,7 @@ class Cartridge {
               (json['zeroDistance'] as num).toDouble(),
               StorageUnits.cartridgeZeroDistance,
             )
-          : Distance(100.0, Unit.meter);
+          : Distance.meter(100.0);
 
       final zeroAtmoJson = json['zeroConditions_legacy'] as Map?;
       final zeroAtmo = zeroAtmoJson != null
@@ -266,9 +266,9 @@ extension CartridgeExtension on Cartridge {
     return Cartridge(
       id: id, // Додайте id, якщо його немає в моделі
       name: name,
-      mv: Velocity(800, Unit.mps),
-      powderTemp: Temperature(20, Unit.celsius),
-      powderSensitivity: Ratio(0, Unit.fraction),
+      mv: Velocity.mps(800),
+      powderTemp: Temperature.celsius(20),
+      powderSensitivity: Ratio.fraction(0),
     );
   }
 }

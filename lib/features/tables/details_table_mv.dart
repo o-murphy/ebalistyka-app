@@ -124,7 +124,7 @@ DetailsTableData _buildDetails(
   final ff = (sd != null && displayBc > 0) ? sd / displayBc : null;
 
   String fmtV(double mps) {
-    final disp = Velocity(mps, Unit.mps).in_(units.velocity);
+    final disp = Velocity.mps(mps).in_(units.velocity);
     return '${disp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
   }
 
@@ -139,7 +139,7 @@ DetailsTableData _buildDetails(
         : null,
     twist: twistInch > 0
         ? () {
-            final tw = Distance(twistInch, Unit.inch).in_(units.twist);
+            final tw = Distance.inch(twistInch).in_(units.twist);
             return '1:${tw.toStringAsFixed(FC.twist.accuracyFor(units.twist))} ${units.twist.symbol}';
           }()
         : null,
@@ -166,7 +166,7 @@ DetailsTableData _buildDetails(
         : null,
     bulletWeight: weightGr > 0
         ? () {
-            final wDisp = Weight(weightGr, Unit.grain).in_(units.weight);
+            final wDisp = Weight.grain(weightGr).in_(units.weight);
             return '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weight))} ${units.weight.symbol}';
           }()
         : null,
@@ -184,13 +184,12 @@ DetailsTableData _buildDetails(
       return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
     }(),
     windSpeed: () {
-      final ws =
-          (winds.isNotEmpty ? winds.first.velocity : Velocity(0.0, Unit.mps))
-              .in_(units.velocity);
+      final ws = (winds.isNotEmpty ? winds.first.velocity : Velocity.mps(0.0))
+          .in_(units.velocity);
       return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     }(),
     windDir:
-        '${(winds.isNotEmpty ? winds.first.directionFrom : Angular(0.0, Unit.degree)).in_(Unit.degree).toStringAsFixed(0)}°',
+        '${(winds.isNotEmpty ? winds.first.directionFrom : Angular.degree(0.0)).in_(Unit.degree).toStringAsFixed(0)}°',
   );
 }
 

@@ -26,24 +26,24 @@ ShotProfile _makeProfile() {
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
+    weight: Weight.grain(175),
+    diameter: Distance.millimeter(7.62),
+    length: Distance.millimeter(31.0),
     coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity(800, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(1.0, Unit.fraction),
+    mv: Velocity.mps(800),
+    powderTemp: Temperature.celsius(15.0),
+    powderSensitivity: Ratio.fraction(1.0),
     zeroConditions: Conditions.withDefaults(usePowderSensitivity: true),
   );
   final rifle = Rifle(
     name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
+    sightHeight: Distance.millimeter(38.0),
+    twist: Distance.inch(11.0),
   );
   final sight = Sight(
     name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
+    sightHeight: Distance.millimeter(38.0),
+    zeroElevation: Angular.radian(0),
   );
   return ShotProfile(
     name: 'Test Shot',
@@ -64,14 +64,14 @@ Conditions _makeConditions({
 }) {
   return Conditions(
     atmo: AtmoData(
-      temperature: Temperature(tempC, Unit.celsius),
-      altitude: Distance(altM, Unit.meter),
-      pressure: Pressure(pressHPa, Unit.hPa),
+      temperature: Temperature.celsius(tempC),
+      altitude: Distance.meter(altM),
+      pressure: Pressure.hPa(pressHPa),
       humidity: humidity,
-      powderTemp: Temperature(powderTempC, Unit.celsius),
+      powderTemp: Temperature.celsius(powderTempC),
     ),
-    lookAngle: Angular(0, Unit.degree),
-    distance: Distance(300.0, Unit.meter),
+    lookAngle: Angular.degree(0),
+    distance: Distance.meter(300.0),
     winds: [],
     usePowderSensitivity: usePowderSensitivity,
     useDiffPowderTemp: useDiffPowderTemp,

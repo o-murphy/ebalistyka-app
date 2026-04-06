@@ -164,8 +164,8 @@ class Conditions {
       usePowderSensitivity: usePowderSensitivity,
       useDiffPowderTemp: useDiffPowderTemp,
       atmo: atmo ?? AtmoData.icao(),
-      distance: distance ?? Distance(100.0, Unit.meter),
-      lookAngle: lookAngle ?? Angular(0.0, Unit.radian),
+      distance: distance ?? Distance.meter(100.0),
+      lookAngle: lookAngle ?? Angular.radian(0.0),
     );
   }
 

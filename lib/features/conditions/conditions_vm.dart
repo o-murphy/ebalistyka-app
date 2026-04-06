@@ -10,7 +10,6 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:bclibc_ffi/bclibc_ffi.dart';
 
-
 // ── Data classes ─────────────────────────────────────────────────────────────
 
 class ConditionsField {
@@ -174,11 +173,11 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         (useDiffPowderTemp && powderSensOn ? currentPowderTempC : newTempC);
 
     final newAtmo = AtmoData(
-      temperature: Temperature(newTempC, Unit.celsius),
-      altitude: Distance(newAltM, Unit.meter),
-      pressure: Pressure(newPressHPa, Unit.hPa),
+      temperature: Temperature.celsius(newTempC),
+      altitude: Distance.meter(newAltM),
+      pressure: Pressure.hPa(newPressHPa),
       humidity: newHumFrac,
-      powderTemp: Temperature(newPowderTempC, Unit.celsius),
+      powderTemp: Temperature.celsius(newPowderTempC),
     );
 
     await ref.read(shotConditionsProvider.notifier).updateAtmo(newAtmo);
@@ -219,7 +218,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     );
 
     final currentMvMps = mvAtTempC(powderTempRaw);
-    final currentMvDisp = Velocity(currentMvMps, Unit.mps).in_(units.velocity);
+    final currentMvDisp = Velocity.mps(currentMvMps).in_(units.velocity);
     final mvStr =
         '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     final sensStr =

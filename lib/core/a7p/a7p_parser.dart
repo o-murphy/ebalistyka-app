@@ -49,7 +49,7 @@ class A7pParser {
     final zeroConditions = Conditions.withDefaults(
       atmo: zeroAtmo,
       distance: zeroDistance,
-      lookAngle: Angular(0.0, Unit.degree),
+      lookAngle: Angular.degree(0.0),
       usePowderSensitivity: hasPowderSens,
       useDiffPowderTemp: useDiffPowderTemp,
     );
@@ -87,19 +87,19 @@ class A7pParser {
     required double humidity,
     required double powderTempC,
   }) => AtmoData(
-    altitude: Distance(altitudeM, Unit.meter),
-    pressure: Pressure(pressureHPa, Unit.hPa),
-    temperature: Temperature(tempC, Unit.celsius),
+    altitude: Distance.meter(altitudeM),
+    pressure: Pressure.hPa(pressureHPa),
+    temperature: Temperature.celsius(tempC),
     humidity: humidity / 100.0,
-    powderTemp: Temperature(powderTempC, Unit.celsius),
+    powderTemp: Temperature.celsius(powderTempC),
   );
 
   static Distance _zeroDistance(Profile p) {
     if (p.distances.isNotEmpty) {
       final idx = p.cZeroDistanceIdx.clamp(0, p.distances.length - 1);
-      return Distance(p.distances[idx] / 100.0, Unit.meter);
+      return Distance.meter(p.distances[idx] / 100.0);
     }
-    return Distance(100.0, Unit.meter);
+    return Distance.meter(100.0);
   }
 
   static DragModelType _dragType(GType t) => switch (t) {

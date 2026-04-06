@@ -31,7 +31,7 @@ class Atmo {
   }) {
     _initializing = true;
 
-    _altitude = altitude ?? Distance(0, Unit.meter);
+    _altitude = altitude ?? Distance.meter(0);
     _temperature = temperature ?? Atmo.standardTemperature(_altitude);
     _pressure = pressure ?? Atmo.standardPressure(_altitude);
     _powderTemp =
@@ -53,7 +53,7 @@ class Atmo {
   Temperature get temperature => _temperature;
   Temperature get powderTemp => _powderTemp;
   double get densityRatio => _densityRatio;
-  Velocity get mach => Velocity(_mach, Unit.fps);
+  Velocity get mach => Velocity.fps(_mach);
   double get humidity => _humidity;
 
   // --- Setters ---
@@ -101,7 +101,7 @@ class Atmo {
     Temperature? temperature,
     double humidity = 0.0,
   }) {
-    final alt = altitude ?? Distance(0, Unit.meter);
+    final alt = altitude ?? Distance.meter(0);
     return Atmo(
       altitude: alt,
       pressure: Atmo.standardPressure(alt),
@@ -176,7 +176,7 @@ class Vacuum extends Atmo {
   static final double cLowestTempC = -BallisticConstants.cDegreesCtoK;
 
   Vacuum({super.altitude, super.temperature})
-    : super(pressure: Pressure(0, Unit.hPa), humidity: 0);
+    : super(pressure: Pressure.hPa(0), humidity: 0);
 
   @override
   void updateDensityRatio() => _densityRatio = 0.0;
@@ -194,8 +194,8 @@ class Wind {
     Angular? directionFrom,
     Distance? untilDistance,
     double? customMaxDistanceFeet,
-  }) : velocity = velocity ?? Velocity(0, Unit.mps),
-       directionFrom = directionFrom ?? Angular(0, Unit.radian),
+  }) : velocity = velocity ?? Velocity.mps(0),
+       directionFrom = directionFrom ?? Angular.radian(0),
        untilDistance =
            untilDistance ??
            Distance(customMaxDistanceFeet ?? maxDistanceFeet, Unit.foot) {

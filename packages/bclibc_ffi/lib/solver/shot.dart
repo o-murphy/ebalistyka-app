@@ -26,10 +26,10 @@ class Shot {
     List<Wind>? winds,
     double? azimuthDeg,
     double? latitudeDeg,
-  }) : lookAngle = lookAngle ?? Angular(0, Unit.radian),
-       cantAngle = cantAngle ?? Angular(0, Unit.radian),
+  }) : lookAngle = lookAngle ?? Angular.radian(0),
+       cantAngle = cantAngle ?? Angular.radian(0),
        atmo = atmo ?? Atmo.icao() {
-    this.relativeAngle = relativeAngle ?? Angular(0, Unit.radian);
+    this.relativeAngle = relativeAngle ?? Angular.radian(0);
     this.winds = winds;
     this.azimuthDeg = azimuthDeg;
     this.latitudeDeg = latitudeDeg;
