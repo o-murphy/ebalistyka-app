@@ -1,34 +1,75 @@
 // test/debug_test.dart
 import 'package:ebalistyka_db/objectbox.g.dart';
 import 'package:ebalistyka_db/src/entities.dart';
-import 'package:objectbox/objectbox.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
 void main() {
   test('переглянути базу', () async {
-    // ObjectBox створить базу в тимчасовій директорії
     final store = await openStore();
 
-    // Додамо тестові дані
+    // Додаємо тестові дані через каскадну нотацію
+    final sight = Sight()
+      ..name = "Vortex Razor HD"
+      ..focalPlane = FocalPlane.ffp
+      ..minMagnification = 1.0
+      ..maxMagnification = 10.0
+      ..vendor = "Vortex"
+      ..verticalClick = 0.1
+      ..horizontalClick = 0.1;
+
     final sightBox = store.box<Sight>();
-    sightBox.put(Sight(name: "Тестовий приціл", focalPlane: FocalPlane.ffp));
+    sightBox.put(sight);
 
-    // Отримуємо шлях до бази через властивість store
-    // У ObjectBox для Dart, шлях зберігається внутрішньо, але ми можемо його дізнатись
-    // Якщо ви не передавали directory в openStore(), то база створюється в поточній директорії
-    final currentPath = Directory.current.path;
-    final dbPath = '$currentPath/objectbox';
+    // Додаємо набій
+    final cartridge = Cartridge()
+      ..name = ".308 Win"
+      ..caliber = 7.62
+      ..weight = 168.0
+      ..bcG1 = 0.462;
 
-    print('База даних знаходиться в: $dbPath');
-    print('Файли бази: ${Directory(dbPath).existsSync()}');
+    final cartridgeBox = store.box<Cartridge>();
+    cartridgeBox.put(cartridge);
+
+    // Додаємо профіль
+    final profile = Profile()
+      ..name = "Мій профіль"
+      ..caliber = 7.62
+      ..rTwist = 254.0;
+
+    profile.sight.target = sight;
+    profile.cartridge.target = cartridge;
+
+    final profileBox = store.box<Profile>();
+    profileBox.put(profile);
+
+    // Додаємо власника
+    final owner = Owner()..token = "user_123";
+
+    final ownerBox = store.box<Owner>();
+    ownerBox.put(owner);
+
+    // Прив'язуємо все до власника
+    sight.owner.target = owner;
+    cartridge.owner.target = owner;
+    profile.owner.target = owner;
+
+    sightBox.put(sight);
+    cartridgeBox.put(cartridge);
+    profileBox.put(profile);
+
+    print('\n=== БАЗА ДАНИХ ===');
+    print('Шлях: ${Directory.current.path}/objectbox');
+    print('Прицілів: ${sightBox.count()}');
+    print('Набоїв: ${cartridgeBox.count()}');
+    print('Профілів: ${profileBox.count()}');
+    print('Власників: ${ownerBox.count()}');
 
     store.close();
 
-    // Тепер ви можете запустити Docker Admin:
     print('\nЩоб переглянути базу, запустіть:');
     print(
-      'docker run --rm -it --volume "$currentPath:/db" --publish 8081:8081 objectboxio/admin:latest',
+      'docker run --rm -it --volume "${Directory.current.path}:/db" --publish 8081:8081 objectboxio/admin:latest',
     );
     print('Потім відкрийте http://localhost:8081\n');
   });

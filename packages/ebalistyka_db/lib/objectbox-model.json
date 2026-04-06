@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:927865793517048258",
-      "lastPropertyId": "2:6920431302249106786",
+      "lastPropertyId": "11:2803708190154614669",
       "name": "Profile",
       "properties": [
         {
@@ -21,13 +21,66 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Sight"
+        },
+        {
+          "id": "3:5188983967410662862",
+          "name": "name",
+          "indexId": "4:286513265082848855",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "4:3623761559779819664",
+          "name": "caliber",
+          "type": 8
+        },
+        {
+          "id": "5:9028891954152522987",
+          "name": "rTwist",
+          "type": 8
+        },
+        {
+          "id": "6:1681978334950655878",
+          "name": "barrelLength",
+          "type": 8
+        },
+        {
+          "id": "7:449230247311639270",
+          "name": "caliberName",
+          "type": 9
+        },
+        {
+          "id": "8:6870856266164355541",
+          "name": "vendor",
+          "type": 9
+        },
+        {
+          "id": "9:2380409399519262404",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "10:8644833513669930252",
+          "name": "cartridgeId",
+          "indexId": "5:5131826817291873478",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Cartridge"
+        },
+        {
+          "id": "11:2803708190154614669",
+          "name": "ownerId",
+          "indexId": "13:7117149731622482272",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
         }
       ],
       "relations": []
     },
     {
       "id": "2:8108854136363241544",
-      "lastPropertyId": "14:5914095292417277866",
+      "lastPropertyId": "16:7230866295162225262",
       "name": "Sight",
       "properties": [
         {
@@ -102,20 +155,651 @@
           "id": "14:5914095292417277866",
           "name": "focalPlaneValue",
           "type": 9
+        },
+        {
+          "id": "15:7143229362592380404",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "16:7230866295162225262",
+          "name": "ownerId",
+          "indexId": "14:561625493702741174",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:4572603873331209493",
+      "lastPropertyId": "39:1998504967963880417",
+      "name": "Cartridge",
+      "properties": [
+        {
+          "id": "1:6353382389239897137",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1054593009840197919",
+          "name": "name",
+          "indexId": "3:8936658245370462764",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "3:7044926281644661975",
+          "name": "dragTypeValue",
+          "type": 9
+        },
+        {
+          "id": "4:3225820576564637498",
+          "name": "caliber",
+          "type": 8
+        },
+        {
+          "id": "5:2273561229399759647",
+          "name": "weight",
+          "type": 8
+        },
+        {
+          "id": "6:2643467541801743943",
+          "name": "length",
+          "type": 8
+        },
+        {
+          "id": "7:8573217324078662677",
+          "name": "bcG1",
+          "type": 8
+        },
+        {
+          "id": "8:4052146921596780",
+          "name": "bcG7",
+          "type": 8
+        },
+        {
+          "id": "9:9111672437611013329",
+          "name": "useMultiBcG1",
+          "type": 1
+        },
+        {
+          "id": "10:2206643988058367124",
+          "name": "useMultiBcG7",
+          "type": 1
+        },
+        {
+          "id": "11:1694977707972060681",
+          "name": "muzzleVelocity",
+          "type": 8
+        },
+        {
+          "id": "12:111333211234673084",
+          "name": "muzzleVelocityTemperature",
+          "type": 8
+        },
+        {
+          "id": "13:958219129775899822",
+          "name": "powderTemperature",
+          "type": 8
+        },
+        {
+          "id": "14:1424878704384506081",
+          "name": "powderSensitivity",
+          "type": 8
+        },
+        {
+          "id": "15:2416811871377860453",
+          "name": "zeroDistance",
+          "type": 8
+        },
+        {
+          "id": "16:3112282761926841545",
+          "name": "zeroLookAngle",
+          "type": 8
+        },
+        {
+          "id": "17:1233804549380541150",
+          "name": "zeroTemperature",
+          "type": 8
+        },
+        {
+          "id": "18:4040385852406914537",
+          "name": "zeroPressure",
+          "type": 8
+        },
+        {
+          "id": "19:5229520173008394464",
+          "name": "zeroHumidity",
+          "type": 8
+        },
+        {
+          "id": "20:4452841066624975069",
+          "name": "zeroPowdertemperature",
+          "type": 8
+        },
+        {
+          "id": "21:1119014235862261184",
+          "name": "usePowderSensitivity",
+          "type": 1
+        },
+        {
+          "id": "22:5440041297993177355",
+          "name": "zeroUseDiffPowderTemperature",
+          "type": 1
+        },
+        {
+          "id": "23:8345511579839389999",
+          "name": "zeroUseCoriolis",
+          "type": 1
+        },
+        {
+          "id": "24:5758385188537156965",
+          "name": "zerolatitudeDeg",
+          "type": 8
+        },
+        {
+          "id": "25:2600128100015095880",
+          "name": "zeroAzimuthDeg",
+          "type": 8
+        },
+        {
+          "id": "26:1073260021544695675",
+          "name": "projectileName",
+          "type": 9
+        },
+        {
+          "id": "27:1598515025374694166",
+          "name": "vendor",
+          "type": 9
+        },
+        {
+          "id": "28:6829508101512887366",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "29:6971750563805268013",
+          "name": "powderSensitivityTemperatures",
+          "type": 29
+        },
+        {
+          "id": "30:4891744130855870927",
+          "name": "powderSensitivityVelocities",
+          "type": 29
+        },
+        {
+          "id": "31:6633316970919042499",
+          "name": "multiBcTableG1Mv",
+          "type": 29
+        },
+        {
+          "id": "32:5983747572055706462",
+          "name": "multiBcTableG1Bc",
+          "type": 29
+        },
+        {
+          "id": "33:4607006707953099956",
+          "name": "multiBcTableG7Mv",
+          "type": 29
+        },
+        {
+          "id": "34:1132706748768173359",
+          "name": "multiBcTableG7Bc",
+          "type": 29
+        },
+        {
+          "id": "35:6368680438599243832",
+          "name": "cusomDragTableV",
+          "type": 29
+        },
+        {
+          "id": "36:8776063109711058258",
+          "name": "cusomDragTableCd",
+          "type": 29
+        },
+        {
+          "id": "37:6924661180502908098",
+          "name": "zeroOffsetX",
+          "type": 8
+        },
+        {
+          "id": "38:4286270484089496467",
+          "name": "zeroOffsetY",
+          "type": 8
+        },
+        {
+          "id": "39:1998504967963880417",
+          "name": "ownerId",
+          "indexId": "8:1022176138450751486",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:5267443466054145812",
+      "lastPropertyId": "17:3477001696398230631",
+      "name": "ConvertorsState",
+      "properties": [
+        {
+          "id": "1:3077183528440272026",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:24484423426636848",
+          "name": "lengthValueInch",
+          "type": 8
+        },
+        {
+          "id": "3:6973686402569113257",
+          "name": "lengthUnit",
+          "type": 9
+        },
+        {
+          "id": "4:6652259521066177931",
+          "name": "weightValueGrain",
+          "type": 8
+        },
+        {
+          "id": "5:6098085782429465218",
+          "name": "weight",
+          "type": 9
+        },
+        {
+          "id": "6:7956667827190690783",
+          "name": "pressureValueMmHg",
+          "type": 8
+        },
+        {
+          "id": "7:7646654231906997150",
+          "name": "pressure",
+          "type": 9
+        },
+        {
+          "id": "8:718748484978722599",
+          "name": "temperatureValueFahrenheit",
+          "type": 8
+        },
+        {
+          "id": "9:2995017798708549637",
+          "name": "temperature",
+          "type": 9
+        },
+        {
+          "id": "10:5411823951087255519",
+          "name": "torqueValueNewtonMeter",
+          "type": 8
+        },
+        {
+          "id": "11:818444463729921538",
+          "name": "torque",
+          "type": 9
+        },
+        {
+          "id": "12:7011334654221385880",
+          "name": "anglesConvertorDistanceValueMeter",
+          "type": 8
+        },
+        {
+          "id": "13:2690750945413442759",
+          "name": "anglesConvertorDistance",
+          "type": 9
+        },
+        {
+          "id": "14:5929453795676652883",
+          "name": "anglesConvertorAngularValueMil",
+          "type": 8
+        },
+        {
+          "id": "15:5583627945033488424",
+          "name": "anglesConvertorAngular",
+          "type": 9
+        },
+        {
+          "id": "16:4615521366243207117",
+          "name": "anglesConvertorOutput",
+          "type": 9
+        },
+        {
+          "id": "17:3477001696398230631",
+          "name": "ownerId",
+          "indexId": "9:7073717413987136344",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:7332263191537971103",
+      "lastPropertyId": "14:5135086126047492769",
+      "name": "GeneralSettings",
+      "properties": [
+        {
+          "id": "1:1823821508110960809",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6420990255914001911",
+          "name": "languageCode",
+          "type": 9
+        },
+        {
+          "id": "3:5779861223600765644",
+          "name": "themeMode",
+          "type": 9
+        },
+        {
+          "id": "4:5259395284837350188",
+          "name": "adjustmentDisplayFormatValue",
+          "type": 9
+        },
+        {
+          "id": "5:7375149331302896755",
+          "name": "homeShowMil",
+          "type": 1
+        },
+        {
+          "id": "6:5226858173561069914",
+          "name": "homeShowMrad",
+          "type": 1
+        },
+        {
+          "id": "7:2101845094001712376",
+          "name": "homeShowMoa",
+          "type": 1
+        },
+        {
+          "id": "8:5900076872640571045",
+          "name": "homeShowCmPer100m",
+          "type": 1
+        },
+        {
+          "id": "9:2251494575601133772",
+          "name": "homeShowInPer100yd",
+          "type": 1
+        },
+        {
+          "id": "10:8385615948799684146",
+          "name": "homeChartDistanceStep",
+          "type": 8
+        },
+        {
+          "id": "11:8620820731348644201",
+          "name": "homeTableDistanceStep",
+          "type": 8
+        },
+        {
+          "id": "12:1778858609381364551",
+          "name": "homeShowSubsonicTransition",
+          "type": 1
+        },
+        {
+          "id": "13:2252516542482072439",
+          "name": "activeProfileId",
+          "indexId": "10:6521444871181926314",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Profile"
+        },
+        {
+          "id": "14:5135086126047492769",
+          "name": "ownerId",
+          "indexId": "11:5005331290561412386",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:4897743228857466575",
+      "lastPropertyId": "2:9217214888847403947",
+      "name": "Owner",
+      "properties": [
+        {
+          "id": "1:712898542712170479",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:9217214888847403947",
+          "name": "token",
+          "indexId": "12:9215171716454540418",
+          "type": 9,
+          "flags": 2048
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:3235870040899566871",
+      "lastPropertyId": "9:7301100055972537810",
+      "name": "TablesSettings",
+      "properties": [
+        {
+          "id": "1:4011112276947326795",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1706676411971534379",
+          "name": "distanceStart",
+          "type": 8
+        },
+        {
+          "id": "3:7064893017119040868",
+          "name": "distanceEnd",
+          "type": 8
+        },
+        {
+          "id": "4:6234492174819371399",
+          "name": "distanceStep",
+          "type": 8
+        },
+        {
+          "id": "5:6018039063684366082",
+          "name": "showZeros",
+          "type": 1
+        },
+        {
+          "id": "6:4157307694991233792",
+          "name": "showSubsonicTransition",
+          "type": 1
+        },
+        {
+          "id": "7:2125448164555242573",
+          "name": "hiddenCols",
+          "type": 30
+        },
+        {
+          "id": "8:8429984583657685045",
+          "name": "hiddenAdjustmentCols",
+          "type": 30
+        },
+        {
+          "id": "9:7301100055972537810",
+          "name": "ownerId",
+          "indexId": "15:6784854645412645618",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:6979638565225886789",
+      "lastPropertyId": "18:1545359105350230291",
+      "name": "UnitSettings",
+      "properties": [
+        {
+          "id": "1:7911236775716785250",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8549577248474944054",
+          "name": "angular",
+          "type": 9
+        },
+        {
+          "id": "3:8957223788935530853",
+          "name": "distance",
+          "type": 9
+        },
+        {
+          "id": "4:5679560348627821230",
+          "name": "velocity",
+          "type": 9
+        },
+        {
+          "id": "5:1934713382128268881",
+          "name": "pressure",
+          "type": 9
+        },
+        {
+          "id": "6:7721577514779144821",
+          "name": "temperature",
+          "type": 9
+        },
+        {
+          "id": "7:3605110331738592169",
+          "name": "diameter",
+          "type": 9
+        },
+        {
+          "id": "8:581101121809206895",
+          "name": "length",
+          "type": 9
+        },
+        {
+          "id": "9:9158459468585975907",
+          "name": "weight",
+          "type": 9
+        },
+        {
+          "id": "10:4442812728843318410",
+          "name": "adjustment",
+          "type": 9
+        },
+        {
+          "id": "11:7543770356120049192",
+          "name": "drop",
+          "type": 9
+        },
+        {
+          "id": "12:2033490306463345198",
+          "name": "energy",
+          "type": 9
+        },
+        {
+          "id": "13:8085057390355979591",
+          "name": "sightHeight",
+          "type": 9
+        },
+        {
+          "id": "14:6616661634193577644",
+          "name": "twist",
+          "type": 9
+        },
+        {
+          "id": "15:603364438759191875",
+          "name": "barrelLength",
+          "type": 9
+        },
+        {
+          "id": "16:2160264610211468728",
+          "name": "time",
+          "type": 9
+        },
+        {
+          "id": "17:5297462246317829173",
+          "name": "torque",
+          "type": 9
+        },
+        {
+          "id": "18:1545359105350230291",
+          "name": "ownerId",
+          "indexId": "16:1252133577549725652",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "2:8108854136363241544",
-  "lastIndexId": "2:8600855167308690224",
+  "lastEntityId": "9:6979638565225886789",
+  "lastIndexId": "16:1252133577549725652",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
-  "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredEntityUids": [
+    2574869899215092843
+  ],
+  "retiredIndexUids": [
+    1668877959297723573
+  ],
+  "retiredPropertyUids": [
+    3992230577236356907,
+    3852349569888539926,
+    4768309265511141298,
+    5687894741067253652,
+    8864786228541764924,
+    8335844664159725858,
+    9142898046774576278,
+    3519569543950943823,
+    6435052345696385423,
+    5356700892263310481,
+    7336337169017802828,
+    242794398223198156,
+    2384217316517589552,
+    173715837656175280,
+    6055890689757276416,
+    4636903759843485645,
+    2158137921821741471,
+    8658882486467658218,
+    1857467622918686645,
+    4032408610565184954,
+    4474501347592307282,
+    3542014445258313335,
+    8601183920645880804,
+    1608376055548477633,
+    7389679167812572001,
+    973636421197560798,
+    5276417178763973565,
+    2506517478860627122,
+    2733478757117021085,
+    6445007351648580517,
+    576567638652309386,
+    3637164268838962529,
+    6143350000450765341,
+    1420146532882863791,
+    1626111773127572490,
+    6748057286605319313,
+    1233590079292863882,
+    6815849949169383864,
+    7381362001728749019,
+    5963313571581648473,
+    2644353846291725421,
+    3247365574967034977
+  ],
   "retiredRelationUids": [],
   "version": 1
 }
