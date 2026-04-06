@@ -1,10 +1,10 @@
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'package:ebalistyka/core/models/cartridge.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/core/models/sight.dart';
 import '../proto/profedit.pb.dart' hide CoefRow;
-import 'package:bclibc_ffi/solver/unit.dart';
 import 'a7p_validator.dart';
 
 /// Converts a validated [Payload] into a [ShotProfile].

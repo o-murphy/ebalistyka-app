@@ -19,10 +19,10 @@ import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/sight.dart';
-import 'package:bclibc_ffi/solver/trajectory_data.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

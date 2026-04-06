@@ -94,6 +94,10 @@ jobs:
 
           BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
           echo "bclibc_hash=$BCLIBC_HASH" >> $GITHUB_OUTPUT
+          
+          # Хеш для пакету bclibc_ffi (якщо є свої зміни)
+          BCLIBC_FFI_HASH=$(git -C packages/bclibc_ffi rev-parse HEAD 2>/dev/null || echo "unknown")
+          echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
 
           if [ "${{ inputs.platform }}" = "linux" ]; then
             echo "bundle_dir=build/linux/${FLUTTER_ARCH}/${{ inputs.build_type }}/bundle" >> $GITHUB_OUTPUT
@@ -120,16 +124,27 @@ jobs:
           key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-${{ inputs.arch }}-
 
+      # Кеш для bclibc (основна бібліотека)
       - name: Cache bclibc build
         uses: actions/cache@v4
         with:
-          path: build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
-          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}
+          path: |
+            build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
+            packages/bclibc_ffi/build
+          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-${{ steps.meta.outputs.bclibc_ffi_hash }}
+          restore-keys: |
+            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-
+            bclibc-${{ inputs.platform }}-${{ inputs.arch }}-
 
       - name: Install Flutter dependencies
         run: |
           flutter clean
           flutter pub get
+
+      - name: Generate FFI bindings
+        run: |
+          cd packages/bclibc_ffi
+          dart run ffigen --config ffigen.yaml
 
       - name: Build Linux bundle
         if: inputs.platform == 'linux'

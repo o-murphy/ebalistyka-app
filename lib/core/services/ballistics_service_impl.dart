@@ -5,10 +5,8 @@ import 'package:flutter/foundation.dart' show compute;
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/solver/calculator.dart';
-import 'package:bclibc_ffi/solver/shot.dart';
-import 'package:bclibc_ffi/solver/trajectory_data.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
+
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 // ─── Units Screen ─────────────────────────────────────────────────────────────
 

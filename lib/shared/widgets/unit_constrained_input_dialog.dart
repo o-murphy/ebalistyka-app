@@ -1,7 +1,7 @@
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 // ── Refactored dialog using the same helper ─────────────────────────────────
 

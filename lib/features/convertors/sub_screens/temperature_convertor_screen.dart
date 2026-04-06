@@ -3,7 +3,7 @@ import 'package:ebalistyka/features/convertors/temperature_convertor_vm.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';

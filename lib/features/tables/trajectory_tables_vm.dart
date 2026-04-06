@@ -12,9 +12,9 @@ import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/solver/trajectory_data.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
+
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 // ── State ────────────────────────────────────────────────────────────────────
 

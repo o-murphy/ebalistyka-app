@@ -8,7 +8,7 @@
 //   sc_height  / 10   → mm
 //   r_twist    / 100  → inch
 
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
 import 'rifle.dart';

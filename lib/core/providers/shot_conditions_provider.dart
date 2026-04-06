@@ -1,6 +1,6 @@
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart'; // Змінений імпорт
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ShotConditionsNotifier extends AsyncNotifier<Conditions> {

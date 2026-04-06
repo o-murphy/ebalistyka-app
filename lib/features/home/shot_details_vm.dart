@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:bclibc_ffi/solver/munition.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
@@ -14,8 +14,6 @@ import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/solver/trajectory_data.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
 
 sealed class ShotDetailsUiState {
   const ShotDetailsUiState();

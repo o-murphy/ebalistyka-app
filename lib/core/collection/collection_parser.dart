@@ -4,7 +4,7 @@ import 'package:ebalistyka/core/models/cartridge.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/sight.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 class BuiltinCollection {
   final List<Rifle> rifles;

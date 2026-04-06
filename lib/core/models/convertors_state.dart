@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 class ConvertorsState {
   final double lengthValueInch;

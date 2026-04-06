@@ -2,7 +2,6 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -10,6 +9,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bclibc_ffi/bclibc_ffi.dart';
 
 class RifleWizardScreen extends ConsumerStatefulWidget {
   const RifleWizardScreen({this.initial, this.caliberEditable, super.key});

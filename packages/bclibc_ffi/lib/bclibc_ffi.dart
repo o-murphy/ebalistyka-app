@@ -8,6 +8,17 @@
 ///   final bc = BcLibC.open();
 ///   final hit = bc.integrate(props, request);
 
+export 'package:bclibc_ffi/solver/calculator.dart';
+export 'package:bclibc_ffi/solver/conditions.dart';
+export 'package:bclibc_ffi/solver/constants.dart';
+export 'package:bclibc_ffi/solver/drag_model.dart';
+export 'package:bclibc_ffi/solver/drag_tables.dart';
+export 'package:bclibc_ffi/solver/munition.dart';
+export 'package:bclibc_ffi/solver/shot.dart';
+export 'package:bclibc_ffi/solver/trajectory_data.dart';
+export 'package:bclibc_ffi/solver/unit.dart';
+export 'package:bclibc_ffi/solver/vector.dart';
+
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
