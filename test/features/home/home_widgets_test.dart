@@ -7,16 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/core/models/app_settings.dart'
+import 'package:ebalistyka/core/models/app_settings.dart'
     show AdjustmentFormat;
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/shared/models/adjustment_data.dart';
-import 'package:eballistica/shared/models/chart_point.dart';
-import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/home/widgets/home_chart_page.dart';
-import 'package:eballistica/features/home/widgets/home_reticle_page.dart';
-import 'package:eballistica/features/home/widgets/home_table_page.dart';
-import 'package:eballistica/features/home/widgets/trajectory_chart.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/shared/models/adjustment_data.dart';
+import 'package:ebalistyka/shared/models/chart_point.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
+import 'package:ebalistyka/features/home/widgets/trajectory_chart.dart';
 
 // ── Fake ViewModel ────────────────────────────────────────────────────────────
 

@@ -4,9 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:eballistica/features/tables/details_table_mv.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
-import 'package:eballistica/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
 
 // ─── HTML Exporter ────────────────────────────────────────────────────────────
 

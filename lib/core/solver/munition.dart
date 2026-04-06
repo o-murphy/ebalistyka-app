@@ -1,5 +1,5 @@
-import 'package:eballistica/core/solver/drag_model.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/drag_model.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 class Weapon {
   final Distance sightHeight;

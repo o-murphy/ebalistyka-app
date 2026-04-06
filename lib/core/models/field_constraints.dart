@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 /// Constraints for a physical quantity role — used by [UnitValueField]
 /// and for display formatting in tables, charts, and widgets.

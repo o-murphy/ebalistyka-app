@@ -1,7 +1,7 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:eballistica/router.dart';
+import 'package:ebalistyka/router.dart';
 
 // ─── Convertor tile data ──────────────────────────────────────────────────────
 

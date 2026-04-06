@@ -1,8 +1,8 @@
 import 'package:uuid/uuid.dart';
 
-import 'package:eballistica/core/solver/shot.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/core/solver/munition.dart';
+import 'package:ebalistyka/core/solver/shot.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/munition.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
 import 'rifle.dart';

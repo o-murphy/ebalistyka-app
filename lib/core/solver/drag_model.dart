@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:eballistica/core/solver/constants.dart';
-import 'package:eballistica/core/solver/drag_tables.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/constants.dart';
+import 'package:ebalistyka/core/solver/drag_tables.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 class BCPoint {
   final double bc;

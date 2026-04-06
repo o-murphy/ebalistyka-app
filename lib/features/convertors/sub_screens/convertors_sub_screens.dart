@@ -1,11 +1,11 @@
-export 'package:eballistica/features/convertors/sub_screens/length_convertor_screen.dart';
-export 'package:eballistica/features/convertors/sub_screens/weight_convertor_screen.dart';
-export 'package:eballistica/features/convertors/sub_screens/pressure_convertor_screen.dart';
-export 'package:eballistica/features/convertors/sub_screens/temperature_convertor_screen.dart';
-export 'package:eballistica/features/convertors/sub_screens/torque_convertor_screen.dart';
-export 'package:eballistica/features/convertors/sub_screens/angular_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/length_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/weight_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/pressure_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/temperature_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/torque_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/angular_convertor_screen.dart';
 
-import 'package:eballistica/shared/widgets/_stub_screen.dart';
+import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
 
 class DistanceConvertorScreen extends StatelessWidget {

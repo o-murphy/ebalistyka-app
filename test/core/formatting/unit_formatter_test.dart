@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/formatting/unit_formatter_impl.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
+import 'package:ebalistyka/core/models/unit_settings.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 void main() {
   group('UnitFormatterImpl — metric defaults', () {

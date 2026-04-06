@@ -1,8 +1,8 @@
 // ── Profile Card ──────────────────────────────────────────────────────────────
-import 'package:eballistica/features/home/profiles_vm.dart';
-import 'package:eballistica/router.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/features/home/profiles_vm.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

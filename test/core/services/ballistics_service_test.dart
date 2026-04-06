@@ -5,14 +5,14 @@
 //   dart test test/services/ballistics_service_test.dart
 
 import 'package:test/test.dart';
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/services/ballistics_service_impl.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 

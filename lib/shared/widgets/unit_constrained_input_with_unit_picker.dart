@@ -1,7 +1,7 @@
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/shared/widgets/unit_constrained_input_field.dart';
-import 'package:eballistica/shared/widgets/unit_picker_button.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_button.dart';
 import 'package:flutter/material.dart';
 
 class ValueInputWithUnitPicker extends StatelessWidget {

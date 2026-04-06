@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/convertors_state.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/convertors_state.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/sight.dart';
 import 'app_storage.dart';
 
 /// Custom exception for storage errors

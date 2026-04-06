@@ -1,9 +1,9 @@
-import 'package:eballistica/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 class SettingsNotifier extends AsyncNotifier<AppSettings> {
   @override

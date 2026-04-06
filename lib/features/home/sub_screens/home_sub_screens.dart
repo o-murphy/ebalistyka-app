@@ -3,7 +3,7 @@ export 'profiles_screen.dart';
 export 'my_cartridges_screen.dart';
 export 'my_sights_screen.dart';
 
-import 'package:eballistica/shared/widgets/_stub_screen.dart';
+import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
 
 // ── Profile Add ───────────────────────────────────────────────────────────────

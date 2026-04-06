@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 // ── Core conversion & validation logic ──────────────────────────────────────
 

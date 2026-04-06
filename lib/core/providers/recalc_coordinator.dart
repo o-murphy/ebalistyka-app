@@ -1,12 +1,12 @@
 import 'package:riverpod/riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_conditions_provider.dart'; // ← додати
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_conditions_provider.dart'; // ← додати
+import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 
 /// Centralises all recalculation triggers.
 ///

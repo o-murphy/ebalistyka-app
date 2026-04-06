@@ -3,10 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/models/app_settings.dart'
-    show AdjustmentFormat;
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/shared/models/adjustment_data.dart';
+import 'package:ebalistyka/core/models/app_settings.dart' show AdjustmentFormat;
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/shared/models/adjustment_data.dart';
 
 // ─── Page 1 — Reticle & Adjustments ──────────────────────────────────────────
 

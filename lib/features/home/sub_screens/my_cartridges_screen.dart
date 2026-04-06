@@ -1,9 +1,9 @@
-import 'package:eballistica/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/models/collection_item.dart';
-import 'package:eballistica/features/home/sub_screens/profiles/widgets/collection_body.dart';
-import 'package:eballistica/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
-import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/core/models/collection_item.dart';
+import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart' hide Velocity;
 
 class MyCartridgesCollectionScreen extends ConsumerWidget {

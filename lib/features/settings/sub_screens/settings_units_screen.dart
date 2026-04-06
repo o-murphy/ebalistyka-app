@@ -1,10 +1,10 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/unit_picker_tile.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 // ─── Units Screen ─────────────────────────────────────────────────────────────
 

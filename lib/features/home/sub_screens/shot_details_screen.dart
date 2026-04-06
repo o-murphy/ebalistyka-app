@@ -1,10 +1,10 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 
 class ShotDetailsScreen extends ConsumerWidget {
   const ShotDetailsScreen({super.key});

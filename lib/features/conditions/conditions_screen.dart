@@ -1,11 +1,11 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/features/conditions/conditions_vm.dart';
-import 'package:eballistica/features/conditions/widgets/temperature_control.dart';
-import 'package:eballistica/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/features/conditions/conditions_vm.dart';
+import 'package:ebalistyka/features/conditions/widgets/temperature_control.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 
 class ConditionsScreen extends ConsumerWidget {
   const ConditionsScreen({super.key});

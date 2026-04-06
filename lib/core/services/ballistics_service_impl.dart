@@ -1,14 +1,14 @@
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show compute;
 
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/calculator.dart';
-import 'package:eballistica/core/solver/ffi/bclibc_bindings.g.dart';
-import 'package:eballistica/core/solver/shot.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/solver/calculator.dart';
+import 'package:ebalistyka/core/solver/ffi/bclibc_bindings.g.dart';
+import 'package:ebalistyka/core/solver/shot.dart';
+import 'package:ebalistyka/core/solver/trajectory_data.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 

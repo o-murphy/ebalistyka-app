@@ -1,4 +1,4 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Reusable stub for screens that are not yet implemented.

@@ -1,4 +1,4 @@
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 /// A single contract for formatting physical quantities into strings for UI.
 /// ViewModel і Widget never call .in_() directly.

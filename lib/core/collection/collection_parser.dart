@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 class BuiltinCollection {
   final List<Rifle> rifles;

@@ -1,10 +1,10 @@
 import 'package:riverpod/riverpod.dart';
-import 'package:eballistica/core/providers/app_state_provider.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/seed_data.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/seed_data.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/sight.dart';
 
 class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   @override

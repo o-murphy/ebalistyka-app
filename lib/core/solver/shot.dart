@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/core/solver/conditions.dart';
-import 'package:eballistica/core/solver/munition.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/conditions.dart';
+import 'package:ebalistyka/core/solver/munition.dart';
 
 class Shot {
   final Ammo ammo;

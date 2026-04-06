@@ -1,8 +1,8 @@
-import 'package:eballistica/core/providers/storage_provider.dart';
+import 'package:ebalistyka/core/providers/storage_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'package:eballistica/core/collection/collection_parser.dart';
+import 'package:ebalistyka/core/collection/collection_parser.dart';
 
 /// Loads the built-in collection with the following priority:
 ///   1. ~/.eBalistyka/collection.json  — cached/updated version from network

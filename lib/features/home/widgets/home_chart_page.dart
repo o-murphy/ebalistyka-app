@@ -1,8 +1,8 @@
-import 'package:eballistica/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
 import 'trajectory_chart.dart';
 
 // ─── Page 3 — Chart ───────────────────────────────────────────────────────────

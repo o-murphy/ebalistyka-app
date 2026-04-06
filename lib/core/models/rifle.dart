@@ -1,5 +1,5 @@
-import 'package:eballistica/core/solver/munition.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/munition.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 import 'package:uuid/uuid.dart';
 
 import '_storage.dart';

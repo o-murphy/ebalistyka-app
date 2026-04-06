@@ -1,4 +1,4 @@
-import 'package:eballistica/core/models/collection_item.dart';
+import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:flutter/material.dart';
 
 class CollectionItemTile extends StatelessWidget {

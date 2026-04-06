@@ -1,21 +1,21 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:async';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/solver/munition.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/solver/munition.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/providers/formatter_provider.dart';
-import 'package:eballistica/core/providers/service_providers.dart';
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_conditions_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/providers/service_providers.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
+import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/solver/trajectory_data.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 sealed class ShotDetailsUiState {
   const ShotDetailsUiState();

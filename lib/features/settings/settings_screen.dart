@@ -1,14 +1,14 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/router.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

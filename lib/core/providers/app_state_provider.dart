@@ -1,12 +1,12 @@
 // app_state.dart
-import 'package:eballistica/core/providers/storage_provider.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/convertors_state.dart';
-import 'package:eballistica/core/models/seed_data.dart';
+import 'package:ebalistyka/core/providers/storage_provider.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/convertors_state.dart';
+import 'package:ebalistyka/core/models/seed_data.dart';
 import 'package:flutter/material.dart' show debugPrint;
 import 'package:riverpod/riverpod.dart'; // Додайте цей імпорт
 

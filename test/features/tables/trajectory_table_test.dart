@@ -3,13 +3,13 @@
 // TrajectoryTable is a plain StatefulWidget — no Riverpod needed.
 //   flutter test test/trajectory_table_test.dart
 
-import 'package:eballistica/features/tables/details_table_mv.dart';
-import 'package:eballistica/features/tables/widgets/details_table.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/tables/widgets/trajectory_table.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 

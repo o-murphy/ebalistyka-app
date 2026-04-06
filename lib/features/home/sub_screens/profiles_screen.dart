@@ -1,10 +1,10 @@
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/providers/app_state_provider.dart';
-import 'package:eballistica/features/home/profiles_vm.dart';
-import 'package:eballistica/features/home/sub_screens/profiles/widgets/profile_card.dart';
-import 'package:eballistica/router.dart';
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/features/home/profiles_vm.dart';
+import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_card.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

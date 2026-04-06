@@ -1,14 +1,14 @@
-import 'package:eballistica/features/tables/details_table_mv.dart';
-import 'package:eballistica/features/tables/table_html_exporter.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
-import 'package:eballistica/features/tables/widgets/details_table.dart';
-import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/table_html_exporter.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/features/tables/widgets/details_table.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:eballistica/router.dart';
-import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/features/tables/widgets/trajectory_table.dart';
 
 class TablesScreen extends ConsumerWidget {
   const TablesScreen({super.key});

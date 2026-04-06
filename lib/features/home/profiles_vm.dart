@@ -1,13 +1,13 @@
 // profiles_vm.dart
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/providers/formatter_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 
 // ── Display model ─────────────────────────────────────────────────────────────
 

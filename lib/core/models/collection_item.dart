@@ -1,5 +1,5 @@
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/sight.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/sight.dart';
 
 abstract interface class CollectionItem<T> {
   String get id;

@@ -1,4 +1,4 @@
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 import 'package:flutter/material.dart';
 
 /// Віджет для вибору одиниці виміру з BottomSheet

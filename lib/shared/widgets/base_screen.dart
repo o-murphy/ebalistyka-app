@@ -1,4 +1,4 @@
-import 'package:eballistica/shared/widgets/screen_top_bar.dart';
+import 'package:ebalistyka/shared/widgets/screen_top_bar.dart';
 import 'package:flutter/material.dart';
 
 class BaseScreen extends StatelessWidget {

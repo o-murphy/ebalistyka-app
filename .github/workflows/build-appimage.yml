@@ -47,7 +47,7 @@ jobs:
               body += `📦 **[Download AppImage](${artifactUrl})**\n`;
               body += `\`${artifactName}\` — available for 7 days\n\n`;
               body += `**PR**: #${{ github.event.pull_request.number }} · **Commit**: \`${{ github.sha }}\`\n\n`;
-              body += `\`\`\`bash\nchmod +x eballistica-x86_64.AppImage\n./eballistica-x86_64.AppImage\n\`\`\`\n`;
+              body += `\`\`\`bash\nchmod +x ebalistyka-x86_64.AppImage\n./ebalistyka-x86_64.AppImage\n\`\`\`\n`;
             } else {
               body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
             }

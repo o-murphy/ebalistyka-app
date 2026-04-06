@@ -1,10 +1,10 @@
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/sight.dart';
 import '../proto/profedit.pb.dart' hide CoefRow;
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 import 'a7p_validator.dart';
 
 /// Converts a validated [Payload] into a [ShotProfile].

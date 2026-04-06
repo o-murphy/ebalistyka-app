@@ -1,6 +1,6 @@
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/solver/trajectory_data.dart';
 
 class TableCalcOptions {
   final double startM;

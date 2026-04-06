@@ -1,10 +1,10 @@
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/convertors/angular_convertor_vm.dart';
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
-import 'package:eballistica/shared/widgets/unit_picker_tile.dart';
-import 'package:eballistica/shared/widgets/unit_constrained_input_with_unit_picker.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/features/convertors/angular_convertor_vm.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

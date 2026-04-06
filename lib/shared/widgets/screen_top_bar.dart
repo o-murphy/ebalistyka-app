@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:eballistica/router.dart';
+import 'package:ebalistyka/router.dart';
 import 'package:flutter/material.dart';
 
 class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {

@@ -1,7 +1,7 @@
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/core/models/unit_settings.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 
 class UnitFormatterImpl implements UnitFormatter {
   final UnitSettings _u;

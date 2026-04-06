@@ -1,4 +1,4 @@
-# eBallistica — Refactoring Plan
+# eBalistyka — Refactoring Plan
 
 **Мета:** Врятувати проект без переписування з нуля. Feature-first, покроково,
 кожна фаза — окремий коміт що не ламає поточне.

@@ -1,5 +1,5 @@
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/core/solver/shot.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/shot.dart';
 
 enum TrajFlag {
   none(0),

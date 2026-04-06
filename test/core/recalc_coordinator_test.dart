@@ -6,20 +6,20 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/core/providers/recalc_coordinator.dart';
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_conditions_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/core/providers/recalc_coordinator.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
+import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

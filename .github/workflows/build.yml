@@ -102,7 +102,7 @@ jobs:
             echo "bundle_dir=build/windows/x64/runner/${BUILD_SUBDIR}" >> $GITHUB_OUTPUT
           fi
 
-          echo "artifact_name=eballistica-${{ inputs.platform }}-${ARCH_SUFFIX}-${{ inputs.build_type }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-${{ inputs.platform }}-${ARCH_SUFFIX}-${{ inputs.build_type }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Cache pub packages (Linux)
         if: inputs.platform == 'linux'
@@ -148,7 +148,7 @@ jobs:
 
           if [ ! -d "$BUNDLE_DIR" ]; then
             echo "Bundle not found at: $BUNDLE_DIR"
-            find build/linux -name "eballistica" 2>/dev/null || true
+            find build/linux -name "ebalistyka" 2>/dev/null || true
             exit 1
           fi
 
@@ -157,30 +157,30 @@ jobs:
           chmod +x /usr/local/bin/appimagetool
 
           APPDIR="AppDir"
-          mkdir -p "$APPDIR/usr/share/eballistica"
+          mkdir -p "$APPDIR/usr/share/ebalistyka"
           mkdir -p "$APPDIR/usr/share/applications"
           mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
 
-          cp -r "$BUNDLE_DIR/"* "$APPDIR/usr/share/eballistica/"
+          cp -r "$BUNDLE_DIR/"* "$APPDIR/usr/share/ebalistyka/"
 
-          printf '[Desktop Entry]\nName=eBallistica\nExec=eballistica\nIcon=eballistica\nType=Application\nCategories=Utility;\n' \
-            > "$APPDIR/usr/share/applications/eballistica.desktop"
+          printf '[Desktop Entry]\nName=eBalistyka\nExec=ebalistyka\nIcon=ebalistyka\nType=Application\nCategories=Utility;\n' \
+            > "$APPDIR/usr/share/applications/ebalistyka.desktop"
 
           if [ -f "assets/icon.png" ]; then
-            cp "assets/icon.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/eballistica.png"
+            cp "assets/icon.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
           else
             printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82' \
-              > "$APPDIR/usr/share/icons/hicolor/256x256/apps/eballistica.png"
+              > "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
           fi
 
-          ln -sf usr/share/applications/eballistica.desktop "$APPDIR/eballistica.desktop"
-          ln -sf usr/share/icons/hicolor/256x256/apps/eballistica.png "$APPDIR/eballistica.png"
+          ln -sf usr/share/applications/ebalistyka.desktop "$APPDIR/ebalistyka.desktop"
+          ln -sf usr/share/icons/hicolor/256x256/apps/ebalistyka.png "$APPDIR/ebalistyka.png"
 
-          printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nAPP_DIR="$HERE/usr/share/eballistica"\nexport LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"\nexec "$APP_DIR/eballistica" "$@"\n' \
+          printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nAPP_DIR="$HERE/usr/share/ebalistyka"\nexport LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"\nexec "$APP_DIR/ebalistyka" "$@"\n' \
             > "$APPDIR/AppRun"
           chmod +x "$APPDIR/AppRun"
 
-          APPIMAGE_NAME="eballistica-${ARCH_SUFFIX}.AppImage"
+          APPIMAGE_NAME="ebalistyka-${ARCH_SUFFIX}.AppImage"
           ARCH="${ARCH_SUFFIX}" appimagetool "$APPDIR" "$APPIMAGE_NAME"
 
           mkdir -p artifacts
@@ -194,21 +194,21 @@ jobs:
 
           if (-not (Test-Path $bundleDir)) {
             Write-Host "Bundle not found at: $bundleDir"
-            Get-ChildItem -Path build -Recurse -Filter "eballistica.exe" | ForEach-Object { Write-Host $_.FullName }
+            Get-ChildItem -Path build -Recurse -Filter "ebalistyka.exe" | ForEach-Object { Write-Host $_.FullName }
             exit 1
           }
 
           New-Item -ItemType Directory -Force -Path artifacts
 
-          Copy-Item "$bundleDir\eballistica.exe" "artifacts\"
+          Copy-Item "$bundleDir\ebalistyka.exe" "artifacts\"
           Get-ChildItem -Path $bundleDir -Filter "*.dll" | Copy-Item -Destination "artifacts\"
 
           if (Test-Path "$bundleDir\data") {
             Copy-Item -Path "$bundleDir\data" -Destination "artifacts\data" -Recurse
           }
 
-          if ("${{ inputs.build_type }}" -eq "debug" -and (Test-Path "$bundleDir\eballistica.pdb")) {
-            Copy-Item "$bundleDir\eballistica.pdb" "artifacts\"
+          if ("${{ inputs.build_type }}" -eq "debug" -and (Test-Path "$bundleDir\ebalistyka.pdb")) {
+            Copy-Item "$bundleDir\ebalistyka.pdb" "artifacts\"
           }
 
       - name: Upload artifact

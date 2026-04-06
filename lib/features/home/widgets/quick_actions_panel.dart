@@ -1,12 +1,12 @@
-import 'package:eballistica/shared/widgets/unit_constrained_input_dialog.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/shared/widgets/icon_value_button.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 
 class QuickActionsPanel extends ConsumerWidget {
   const QuickActionsPanel({super.key});

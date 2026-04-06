@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 
 void main() {
   group('Angular normalization', () {

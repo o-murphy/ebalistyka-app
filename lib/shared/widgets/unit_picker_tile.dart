@@ -1,5 +1,5 @@
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/shared/widgets/unit_picker_button.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_button.dart';
 import 'package:flutter/material.dart';
 
 /// Обгортка на базі ListTile для використання в налаштуваннях

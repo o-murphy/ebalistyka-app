@@ -1,21 +1,21 @@
 import 'dart:math' as math;
 
-import 'package:eballistica/shared/widgets/pages_dots_indicator.dart';
-import 'package:eballistica/shared/widgets/unit_constrained_input_dialog.dart';
+import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:eballistica/router.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/widgets/home_chart_page.dart';
-import 'package:eballistica/features/home/widgets/home_reticle_page.dart';
-import 'package:eballistica/features/home/widgets/home_table_page.dart';
-import 'package:eballistica/features/home/widgets/quick_actions_panel.dart';
-import 'package:eballistica/features/home/widgets/side_control_block.dart';
-import 'package:eballistica/features/home/widgets/wind_indicator.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
+import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
+import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
+import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

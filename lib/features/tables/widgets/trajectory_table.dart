@@ -1,9 +1,9 @@
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
-import 'package:eballistica/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 
-import 'package:eballistica/shared/models/formatted_row.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ─── Trajectory Table ─────────────────────────────────────────────────────────

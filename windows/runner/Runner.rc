@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "ballistics-lab" "\0"
-            VALUE "FileDescription", "eBallistica" "\0"
+            VALUE "FileDescription", "eBalistyka" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "eballistica" "\0"
+            VALUE "InternalName", "ebalistyka" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 ballistics-lab. All rights reserved." "\0"
-            VALUE "OriginalFilename", "eballistica.exe" "\0"
-            VALUE "ProductName", "eBallistica" "\0"
+            VALUE "OriginalFilename", "ebalistyka.exe" "\0"
+            VALUE "ProductName", "eBalistyka" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

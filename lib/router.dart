@@ -1,6 +1,6 @@
-import 'package:eballistica/features/convertors/sub_screens/convertors_sub_screens.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/features/home/sub_screens/rifle_wizard_screen.dart';
+import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/features/home/sub_screens/rifle_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

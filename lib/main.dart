@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/shared/helpers/is_desktop.dart';
+import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'core/providers/settings_provider.dart';

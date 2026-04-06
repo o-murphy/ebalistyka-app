@@ -8,7 +8,7 @@
 //   sc_height  / 10   → mm
 //   r_twist    / 100  → inch
 
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/solver/unit.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
 import 'rifle.dart';
