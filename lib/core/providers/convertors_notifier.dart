@@ -42,7 +42,8 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
 
   Future<void> _save(ConvertorsState s) async {
     _store.box<ConvertorsState>().put(s);
-    // Stream subscription in build() fires and updates state reactively.
+    final fresh = _store.box<ConvertorsState>().get(s.id);
+    if (fresh != null) state = AsyncData(fresh);
   }
 
   // ── Length ────────────────────────────────────────────────────────────────────

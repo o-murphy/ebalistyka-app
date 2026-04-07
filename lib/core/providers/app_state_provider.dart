@@ -87,8 +87,13 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           .find();
     }
 
-    final activeProfile = owner.activeProfile.target
-        ?? (profiles.isNotEmpty ? profiles.first : null);
+    // Use targetId (just the ID, no cached entity) then find the fresh
+    // entity from the just-loaded profiles list so Riverpod always sees
+    // a new object reference and notifies downstream providers.
+    final activeId = owner.activeProfile.targetId;
+    final activeProfile = activeId != 0
+        ? profiles.where((p) => p.id == activeId).firstOrNull
+        : (profiles.isNotEmpty ? profiles.first : null);
 
     debugPrint(
       'AppStateNotifier: ${cartridges.length} ammo, '

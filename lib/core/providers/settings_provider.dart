@@ -46,7 +46,8 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
 
   Future<void> _save(GeneralSettings s) async {
     _store.box<GeneralSettings>().put(s);
-    // The stream subscription in build() fires and updates state reactively.
+    final fresh = _store.box<GeneralSettings>().get(s.id);
+    if (fresh != null) state = AsyncData(fresh);
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
@@ -137,6 +138,8 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
 
   Future<void> _save(UnitSettings s) async {
     _store.box<UnitSettings>().put(s);
+    final fresh = _store.box<UnitSettings>().get(s.id);
+    if (fresh != null) state = AsyncData(fresh);
   }
 
   Future<void> setUnit(String key, Unit unit) async {
@@ -205,6 +208,8 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
 
   Future<void> save(TablesSettings s) async {
     _store.box<TablesSettings>().put(s);
+    final fresh = _store.box<TablesSettings>().get(s.id);
+    if (fresh != null) state = AsyncData(fresh);
   }
 }
 

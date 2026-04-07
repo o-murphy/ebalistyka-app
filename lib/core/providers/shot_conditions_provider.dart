@@ -41,7 +41,9 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> _save(ShootingConditions cond) async {
     _store.box<ShootingConditions>().put(cond);
-    // Stream subscription in build() fires and updates state reactively.
+    // Re-read a fresh instance so Riverpod always sees a new object reference.
+    final fresh = _store.box<ShootingConditions>().get(cond.id);
+    if (fresh != null) state = AsyncData(fresh);
   }
 
   // ── Distance / geometry ───────────────────────────────────────────────────────

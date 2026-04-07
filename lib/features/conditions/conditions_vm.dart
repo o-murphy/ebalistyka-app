@@ -86,7 +86,9 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   }
 
   Future<void> updateTemperature(double rawCelsius) async {
-    await ref.read(shotConditionsProvider.notifier).updateTemperature(rawCelsius);
+    await ref
+        .read(shotConditionsProvider.notifier)
+        .updateTemperature(rawCelsius);
   }
 
   Future<void> updateAltitude(double rawMeters) async {
@@ -174,8 +176,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final currentMvDisp = Velocity.mps(currentMvMps).in_(velUnit);
     final mvStr =
         '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(velUnit))} ${velUnit.symbol}';
-    final sensStr =
-        '${(sensitivityFrac * 100.0).toStringAsFixed(2)} %/15°C';
+    final sensStr = '${(sensitivityFrac * 100.0).toStringAsFixed(2)} %/15°C';
 
     return ConditionsUiState(
       temperature: _field(

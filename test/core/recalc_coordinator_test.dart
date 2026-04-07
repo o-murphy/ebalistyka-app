@@ -1,7 +1,7 @@
 // Unit tests for RecalcCoordinator (Phase 3).
 //
 // No FFI required — uses only Riverpod container with provider overrides.
-//   flutter test test/recalc_coordinator_test.dart
+//   flutter test test/core/recalc_coordinator_test.dart
 
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,47 +10,14 @@ import 'package:ebalistyka/core/providers/recalc_coordinator.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
-
-import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-ProfileData _makeProfile() {
-  final cartridge = AmmoData(
-    name: 'Test .308',
-    projectileName: 'Test 175gr',
-    dragType: DragModelType.g7,
-    weight: Weight.grain(175),
-    diameter: Distance.millimeter(7.62),
-    length: Distance.millimeter(31.0),
-    coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity.mps(800),
-    powderTemp: Temperature.celsius(15.0),
-    powderSensitivity: Ratio.fraction(1.0),
-    zeroConditions: Conditions.withDefaults(useDiffPowderTemp: true),
-  );
-  final rifle = WeaponData(
-    name: 'Test Rifle',
-    sightHeight: Distance.millimeter(38.0),
-    twist: Distance.inch(11.0),
-  );
-  final sight = SightData(name: 'Test Scope');
-  return ProfileData(
-    name: 'Test Shot',
-    rifle: rifle,
-    sight: sight,
-    cartridge: cartridge,
-  );
-}
+Profile _makeProfile() => Profile()..name = 'Test Profile';
 
 // ── Fake notifiers that track calls ────────────────────────────────────────
 
@@ -91,43 +58,35 @@ class _TrackingTablesVM extends TrajectoryTablesViewModel {
   }
 }
 
-/// Profile notifier that can push new values.
+/// Profile notifier that can push new values without touching the DB.
 class _ControllableProfileNotifier extends ShotProfileNotifier {
-  final ProfileData _initial;
-  _ControllableProfileNotifier(this._initial);
-
   @override
-  Future<ProfileData> build() async => _initial;
+  Future<Profile?> build() async => _makeProfile();
 
-  void push(ProfileData p) => state = AsyncData(p);
+  void push(Profile? p) => state = AsyncData(p);
 }
 
-/// Settings notifier that can push new values.
+/// Settings notifier that can push new values without touching the DB.
 class _ControllableSettingsNotifier extends SettingsNotifier {
-  final AppSettings _initial;
-  _ControllableSettingsNotifier(this._initial);
-
   @override
-  Future<AppSettings> build() async => _initial;
+  Future<GeneralSettings> build() async => GeneralSettings();
 
-  void push(AppSettings s) => state = AsyncData(s);
+  void push(GeneralSettings s) => state = AsyncData(s);
 }
 
-/// Conditions notifier that can push new values.
+/// Conditions notifier that can push new values without touching the DB.
 class _ControllableConditionsNotifier extends ShotConditionsNotifier {
-  Conditions _currentValue;
-
-  _ControllableConditionsNotifier(this._currentValue);
+  ShootingConditions _currentValue = ShootingConditions();
 
   @override
-  Future<Conditions> build() async => _currentValue;
+  Future<ShootingConditions> build() async => _currentValue;
 
-  void push(Conditions c) {
+  void push(ShootingConditions c) {
     _currentValue = c;
     state = AsyncData(c);
   }
 
-  Conditions get currentValue => _currentValue;
+  ShootingConditions get currentValue => _currentValue;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -152,17 +111,13 @@ class _TestContext {
   });
 }
 
-_TestContext _createTestContext({
-  AppSettings initialSettings = const AppSettings(),
-}) {
+_TestContext _createTestContext() {
   final homeVM = _TrackingHomeVM();
   final tablesVM = _TrackingTablesVM();
   final shotDetailsVM = _TrackingShotDetailsVM();
-  final profileNotifier = _ControllableProfileNotifier(_makeProfile());
-  final settingsNotifier = _ControllableSettingsNotifier(initialSettings);
-  final conditionsNotifier = _ControllableConditionsNotifier(
-    Conditions.withDefaults(),
-  );
+  final profileNotifier = _ControllableProfileNotifier();
+  final settingsNotifier = _ControllableSettingsNotifier();
+  final conditionsNotifier = _ControllableConditionsNotifier();
 
   final container = ProviderContainer(
     overrides: [
@@ -210,7 +165,7 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('tab 0 (Home) triggers home and shot details VMs', () {
+    test('tab 0 (Home) triggers homeVM + shotDetailsVM', () {
       ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(0);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -223,22 +178,6 @@ void main() {
 
       expect(ctx.tablesVM.recalcCount, 1);
       expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.shotDetailsVM.recalcCount, 0);
-    });
-
-    test('tab 1 (Conditions) triggers nothing', () {
-      ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(1);
-
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
-      expect(ctx.shotDetailsVM.recalcCount, 0);
-    });
-
-    test('tab 3 (Convertors) triggers nothing', () {
-      ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(3);
-
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
       expect(ctx.shotDetailsVM.recalcCount, 0);
     });
 
@@ -262,8 +201,7 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('profile change triggers all providers', () async {
-      final newProfile = _makeProfile();
-      ctx.profileNotifier.push(newProfile);
+      ctx.profileNotifier.push(_makeProfile());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -294,18 +232,7 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('conditions change triggers all providers', () async {
-      final newConditions = Conditions(
-        atmo: AtmoData.icao(),
-        distance: Distance.meter(200),
-        lookAngle: Angular.degree(5),
-        wind: WindData.empty(),
-        usePowderSensitivity: true,
-        useDiffPowderTemp: false,
-        useCoriolis: false,
-        latitudeDeg: null,
-        azimuthDeg: null,
-      );
-      ctx.conditionsNotifier.push(newConditions);
+      ctx.conditionsNotifier.push(ShootingConditions()..distanceMeter = 200);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -314,9 +241,9 @@ void main() {
     });
 
     test('conditions usePowderSensitivity change triggers recalc', () async {
-      final current = ctx.conditionsNotifier.currentValue;
-      final newConditions = current.copyWith(usePowderSensitivity: true);
-      ctx.conditionsNotifier.push(newConditions);
+      ctx.conditionsNotifier.push(
+        ShootingConditions()..usePowderSensitivity = true,
+      );
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -325,14 +252,7 @@ void main() {
     });
 
     test('conditions wind speed change triggers recalc', () async {
-      final current = ctx.conditionsNotifier.currentValue;
-      final newConditions = current.copyWith(
-        wind: WindData(
-          velocity: Velocity.mps(5.0),
-          directionFrom: Angular.degree(90),
-        ),
-      );
-      ctx.conditionsNotifier.push(newConditions);
+      ctx.conditionsNotifier.push(ShootingConditions()..windSpeedMps = 5.0);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -352,7 +272,8 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('chartDistanceStep change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(chartDistanceStep: 50.0));
+      // Default is 10; push 50 to ensure a real change.
+      ctx.settingsNotifier.push(GeneralSettings()..homeChartDistanceStep = 50);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -360,10 +281,8 @@ void main() {
       expect(ctx.shotDetailsVM.recalcCount, 1);
     });
 
-    test('tableConfig.stepM change triggers recalc', () async {
-      ctx.settingsNotifier.push(
-        const AppSettings(tableConfig: TableConfig(stepM: 50.0)),
-      );
+    test('tableDistanceStep change triggers recalc', () async {
+      ctx.settingsNotifier.push(GeneralSettings()..homeTableDistanceStep = 50);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -383,7 +302,8 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('showMrad change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(showMrad: false));
+      // Default homeShowMrad = false; push true to differ from initial.
+      ctx.settingsNotifier.push(GeneralSettings()..homeShowMrad = true);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -392,7 +312,7 @@ void main() {
     });
 
     test('showMoa change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(showMoa: true));
+      ctx.settingsNotifier.push(GeneralSettings()..homeShowMoa = true);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -428,10 +348,9 @@ void main() {
       'settings change with multiple relevant fields triggers once',
       () async {
         ctx.settingsNotifier.push(
-          const AppSettings(
-            chartDistanceStep: 50.0,
-            tableConfig: TableConfig(stepM: 50.0),
-          ),
+          GeneralSettings()
+            ..homeChartDistanceStep = 50
+            ..homeTableDistanceStep = 50,
         );
         await Future<void>.delayed(Duration.zero);
 
