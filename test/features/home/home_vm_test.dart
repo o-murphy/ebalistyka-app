@@ -456,8 +456,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // Не чекаємо нічого, просто читаємо початковий стан
-      final state = container.read(homeVmProvider).value;
+      // build() повертає HomeUiLoading — чекаємо поки Future resolve
+      final state = await container.read(homeVmProvider.future);
       expect(state, isA<HomeUiLoading>());
     });
   });

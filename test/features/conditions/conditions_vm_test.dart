@@ -332,7 +332,10 @@ void main() {
           settingsProvider.overrideWith(
             () => _FakeSettingsNotifier(const AppSettings()),
           ),
-          // Не оверрайдимо shotConditionsProvider - він сам завантажиться
+          // Мокуємо умови як "не завантажені" (default empty conditions)
+          shotConditionsProvider.overrideWith(
+            () => _FakeConditionsNotifier(Conditions.withDefaults()),
+          ),
         ],
       );
       addTearDown(container.dispose);

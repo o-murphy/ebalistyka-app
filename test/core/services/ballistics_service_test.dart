@@ -400,6 +400,8 @@ void main() {
       );
 
       // Cartridge with powder sensitivity
+      // Zero powder temp = 35°C (hot), reference = 15°C → delta = 20°C
+      // With sensitivity enabled, MV at zero is higher → less elevation needed
       final sensitiveCartridge = AmmoData(
         name: 'Temp Sens',
         projectileName: profile.cartridge!.projectileName,
@@ -409,13 +411,19 @@ void main() {
         diameter: profile.cartridge!.diameter,
         coefRows: profile.cartridge!.coefRows,
         mv: Velocity.mps(800),
-        powderTemp: Temperature.celsius(15),
+        powderTemp: Temperature.celsius(15), // reference temp
         powderSensitivity: Ratio.fraction(1.0), // 1% per 15°C
         zeroConditions: Conditions.withDefaults(
           usePowderSensitivity: true,
           distance: Distance.meter(100),
-          atmo: zeroConditions,
-          useDiffPowderTemp: true, // ← додаємо умови обнулення
+          atmo: AtmoData(
+            temperature: zeroConditions.temperature,
+            altitude: zeroConditions.altitude,
+            pressure: zeroConditions.pressure,
+            humidity: zeroConditions.humidity,
+            powderTemp: Temperature.celsius(35.0), // hot powder at zero → delta vs reference
+          ),
+          useDiffPowderTemp: true,
         ),
       );
 
