@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:bclibc_ffi/unit.dart';
 
 class BuiltinCollection {
-  final List<Rifle> rifles;
-  final List<Cartridge> cartridges;
-  final List<Cartridge> projectiles;
-  final List<Sight> sights;
+  final List<WeaponData> rifles;
+  final List<AmmoData> cartridges;
+  final List<AmmoData> projectiles;
+  final List<SightData> sights;
 
   const BuiltinCollection({
     required this.rifles,
@@ -57,12 +57,15 @@ abstract final class CollectionParser {
 
   // ── Rifle ──────────────────────────────────────────────────────────────────
 
-  static Rifle _parseRifle(Map<String, dynamic> j, Map<int, double> calibers) {
+  static WeaponData _parseRifle(
+    Map<String, dynamic> j,
+    Map<int, double> calibers,
+  ) {
     final caliberId = j['caliberId'] as int?;
     final diameterInch = caliberId != null ? calibers[caliberId] : null;
     final barrelRaw =
         (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
-    return Rifle(
+    return WeaponData(
       name: j['name'] as String,
       vendor: j['vendor'] as String?,
       sightHeight: Distance.millimeter(0.0),
@@ -76,7 +79,7 @@ abstract final class CollectionParser {
 
   // ── Cartridge ──────────────────────────────────────────────────────────────
 
-  static Cartridge _parseCartridge(
+  static AmmoData _parseCartridge(
     Map<String, dynamic> j,
     Map<int, double> calibers,
   ) {
@@ -107,11 +110,11 @@ abstract final class CollectionParser {
       coefRows = [CoeficientRow(bcCd: bc, mv: 0.0)];
     }
 
-    return Cartridge(
+    return AmmoData(
       name: name,
       vendor: j['vendor'] as String?,
       projectileName: j['projectileName'] as String?,
-      type: CartridgeType.cartridge,
+      type: AmmoType.cartridge,
       dragType: dType,
       weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
       diameter: Distance.inch(diameterInch),
@@ -135,8 +138,10 @@ abstract final class CollectionParser {
 
   // ── Sight ──────────────────────────────────────────────────────────────────
 
-  static Sight _parseSight(Map<String, dynamic> j) =>
-      Sight(name: j['name'] as String, manufacturer: j['vendor'] as String?);
+  static SightData _parseSight(Map<String, dynamic> j) => SightData(
+    name: j['name'] as String,
+    manufacturer: j['vendor'] as String?,
+  );
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 

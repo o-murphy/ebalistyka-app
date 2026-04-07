@@ -1,22 +1,22 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:uuid/uuid.dart';
 
-class Sight {
+class SightData {
   final String id;
   final String name;
   final String? manufacturer;
   final String? notes;
 
-  Sight({String? id, required this.name, this.manufacturer, this.notes})
+  SightData({String? id, required this.name, this.manufacturer, this.notes})
     : id = id ?? const Uuid().v4();
 
-  Sight copyWith({
+  SightData copyWith({
     String? name,
     String? manufacturer,
     Distance? sightHeight,
     Angular? zeroElevation,
     String? notes,
-  }) => Sight(
+  }) => SightData(
     id: id,
     name: name ?? this.name,
     manufacturer: manufacturer ?? this.manufacturer,
@@ -30,7 +30,7 @@ class Sight {
     if (notes != null) 'notes': notes,
   };
 
-  factory Sight.fromJson(Map<String, dynamic> json) => Sight(
+  factory SightData.fromJson(Map<String, dynamic> json) => SightData(
     id: json['id'] as String,
     name: json['name'] as String,
     manufacturer: json['manufacturer'] as String?,

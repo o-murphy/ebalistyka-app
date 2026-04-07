@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:riverpod/riverpod.dart';
 
@@ -14,7 +14,7 @@ import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
@@ -212,13 +212,14 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final current = ref.read(shotConditionsProvider).value;
     if (current == null) return;
 
-    await ref.read(shotConditionsProvider.notifier).updateWinds([
-      WindData(
-        velocity: _currentWindVelocity(),
-        directionFrom: Angular.degree(degrees),
-        untilDistance: Distance.meter(9999.0),
-      ),
-    ]);
+    await ref
+        .read(shotConditionsProvider.notifier)
+        .updateWinds(
+          WindData(
+            velocity: _currentWindVelocity(),
+            directionFrom: Angular.degree(degrees),
+          ),
+        );
   }
 
   Future<void> updateWindSpeed(double rawMps) async {
@@ -239,12 +240,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   Velocity _currentWindVelocity() {
     final conditions = ref.read(shotConditionsProvider).value;
-    final winds = conditions?.winds ?? const <WindData>[];
-    return winds.isNotEmpty ? winds.first.velocity : Velocity.mps(0);
+    final wind = conditions?.wind ?? WindData.empty();
+    return wind.velocity;
   }
 
   HomeUiReady _buildReadyState({
-    required ShotProfile profile,
+    required ProfileData profile,
     required Conditions conditions,
     required AppSettings settings,
     required UnitFormatter formatter,
@@ -253,9 +254,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final hit = result.hitResult;
     final targetM = conditions.distance.in_(Unit.meter);
 
-    final windDirDeg = conditions.winds.isNotEmpty
-        ? conditions.winds.first.directionFrom.in_(Unit.degree)
-        : 0.0;
+    final windDirDeg = conditions.wind.directionFrom.in_(Unit.degree);
 
     final atmo = conditions.atmo;
     final tempStr = formatter.temperature(atmo.temperature);
@@ -263,9 +262,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final pressStr = formatter.pressure(atmo.pressure);
     final humidStr = formatter.humidity(Ratio(atmo.humidity, Unit.fraction));
 
-    final windMps = conditions.winds.isNotEmpty
-        ? conditions.winds.first.velocity.in_(Unit.mps)
-        : 0.0;
+    final windMps = conditions.wind.velocity.in_(Unit.mps);
     final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
@@ -313,7 +310,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   String _buildCartridgeInfoLine(
-    ShotProfile profile,
+    ProfileData profile,
     Conditions conditions,
     UnitFormatter fmt,
   ) {
@@ -544,7 +541,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   // ── Zero key (logic for detecting zero-relevant changes) ───────────────────
   // Використовує нову структуру cartridge.zeroConditions
 
-  List<double> _buildZeroKey(ShotProfile profile, Conditions conditions) {
+  List<double> _buildZeroKey(ProfileData profile, Conditions conditions) {
     final c = profile.cartridge!;
     // Використовуємо умови обнулення з картриджа
     final zeroConditions = c.zeroConditions;

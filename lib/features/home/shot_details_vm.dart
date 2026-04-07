@@ -15,7 +15,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 
 sealed class ShotDetailsUiState {
   const ShotDetailsUiState();
@@ -121,7 +121,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
   }
 
   ShotDetailsReady _buildReadyState(
-    ShotProfile profile,
+    ProfileData profile,
     Conditions conditions,
     AppSettings settings,
     UnitFormatter formatter,

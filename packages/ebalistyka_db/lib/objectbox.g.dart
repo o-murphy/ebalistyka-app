@@ -510,6 +510,11 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[
       obx_int.ModelBacklink(
+        name: 'weapons',
+        srcEntity: 'Weapon',
+        srcField: 'owner',
+      ),
+      obx_int.ModelBacklink(
         name: 'sights',
         srcEntity: 'Sight',
         srcField: 'owner',
@@ -1001,6 +1006,109 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(10, 6584000130387526342),
+    name: 'Conditions',
+    lastPropertyId: const obx_int.IdUid(15, 916432832977451751),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 5426442208853934967),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 5037629548932659231),
+        name: 'distanceMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 2371951231907280109),
+        name: 'lookAngleRad',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 4323419063753503766),
+        name: 'temperatureC',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 5700219949944244664),
+        name: 'pressurehPa',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 3495671315189767458),
+        name: 'humidityFrac',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 1735874292186788102),
+        name: 'powderTemperatureC',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 1650001243265687394),
+        name: 'usePowderSensitivity',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(9, 216318801184607733),
+        name: 'useDiffPowderTemperature',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(10, 4000401922573370751),
+        name: 'useCoriolis',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(11, 4955365735129140676),
+        name: 'latitudeDeg',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(12, 4972635236809095731),
+        name: 'azimuthDeg',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(13, 8332173160992404525),
+        name: 'windDirectionDeg',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(14, 3538766144987324145),
+        name: 'windSpeedMps',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(15, 916432832977451751),
+        name: 'ownerId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(18, 5948883144970043596),
+        relationField: 'owner',
+        relationTarget: 'Owner',
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -1045,8 +1153,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(9, 1731139601222753801),
-    lastIndexId: const obx_int.IdUid(17, 9049041270276597027),
+    lastEntityId: const obx_int.IdUid(10, 6584000130387526342),
+    lastIndexId: const obx_int.IdUid(18, 5948883144970043596),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [],
@@ -1621,6 +1729,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
       model: _entities[3],
       toOneRelations: (Owner object) => [],
       toManyRelations: (Owner object) => {
+        obx_int.RelInfo<Weapon>.toOneBacklink(
+          8,
+          object.id,
+          (Weapon srcObject) => srcObject.owner,
+        ): object.weapons,
         obx_int.RelInfo<Sight>.toOneBacklink(
           16,
           object.id,
@@ -1680,6 +1793,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ..token = const fb.StringReader(
             asciiOptimization: true,
           ).vTableGetNullable(buffer, rootOffset, 6);
+        obx_int.InternalToManyAccess.setRelInfo<Owner>(
+          object.weapons,
+          store,
+          obx_int.RelInfo<Weapon>.toOneBacklink(
+            8,
+            object.id,
+            (Weapon srcObject) => srcObject.owner,
+          ),
+        );
         obx_int.InternalToManyAccess.setRelInfo<Owner>(
           object.sights,
           store,
@@ -2248,6 +2370,128 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    Conditions: obx_int.EntityDefinition<Conditions>(
+      model: _entities[9],
+      toOneRelations: (Conditions object) => [object.owner],
+      toManyRelations: (Conditions object) => {},
+      getId: (Conditions object) => object.id,
+      setId: (Conditions object, int id) {
+        object.id = id;
+      },
+      objectToFB: (Conditions object, fb.Builder fbb) {
+        fbb.startTable(16);
+        fbb.addInt64(0, object.id);
+        fbb.addFloat64(1, object.distanceMeter);
+        fbb.addFloat64(2, object.lookAngleRad);
+        fbb.addFloat64(3, object.temperatureC);
+        fbb.addFloat64(4, object.pressurehPa);
+        fbb.addFloat64(5, object.humidityFrac);
+        fbb.addFloat64(6, object.powderTemperatureC);
+        fbb.addBool(7, object.usePowderSensitivity);
+        fbb.addBool(8, object.useDiffPowderTemperature);
+        fbb.addBool(9, object.useCoriolis);
+        fbb.addFloat64(10, object.latitudeDeg);
+        fbb.addFloat64(11, object.azimuthDeg);
+        fbb.addFloat64(12, object.windDirectionDeg);
+        fbb.addFloat64(13, object.windSpeedMps);
+        fbb.addInt64(14, object.owner.targetId);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+
+        final object = Conditions()
+          ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
+          ..distanceMeter = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            6,
+            0,
+          )
+          ..lookAngleRad = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            8,
+            0,
+          )
+          ..temperatureC = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            10,
+            0,
+          )
+          ..pressurehPa = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            12,
+            0,
+          )
+          ..humidityFrac = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            14,
+            0,
+          )
+          ..powderTemperatureC = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            16,
+            0,
+          )
+          ..usePowderSensitivity = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            18,
+            false,
+          )
+          ..useDiffPowderTemperature = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            20,
+            false,
+          )
+          ..useCoriolis = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            22,
+            false,
+          )
+          ..latitudeDeg = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            24,
+            0,
+          )
+          ..azimuthDeg = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            26,
+            0,
+          )
+          ..windDirectionDeg = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            28,
+            0,
+          )
+          ..windSpeedMps = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            30,
+            0,
+          );
+        object.owner.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          32,
+          0,
+        );
+        object.owner.attach(store);
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -2609,6 +2853,9 @@ class Owner_ {
     _entities[3].properties[1],
   );
 
+  /// see [Owner.weapons]
+  static final weapons = obx.QueryBacklinkToMany<Weapon, Owner>(Weapon_.owner);
+
   /// see [Owner.sights]
   static final sights = obx.QueryBacklinkToMany<Sight, Owner>(Sight_.owner);
 
@@ -2963,5 +3210,83 @@ class Weapon_ {
   /// See [Weapon.zeroElevationRad].
   static final zeroElevationRad = obx.QueryDoubleProperty<Weapon>(
     _entities[8].properties[8],
+  );
+}
+
+/// [Conditions] entity fields to define ObjectBox queries.
+class Conditions_ {
+  /// See [Conditions.id].
+  static final id = obx.QueryIntegerProperty<Conditions>(
+    _entities[9].properties[0],
+  );
+
+  /// See [Conditions.distanceMeter].
+  static final distanceMeter = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[1],
+  );
+
+  /// See [Conditions.lookAngleRad].
+  static final lookAngleRad = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[2],
+  );
+
+  /// See [Conditions.temperatureC].
+  static final temperatureC = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[3],
+  );
+
+  /// See [Conditions.pressurehPa].
+  static final pressurehPa = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[4],
+  );
+
+  /// See [Conditions.humidityFrac].
+  static final humidityFrac = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[5],
+  );
+
+  /// See [Conditions.powderTemperatureC].
+  static final powderTemperatureC = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[6],
+  );
+
+  /// See [Conditions.usePowderSensitivity].
+  static final usePowderSensitivity = obx.QueryBooleanProperty<Conditions>(
+    _entities[9].properties[7],
+  );
+
+  /// See [Conditions.useDiffPowderTemperature].
+  static final useDiffPowderTemperature = obx.QueryBooleanProperty<Conditions>(
+    _entities[9].properties[8],
+  );
+
+  /// See [Conditions.useCoriolis].
+  static final useCoriolis = obx.QueryBooleanProperty<Conditions>(
+    _entities[9].properties[9],
+  );
+
+  /// See [Conditions.latitudeDeg].
+  static final latitudeDeg = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[10],
+  );
+
+  /// See [Conditions.azimuthDeg].
+  static final azimuthDeg = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[11],
+  );
+
+  /// See [Conditions.windDirectionDeg].
+  static final windDirectionDeg = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[12],
+  );
+
+  /// See [Conditions.windSpeedMps].
+  static final windSpeedMps = obx.QueryDoubleProperty<Conditions>(
+    _entities[9].properties[13],
+  );
+
+  /// See [Conditions.owner].
+  static final owner = obx.QueryRelationToOne<Conditions, Owner>(
+    _entities[9].properties[14],
   );
 }

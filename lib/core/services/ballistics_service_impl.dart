@@ -3,14 +3,14 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show compute;
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
 // (profile, conditions, stepM, cachedZeroElevationRad?)
-typedef _TableCalcArgs = (ShotProfile, Conditions, double, double?);
+typedef _TableCalcArgs = (ProfileData, Conditions, double, double?);
 // (hitResult, freshZeroElevationRad?)
 typedef _TableCalcResult = (bclibc.HitResult?, double?);
 
@@ -55,7 +55,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
 }
 
 // (profile, conditions, targetDistM, chartStepM, cachedZeroElevationRad?)
-typedef _HomeCalcArgs = (ShotProfile, Conditions, double, double, double?);
+typedef _HomeCalcArgs = (ProfileData, Conditions, double, double, double?);
 // (hitResult, freshZeroElevationRad?)
 typedef _HomeCalcResult = (bclibc.HitResult?, double?);
 
@@ -129,7 +129,7 @@ class CalculationException implements Exception {
 class BallisticsServiceImpl implements BallisticsService {
   @override
   Future<BallisticsResult> calculateTable(
-    ShotProfile profile,
+    ProfileData profile,
     Conditions conditions,
     TableCalcOptions opts, {
     double? cachedZeroElevRad,
@@ -149,7 +149,7 @@ class BallisticsServiceImpl implements BallisticsService {
 
   @override
   Future<BallisticsResult> calculateForTarget(
-    ShotProfile profile,
+    ProfileData profile,
     Conditions conditions,
     TargetCalcOptions opts, {
     double? cachedZeroElevRad,

@@ -11,18 +11,18 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:bclibc_ffi/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-ShotProfile _makeProfile() {
-  final cartridge = Cartridge(
+ProfileData _makeProfile() {
+  final cartridge = AmmoData(
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
@@ -35,13 +35,13 @@ ShotProfile _makeProfile() {
     powderSensitivity: Ratio.fraction(1.0),
     zeroConditions: Conditions.withDefaults(usePowderSensitivity: true),
   );
-  final rifle = Rifle(
+  final rifle = WeaponData(
     name: 'Test Rifle',
     sightHeight: Distance.millimeter(38.0),
     twist: Distance.inch(11.0),
   );
-  final sight = Sight(name: 'Test Scope');
-  return ShotProfile(
+  final sight = SightData(name: 'Test Scope');
+  return ProfileData(
     name: 'Test Shot',
     rifle: rifle,
     sight: sight,
@@ -68,7 +68,7 @@ Conditions _makeConditions({
     ),
     lookAngle: Angular.degree(0),
     distance: Distance.meter(300.0),
-    winds: [],
+    wind: WindData.empty(),
     usePowderSensitivity: usePowderSensitivity,
     useDiffPowderTemp: useDiffPowderTemp,
     useCoriolis: false,
@@ -80,10 +80,10 @@ Conditions _makeConditions({
 // ── Fake notifiers for provider overrides ────────────────────────────────────
 
 class _FakeProfileNotifier extends ShotProfileNotifier {
-  final ShotProfile _profile;
+  final ProfileData _profile;
   _FakeProfileNotifier(this._profile);
   @override
-  Future<ShotProfile> build() async => _profile;
+  Future<ProfileData> build() async => _profile;
 }
 
 class _FakeSettingsNotifier extends SettingsNotifier {
@@ -111,7 +111,7 @@ class _FakeConditionsNotifier extends ShotConditionsNotifier {
 
 /// Creates a ProviderContainer with the given profile, conditions and settings.
 ProviderContainer _createContainer({
-  required ShotProfile profile,
+  required ProfileData profile,
   required Conditions conditions,
   AppSettings settings = const AppSettings(),
 }) {

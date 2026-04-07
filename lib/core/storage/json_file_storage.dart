@@ -6,9 +6,9 @@ import 'package:ebalistyka/core/models/convertors_state.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'app_storage.dart';
 
 /// Custom exception for storage errors
@@ -151,11 +151,11 @@ class JsonFileStorage implements AppStorage {
   // ── Cartridges ─────────────────────────────────────────────────────────────
 
   @override
-  Future<List<Cartridge>> loadCartridges() async =>
-      (await _readList('cartridges')).map(Cartridge.fromJson).toList();
+  Future<List<AmmoData>> loadCartridges() async =>
+      (await _readList('cartridges')).map(AmmoData.fromJson).toList();
 
   @override
-  Future<void> saveCartridge(Cartridge c) async {
+  Future<void> saveCartridge(AmmoData c) async {
     final list = await _readList('cartridges');
     final idx = list.indexWhere((m) => m['id'] == c.id);
     if (idx >= 0) {
@@ -176,11 +176,11 @@ class JsonFileStorage implements AppStorage {
   // ── Sights ─────────────────────────────────────────────────────────────────
 
   @override
-  Future<List<Sight>> loadSights() async =>
-      (await _readList('sights')).map(Sight.fromJson).toList();
+  Future<List<SightData>> loadSights() async =>
+      (await _readList('sights')).map(SightData.fromJson).toList();
 
   @override
-  Future<void> saveSight(Sight s) async {
+  Future<void> saveSight(SightData s) async {
     final list = await _readList('sights');
     final idx = list.indexWhere((m) => m['id'] == s.id);
     if (idx >= 0) {
@@ -248,13 +248,13 @@ class JsonFileStorage implements AppStorage {
   }
 
   @override
-  Future<List<ShotProfile>> loadProfiles() async {
+  Future<List<ProfileData>> loadProfiles() async {
     final (list, _) = await _readProfilesFile();
-    return list.map(ShotProfile.fromJson).toList();
+    return list.map(ProfileData.fromJson).toList();
   }
 
   @override
-  Future<void> saveProfile(ShotProfile p) async {
+  Future<void> saveProfile(ProfileData p) async {
     final (list, activeId) = await _readProfilesFile();
     final idx = list.indexWhere((m) => m['id'] == p.id);
     if (idx >= 0) {
@@ -266,7 +266,7 @@ class JsonFileStorage implements AppStorage {
   }
 
   @override
-  Future<void> saveProfilesOrdered(List<ShotProfile> profiles) async {
+  Future<void> saveProfilesOrdered(List<ProfileData> profiles) async {
     final (_, activeId) = await _readProfilesFile();
     await _writeProfilesFile(
       profiles.map((p) => p.toJson()).toList(),

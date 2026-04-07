@@ -11,7 +11,7 @@ import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -120,7 +120,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   // ── Private builders ───────────────────────────────────────────────────────
 
   TrajectoryTablesUiReady _buildReadyState({
-    required ShotProfile profile,
+    required ProfileData profile,
     required Conditions conditions,
     required AppSettings settings,
     required UnitFormatter formatter,
@@ -348,7 +348,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   // ── Zero key ───────────────────────────────────────────────────────────────
   // Використовує нову структуру cartridge.zeroConditions
 
-  List<double> _buildZeroKey(ShotProfile profile, Conditions conditions) {
+  List<double> _buildZeroKey(ProfileData profile, Conditions conditions) {
     final c = profile.cartridge!;
     // Використовуємо zeroConditions з картриджа
     final zeroConditions = c.zeroConditions;

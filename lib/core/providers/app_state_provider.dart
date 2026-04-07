@@ -1,8 +1,8 @@
 // app_state.dart
 import 'package:ebalistyka/core/providers/storage_provider.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/convertors_state.dart';
@@ -12,9 +12,9 @@ import 'package:riverpod/riverpod.dart'; // Додайте цей імпорт
 
 class AppState {
   // ВСІ дані в одному місці
-  final List<Cartridge> cartridges;
-  final List<Sight> sights;
-  final List<ShotProfile> profiles;
+  final List<AmmoData> cartridges;
+  final List<SightData> sights;
+  final List<ProfileData> profiles;
   final AppSettings? settings;
   final Conditions? conditions;
   final ConvertorsState? convertors;
@@ -36,9 +36,9 @@ class AppState {
 
   // Копіювання зі змінами (імутабельність)
   AppState copyWith({
-    List<Cartridge>? cartridges,
-    List<Sight>? sights,
-    List<ShotProfile>? profiles,
+    List<AmmoData>? cartridges,
+    List<SightData>? sights,
+    List<ProfileData>? profiles,
     AppSettings? settings,
     Conditions? conditions,
     ConvertorsState? convertors,
@@ -56,7 +56,7 @@ class AppState {
   }
 
   // Допоміжні методи для цілісності даних
-  List<ShotProfile> getValidProfiles() {
+  List<ProfileData> getValidProfiles() {
     final validCartridgeIds = cartridges.map((c) => c.id).toSet();
     final validSightIds = sights.map((s) => s.id).toSet();
 
@@ -149,7 +149,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   }
 
   // ---- Операції з патронами ----
-  Future<void> saveCartridge(Cartridge cartridge) async {
+  Future<void> saveCartridge(AmmoData cartridge) async {
     final storage = ref.read(appStorageProvider);
     await storage.saveCartridge(cartridge);
     final currentState = state.value!;
@@ -184,7 +184,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   }
 
   // ---- Операції з прицілами ----
-  Future<void> saveSight(Sight sight) async {
+  Future<void> saveSight(SightData sight) async {
     final storage = ref.read(appStorageProvider);
     await storage.saveSight(sight);
     final currentState = state.value!;
@@ -215,7 +215,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   }
 
   // ---- Операції з профілями ----
-  Future<void> saveProfile(ShotProfile profile) async {
+  Future<void> saveProfile(ProfileData profile) async {
     final storage = ref.read(appStorageProvider);
     await storage.saveProfile(profile);
     final currentState = state.value!;
@@ -262,11 +262,11 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   }
 
   // ---- Допоміжні геттери ----
-  List<ShotProfile> getValidProfiles() {
+  List<ProfileData> getValidProfiles() {
     return state.value?.getValidProfiles() ?? [];
   }
 
-  ShotProfile? getActiveProfile() {
+  ProfileData? getActiveProfile() {
     final appState = state.value;
     if (appState?.activeProfileId == null) return null;
     return appState?.profiles.firstWhere(

@@ -3,17 +3,17 @@ import 'package:uuid/uuid.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:bclibc_ffi/unit.dart';
 
-import 'cartridge.dart';
+import 'ammo_data.dart';
 import 'conditions_data.dart';
-import 'rifle.dart';
-import 'sight.dart';
+import 'weapon_data.dart';
+import 'sight_data.dart';
 
-class ShotProfile {
+class ProfileData {
   final String id;
   final String name;
 
   // ── Embedded у JSON профілю ───────────────────────────────────────────────
-  final Rifle rifle;
+  final WeaponData rifle;
 
   // ── References до бібліотек (тільки id у JSON) ────────────────────────────
   final String? cartridgeId;
@@ -21,10 +21,10 @@ class ShotProfile {
 
   // ── Resolved об'єкти (НЕ зберігаються в JSON) ────────────────────────────
   // Заповнюються тільки для активного профілю через shotProfileProvider.
-  final Cartridge? cartridge;
-  final Sight? sight;
+  final AmmoData? cartridge;
+  final SightData? sight;
 
-  ShotProfile({
+  ProfileData({
     String? id,
     required this.name,
     required this.rifle,
@@ -80,21 +80,21 @@ class ShotProfile {
       ammo: currentAmmo,
       lookAngle: conditions.lookAngle,
       atmo: conditions.toAtmo(),
-      winds: conditions.winds.map((w) => w.toWind()).toList(),
+      winds: [conditions.wind.toWind()],
       latitudeDeg: conditions.latitudeDeg,
       azimuthDeg: conditions.azimuthDeg,
     );
   }
 
   // ── copyWith ──────────────────────────────────────────────────────────────
-  ShotProfile copyWith({
+  ProfileData copyWith({
     String? name,
-    Rifle? rifle,
-    Cartridge? cartridge,
+    WeaponData? rifle,
+    AmmoData? cartridge,
     bool clearCartridge = false,
-    Sight? sight,
+    SightData? sight,
     bool clearSight = false,
-  }) => ShotProfile(
+  }) => ProfileData(
     id: id,
     name: name ?? this.name,
     rifle: rifle ?? this.rifle,
@@ -113,37 +113,37 @@ class ShotProfile {
     if (sightId != null) 'sightId': sightId,
   };
 
-  factory ShotProfile.fromJson(Map<String, dynamic> json) {
+  factory ProfileData.fromJson(Map<String, dynamic> json) {
     // ── Sight: new format (sightId) або backward-compat (embedded sight) ────
     final sightIdNew = json['sightId'] as String?;
-    Sight? inlineSight;
+    SightData? inlineSight;
     String? resolvedSightId = sightIdNew;
 
     if (sightIdNew == null) {
       final sightJson = json['sight'] as Map<String, dynamic>?;
       if (sightJson != null) {
-        inlineSight = Sight.fromJson(sightJson);
+        inlineSight = SightData.fromJson(sightJson);
         resolvedSightId = inlineSight.id;
       }
     }
 
     // ── Cartridge: new format (cartridgeId) або backward-compat ─────────────
     final cartridgeIdNew = json['cartridgeId'] as String?;
-    Cartridge? inlineCartridge;
+    AmmoData? inlineCartridge;
     String? resolvedCartridgeId = cartridgeIdNew;
 
     if (cartridgeIdNew == null) {
       final cartridgeJson = json['cartridge'] as Map<String, dynamic>?;
       if (cartridgeJson != null) {
-        inlineCartridge = Cartridge.fromJson(cartridgeJson);
+        inlineCartridge = AmmoData.fromJson(cartridgeJson);
         resolvedCartridgeId = inlineCartridge.id;
       }
     }
 
-    return ShotProfile(
+    return ProfileData(
       id: json['id'] as String,
       name: json['name'] as String,
-      rifle: Rifle.fromJson(json['rifle'] as Map<String, dynamic>),
+      rifle: WeaponData.fromJson(json['rifle'] as Map<String, dynamic>),
       cartridgeId: resolvedCartridgeId,
       cartridge: inlineCartridge,
       sightId: resolvedSightId,

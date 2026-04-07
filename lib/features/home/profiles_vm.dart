@@ -1,11 +1,11 @@
 // profiles_vm.dart
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 
@@ -84,7 +84,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 
   ProfileCardData _buildCardData(
-    ShotProfile profile,
+    ProfileData profile,
     AppState appState,
     UnitFormatter fmt,
   ) {
@@ -176,7 +176,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     }
   }
 
-  Future<void> updateProfileRifle(String profileId, Rifle rifle) async {
+  Future<void> updateProfileRifle(String profileId, WeaponData rifle) async {
     final appStateNotifier = ref.read(appStateProvider.notifier);
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
@@ -223,7 +223,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     }
   }
 
-  Future<void> saveProfile(ShotProfile profile) async {
+  Future<void> saveProfile(ProfileData profile) async {
     final appStateNotifier = ref.read(appStateProvider.notifier);
     await appStateNotifier.saveProfile(profile);
 

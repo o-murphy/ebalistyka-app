@@ -89,24 +89,18 @@ class AtmoData {
 class WindData {
   final Velocity velocity;
   final Angular directionFrom;
-  final Distance untilDistance;
 
-  const WindData({
-    required this.velocity,
-    required this.directionFrom,
-    required this.untilDistance,
-  });
+  const WindData({required this.velocity, required this.directionFrom});
 
-  bclibc.Wind toWind() => bclibc.Wind(
-    velocity: velocity,
-    directionFrom: directionFrom,
-    untilDistance: untilDistance,
-  );
+  factory WindData.empty() =>
+      WindData(velocity: Velocity.mps(0.0), directionFrom: Angular.radian(0.0));
+
+  bclibc.Wind toWind() =>
+      bclibc.Wind(velocity: velocity, directionFrom: directionFrom);
 
   Map<String, dynamic> toJson() => {
     'velocity': velocity.in_(StorageUnits.windVelocity),
     'directionFrom': directionFrom.in_(StorageUnits.windDirectionFrom),
-    'untilDistance': untilDistance.in_(StorageUnits.windUntilDistance),
   };
 
   factory WindData.fromJson(Map w) => WindData(
@@ -118,10 +112,6 @@ class WindData {
       (w['directionFrom'] as num).toDouble(),
       StorageUnits.windDirectionFrom,
     ),
-    untilDistance: Distance(
-      (w['untilDistance'] as num).toDouble(),
-      StorageUnits.windUntilDistance,
-    ),
   );
 }
 
@@ -129,7 +119,7 @@ class Conditions {
   final AtmoData atmo;
   final Distance distance;
   final Angular lookAngle;
-  final List<WindData> winds;
+  final WindData wind;
   final bool usePowderSensitivity;
   final bool useDiffPowderTemp;
   final bool useCoriolis;
@@ -140,7 +130,7 @@ class Conditions {
     required this.atmo,
     required this.distance,
     required this.lookAngle,
-    required this.winds,
+    required this.wind,
     required this.usePowderSensitivity,
     required this.useDiffPowderTemp,
     required this.useCoriolis,
@@ -149,7 +139,7 @@ class Conditions {
   });
 
   factory Conditions.withDefaults({
-    List<WindData> winds = const [],
+    WindData? wind,
     bool usePowderSensitivity = false,
     bool useDiffPowderTemp = false,
     bool useCoriolis = false,
@@ -160,7 +150,7 @@ class Conditions {
     Angular? lookAngle,
   }) {
     return Conditions(
-      winds: winds,
+      wind: WindData.empty(),
       useCoriolis: useCoriolis,
       usePowderSensitivity: usePowderSensitivity,
       useDiffPowderTemp: useDiffPowderTemp,
@@ -180,7 +170,7 @@ class Conditions {
 
   Map<String, dynamic> toJson() => {
     'atmo': atmo.toJson(),
-    'winds': winds.map((w) => w.toJson()).toList(),
+    'wind': wind,
     'lookAngle': lookAngle.in_(StorageUnits.profileLookAngle),
     'targetDistance': distance.in_(StorageUnits.profileTargetDistance),
     'usePowderSensitivity': usePowderSensitivity,
@@ -192,7 +182,7 @@ class Conditions {
 
   Conditions copyWith({
     AtmoData? atmo,
-    List<WindData>? winds,
+    WindData? wind,
     Angular? lookAngle,
     double? latitudeDeg,
     double? azimuthDeg,
@@ -203,7 +193,7 @@ class Conditions {
   }) {
     return Conditions(
       atmo: atmo ?? this.atmo,
-      winds: winds ?? this.winds,
+      wind: wind ?? this.wind,
       lookAngle: lookAngle ?? this.lookAngle,
       latitudeDeg: latitudeDeg ?? this.latitudeDeg,
       azimuthDeg: azimuthDeg ?? this.azimuthDeg,
@@ -219,9 +209,7 @@ class Conditions {
 
     return Conditions.withDefaults(
       atmo: AtmoData.fromJson(atmo),
-      winds: (json['winds'] as List)
-          .map((w) => WindData.fromJson(w as Map))
-          .toList(),
+      wind: WindData.fromJson(json['wind'] as Map),
       lookAngle: Angular(
         (json['lookAngle'] as num).toDouble(),
         StorageUnits.profileLookAngle,

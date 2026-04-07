@@ -11,11 +11,11 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
@@ -24,8 +24,8 @@ import 'package:bclibc_ffi/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-ShotProfile _makeProfile() {
-  final cartridge = Cartridge(
+ProfileData _makeProfile() {
+  final cartridge = AmmoData(
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
@@ -38,13 +38,13 @@ ShotProfile _makeProfile() {
     powderSensitivity: Ratio.fraction(1.0),
     zeroConditions: Conditions.withDefaults(useDiffPowderTemp: true),
   );
-  final rifle = Rifle(
+  final rifle = WeaponData(
     name: 'Test Rifle',
     sightHeight: Distance.millimeter(38.0),
     twist: Distance.inch(11.0),
   );
-  final sight = Sight(name: 'Test Scope');
-  return ShotProfile(
+  final sight = SightData(name: 'Test Scope');
+  return ProfileData(
     name: 'Test Shot',
     rifle: rifle,
     sight: sight,
@@ -93,13 +93,13 @@ class _TrackingTablesVM extends TrajectoryTablesViewModel {
 
 /// Profile notifier that can push new values.
 class _ControllableProfileNotifier extends ShotProfileNotifier {
-  final ShotProfile _initial;
+  final ProfileData _initial;
   _ControllableProfileNotifier(this._initial);
 
   @override
-  Future<ShotProfile> build() async => _initial;
+  Future<ProfileData> build() async => _initial;
 
-  void push(ShotProfile p) => state = AsyncData(p);
+  void push(ProfileData p) => state = AsyncData(p);
 }
 
 /// Settings notifier that can push new values.
@@ -298,7 +298,7 @@ void main() {
         atmo: AtmoData.icao(),
         distance: Distance.meter(200),
         lookAngle: Angular.degree(5),
-        winds: [],
+        wind: WindData.empty(),
         usePowderSensitivity: true,
         useDiffPowderTemp: false,
         useCoriolis: false,
@@ -327,13 +327,10 @@ void main() {
     test('conditions wind speed change triggers recalc', () async {
       final current = ctx.conditionsNotifier.currentValue;
       final newConditions = current.copyWith(
-        winds: [
-          WindData(
-            velocity: Velocity.mps(5.0),
-            directionFrom: Angular.degree(90),
-            untilDistance: Distance.meter(9999),
-          ),
-        ],
+        wind: WindData(
+          velocity: Velocity.mps(5.0),
+          directionFrom: Angular.degree(90),
+        ),
       );
       ctx.conditionsNotifier.push(newConditions);
       await Future<void>.delayed(Duration.zero);

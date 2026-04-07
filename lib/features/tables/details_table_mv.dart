@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,7 +7,7 @@ import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
@@ -61,7 +61,7 @@ class DetailsTableData {
 // ── Private builder ──────────────────────────────────────────────────────────
 
 DetailsTableData _buildDetails(
-  ShotProfile profile,
+  ProfileData profile,
   Conditions conditions,
   AppSettings settings,
 ) {
@@ -69,7 +69,7 @@ DetailsTableData _buildDetails(
   final rifle = profile.rifle;
   final cart = profile.cartridge!;
   final atmo = conditions.atmo;
-  final winds = conditions.winds;
+  final wind = conditions.wind;
 
   final twistInch = rifle.twist.in_(Unit.inch);
   final weightGr = cart.weight.in_(Unit.grain);
@@ -185,12 +185,10 @@ DetailsTableData _buildDetails(
       return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
     }(),
     windSpeed: () {
-      final ws = (winds.isNotEmpty ? winds.first.velocity : Velocity.mps(0.0))
-          .in_(units.velocity);
+      final ws = wind.velocity.in_(units.velocity);
       return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
     }(),
-    windDir:
-        '${(winds.isNotEmpty ? winds.first.directionFrom : Angular.degree(0.0)).in_(Unit.degree).toStringAsFixed(0)}°',
+    windDir: '${(wind.directionFrom).in_(Unit.degree).toStringAsFixed(0)}°',
   );
 }
 

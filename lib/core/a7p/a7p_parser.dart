@@ -1,33 +1,33 @@
 import 'package:bclibc_ffi/unit.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import '../proto/profedit.pb.dart' hide CoefRow;
 import 'a7p_validator.dart';
 
-/// Converts a validated [Payload] into a [ShotProfile].
+/// Converts a validated [Payload] into a [ProfileData].
 ///
 /// Call [A7pValidator.validate] before this if you want explicit error
 /// reporting; [fromPayload] will throw [A7pValidationException] on its own
 /// by default (pass [validate] = false to skip).
 class A7pParser {
-  static ShotProfile fromPayload(Payload payload, {bool validate = true}) {
+  static ProfileData fromPayload(Payload payload, {bool validate = true}) {
     if (validate) A7pValidator.validate(payload);
     return _parseProfile(payload.profile);
   }
 
   // ── main ───────────────────────────────────────────────────────────────────
 
-  static ShotProfile _parseProfile(Profile p) {
-    final rifle = Rifle(
+  static ProfileData _parseProfile(Profile p) {
+    final rifle = WeaponData(
       name: p.profileName,
       sightHeight: Distance.millimeter(p.scHeight.toDouble()),
       twist: Distance.inch(p.rTwist / 100.0),
     );
 
-    final sight = Sight(name: p.profileName);
+    final sight = SightData(name: p.profileName);
 
     // Будуємо zeroConditions
     final zeroAtmo = _buildAtmoData(
@@ -50,7 +50,7 @@ class A7pParser {
       useDiffPowderTemp: useDiffPowderTemp,
     );
 
-    final cartridge = Cartridge(
+    final cartridge = AmmoData(
       name: p.cartridgeName,
       projectileName: p.bulletName,
       dragType: _dragType(p.bcType),
@@ -64,7 +64,7 @@ class A7pParser {
       zeroConditions: zeroConditions,
     );
 
-    return ShotProfile(
+    return ProfileData(
       name: p.profileName,
       rifle: rifle,
       cartridgeId: cartridge.id,

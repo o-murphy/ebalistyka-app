@@ -1,9 +1,9 @@
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/convertors_state.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 
 abstract interface class AppStorage {
   // Settings
@@ -15,21 +15,21 @@ abstract interface class AppStorage {
   Future<void> saveConditions(Conditions c);
 
   // Cartridges
-  Future<List<Cartridge>> loadCartridges();
-  Future<void> saveCartridge(Cartridge c);
+  Future<List<AmmoData>> loadCartridges();
+  Future<void> saveCartridge(AmmoData c);
   Future<void> deleteCartridge(String id);
 
   // Sights
-  Future<List<Sight>> loadSights();
-  Future<void> saveSight(Sight s);
+  Future<List<SightData>> loadSights();
+  Future<void> saveSight(SightData s);
   Future<void> deleteSight(String id);
 
   // Profile library  (profiles.json stores {activeProfileId, profiles:[...]})
   Future<String?> loadActiveProfileId();
   Future<void> saveActiveProfileId(String id);
-  Future<List<ShotProfile>> loadProfiles();
-  Future<void> saveProfile(ShotProfile p);
-  Future<void> saveProfilesOrdered(List<ShotProfile> profiles);
+  Future<List<ProfileData>> loadProfiles();
+  Future<void> saveProfile(ProfileData p);
+  Future<void> saveProfilesOrdered(List<ProfileData> profiles);
   Future<void> deleteProfile(String id);
 
   // Built-in collection cache (collection.json downloaded from network)

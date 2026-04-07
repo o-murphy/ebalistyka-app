@@ -13,21 +13,46 @@
 - Phase 4 ✅ — Profiles Screen: `ProfilesVm`, `ProfilesScreen`, `ProfileCardData`, `profile_card.dart`
 - `rifle_wizard_screen.dart` ✅ — повністю реалізований
 - `home_sub_screens.dart` 🔲 — всі під-екрани як заглушки (`StubScreen`)
-- Phase 5 ✅ - Зроблено, але: Один тест ламається - виправити! Цей документ окумент не оновлено - перед фазою 6 оновити!
+- Phase 5 ✅ — Зроблено. Один тест ламається — TODO: виправити.
+- Phase 6 🔲 — ObjectBox Migration (замінює JSON storage): див. `docs/OBJECTBOX_MIGRATION.md`
 ---
 
 ## Storage Architecture
 
-### Файли
+> ⚠️ Phase 6 (ObjectBox Migration) замінює JSON storage на ObjectBox. Деталі в `docs/OBJECTBOX_MIGRATION.md`.
+
+### Поточний стан (до Phase 6): JSON файли
 
 ```
 ~/.eBalistyka/
-  data.json          ← всі юзерські дані (профілі, патрони, прицілі)
-  settings.json      ← AppSettings (одиниці, теми)
-  collection.json    ← вбудована колекція (кеш з мережі або assets fallback)
+  cartridges.json    ← List<AmmoData>
+  sights.json        ← List<SightData>
+  profiles.json      ← {activeProfileId, profiles:[...]}
+  settings.json      ← AppSettings (одиниці, теми, конвертори)
+  conditions.json    ← Conditions (умови стрільби)
+  collection.json    ← вбудована колекція (кеш або assets fallback)
 ```
 
-> `rifles.json`, `bullets.json`, `cartridges.json`, `sights.json`, `profiles.json` — **не існують** як окремі файли. Все зберігається в `data.json`. Rifle — embedded у профіль. Bullet — cartridge з `type: bullet`.
+### Цільовий стан (після Phase 6): ObjectBox
+
+```
+~/.eBalistyka/objectbox/  ← ObjectBox database (ebalistyka_db)
+  Owner              ← singleton root (token="local")
+  ├── Weapon[]       ← гвинтівки (замість WeaponData JSON)
+  ├── Ammo[]         ← патрони/кулі (замість AmmoData JSON)
+  ├── Sight[]        ← прицілі (замість SightData JSON)
+  ├── Profile[]      ← профілі (замість ProfileData JSON)
+  │     ├── ToOne<Weapon>
+  │     ├── ToOne<Sight>
+  │     └── ToOne<Ammo>
+  ├── GeneralSettings    ← замість AppSettings JSON
+  ├── UnitSettings
+  ├── TablesSettings
+  ├── ConvertorsState
+  └── ShootingConditions ← замість Conditions JSON (NEW entity)
+
+~/.eBalistyka/collection.json  ← вбудована колекція (залишається JSON)
+```
 
 ---
 
@@ -111,72 +136,55 @@ Backward-compat: при читанні старого формату (`profiles.
 
 ---
 
-## ShotProfile Model
+## Profile Model
 
-Три категорії полів з різною стратегією зберігання:
+> Назви класів після рефакторингу:
+> - `ShotProfile` / `ProfileData` → **`ebalistyka_db.Profile`** (ObjectBox entity) + `extension ProfileData on Profile`
+> - `Rifle` / `WeaponData` → **`ebalistyka_db.Weapon`** + `extension WeaponData on Weapon`
+> - `Cartridge` / `AmmoData` → **`ebalistyka_db.Ammo`** + `extension AmmoData on Ammo`
+> - `Sight` / `SightData` → **`ebalistyka_db.Sight`** + `extension SightData on Sight`
+> - `Conditions` / `AtmoData` → **`ebalistyka_db.ShootingConditions`** + `extension ConditionsData on ShootingConditions`
+
+### ObjectBox Profile entity (після Phase 6)
 
 ```dart
-class ShotProfile {
-  final String id;
-  final String name;
+// packages/ebalistyka_db/lib/src/entities.dart
+@Entity()
+class Profile {
+  @Id() int id = 0;
+  String name = "";
+  int sortOrder = 0;
 
-  // ── Embedded у JSON профілю ───────────────────────────────────────────────
-  // Зберігаються як вкладені об'єкти у profiles.json.
-  // Відновлюються при перезапуску / зміні профілю.
-
-  final Rifle rifle;              // гвинтівка — завжди belongs to profile
-  final AtmoData conditions;      // поточні умови стрільби
-  final List<WindData> winds;
-  final Angular lookAngle;
-  final Distance targetDistance;
-  final bool usePowderSensitivity; // поточний постріл
-  final bool useDiffPowderTemp;    // поточний постріл
-
-  // ── References до бібліотек (тільки id у JSON) ────────────────────────────
-  // Зберігаються як рядок-ідентифікатор у profiles.json.
-  // null = не вибрано.
-
-  final String? cartridgeId;
-  final String? sightId;
-
-  // ── Resolved об'єкти (НЕ зберігаються в JSON) ────────────────────────────
-  // Заповнюються тільки для активного профілю через shotProfileProvider.
-  // profileLibraryProvider зберігає профілі без resolve (cartridge == null).
-
-  final Cartridge? cartridge;
-  final Sight? sight;
+  final weapon = ToOne<Weapon>();  // завжди belongs to profile
+  final sight = ToOne<Sight>();    // null = не вибрано
+  final ammo = ToOne<Ammo>();      // null = не вибрано
+  final owner = ToOne<Owner>();
 }
 ```
 
-**Cartridge model** додатково містить zero-related поля — все що стосується
-пристрілювання належить патрону, не профілю:
+Умови стрільби (conditions, winds, lookAngle тощо) зберігаються в **`ShootingConditions`** entity (linked до Owner, не до Profile — global session state).
+
+### Ammo entity містить zero-related поля
 
 ```dart
-class Cartridge {
-  // ... існуючі поля ...
-  final CartridgeType type;            // cartridge | bullet
-  final Distance zeroDistance;
-  final AtmoData zeroConditions;
-  final bool zeroUsePowderSensitivity;
-  final bool zeroUseDiffPowderTemp;
+@Entity()
+class Ammo {
+  // ... ballistics fields (caliber, weight, drag, bc, mv, powderTemp...) ...
+  // Zero data:
+  double zeroDistanceMeter = 100.0;
+  double zeroLookAngleRad = 0.0;
+  double zeroTemperatureC = 15.0;
+  double zeroPressurehPa = 1013;
+  double zeroHumidityFrac = 0.0;
+  double zeroPowderTemperatureC = 15.0;
+  bool usePowderSensitivity = false;
+  bool zeroUseDiffPowderTemperature = false;
+  bool zeroUseCoriolis = false;
+  // ...
 }
-
-enum CartridgeType { cartridge, bullet }
 ```
 
-**Cartridge model** додатково містить zero-related поля:
-```dart
-class Cartridge {
-  // ... існуючі поля ...
-  final Distance zeroDistance;
-  final AtmoData zeroConditions;
-  final bool zeroUsePowderSensitivity;
-  final bool zeroUseDiffPowderTemp;
-  final CartridgeType type; // cartridge | bullet
-}
-
-enum CartridgeType { cartridge, bullet }
-```
+`DragType` (g1/g7/custom) — через `@Transient()` enum з string getter/setter.
 
 ---
 
@@ -264,11 +272,11 @@ My Cartridges / My Sights              Built-in Collection (hidden)
 
 **Wizard не знає контексту виклику** — просто редагує і повертає результат. Логіка збереження — у caller.
 
-Після збереження у wizard → зберігається в `cartridges.json` (My Cartridges) → автоматично прив'язується до профілю через `cartridgeId`.
+Після збереження у wizard → зберігається в ObjectBox (Ammo entity) → прив'язується до Profile через `profile.ammo.target`.
 
 ### SightWizardScreen
 
-Аналогічно, повертає `Sight`. Після збереження → `sights.json` → прив'язується до профілю.
+Аналогічно, повертає `Sight`. Після збереження → ObjectBox (Sight entity) → прив'язується до Profile через `profile.sight.target`.
 
 ---
 
@@ -284,9 +292,9 @@ ProfilesScreen
               └─ Вибір rifle:
                   ├─ "From Collection" → RifleCollectionScreen
                   │     └─ Select → RifleWizardScreen (pre-filled, caliberDiameter readonly)
-                  │           └─ Save → rifle embedded у новий ShotProfile
+                  │           └─ Save → weapon linked до нового Profile
                   └─ "Create manually" → RifleWizardScreen (порожній, всі поля редагуються)
-                        └─ Save → rifle embedded у новий ShotProfile
+                        └─ Save → weapon linked до нового Profile
 ```
 
 Профіль створюється з rifle, але **без** cartridge і sight (cartridgeId = null, sightId = null).
@@ -301,12 +309,12 @@ ProfileCard
           │   ├─ Select item → прив'язати cartridgeId до профілю
           │   └─ Cog → Edit / Duplicate / Delete
           ├─ "Create Cartridge" btn → CartridgeWizardScreen (порожній, type: cartridge)
-          │     └─ Save → зберегти в cartridges.json → прив'язати до профілю
+          │     └─ Save → зберегти в ObjectBox (Ammo) → прив'язати до Profile
           ├─ "Create Bullet" btn → CartridgeWizardScreen (порожній, type: bullet)
-          │     └─ Save → зберегти в cartridges.json → прив'язати до профілю
+          │     └─ Save → зберегти в ObjectBox (Ammo) → прив'язати до Profile
           └─ "From Collection" btn → CartridgeCollectionScreen
                 └─ Select → CartridgeWizardScreen (pre-filled)
-                      └─ Save → copy до cartridges.json → прив'язати до профілю
+                      └─ Save → copy до ObjectBox (Ammo) → прив'язати до Profile
 ```
 
 ### Flow 3: Вибір / зміна Sight з ProfileCard
@@ -319,10 +327,10 @@ ProfileCard
           │   ├─ Select item → прив'язати sightId до профілю
           │   └─ Cog → Edit / Duplicate / Delete
           ├─ "Create Sight" btn → SightWizardScreen (порожній)
-          │     └─ Save → зберегти в sights.json → прив'язати до профілю
+          │     └─ Save → зберегти в ObjectBox (Sight) → прив'язати до Profile
           └─ "From Collection" btn → SightCollectionScreen
                 └─ Select → SightWizardScreen (pre-filled)
-                      └─ Save → copy до sights.json → прив'язати до профілю
+                      └─ Save → copy до ObjectBox (Sight) → прив'язати до Profile
 ```
 
 ### Flow 4: Edit Rifle з ProfileCard
@@ -492,56 +500,83 @@ ProfilesScreen  (/home/profiles)
 
 ## Critical Files
 
-| Файл                                                               | Статус                  | Опис                                                                                                                                                      |
-| ------------------------------------------------------------------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/core/models/shot_profile.dart`                                | 🔧 потребує рефакторингу | Додати `cartridgeId?`, `sightId?`, `cartridge?`, `sight?`; видалити `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp` |
-| `lib/core/models/cartridge.dart`                                   | 🔧 потребує рефакторингу | Додати `CartridgeType`, `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp`                                             |
-| `lib/core/models/rifle.dart`                                       | ✅                       | `caliberDiameter?`, `barrelLength?`, getter `isRightHandTwist`                                                                                            |
-| `lib/core/models/sight.dart`                                       | ✅                       | Базова модель                                                                                                                                             |
-| `lib/core/models/projectile.dart`                                  | ✅                       | Модель кулі                                                                                                                                               |
-| `lib/core/models/field_constraints.dart`                           | ✅                       | `FC.barrelLength`                                                                                                                                         |
-| `lib/core/models/unit_settings.dart`                               | ✅                       | `barrelLength: Unit`                                                                                                                                      |
-| `lib/core/models/seed_data.dart`                                   | 🔧 потребує рефакторингу | Оновити seed профілі під нову структуру                                                                                                                   |
-| `lib/core/formatting/unit_formatter.dart`                          | ✅                       | `barrelLength()`                                                                                                                                          |
-| `lib/core/services/ballistics_service_impl.dart`                   | 🔧 потребує рефакторингу | Zero дані тепер з `cartridge`, не з `profile`                                                                                                             |
-| `lib/core/a7p/a7p_parser.dart`                                     | 🔧 потребує рефакторингу | Zero дані → `Cartridge`                                                                                                                                   |
-| `lib/core/storage/app_storage.dart`                                | 🔧 потребує рефакторингу | Перейти на `data.json`; видалити rifles CRUD; об'єднати profiles/cartridges/sights в один файл                                                            |
-| `lib/core/storage/json_file_storage.dart`                          | 🔧 потребує рефакторингу | Аналогічно; backward-compat міграція зі старих окремих файлів                                                                                             |
-| `lib/core/collection/collection_parser.dart`                       | 🔧 потребує рефакторингу | `CartridgeType`, zero дані в cartridge                                                                                                                    |
-| `lib/core/providers/shot_profile_provider.dart`                    | 🔧 потребує рефакторингу | Resolve cartridge/sight при завантаженні активного профілю                                                                                                |
-| `lib/core/providers/profile_library_provider.dart`                 | ✅                       | CRUD + `moveToFirst` + seed                                                                                                                               |
-| `lib/core/providers/library_provider.dart`                         | 🔧 потребує рефакторингу | Видалити `rifleLibraryProvider`; залишити `cartridgeLibraryProvider`, `sightLibraryProvider`                                                              |
-| `lib/core/providers/builtin_collection_provider.dart`              | ✅                       | assets → fallback                                                                                                                                         |
-| `lib/features/home/sub_screens/profiles/profiles_vm.dart`          | 🔧 потребує рефакторингу | `ProfileCardData` під нову структуру                                                                                                                      |
-| `lib/features/home/sub_screens/profiles_screen.dart`               | ✅                       | PageView, FAB                                                                                                                                             |
-| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | 🔧 потребує рефакторингу | Навігація через callbacks, не `context.go` у widget                                                                                                       |
-| `lib/features/home/sub_screens/rifle_wizard_screen.dart`           | ✅                       | Повністю реалізований                                                                                                                                     |
-| `lib/features/home/sub_screens/home_sub_screens.dart`              | 🔲 stubs                 | Всі під-екрани — `StubScreen`                                                                                                                             |
-| `lib/router.dart`                                                  | 🔧 потребує оновлення    | Нові routes константи                                                                                                                                     |
-| `assets/json/collection.json`                                      | ✅                       | Вбудована колекція                                                                                                                                        |
+> Після Phase 5 рефакторингу назви класів змінились: `Rifle` → `WeaponData`/`Weapon`, `Cartridge` → `AmmoData`/`Ammo`, `ShotProfile` → `ProfileData`/`Profile`.
+
+### DB / Storage (Phase 6 — ObjectBox Migration)
+
+| Файл | Статус | Опис |
+|---|---|---|
+| `packages/ebalistyka_db/lib/src/entities.dart` | 🔧 Phase 6 | Додати `ShootingConditions` entity, `sortOrder` до `Profile` |
+| `packages/ebalistyka_db/lib/ebalistyka_db.dart` | 🔧 Phase 6 | Fix store init (повернути Store, прийняти directory) |
+| `lib/core/providers/store_provider.dart` | 🆕 Phase 6 | storeProvider + ownerProvider |
+| `lib/core/extensions/weapon_extensions.dart` | 🆕 Phase 6 | `extension WeaponData on Weapon` |
+| `lib/core/extensions/ammo_extensions.dart` | 🆕 Phase 6 | `extension AmmoData on Ammo` |
+| `lib/core/extensions/sight_extensions.dart` | 🆕 Phase 6 | `extension SightData on Sight` |
+| `lib/core/extensions/profile_extensions.dart` | 🆕 Phase 6 | `extension ProfileData on Profile` |
+| `lib/core/extensions/conditions_extensions.dart` | 🆕 Phase 6 | `extension ConditionsData on ShootingConditions` |
+| `lib/core/extensions/settings_extensions.dart` | 🆕 Phase 6 | `extension AppSettings on GeneralSettings`, `extension AppUnitSettings on UnitSettings` |
+| `lib/core/providers/app_state_provider.dart` | 🔧 Phase 6 | Замінити JsonFileStorage на ObjectBox |
+| `lib/core/providers/shot_profile_provider.dart` | 🔧 Phase 6 | Спростити — прибрати `_resolve()`, OB relations вирішуються автоматично |
+| `lib/core/providers/shot_conditions_provider.dart` | 🔧 Phase 6 | Читати `ShootingConditions` entity |
+| `lib/core/providers/settings_provider.dart` | 🔧 Phase 6 | Читати `GeneralSettings`/`UnitSettings` |
+| `lib/core/storage/json_file_storage.dart` | 🗑 Phase 6 | Видалити після міграції |
+| `lib/core/storage/app_storage.dart` | 🗑 Phase 6 | Видалити після міграції |
+| `lib/core/providers/storage_provider.dart` | 🗑 Phase 6 | Видалити після міграції |
+| `lib/core/models/weapon_data.dart` | 🗑 Phase 6 | Замінити extension on Weapon |
+| `lib/core/models/ammo_data.dart` | 🗑 Phase 6 | Замінити extension on Ammo |
+| `lib/core/models/sight_data.dart` | 🗑 Phase 6 | Замінити extension on Sight |
+| `lib/core/models/profile_data.dart` | 🗑 Phase 6 | Замінити extension on Profile |
+| `lib/core/models/app_settings.dart` | 🗑 Phase 6 | Замінити extension on GeneralSettings |
+| `lib/core/models/conditions_data.dart` | 🗑 Phase 6 | Замінити extension on ShootingConditions |
+
+### App / UI
+
+| Файл | Статус | Опис |
+|---|---|---|
+| `lib/main.dart` | 🔧 Phase 6 | ObjectBox init before runApp |
+| `lib/core/models/seed_data.dart` | 🔧 Phase 6 | Оновити seed під ObjectBox entities |
+| `lib/core/services/ballistics_service_impl.dart` | 🔧 | Zero дані з `ammo.target`, не з `profile` |
+| `lib/core/a7p/a7p_parser.dart` | 🔧 | Zero дані → `Ammo` entity |
+| `lib/core/collection/collection_parser.dart` | 🔧 | Парсити у OB entities або AmmoData extension |
+| `lib/core/providers/builtin_collection_provider.dart` | ✅ | assets → fallback |
+| `lib/features/home/sub_screens/profiles/profiles_vm.dart` | 🔧 | `ProfileCardData` під нову структуру |
+| `lib/features/home/sub_screens/profiles_screen.dart` | ✅ | PageView, FAB |
+| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | 🔧 | Навігація через callbacks |
+| `lib/features/home/sub_screens/rifle_wizard_screen.dart` | ✅ | Реалізований (використовує WeaponData) |
+| `lib/features/home/sub_screens/home_sub_screens.dart` | 🔲 stubs | Всі під-екрани — `StubScreen` |
+| `lib/router.dart` | 🔧 | Routes константи |
+| `assets/json/collection.json` | ✅ | Вбудована колекція |
 
 ---
 
 ## Phases — Що залишилось
 
-### Phase 5 — Рефакторинг моделей і провайдерів 
+### Phase 5 — Рефакторинг моделей і провайдерів ✅
 
-**Мета:** привести моделі і провайдери у відповідність до нової архітектури перед реалізацією UI.
-
-- `Cartridge` model: додати `CartridgeType`, `zeroDistance`, `zeroConditions`, `zeroUsePowderSensitivity`, `zeroUseDiffPowderTemp`; оновити `toJson`/`fromJson`; backward-compat
-- `ShotProfile` model: додати `cartridgeId?`, `sightId?`, `cartridge?`, `sight?`; видалити zero-related поля; оновити `toJson`/`fromJson`; backward-compat
-- `shotProfileProvider`: resolve cartridge/sight при завантаженні активного профілю; broken ref handling (обнулити id + toast)
-- `library_provider.dart`: видалити `rifleLibraryProvider`
-- `app_storage.dart` + `json_file_storage.dart`: видалити rifle CRUD
-- `ballistics_service_impl.dart`: zero дані брати з `profile.cartridge`, не з `profile`
-- `a7p_parser.dart`: zero дані → `Cartridge`
-- `collection_parser.dart`: парсити `CartridgeType`, zero дані в cartridge
-- `seed_data.dart`: оновити під нову структуру
-- `isReadyForCalculation` геттер у `ShotProfile`
+Виконано. Основні зміни:
+- `WeaponData` (ex-Rifle), `AmmoData` (ex-Cartridge), `SightData`, `ProfileData` (ex-ShotProfile) — JSON моделі
+- `shotProfileProvider`: resolve cartridge/sight, broken ref handling
+- `ballistics_service_impl.dart`: zero дані з `ammo`, не з `profile`
+- `isReadyForCalculation` у `ProfileData`
 
 ---
 
-### Phase 6 — Profile Add Screen + Rifle Selection
+### Phase 6 — ObjectBox Migration 🔧
+
+**Мета:** замінити JSON file storage на ObjectBox, усунути рейс кондішни.
+Деталі в `docs/OBJECTBOX_MIGRATION.md`.
+
+Кроки:
+1. `ShootingConditions` entity + `sortOrder` у `Profile` → codegen
+2. `storeProvider` + `ownerProvider`
+3. Extension files (WeaponData/AmmoData/SightData/ProfileData/ConditionsData on OB entities)
+4. Rewrite `AppStateNotifier` — ObjectBox замість `JsonFileStorage`
+5. Simplify `ShotProfileNotifier` — прибрати `_resolve()`
+6. Delete: `JsonFileStorage`, `AppStorage`, старі model класи
+
+---
+
+### Phase 7 — Profile Add Screen + Rifle Selection
 
 **`ProfileAddScreen`** — вибір джерела rifle:
 - "From Collection" btn → `RifleCollectionScreen`
@@ -556,25 +591,25 @@ ProfilesScreen  (/home/profiles)
 
 ---
 
-### Phase 7 — CartridgeSelectScreen + CartridgeWizardScreen
+### Phase 8 — CartridgeSelectScreen + CartridgeWizardScreen
 
 - `CartridgeSelectScreen`: My Cartridges + My Bullets в одному списку (або tabs), filtered by `CartridgeType`
 - `CartridgeCollectionScreen`: builtin cartridges + projectiles (з 🔒)
 - `CartridgeWizardScreen`: повна реалізація з секціями Ballistics / MV / Zero; параметр `CartridgeType`
 - `CartridgeTile` (reusable, cog для user data, Select btn)
-- Після Save → `cartridges.json` → прив'язати `cartridgeId` до профілю
+- Після Save → ObjectBox (Ammo) → прив'язати до Profile (`profile.ammo.target`)
 
 ---
 
-### Phase 8 — SightSelectScreen + SightWizardScreen
+### Phase 9 — SightSelectScreen + SightWizardScreen
 
 - Аналогічно Phase 7 для Sight
 - `SightTile` (reusable)
-- Після Save → `sights.json` → прив'язати `sightId` до профілю
+- Після Save → ObjectBox (Sight) → прив'язати до Profile (`profile.sight.target`)
 
 ---
 
-### Phase 9 — IncompleteBanner + ProfileCard навігація
+### Phase 10 — IncompleteBanner + ProfileCard навігація
 
 - `IncompleteBanner` widget на Home / Conditions / Tables
 - `RecalcCoordinator` блокує перерахунок якщо `!isReadyForCalculation`
@@ -583,7 +618,7 @@ ProfilesScreen  (/home/profiles)
 
 ---
 
-### Phase 10 — Duplicate Profile + FAB меню
+### Phase 11 — Duplicate Profile + FAB меню
 
 - "Duplicate" у FAB меню `ProfilesScreen`
 - Dialog для введення нової назви
@@ -591,7 +626,7 @@ ProfilesScreen  (/home/profiles)
 
 ---
 
-### Phase 11 — Edit Flows (Flow 4)
+### Phase 12 — Edit Flows (Flow 4)
 
 - "Edit Rifle ›" у ProfileCard → `RifleWizardScreen` з поточними даними (caliberDiameter readonly)
 - "Edit Cartridge ›" → `CartridgeWizardScreen` з поточними даними
@@ -599,7 +634,7 @@ ProfilesScreen  (/home/profiles)
 
 ---
 
-### Phase 12 — Built-in Collection Update (майбутнє)
+### Phase 13 — Built-in Collection Update (майбутнє)
 
 Колекція — офлайн за замовчуванням (assets). Оновлення в додатку:
 1. Перевірити останній тег `a7p-lib`

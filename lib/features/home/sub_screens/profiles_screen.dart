@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_card.dart';
@@ -105,7 +105,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     final profile = appState.profiles.where((p) => p.id == data.id).firstOrNull;
     if (profile == null) return;
 
-    final result = await context.push<Rifle?>(
+    final result = await context.push<WeaponData?>(
       Routes.profileEditRifle,
       extra: profile.rifle,
     );

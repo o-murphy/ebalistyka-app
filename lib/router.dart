@@ -1,5 +1,5 @@
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/features/home/sub_screens/rifle_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -170,8 +170,9 @@ final appRouter = GoRouter(
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
                       path: 'rifle-edit',
-                      builder: (_, state) =>
-                          RifleWizardScreen(initial: state.extra as Rifle?),
+                      builder: (_, state) => RifleWizardScreen(
+                        initial: state.extra as WeaponData?,
+                      ),
                     ),
                     GoRoute(
                       path: 'cartridge-edit',

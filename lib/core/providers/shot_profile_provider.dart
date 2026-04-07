@@ -1,14 +1,14 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/models/seed_data.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 
-class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
+class ShotProfileNotifier extends AsyncNotifier<ProfileData> {
   @override
-  Future<ShotProfile> build() async {
+  Future<ProfileData> build() async {
     final appState = ref.watch(appStateProvider);
 
     return appState.when(
@@ -33,11 +33,11 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   }
 
   // ---- Resolve cartridge/sight з глобального стану ----
-  ShotProfile _resolve(ShotProfile profile, AppState appState) {
+  ProfileData _resolve(ProfileData profile, AppState appState) {
     String? cartridgeId = profile.cartridgeId;
-    Cartridge? cartridge = profile.cartridge;
+    AmmoData? cartridge = profile.cartridge;
     String? sightId = profile.sightId;
-    Sight? sight = profile.sight;
+    SightData? sight = profile.sight;
 
     // Якщо є вбудований cartridge (backward-compat) - зберігаємо в глобальний стан
     if (cartridge != null && cartridgeId == null) {
@@ -78,7 +78,7 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
 
     // Якщо референси змінились - зберігаємо оновлений профіль
     if (cartridgeId != profile.cartridgeId || sightId != profile.sightId) {
-      final cleaned = ShotProfile(
+      final cleaned = ProfileData(
         id: profile.id,
         name: profile.name,
         rifle: profile.rifle,
@@ -91,7 +91,7 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
       return cleaned;
     }
 
-    return ShotProfile(
+    return ProfileData(
       id: profile.id,
       name: profile.name,
       rifle: profile.rifle,
@@ -103,30 +103,31 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
   }
 
   // ---- Допоміжні методи для роботи з глобальним станом ----
-  Future<void> _saveCartridgeToGlobalState(Cartridge cartridge) async {
+  Future<void> _saveCartridgeToGlobalState(AmmoData cartridge) async {
     final notifier = ref.read(appStateProvider.notifier);
     await notifier.saveCartridge(cartridge);
   }
 
-  Future<void> _saveSightToGlobalState(Sight sight) async {
+  Future<void> _saveSightToGlobalState(SightData sight) async {
     final notifier = ref.read(appStateProvider.notifier);
     await notifier.saveSight(sight);
   }
 
-  Future<void> _saveProfileToGlobalState(ShotProfile profile) async {
+  Future<void> _saveProfileToGlobalState(ProfileData profile) async {
     final notifier = ref.read(appStateProvider.notifier);
     await notifier.saveProfile(profile);
   }
 
   // ---- Public API ----
-  Future<void> selectRifle(Rifle r) => _update((p) => p.copyWith(rifle: r));
+  Future<void> selectRifle(WeaponData r) =>
+      _update((p) => p.copyWith(rifle: r));
 
-  Future<void> selectSight(Sight s) => _update((p) => p.copyWith(sight: s));
+  Future<void> selectSight(SightData s) => _update((p) => p.copyWith(sight: s));
 
-  Future<void> selectCartridge(Cartridge c) =>
+  Future<void> selectCartridge(AmmoData c) =>
       _update((p) => p.copyWith(cartridge: c));
 
-  Future<void> selectProfile(ShotProfile profile) async {
+  Future<void> selectProfile(ProfileData profile) async {
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
 
@@ -137,7 +138,7 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
     await notifier.saveActiveProfileId(resolved.id);
   }
 
-  Future<void> _update(ShotProfile Function(ShotProfile) fn) async {
+  Future<void> _update(ProfileData Function(ProfileData) fn) async {
     final current = state.value ?? seedShotProfile;
     final updated = fn(current);
     state = AsyncData(updated);
@@ -148,6 +149,6 @@ class ShotProfileNotifier extends AsyncNotifier<ShotProfile> {
 }
 
 final shotProfileProvider =
-    AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>(
+    AsyncNotifierProvider<ShotProfileNotifier, ProfileData>(
       ShotProfileNotifier.new,
     );

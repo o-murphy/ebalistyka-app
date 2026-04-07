@@ -42,5 +42,4 @@ abstract final class StorageUnits {
   // ── Wind ──────────────────────────────────────────────────────────────────
   static const windVelocity = Unit.mps;
   static const windDirectionFrom = Unit.radian;
-  static const windUntilDistance = Unit.meter;
 }

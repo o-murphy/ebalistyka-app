@@ -25,10 +25,10 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
     await _save(current.copyWith(atmo: atmo));
   }
 
-  Future<void> updateWinds(List<WindData> winds) async {
+  Future<void> updateWinds(WindData wind) async {
     final current = state.value;
     if (current == null) return;
-    await _save(current.copyWith(winds: winds));
+    await _save(current.copyWith(wind: wind));
   }
 
   Future<void> updateLookAngle(double degrees) async {
@@ -77,23 +77,12 @@ class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
     final current = state.value;
     if (current == null) return;
 
-    final existing = current.winds;
-    final dir = existing.isNotEmpty
-        ? existing.first.directionFrom
-        : Angular.degree(0.0);
-    final until = existing.isNotEmpty
-        ? existing.first.untilDistance
-        : Distance.meter(9999.0);
+    final existing = current.wind;
+    final dir = existing.directionFrom;
 
     await _save(
       current.copyWith(
-        winds: [
-          WindData(
-            velocity: Velocity.mps(mps),
-            directionFrom: dir,
-            untilDistance: until,
-          ),
-        ],
+        wind: WindData(velocity: Velocity.mps(mps), directionFrom: dir),
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '_storage.dart';
 
-class Rifle {
+class WeaponData {
   final String id;
   final String name;
   final String? vendor;
@@ -19,7 +19,7 @@ class Rifle {
   final Distance? barrelLength;
   final String? notes;
 
-  Rifle({
+  WeaponData({
     String? id,
     required this.name,
     this.vendor,
@@ -41,7 +41,7 @@ class Rifle {
     zeroElevation: zeroElevation,
   );
 
-  Rifle copyWith({
+  WeaponData copyWith({
     String? name,
     String? vendor,
     Distance? sightHeight,
@@ -50,7 +50,7 @@ class Rifle {
     Distance? caliber,
     Distance? barrelLength,
     String? notes,
-  }) => Rifle(
+  }) => WeaponData(
     id: id,
     name: name ?? this.name,
     vendor: vendor ?? this.vendor,
@@ -78,10 +78,10 @@ class Rifle {
     if (notes != null) 'notes': notes,
   };
 
-  factory Rifle.fromJson(Map<String, dynamic> json) {
+  factory WeaponData.fromJson(Map<String, dynamic> json) {
     final w = json['weapon'] as Map;
     final caliberRaw = w['caliberDiameter'] as num?;
-    return Rifle(
+    return WeaponData(
       id: json['id'] as String,
       name: json['name'] as String,
       vendor: json['vendor'] as String?,

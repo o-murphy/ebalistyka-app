@@ -799,10 +799,97 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "10:6584000130387526342",
+      "lastPropertyId": "15:916432832977451751",
+      "name": "Conditions",
+      "properties": [
+        {
+          "id": "1:5426442208853934967",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5037629548932659231",
+          "name": "distanceMeter",
+          "type": 8
+        },
+        {
+          "id": "3:2371951231907280109",
+          "name": "lookAngleRad",
+          "type": 8
+        },
+        {
+          "id": "4:4323419063753503766",
+          "name": "temperatureC",
+          "type": 8
+        },
+        {
+          "id": "5:5700219949944244664",
+          "name": "pressurehPa",
+          "type": 8
+        },
+        {
+          "id": "6:3495671315189767458",
+          "name": "humidityFrac",
+          "type": 8
+        },
+        {
+          "id": "7:1735874292186788102",
+          "name": "powderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "8:1650001243265687394",
+          "name": "usePowderSensitivity",
+          "type": 1
+        },
+        {
+          "id": "9:216318801184607733",
+          "name": "useDiffPowderTemperature",
+          "type": 1
+        },
+        {
+          "id": "10:4000401922573370751",
+          "name": "useCoriolis",
+          "type": 1
+        },
+        {
+          "id": "11:4955365735129140676",
+          "name": "latitudeDeg",
+          "type": 8
+        },
+        {
+          "id": "12:4972635236809095731",
+          "name": "azimuthDeg",
+          "type": 8
+        },
+        {
+          "id": "13:8332173160992404525",
+          "name": "windDirectionDeg",
+          "type": 8
+        },
+        {
+          "id": "14:3538766144987324145",
+          "name": "windSpeedMps",
+          "type": 8
+        },
+        {
+          "id": "15:916432832977451751",
+          "name": "ownerId",
+          "indexId": "18:5948883144970043596",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "9:1731139601222753801",
-  "lastIndexId": "17:9049041270276597027",
+  "lastEntityId": "10:6584000130387526342",
+  "lastIndexId": "18:5948883144970043596",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

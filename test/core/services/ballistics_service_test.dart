@@ -7,18 +7,18 @@
 import 'package:test/test.dart';
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
-import 'package:ebalistyka/core/models/cartridge.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/ammo_data.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:ebalistyka/core/models/sight.dart';
+import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/models/sight_data.dart';
 import 'package:bclibc_ffi/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 
 /// Realistic .308 Win profile for testing.
-ShotProfile _makeProfile() {
-  final cartridge = Cartridge(
+ProfileData _makeProfile() {
+  final cartridge = AmmoData(
     name: 'Test .308',
     projectileName: 'Test 175gr',
     dragType: DragModelType.g7,
@@ -31,13 +31,13 @@ ShotProfile _makeProfile() {
     powderSensitivity: Ratio.fraction(0.0),
     zeroConditions: Conditions.withDefaults(distance: Distance.meter(100.0)),
   );
-  final rifle = Rifle(
+  final rifle = WeaponData(
     name: 'Test Rifle',
     sightHeight: Distance.millimeter(38.0),
     twist: Distance.inch(11.0),
   );
-  final sight = Sight(name: 'Test Scope');
-  return ShotProfile(
+  final sight = SightData(name: 'Test Scope');
+  return ProfileData(
     name: 'Test Shot',
     rifle: rifle,
     cartridge: cartridge,
@@ -52,7 +52,7 @@ Conditions _makeConditions({
   double pressHPa = 1013.25,
   double humidity = 0.0,
   double powderTempC = 15.0,
-  List<WindData> winds = const [],
+  WindData? wind,
 }) {
   return Conditions(
     atmo: AtmoData(
@@ -62,7 +62,7 @@ Conditions _makeConditions({
       humidity: humidity,
       powderTemp: Temperature.celsius(powderTempC),
     ),
-    winds: winds,
+    wind: wind ?? WindData.empty(),
     lookAngle: Angular.degree(0),
     distance: Distance.meter(targetM),
     usePowderSensitivity: false,
@@ -293,13 +293,10 @@ void main() {
     test('wind produces non-zero windage', () async {
       final profile = _makeProfile();
       final conditions = _makeConditions(
-        winds: [
-          WindData(
-            velocity: Velocity.mps(5.0),
-            directionFrom: Angular.degree(90.0),
-            untilDistance: Distance.meter(2000.0),
-          ),
-        ],
+        wind: WindData(
+          velocity: Velocity.mps(5.0),
+          directionFrom: Angular.degree(90.0),
+        ),
       );
 
       final result = await service.calculateTable(
@@ -315,15 +312,12 @@ void main() {
 
     test('no wind gives much less windage than with wind', () async {
       final profile = _makeProfile();
-      final noWindConditions = _makeConditions(winds: const []);
+      final noWindConditions = _makeConditions(wind: WindData.empty());
       final windConditions = _makeConditions(
-        winds: [
-          WindData(
-            velocity: Velocity.mps(10.0),
-            directionFrom: Angular.degree(90.0),
-            untilDistance: Distance.meter(2000.0),
-          ),
-        ],
+        wind: WindData(
+          velocity: Velocity.mps(10.0),
+          directionFrom: Angular.degree(90.0),
+        ),
       );
 
       final noWindResult = await service.calculateTable(
@@ -352,7 +346,7 @@ void main() {
   group('BallisticsService — error handling', () {
     test('throws CalculationException for invalid profile', () async {
       // BC must be positive, zero MV will cause issues in zeroing
-      final cartridge = Cartridge(
+      final cartridge = AmmoData(
         name: 'Bad',
         projectileName: 'Bad',
         dragType: DragModelType.g7,
@@ -367,13 +361,13 @@ void main() {
           distance: Distance.meter(3000.0), // impossible zero
         ),
       );
-      final rifle = Rifle(
+      final rifle = WeaponData(
         name: 'Bad',
         sightHeight: Distance.millimeter(38.0),
         twist: Distance.inch(0.0),
       );
-      final sight = Sight(name: 'Bad');
-      final badProfile = ShotProfile(
+      final sight = SightData(name: 'Bad');
+      final badProfile = ProfileData(
         name: 'Bad Shot',
         rifle: rifle,
         cartridge: cartridge,
@@ -406,7 +400,7 @@ void main() {
       );
 
       // Cartridge with powder sensitivity
-      final sensitiveCartridge = Cartridge(
+      final sensitiveCartridge = AmmoData(
         name: 'Temp Sens',
         projectileName: profile.cartridge!.projectileName,
         dragType: profile.cartridge!.dragType,
@@ -425,7 +419,7 @@ void main() {
         ),
       );
 
-      final sensitiveProfile = ShotProfile(
+      final sensitiveProfile = ProfileData(
         name: profile.name,
         rifle: profile.rifle,
         cartridge: sensitiveCartridge,

@@ -9,16 +9,16 @@
 //   r_twist    / 100  → inch
 
 import 'package:bclibc_ffi/unit.dart';
-import 'cartridge.dart';
+import 'ammo_data.dart';
 import 'conditions_data.dart';
-import 'rifle.dart';
-import 'shot_profile.dart';
-import 'sight.dart';
+import 'weapon_data.dart';
+import 'profile_data.dart';
+import 'sight_data.dart';
 
 // ── Rifle ─────────────────────────────────────────────────────────────────────
 // Based on .338LM UKROP profile (sc_height=8.5mm, r_twist=10")
 
-final seedRifle = Rifle(
+final seedRifle = WeaponData(
   id: 'seed-rifle-338lm',
   name: '.338 Lapua Magnum',
   vendor: 'Generic .338LM platform',
@@ -29,7 +29,7 @@ final seedRifle = Rifle(
 
 // ── Sight ─────────────────────────────────────────────────────────────────────
 
-final seedSight = Sight(
+final seedSight = SightData(
   id: 'seed-sight-generic',
   name: 'Generic Long-Range Scope',
 );
@@ -46,7 +46,7 @@ final _seedZeroAtmo = AtmoData(
 
 final _seedZeroConditions = Conditions.withDefaults(
   atmo: _seedZeroAtmo,
-  winds: const [],
+  wind: WindData.empty(),
   lookAngle: Angular.degree(0.0),
   usePowderSensitivity: false,
   useDiffPowderTemp: false,
@@ -64,7 +64,7 @@ final _seedZeroConditions = Conditions.withDefaults(
 // ── Cartridges ────────────────────────────────────────────────────────────────
 // Тепер використовуємо zeroConditions замість окремих полів
 
-final seedCartridgeUkrop250 = Cartridge(
+final seedCartridgeUkrop250 = AmmoData(
   id: 'seed-cart-ukrop-250-smk',
   name: '.338LM UKROP 250GR SMK',
   dragType: DragModelType.g7,
@@ -78,7 +78,7 @@ final seedCartridgeUkrop250 = Cartridge(
   zeroConditions: _seedZeroConditions, // ← використовуємо Conditions
 );
 
-final seedCartridgeHornady250 = Cartridge(
+final seedCartridgeHornady250 = AmmoData(
   id: 'seed-cart-hornady-250-bthp',
   name: '.338LM Hornady 250GR BTHP',
   dragType: DragModelType.g7,
@@ -92,7 +92,7 @@ final seedCartridgeHornady250 = Cartridge(
   zeroConditions: _seedZeroConditions,
 );
 
-final seedCartridgeLapua300 = Cartridge(
+final seedCartridgeLapua300 = AmmoData(
   id: 'seed-cart-lapua-300-smk',
   name: '.338LM Lapua 300GR SMK',
   dragType: DragModelType.g7,
@@ -106,7 +106,7 @@ final seedCartridgeLapua300 = Cartridge(
   zeroConditions: _seedZeroConditions,
 );
 
-final seedCartridgeSts285EldM = Cartridge(
+final seedCartridgeSts285EldM = AmmoData(
   id: 'seed-cart-sts-285-eld-m',
   name: '.338LM Hornady 285GR ELD-M',
   dragType: DragModelType.g7,
@@ -134,7 +134,7 @@ final seedCartridges = [
 // ── Default Shot Profiles ─────────────────────────────────────────────────────
 // Профілі тепер не містять умов (вони в окремому провайдері)
 
-final seedShotProfile = ShotProfile(
+final seedShotProfile = ProfileData(
   id: 'seed-profile-default',
   name: '.338LM UKROP 250GR SMK',
   rifle: seedRifle,
@@ -144,7 +144,7 @@ final seedShotProfile = ShotProfile(
   sight: seedSight,
 );
 
-final seedShotProfileHornady = ShotProfile(
+final seedShotProfileHornady = ProfileData(
   id: 'seed-profile-hornady-250',
   name: '.338LM Hornady 250GR BTHP',
   rifle: seedRifle,
@@ -154,7 +154,7 @@ final seedShotProfileHornady = ShotProfile(
   sight: seedSight,
 );
 
-final seedShotProfileLapua300 = ShotProfile(
+final seedShotProfileLapua300 = ProfileData(
   id: 'seed-profile-lapua-300',
   name: '.338LM Lapua 300GR SMK',
   rifle: seedRifle,
@@ -180,13 +180,10 @@ final seedConditions = Conditions.withDefaults(
     humidity: 0.50,
     powderTemp: Temperature.celsius(20.0),
   ),
-  winds: [
-    WindData(
-      velocity: Velocity.mps(3.0),
-      directionFrom: Angular.degree(90.0),
-      untilDistance: Distance.meter(9999.0),
-    ),
-  ],
+  wind: WindData(
+    velocity: Velocity.mps(3.0),
+    directionFrom: Angular.degree(90.0),
+  ),
   lookAngle: Angular.degree(0.0),
   distance: Distance.meter(300.0),
   usePowderSensitivity: false,

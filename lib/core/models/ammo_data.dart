@@ -22,14 +22,14 @@ class CoeficientRow {
   );
 }
 
-enum CartridgeType { cartridge, bullet }
+enum AmmoType { cartridge, bullet }
 
-class Cartridge {
+class AmmoData {
   final String id;
   final String name;
   final String? projectileName;
   final String? vendor;
-  final CartridgeType type;
+  final AmmoType type;
   final DragModelType dragType;
   final Weight weight;
   final Distance diameter;
@@ -44,7 +44,7 @@ class Cartridge {
 
   final String? notes;
 
-  Cartridge({
+  AmmoData({
     String? id,
     required this.name,
     this.projectileName,
@@ -54,7 +54,7 @@ class Cartridge {
     Distance? length,
     List<CoeficientRow>? coefRows,
     this.vendor,
-    this.type = CartridgeType.cartridge,
+    this.type = AmmoType.cartridge,
     required this.mv,
     required this.powderTemp,
     required this.powderSensitivity,
@@ -127,11 +127,11 @@ class Cartridge {
     tempModifier: powderSensitivity.in_(Unit.fraction),
   );
 
-  Cartridge copyWith({
+  AmmoData copyWith({
     String? name,
     String? projectileName,
     String? vendor,
-    CartridgeType? type,
+    AmmoType? type,
     DragModelType? dragType,
     Weight? weight,
     Distance? diameter,
@@ -142,7 +142,7 @@ class Cartridge {
     Ratio? powderSensitivity,
     Conditions? zeroConditions,
     String? notes,
-  }) => Cartridge(
+  }) => AmmoData(
     id: id,
     name: name ?? this.name,
     projectileName: projectileName ?? this.projectileName,
@@ -180,11 +180,9 @@ class Cartridge {
     if (notes != null) 'notes': notes,
   };
 
-  factory Cartridge.fromJson(Map<String, dynamic> json) {
+  factory AmmoData.fromJson(Map<String, dynamic> json) {
     final typeStr = json['type'] as String?;
-    final type = typeStr == 'bullet'
-        ? CartridgeType.bullet
-        : CartridgeType.cartridge;
+    final type = typeStr == 'bullet' ? AmmoType.bullet : AmmoType.cartridge;
 
     Conditions zeroConditions;
 
@@ -229,7 +227,7 @@ class Cartridge {
             .toList() ??
         [];
 
-    return Cartridge(
+    return AmmoData(
       id: json['id'] as String,
       name: json['name'] as String,
       projectileName: json['projectileName'] as String?,
@@ -264,9 +262,9 @@ class Cartridge {
   }
 }
 
-extension CartridgeExtension on Cartridge {
-  static Cartridge mock(String id, String name) {
-    return Cartridge(
+extension AmmoExtension on AmmoData {
+  static AmmoData mock(String id, String name) {
+    return AmmoData(
       id: id, // Додайте id, якщо його немає в моделі
       name: name,
       mv: Velocity.mps(800),

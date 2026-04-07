@@ -17,6 +17,9 @@ class Owner {
   String? token;
 
   @Backlink('owner')
+  final weapons = ToMany<Weapon>();
+
+  @Backlink('owner')
   final sights = ToMany<Sight>();
 
   @Backlink('owner')
@@ -259,6 +262,28 @@ class UnitSettings {
   String barrelLength = "inch";
   String time = "second";
   String torque = "newtonMeter";
+
+  final owner = ToOne<Owner>();
+}
+
+@Entity()
+class Conditions {
+  @Id()
+  int id = 0;
+
+  double distanceMeter = 100.0;
+  double lookAngleRad = 0.0;
+  double temperatureC = 15.0;
+  double pressurehPa = 1013;
+  double humidityFrac = 0.0;
+  double powderTemperatureC = 15.0;
+  bool usePowderSensitivity = false;
+  bool useDiffPowderTemperature = false;
+  bool useCoriolis = false;
+  double latitudeDeg = 0.0;
+  double azimuthDeg = 0.0;
+  double windDirectionDeg = 0.0;
+  double windSpeedMps = 0.0;
 
   final owner = ToOne<Owner>();
 }

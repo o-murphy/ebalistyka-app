@@ -1,5 +1,5 @@
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/rifle.dart';
+import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -16,7 +16,7 @@ class RifleWizardScreen extends ConsumerStatefulWidget {
 
   /// Pre-fill the form with an existing rifle (edit / copy-from-collection).
   /// null = new empty rifle.
-  final Rifle? initial;
+  final WeaponData? initial;
 
   /// Whether the caliber diameter field is editable.
   /// Defaults to true when [initial] is null (manual create), false otherwise.
@@ -80,9 +80,9 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
 
   // ── Build result ──────────────────────────────────────────────────────────
 
-  Rifle _buildRifle() {
+  WeaponData _buildRifle() {
     final signedTwist = _rightHand ? _twistRaw : -_twistRaw;
-    return Rifle(
+    return WeaponData(
       id: widget.initial?.id,
       name: _nameCtrl.text.trim(),
       vendor: widget.initial?.vendor,
