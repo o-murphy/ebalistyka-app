@@ -2,6 +2,7 @@ import 'dart:io';
 import 'objectbox.g.dart';
 
 export 'src/entities.dart';
+export 'objectbox.g.dart';
 
 /// Opens (or creates) the ObjectBox store at [directory].
 ///

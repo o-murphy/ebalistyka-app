@@ -1,9 +1,11 @@
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'core/providers/db_provider.dart';
 import 'core/providers/settings_provider.dart';
 import 'router.dart';
 
@@ -47,7 +49,12 @@ void main() async {
     });
   }
 
-  runApp(const ProviderScope(child: MyApp()));
+  final store = await initObjectBox();
+
+  runApp(ProviderScope(
+    overrides: [dbProvider.overrideWithValue(store)],
+    child: const MyApp(),
+  ));
 }
 
 class _AppScrollBehavior extends MaterialScrollBehavior {
