@@ -490,7 +490,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 4146065780846629425),
     name: 'Owner',
-    lastPropertyId: const obx_int.IdUid(2, 5792398024273257746),
+    lastPropertyId: const obx_int.IdUid(3, 4471585411904370915),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -529,32 +529,12 @@ final _entities = <obx_int.ModelEntity>[
         srcEntity: 'Profile',
         srcField: 'owner',
       ),
-      obx_int.ModelBacklink(
-        name: 'generalSettings',
-        srcEntity: 'GeneralSettings',
-        srcField: 'owner',
-      ),
-      obx_int.ModelBacklink(
-        name: 'unitSettings',
-        srcEntity: 'UnitSettings',
-        srcField: 'owner',
-      ),
-      obx_int.ModelBacklink(
-        name: 'tablesSettings',
-        srcEntity: 'TablesSettings',
-        srcField: 'owner',
-      ),
-      obx_int.ModelBacklink(
-        name: 'convertorsState',
-        srcEntity: 'ConvertorsState',
-        srcField: 'owner',
-      ),
     ],
   ),
   obx_int.ModelEntity(
     id: const obx_int.IdUid(5, 5490667085782347020),
     name: 'Profile',
-    lastPropertyId: const obx_int.IdUid(6, 4262110574303383529),
+    lastPropertyId: const obx_int.IdUid(7, 3085806308739651023),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -605,6 +585,12 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(11, 8484758124775365437),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 3085806308739651023),
+        name: 'sortOrder',
+        type: 6,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -1009,7 +995,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(11, 7626615768518305721),
     name: 'ShootingConditions',
-    lastPropertyId: const obx_int.IdUid(15, 7194175570403883704),
+    lastPropertyId: const obx_int.IdUid(18, 5709130923027295962),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -1061,12 +1047,6 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(9, 706360045788517632),
-        name: 'useDiffPowderTemperature',
-        type: 1,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(10, 2330276065485139737),
         name: 'useCoriolis',
         type: 1,
@@ -1097,11 +1077,23 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(15, 7194175570403883704),
+        id: const obx_int.IdUid(16, 7203768725508911679),
+        name: 'altitudeMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(17, 2112079042996933469),
+        name: 'useDiffPowderTemp',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(18, 5709130923027295962),
         name: 'ownerId',
         type: 11,
         flags: 520,
-        indexId: const obx_int.IdUid(19, 7660367679200674607),
+        indexId: const obx_int.IdUid(21, 579530206861337038),
         relationField: 'owner',
         relationTarget: 'Owner',
       ),
@@ -1154,11 +1146,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
     lastEntityId: const obx_int.IdUid(11, 7626615768518305721),
-    lastIndexId: const obx_int.IdUid(19, 7660367679200674607),
+    lastIndexId: const obx_int.IdUid(21, 579530206861337038),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [6584000130387526342],
-    retiredIndexUids: const [],
+    retiredIndexUids: const [7660367679200674607, 5886553554304794145],
     retiredPropertyUids: const [
       56589591724136369,
       7435866408476540470,
@@ -1213,6 +1205,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
       8332173160992404525,
       3538766144987324145,
       916432832977451751,
+      706360045788517632,
+      7194175570403883704,
+      4471585411904370915,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1764,26 +1759,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
           object.id,
           (Profile srcObject) => srcObject.owner,
         ): object.profiles,
-        obx_int.RelInfo<GeneralSettings>.toOneBacklink(
-          14,
-          object.id,
-          (GeneralSettings srcObject) => srcObject.owner,
-        ): object.generalSettings,
-        obx_int.RelInfo<UnitSettings>.toOneBacklink(
-          18,
-          object.id,
-          (UnitSettings srcObject) => srcObject.owner,
-        ): object.unitSettings,
-        obx_int.RelInfo<TablesSettings>.toOneBacklink(
-          9,
-          object.id,
-          (TablesSettings srcObject) => srcObject.owner,
-        ): object.tablesSettings,
-        obx_int.RelInfo<ConvertorsState>.toOneBacklink(
-          17,
-          object.id,
-          (ConvertorsState srcObject) => srcObject.owner,
-        ): object.convertorsState,
       },
       getId: (Owner object) => object.id,
       setId: (Owner object, int id) {
@@ -1793,7 +1768,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final tokenOffset = object.token == null
             ? null
             : fbb.writeString(object.token!);
-        fbb.startTable(3);
+        fbb.startTable(4);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, tokenOffset);
         fbb.finish(fbb.endTable());
@@ -1844,42 +1819,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             (Profile srcObject) => srcObject.owner,
           ),
         );
-        obx_int.InternalToManyAccess.setRelInfo<Owner>(
-          object.generalSettings,
-          store,
-          obx_int.RelInfo<GeneralSettings>.toOneBacklink(
-            14,
-            object.id,
-            (GeneralSettings srcObject) => srcObject.owner,
-          ),
-        );
-        obx_int.InternalToManyAccess.setRelInfo<Owner>(
-          object.unitSettings,
-          store,
-          obx_int.RelInfo<UnitSettings>.toOneBacklink(
-            18,
-            object.id,
-            (UnitSettings srcObject) => srcObject.owner,
-          ),
-        );
-        obx_int.InternalToManyAccess.setRelInfo<Owner>(
-          object.tablesSettings,
-          store,
-          obx_int.RelInfo<TablesSettings>.toOneBacklink(
-            9,
-            object.id,
-            (TablesSettings srcObject) => srcObject.owner,
-          ),
-        );
-        obx_int.InternalToManyAccess.setRelInfo<Owner>(
-          object.convertorsState,
-          store,
-          obx_int.RelInfo<ConvertorsState>.toOneBacklink(
-            17,
-            object.id,
-            (ConvertorsState srcObject) => srcObject.owner,
-          ),
-        );
         return object;
       },
     ),
@@ -1898,13 +1837,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (Profile object, fb.Builder fbb) {
         final nameOffset = fbb.writeString(object.name);
-        fbb.startTable(7);
+        fbb.startTable(8);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addInt64(2, object.weapon.targetId);
         fbb.addInt64(3, object.sight.targetId);
         fbb.addInt64(4, object.ammo.targetId);
         fbb.addInt64(5, object.owner.targetId);
+        fbb.addInt64(6, object.sortOrder);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1916,7 +1856,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
           ..name = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 6, '');
+          ).vTableGet(buffer, rootOffset, 6, '')
+          ..sortOrder = const fb.Int64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            16,
+            0,
+          );
         object.weapon.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2394,7 +2340,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         object.id = id;
       },
       objectToFB: (ShootingConditions object, fb.Builder fbb) {
-        fbb.startTable(16);
+        fbb.startTable(19);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.distanceMeter);
         fbb.addFloat64(2, object.lookAngleRad);
@@ -2403,13 +2349,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(5, object.humidityFrac);
         fbb.addFloat64(6, object.powderTemperatureC);
         fbb.addBool(7, object.usePowderSensitivity);
-        fbb.addBool(8, object.useDiffPowderTemperature);
         fbb.addBool(9, object.useCoriolis);
         fbb.addFloat64(10, object.latitudeDeg);
         fbb.addFloat64(11, object.azimuthDeg);
         fbb.addFloat64(12, object.windDirectionDeg);
         fbb.addFloat64(13, object.windSpeedMps);
-        fbb.addInt64(14, object.owner.targetId);
+        fbb.addFloat64(15, object.altitudeMeter);
+        fbb.addBool(16, object.useDiffPowderTemp);
+        fbb.addInt64(17, object.owner.targetId);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2461,12 +2408,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             18,
             false,
           )
-          ..useDiffPowderTemperature = const fb.BoolReader().vTableGet(
-            buffer,
-            rootOffset,
-            20,
-            false,
-          )
           ..useCoriolis = const fb.BoolReader().vTableGet(
             buffer,
             rootOffset,
@@ -2496,11 +2437,23 @@ obx_int.ModelDefinition getObjectBoxModel() {
             rootOffset,
             30,
             0,
+          )
+          ..altitudeMeter = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            34,
+            0,
+          )
+          ..useDiffPowderTemp = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            36,
+            false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
-          32,
+          38,
           0,
         );
         object.owner.attach(store);
@@ -2881,24 +2834,6 @@ class Owner_ {
   static final profiles = obx.QueryBacklinkToMany<Profile, Owner>(
     Profile_.owner,
   );
-
-  /// see [Owner.generalSettings]
-  static final generalSettings =
-      obx.QueryBacklinkToMany<GeneralSettings, Owner>(GeneralSettings_.owner);
-
-  /// see [Owner.unitSettings]
-  static final unitSettings = obx.QueryBacklinkToMany<UnitSettings, Owner>(
-    UnitSettings_.owner,
-  );
-
-  /// see [Owner.tablesSettings]
-  static final tablesSettings = obx.QueryBacklinkToMany<TablesSettings, Owner>(
-    TablesSettings_.owner,
-  );
-
-  /// see [Owner.convertorsState]
-  static final convertorsState =
-      obx.QueryBacklinkToMany<ConvertorsState, Owner>(ConvertorsState_.owner);
 }
 
 /// [Profile] entity fields to define ObjectBox queries.
@@ -2931,6 +2866,11 @@ class Profile_ {
   /// See [Profile.owner].
   static final owner = obx.QueryRelationToOne<Profile, Owner>(
     _entities[4].properties[5],
+  );
+
+  /// See [Profile.sortOrder].
+  static final sortOrder = obx.QueryIntegerProperty<Profile>(
+    _entities[4].properties[6],
   );
 }
 
@@ -3269,37 +3209,43 @@ class ShootingConditions_ {
   static final usePowderSensitivity =
       obx.QueryBooleanProperty<ShootingConditions>(_entities[9].properties[7]);
 
-  /// See [ShootingConditions.useDiffPowderTemperature].
-  static final useDiffPowderTemperature =
-      obx.QueryBooleanProperty<ShootingConditions>(_entities[9].properties[8]);
-
   /// See [ShootingConditions.useCoriolis].
   static final useCoriolis = obx.QueryBooleanProperty<ShootingConditions>(
-    _entities[9].properties[9],
+    _entities[9].properties[8],
   );
 
   /// See [ShootingConditions.latitudeDeg].
   static final latitudeDeg = obx.QueryDoubleProperty<ShootingConditions>(
-    _entities[9].properties[10],
+    _entities[9].properties[9],
   );
 
   /// See [ShootingConditions.azimuthDeg].
   static final azimuthDeg = obx.QueryDoubleProperty<ShootingConditions>(
-    _entities[9].properties[11],
+    _entities[9].properties[10],
   );
 
   /// See [ShootingConditions.windDirectionDeg].
   static final windDirectionDeg = obx.QueryDoubleProperty<ShootingConditions>(
-    _entities[9].properties[12],
+    _entities[9].properties[11],
   );
 
   /// See [ShootingConditions.windSpeedMps].
   static final windSpeedMps = obx.QueryDoubleProperty<ShootingConditions>(
+    _entities[9].properties[12],
+  );
+
+  /// See [ShootingConditions.altitudeMeter].
+  static final altitudeMeter = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[13],
+  );
+
+  /// See [ShootingConditions.useDiffPowderTemp].
+  static final useDiffPowderTemp = obx.QueryBooleanProperty<ShootingConditions>(
+    _entities[9].properties[14],
   );
 
   /// See [ShootingConditions.owner].
   static final owner = obx.QueryRelationToOne<ShootingConditions, Owner>(
-    _entities[9].properties[14],
+    _entities[9].properties[15],
   );
 }

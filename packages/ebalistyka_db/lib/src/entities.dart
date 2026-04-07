@@ -28,17 +28,6 @@ class Owner {
   @Backlink('owner')
   final profiles = ToMany<Profile>();
 
-  @Backlink('owner')
-  final generalSettings = ToMany<GeneralSettings>();
-
-  @Backlink('owner')
-  final unitSettings = ToMany<UnitSettings>();
-
-  @Backlink('owner')
-  final tablesSettings = ToMany<TablesSettings>();
-
-  @Backlink('owner')
-  final convertorsState = ToMany<ConvertorsState>();
 }
 
 @Entity()
@@ -178,6 +167,8 @@ class Profile {
   @Index()
   String name = "";
 
+  int sortOrder = 0;
+
   final weapon = ToOne<Weapon>();
   final sight = ToOne<Sight>();
   final ammo = ToOne<Ammo>();
@@ -273,12 +264,13 @@ class ShootingConditions {
 
   double distanceMeter = 100.0;
   double lookAngleRad = 0.0;
+  double altitudeMeter = 0.0;
   double temperatureC = 15.0;
-  double pressurehPa = 1013;
+  double pressurehPa = 1013.25;
   double humidityFrac = 0.0;
   double powderTemperatureC = 15.0;
   bool usePowderSensitivity = false;
-  bool useDiffPowderTemperature = false;
+  bool useDiffPowderTemp = false;
   bool useCoriolis = false;
   double latitudeDeg = 0.0;
   double azimuthDeg = 0.0;

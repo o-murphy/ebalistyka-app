@@ -396,7 +396,7 @@
     },
     {
       "id": "4:4146065780846629425",
-      "lastPropertyId": "2:5792398024273257746",
+      "lastPropertyId": "3:4471585411904370915",
       "name": "Owner",
       "properties": [
         {
@@ -417,7 +417,7 @@
     },
     {
       "id": "5:5490667085782347020",
-      "lastPropertyId": "6:4262110574303383529",
+      "lastPropertyId": "7:3085806308739651023",
       "name": "Profile",
       "properties": [
         {
@@ -464,6 +464,11 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "7:3085806308739651023",
+          "name": "sortOrder",
+          "type": 6
         }
       ],
       "relations": []
@@ -802,7 +807,7 @@
     },
     {
       "id": "11:7626615768518305721",
-      "lastPropertyId": "15:7194175570403883704",
+      "lastPropertyId": "18:5709130923027295962",
       "name": "ShootingConditions",
       "properties": [
         {
@@ -847,11 +852,6 @@
           "type": 1
         },
         {
-          "id": "9:706360045788517632",
-          "name": "useDiffPowderTemperature",
-          "type": 1
-        },
-        {
           "id": "10:2330276065485139737",
           "name": "useCoriolis",
           "type": 1
@@ -877,9 +877,19 @@
           "type": 8
         },
         {
-          "id": "15:7194175570403883704",
+          "id": "16:7203768725508911679",
+          "name": "altitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "17:2112079042996933469",
+          "name": "useDiffPowderTemp",
+          "type": 1
+        },
+        {
+          "id": "18:5709130923027295962",
           "name": "ownerId",
-          "indexId": "19:7660367679200674607",
+          "indexId": "21:579530206861337038",
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
@@ -889,7 +899,7 @@
     }
   ],
   "lastEntityId": "11:7626615768518305721",
-  "lastIndexId": "19:7660367679200674607",
+  "lastIndexId": "21:579530206861337038",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
@@ -897,7 +907,10 @@
   "retiredEntityUids": [
     6584000130387526342
   ],
-  "retiredIndexUids": [],
+  "retiredIndexUids": [
+    7660367679200674607,
+    5886553554304794145
+  ],
   "retiredPropertyUids": [
     56589591724136369,
     7435866408476540470,
@@ -951,7 +964,10 @@
     4972635236809095731,
     8332173160992404525,
     3538766144987324145,
-    916432832977451751
+    916432832977451751,
+    706360045788517632,
+    7194175570403883704,
+    4471585411904370915
   ],
   "retiredRelationUids": [],
   "version": 1

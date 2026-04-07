@@ -182,7 +182,7 @@ void main() {
   });
 
   group('Conditions', () {
-    test('stores shooting conditions per owner', () {
+    test('stores conditions linked to owner via ToOne', () {
       final owner = Owner()..token = 'local';
       store.box<Owner>().put(owner);
 
@@ -195,8 +195,13 @@ void main() {
         ..windDirectionDeg = 90.0
         ..owner.target = owner;
 
-      final id = store.box<ShootingConditions>().put(cond);
-      final found = store.box<ShootingConditions>().get(id)!;
+      store.box<ShootingConditions>().put(cond);
+
+      final found = store
+          .box<ShootingConditions>()
+          .query(ShootingConditions_.owner.equals(owner.id))
+          .build()
+          .findFirst()!;
 
       expect(found.distanceMeter, closeTo(300.0, 1e-6));
       expect(found.temperatureC, closeTo(20.0, 1e-6));

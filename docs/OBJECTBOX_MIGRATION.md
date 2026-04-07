@@ -188,7 +188,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 
 ## Implementation Steps
 
-### Step 1 — Fix ObjectBox initialization
+### |Done| Step 1 — Fix ObjectBox initialization
 - `packages/ebalistyka_db/lib/ebalistyka_db.dart`: повернути `Store`, прийняти `directory`
 - `lib/main.dart`:
   ```dart
@@ -199,7 +199,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
   ));
   ```
 
-### Step 2 — Entity changes + codegen
+### |Done| Step 2 — Entity changes + codegen
 - Додати `ShootingConditions` entity та `sortOrder` до `Profile`
 - `dart run build_runner build --delete-conflicting-outputs`
 
