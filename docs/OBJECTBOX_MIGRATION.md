@@ -237,7 +237,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 ### |Done| Step 7 — Update `SettingsNotifier` / `ConvertorsNotifier`
 - Читають з `appStateProvider`, пишуть через `appStateProvider.notifier`
 
-### Step 8 — Delete old code
+### |WIP| Step 8 — Delete old code
 Files to delete:
 - `lib/core/storage/json_file_storage.dart`
 - `lib/core/storage/app_storage.dart`
@@ -250,7 +250,7 @@ Files to delete:
 - `lib/core/models/convertors_state.dart`
 - `lib/core/models/conditions_data.dart`
 
-### |WIP| Step 9 — Update all consumers
+### |Done| Step 9 — Update all consumers
 - `WeaponData` → `Weapon`, `AmmoData` → `Ammo`, `SightData` → `Sight`
 - `profile.rifle` → `profile.weapon.target`
 - `profile.cartridge` → `profile.ammo.target`
