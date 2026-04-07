@@ -46,10 +46,10 @@ class Weapon {
   @Index()
   String name = "";
 
-  double caliber = 0.0;
-  double twist = 0.0;
+  double caliberInch = 0.0;
+  double twistInch = 0.0;
 
-  double? barrelLength;
+  double? barrelLengthInch;
 
   String? vendor;
   String? image;
@@ -77,12 +77,12 @@ class Sight {
     );
   }
 
-  double sightHeight = 0.0;
+  double sightHeightInch = 0.0;
+  double sightHorizontalOffsetInch = 0.0;
   double verticalClick = 0.1;
   double horizontalClick = 0.1;
   String verticalClickUnit = "mil";
   String horizontalClickUnit = "mil";
-  double sightHorizontalOffset = 0.0;
   double minMagnification = 0.0;
   double maxMagnification = 0.0;
 
@@ -106,9 +106,9 @@ class Ammo {
   @Index()
   String name = "";
 
-  double caliber = 0.0;
-  double weight = 0.0;
-  double length = 0.0;
+  double caliberInch = 0.0;
+  double weightGrain = 0.0;
+  double lengthInch = 0.0;
 
   @Transient()
   DragType dragType = DragType.g1;
@@ -126,34 +126,34 @@ class Ammo {
   double bcG7 = 1.0;
   bool useMultiBcG1 = false;
   bool useMultiBcG7 = false;
-  double? muzzleVelocity;
-  double muzzleVelocityTemperature = 15.0;
-  double powderTemperature = 15.0;
-  double powderSensitivity = 0.0;
+  double? muzzleVelocityMps;
+  double muzzleVelocityTemperatureC = 15.0;
+  double powderTemperatureC = 15.0;
+  double powderSensitivityFrac = 0.0;
 
-  Float64List? powderSensitivityTemperatures;
-  Float64List? powderSensitivityVelocities;
-  Float64List? multiBcTableG1Mv;
+  Float64List? powderSensitivityTC;
+  Float64List? powderSensitivityVMps;
+  Float64List? multiBcTableG1VMps;
   Float64List? multiBcTableG1Bc;
-  Float64List? multiBcTableG7Mv;
+  Float64List? multiBcTableG7VMps;
   Float64List? multiBcTableG7Bc;
-  Float64List? cusomDragTableV;
+  Float64List? cusomDragTableMach;
   Float64List? cusomDragTableCd;
 
-  double zeroDistance = 100.0;
-  double zeroLookAngle = 0.0;
-  double zeroTemperature = 15.0;
-  double zeroPressure = 1013;
-  double zeroHumidity = 0.0;
-  double zeroPowdertemperature = 15.0;
+  double zeroDistanceMeter = 100.0;
+  double zeroLookAngleRad = 0.0;
+  double zeroTemperatureC = 15.0;
+  double zeroPressurehPa = 1013;
+  double zeroHumidityFrac = 0.0;
+  double zeroPowderTemperatureC = 15.0;
   bool usePowderSensitivity = false;
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
   double? zerolatitudeDeg;
   double? zeroAzimuthDeg;
 
-  double zeroOffsetX = 0.0;
-  double zeroOffsetY = 0.0;
+  double zeroOffsetXRad = 0.0;
+  double zeroOffsetYRad = 0.0;
 
   String? projectileName;
   String? vendor;
@@ -220,14 +220,18 @@ class TablesSettings {
   @Id()
   int id = 0;
 
-  double distanceStart = 0.0;
-  double distanceEnd = 2000.0;
-  double distanceStep = 100.0;
+  double distanceStartMeter = 0.0;
+  double distanceEndMeter = 2000.0;
+  double distanceStepMeter = 100.0;
 
   bool showZeros = true;
   bool showSubsonicTransition = true;
   List<String> hiddenCols = const [];
-  List<String> hiddenAdjustmentCols = const [];
+  bool showMil = false;
+  bool showMrad = false;
+  bool showMoa = false;
+  bool showCmPer100m = false;
+  bool showInPer100yd = false;
 
   final owner = ToOne<Owner>();
 }
@@ -265,18 +269,18 @@ class ConvertorsState {
   double lengthValueInch = 100.0;
   String lengthUnit = "inch";
   double weightValueGrain = 100.0;
-  String weight = "grain";
+  String weightUnit = "grain";
   double pressureValueMmHg = 1013.0;
-  String pressure = "hPa";
-  double temperatureValueFahrenheit = 68.0;
-  String temperature = "celsius";
+  String pressureUnit = "hPa";
+  double temperatureValueF = 68.0;
+  String temperatureUnit = "celsius";
   double torqueValueNewtonMeter = 100.0;
-  String torque = "newtonMeter";
+  String torqueUnit = "newtonMeter";
   double anglesConvertorDistanceValueMeter = 100.0;
-  String anglesConvertorDistance = "meter";
+  String anglesConvertorDistanceUnit = "meter";
   double anglesConvertorAngularValueMil = 1.0;
-  String anglesConvertorAngular = "mil";
-  String anglesConvertorOutput = "centimeter";
+  String anglesConvertorAngularUnit = "mil";
+  String anglesConvertorOutputUnit = "centimeter";
 
   final owner = ToOne<Owner>();
 }

@@ -24,8 +24,8 @@ void main() {
     // Додаємо набій
     final ammo = Ammo()
       ..name = ".308 Win"
-      ..caliber = 7.62
-      ..weight = 168.0
+      ..caliberInch = 7.62
+      ..weightGrain = 168.0
       ..bcG1 = 0.462;
 
     final cartridgeBox = store.box<Ammo>();
@@ -33,8 +33,8 @@ void main() {
 
     final weapon = Weapon()
       ..name = "Мій ствол"
-      ..caliber = 7.62
-      ..twist = 254.0;
+      ..caliberInch = 7.62
+      ..twistInch = 254.0;
 
     // Додаємо профіль
     final profile = Profile()..name = "Мій профіль";

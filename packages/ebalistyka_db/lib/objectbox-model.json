@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:481047032094263803",
-      "lastPropertyId": "39:2696625425089428654",
+      "lastPropertyId": "59:3182962183369396844",
       "name": "Ammo",
       "properties": [
         {
@@ -20,21 +20,6 @@
           "indexId": "1:944814867517340877",
           "type": 9,
           "flags": 2048
-        },
-        {
-          "id": "3:56589591724136369",
-          "name": "caliber",
-          "type": 8
-        },
-        {
-          "id": "4:7435866408476540470",
-          "name": "weight",
-          "type": 8
-        },
-        {
-          "id": "5:7749662423289089179",
-          "name": "length",
-          "type": 8
         },
         {
           "id": "6:8466745873890719630",
@@ -62,48 +47,8 @@
           "type": 1
         },
         {
-          "id": "11:2492064189372607551",
-          "name": "muzzleVelocity",
-          "type": 8
-        },
-        {
-          "id": "12:5514844413031348455",
-          "name": "muzzleVelocityTemperature",
-          "type": 8
-        },
-        {
-          "id": "13:1799365847783643769",
-          "name": "powderTemperature",
-          "type": 8
-        },
-        {
-          "id": "14:974272242678895264",
-          "name": "powderSensitivity",
-          "type": 8
-        },
-        {
-          "id": "15:8929423509273604592",
-          "name": "powderSensitivityTemperatures",
-          "type": 29
-        },
-        {
-          "id": "16:3283350237107193853",
-          "name": "powderSensitivityVelocities",
-          "type": 29
-        },
-        {
-          "id": "17:6833671569938414681",
-          "name": "multiBcTableG1Mv",
-          "type": 29
-        },
-        {
           "id": "18:1770810788819588875",
           "name": "multiBcTableG1Bc",
-          "type": 29
-        },
-        {
-          "id": "19:5416477658534681004",
-          "name": "multiBcTableG7Mv",
           "type": 29
         },
         {
@@ -112,44 +57,9 @@
           "type": 29
         },
         {
-          "id": "21:7530323202461384488",
-          "name": "cusomDragTableV",
-          "type": 29
-        },
-        {
           "id": "22:634242907511084069",
           "name": "cusomDragTableCd",
           "type": 29
-        },
-        {
-          "id": "23:2599773404316424628",
-          "name": "zeroDistance",
-          "type": 8
-        },
-        {
-          "id": "24:3473906109131868875",
-          "name": "zeroLookAngle",
-          "type": 8
-        },
-        {
-          "id": "25:6170586545303640674",
-          "name": "zeroTemperature",
-          "type": 8
-        },
-        {
-          "id": "26:1331174537811421704",
-          "name": "zeroPressure",
-          "type": 8
-        },
-        {
-          "id": "27:5088462136301972979",
-          "name": "zeroHumidity",
-          "type": 8
-        },
-        {
-          "id": "28:9201312319250354552",
-          "name": "zeroPowdertemperature",
-          "type": 8
         },
         {
           "id": "29:8205752393931719157",
@@ -177,16 +87,6 @@
           "type": 8
         },
         {
-          "id": "34:4581674611466032688",
-          "name": "zeroOffsetX",
-          "type": 8
-        },
-        {
-          "id": "35:4437029025770366401",
-          "name": "zeroOffsetY",
-          "type": 8
-        },
-        {
           "id": "36:2792708475255283450",
           "name": "projectileName",
           "type": 9
@@ -208,13 +108,113 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "40:4026842547250053682",
+          "name": "caliberInch",
+          "type": 8
+        },
+        {
+          "id": "41:5467966681391980690",
+          "name": "weightGrain",
+          "type": 8
+        },
+        {
+          "id": "42:8268372626678279783",
+          "name": "lengthInch",
+          "type": 8
+        },
+        {
+          "id": "43:5188091358655499808",
+          "name": "muzzleVelocityMps",
+          "type": 8
+        },
+        {
+          "id": "44:265135372287862472",
+          "name": "muzzleVelocityTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "45:824601022869745530",
+          "name": "powderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "46:1096154456700048161",
+          "name": "powderSensitivityFrac",
+          "type": 8
+        },
+        {
+          "id": "47:562903801667941445",
+          "name": "powderSensitivityTC",
+          "type": 29
+        },
+        {
+          "id": "48:5389361122000287149",
+          "name": "powderSensitivityVMps",
+          "type": 29
+        },
+        {
+          "id": "49:7245050342213796052",
+          "name": "multiBcTableG1VMps",
+          "type": 29
+        },
+        {
+          "id": "50:3097257252347097034",
+          "name": "multiBcTableG7VMps",
+          "type": 29
+        },
+        {
+          "id": "51:3103745605439968828",
+          "name": "cusomDragTableMach",
+          "type": 29
+        },
+        {
+          "id": "52:8326665813892168618",
+          "name": "zeroDistanceMeter",
+          "type": 8
+        },
+        {
+          "id": "53:5469604972785765889",
+          "name": "zeroLookAngleRad",
+          "type": 8
+        },
+        {
+          "id": "54:6632001658917972013",
+          "name": "zeroTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "55:1711579614606815657",
+          "name": "zeroPressurehPa",
+          "type": 8
+        },
+        {
+          "id": "56:3355705688815311182",
+          "name": "zeroHumidityFrac",
+          "type": 8
+        },
+        {
+          "id": "57:8912827884731588281",
+          "name": "zeroPowderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "58:2449350094904024515",
+          "name": "zeroOffsetXRad",
+          "type": 8
+        },
+        {
+          "id": "59:3182962183369396844",
+          "name": "zeroOffsetYRad",
+          "type": 8
         }
       ],
       "relations": []
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "17:8290030605337265686",
+      "lastPropertyId": "25:8552267728328334166",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -239,29 +239,9 @@
           "type": 8
         },
         {
-          "id": "5:8509556449611080162",
-          "name": "weight",
-          "type": 9
-        },
-        {
           "id": "6:6621825253328128572",
           "name": "pressureValueMmHg",
           "type": 8
-        },
-        {
-          "id": "7:811841300633756386",
-          "name": "pressure",
-          "type": 9
-        },
-        {
-          "id": "8:6400710630634493678",
-          "name": "temperatureValueFahrenheit",
-          "type": 8
-        },
-        {
-          "id": "9:1306657369725317903",
-          "name": "temperature",
-          "type": 9
         },
         {
           "id": "10:3521516380372782062",
@@ -269,34 +249,14 @@
           "type": 8
         },
         {
-          "id": "11:1338303344777086487",
-          "name": "torque",
-          "type": 9
-        },
-        {
           "id": "12:351391817273593368",
           "name": "anglesConvertorDistanceValueMeter",
           "type": 8
         },
         {
-          "id": "13:623798383099068972",
-          "name": "anglesConvertorDistance",
-          "type": 9
-        },
-        {
           "id": "14:3384127170950481517",
           "name": "anglesConvertorAngularValueMil",
           "type": 8
-        },
-        {
-          "id": "15:8478334701850613082",
-          "name": "anglesConvertorAngular",
-          "type": 9
-        },
-        {
-          "id": "16:8256106710858315457",
-          "name": "anglesConvertorOutput",
-          "type": 9
         },
         {
           "id": "17:8290030605337265686",
@@ -305,6 +265,46 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "18:8557219818830111210",
+          "name": "weightUnit",
+          "type": 9
+        },
+        {
+          "id": "19:1104253833503703564",
+          "name": "pressureUnit",
+          "type": 9
+        },
+        {
+          "id": "20:460269895754369290",
+          "name": "temperatureValueF",
+          "type": 8
+        },
+        {
+          "id": "21:8353998891114488076",
+          "name": "temperatureUnit",
+          "type": 9
+        },
+        {
+          "id": "22:8371375436333097253",
+          "name": "torqueUnit",
+          "type": 9
+        },
+        {
+          "id": "23:8038748045572178862",
+          "name": "anglesConvertorDistanceUnit",
+          "type": 9
+        },
+        {
+          "id": "24:8458352093651103584",
+          "name": "anglesConvertorAngularUnit",
+          "type": 9
+        },
+        {
+          "id": "25:8552267728328334166",
+          "name": "anglesConvertorOutputUnit",
+          "type": 9
         }
       ],
       "relations": []
@@ -470,7 +470,7 @@
     },
     {
       "id": "6:9008070843231077690",
-      "lastPropertyId": "16:737672345032110523",
+      "lastPropertyId": "18:245945662969613122",
       "name": "Sight",
       "properties": [
         {
@@ -492,11 +492,6 @@
           "type": 9
         },
         {
-          "id": "4:1437704715851296309",
-          "name": "sightHeight",
-          "type": 8
-        },
-        {
           "id": "5:4348750242276057672",
           "name": "verticalClick",
           "type": 8
@@ -515,11 +510,6 @@
           "id": "8:8415923395606248925",
           "name": "horizontalClickUnit",
           "type": 9
-        },
-        {
-          "id": "9:3906981019707090664",
-          "name": "sightHorizontalOffset",
-          "type": 8
         },
         {
           "id": "10:4265494260285088797",
@@ -558,13 +548,23 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "17:8684537408128170375",
+          "name": "sightHeightInch",
+          "type": 8
+        },
+        {
+          "id": "18:245945662969613122",
+          "name": "sightHorizontalOffsetInch",
+          "type": 8
         }
       ],
       "relations": []
     },
     {
       "id": "7:1704755846093761912",
-      "lastPropertyId": "9:7685983959523799065",
+      "lastPropertyId": "17:7303471664831654006",
       "name": "TablesSettings",
       "properties": [
         {
@@ -572,21 +572,6 @@
           "name": "id",
           "type": 6,
           "flags": 1
-        },
-        {
-          "id": "2:7130419408238951888",
-          "name": "distanceStart",
-          "type": 8
-        },
-        {
-          "id": "3:462378690113141369",
-          "name": "distanceEnd",
-          "type": 8
-        },
-        {
-          "id": "4:4571615005069247360",
-          "name": "distanceStep",
-          "type": 8
         },
         {
           "id": "5:5752190580816842465",
@@ -604,17 +589,52 @@
           "type": 30
         },
         {
-          "id": "8:8454924801350945338",
-          "name": "hiddenAdjustmentCols",
-          "type": 30
-        },
-        {
           "id": "9:7685983959523799065",
           "name": "ownerId",
           "indexId": "14:8530595160478793144",
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "10:2736143774895099737",
+          "name": "distanceStartMeter",
+          "type": 8
+        },
+        {
+          "id": "11:4450207048408314633",
+          "name": "distanceEndMeter",
+          "type": 8
+        },
+        {
+          "id": "12:1234509859101714113",
+          "name": "distanceStepMeter",
+          "type": 8
+        },
+        {
+          "id": "13:1216482517150401574",
+          "name": "showMil",
+          "type": 1
+        },
+        {
+          "id": "14:3851571950255688198",
+          "name": "showMrad",
+          "type": 1
+        },
+        {
+          "id": "15:673798296604230945",
+          "name": "showMoa",
+          "type": 1
+        },
+        {
+          "id": "16:6194656477589113694",
+          "name": "showCmPer100m",
+          "type": 1
+        },
+        {
+          "id": "17:7303471664831654006",
+          "name": "showInPer100yd",
+          "type": 1
         }
       ],
       "relations": []
@@ -723,7 +743,7 @@
     },
     {
       "id": "9:1731139601222753801",
-      "lastPropertyId": "8:2042548101712427756",
+      "lastPropertyId": "11:351630455784485828",
       "name": "Weapon",
       "properties": [
         {
@@ -738,21 +758,6 @@
           "indexId": "16:8111909717702429569",
           "type": 9,
           "flags": 2048
-        },
-        {
-          "id": "3:6368953314469303965",
-          "name": "caliber",
-          "type": 8
-        },
-        {
-          "id": "4:6284527265072016857",
-          "name": "twist",
-          "type": 8
-        },
-        {
-          "id": "5:6255307954200195809",
-          "name": "barrelLength",
-          "type": 8
         },
         {
           "id": "6:6666126699331535385",
@@ -771,6 +776,21 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "9:5469377151697569803",
+          "name": "caliberInch",
+          "type": 8
+        },
+        {
+          "id": "10:999991577173923373",
+          "name": "twistInch",
+          "type": 8
+        },
+        {
+          "id": "11:351630455784485828",
+          "name": "barrelLengthInch",
+          "type": 8
         }
       ],
       "relations": []
@@ -784,7 +804,45 @@
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    56589591724136369,
+    7435866408476540470,
+    7749662423289089179,
+    2492064189372607551,
+    5514844413031348455,
+    1799365847783643769,
+    974272242678895264,
+    8929423509273604592,
+    3283350237107193853,
+    6833671569938414681,
+    5416477658534681004,
+    7530323202461384488,
+    2599773404316424628,
+    3473906109131868875,
+    6170586545303640674,
+    1331174537811421704,
+    5088462136301972979,
+    9201312319250354552,
+    4581674611466032688,
+    4437029025770366401,
+    8509556449611080162,
+    811841300633756386,
+    6400710630634493678,
+    1306657369725317903,
+    1338303344777086487,
+    623798383099068972,
+    8478334701850613082,
+    8256106710858315457,
+    1437704715851296309,
+    3906981019707090664,
+    7130419408238951888,
+    462378690113141369,
+    4571615005069247360,
+    8454924801350945338,
+    6368953314469303965,
+    6284527265072016857,
+    6255307954200195809
+  ],
   "retiredRelationUids": [],
   "version": 1
 }
