@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:bclibc_ffi/unit.dart';
 
 import 'cartridge.dart';
 import 'conditions_data.dart';
@@ -45,8 +46,8 @@ class ShotProfile {
 
   // ── toShot ────────────────────────────────────────────────────────────────
 
-  Shot toZeroShot(Angular lookAngle, Weapon weapon) {
-    final zeroAmmo = Ammo(
+  bclibc.Shot toZeroShot(Angular lookAngle, bclibc.Weapon weapon) {
+    final zeroAmmo = bclibc.Ammo(
       dm: cartridge!.toDragModel(),
       mv: cartridge!.mv,
       powderTemp: cartridge!.powderTemp,
@@ -56,7 +57,7 @@ class ShotProfile {
 
     final zeroAtmo = cartridge!.zeroConditions.atmo;
 
-    return Shot(
+    return bclibc.Shot(
       weapon: weapon,
       ammo: zeroAmmo,
       lookAngle: lookAngle,
@@ -65,8 +66,8 @@ class ShotProfile {
     );
   }
 
-  Shot toCurrentShot(Conditions conditions, Weapon weapon) {
-    final currentAmmo = Ammo(
+  bclibc.Shot toCurrentShot(Conditions conditions, bclibc.Weapon weapon) {
+    final currentAmmo = bclibc.Ammo(
       dm: cartridge!.toDragModel(),
       mv: cartridge!.mv,
       powderTemp: cartridge!.powderTemp,
@@ -74,7 +75,7 @@ class ShotProfile {
       usePowderSensitivity: conditions.usePowderSensitivity,
     );
 
-    return Shot(
+    return bclibc.Shot(
       weapon: weapon,
       ammo: currentAmmo,
       lookAngle: conditions.lookAngle,

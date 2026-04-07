@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 import 'package:flutter/material.dart';
 
 /// Віджет для вибору одиниці виміру з BottomSheet

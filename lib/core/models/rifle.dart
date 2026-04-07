@@ -1,4 +1,5 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:bclibc_ffi/unit.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -34,7 +35,7 @@ class Rifle {
   /// Right-hand twist when positive, left-hand when negative.
   bool get isRightHandTwist => twist.raw >= 0;
 
-  Weapon toWeapon() => Weapon(
+  bclibc.Weapon toWeapon() => bclibc.Weapon(
     sightHeight: sightHeight,
     twist: twist,
     zeroElevation: zeroElevation,

@@ -1,7 +1,7 @@
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 class AnglesConvertorField {
   final String label;

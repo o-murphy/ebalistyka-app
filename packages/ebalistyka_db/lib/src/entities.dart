@@ -51,6 +51,8 @@ class Weapon {
 
   double? barrelLengthInch;
 
+  double zeroElevationRad = 0.0;
+
   String? vendor;
   String? image;
 
@@ -149,8 +151,8 @@ class Ammo {
   bool usePowderSensitivity = false;
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
-  double? zerolatitudeDeg;
-  double? zeroAzimuthDeg;
+  double zerolatitudeDeg = 0.0;
+  double zeroAzimuthDeg = 0.0;
 
   double zeroOffsetXRad = 0.0;
   double zeroOffsetYRad = 0.0;

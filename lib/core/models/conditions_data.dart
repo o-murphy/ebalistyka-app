@@ -1,4 +1,5 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:bclibc_ffi/unit.dart';
 
 import '_storage.dart';
 
@@ -19,7 +20,7 @@ class AtmoData {
     required this.powderTemp,
   });
 
-  Atmo toAtmo() => Atmo(
+  bclibc.Atmo toAtmo() => bclibc.Atmo(
     altitude: altitude,
     pressure: pressure,
     temperature: temperature,
@@ -28,7 +29,7 @@ class AtmoData {
   );
 
   factory AtmoData.icao() {
-    final atmo = Atmo.icao();
+    final atmo = bclibc.Atmo.icao();
     return AtmoData(
       altitude: atmo.altitude,
       pressure: atmo.pressure,
@@ -96,7 +97,7 @@ class WindData {
     required this.untilDistance,
   });
 
-  Wind toWind() => Wind(
+  bclibc.Wind toWind() => bclibc.Wind(
     velocity: velocity,
     directionFrom: directionFrom,
     untilDistance: untilDistance,
@@ -169,7 +170,7 @@ class Conditions {
     );
   }
 
-  Atmo toAtmo() => Atmo(
+  bclibc.Atmo toAtmo() => bclibc.Atmo(
     altitude: atmo.altitude,
     pressure: atmo.pressure,
     temperature: atmo.temperature,

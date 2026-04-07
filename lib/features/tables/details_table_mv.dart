@@ -9,7 +9,8 @@ import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── Spoiler data ─────────────────────────────────────────────────────────────
 
@@ -87,7 +88,7 @@ DetailsTableData _buildDetails(
   final refMvMps = cart.mv.in_(Unit.mps);
   final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
 
-  double mvAtTempC(double tCurC) => velocityForPowderTemp(
+  double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
     refMvMps,
     refPowderTempC,
     tCurC,

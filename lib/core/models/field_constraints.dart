@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 /// Constraints for a physical quantity role — used by [UnitValueField]
 /// and for display formatting in tables, charts, and widgets.

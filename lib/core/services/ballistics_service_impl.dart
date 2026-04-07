@@ -4,19 +4,20 @@ import 'package:flutter/foundation.dart' show compute;
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
 // (profile, conditions, stepM, cachedZeroElevationRad?)
 typedef _TableCalcArgs = (ShotProfile, Conditions, double, double?);
 // (hitResult, freshZeroElevationRad?)
-typedef _TableCalcResult = (HitResult?, double?);
+typedef _TableCalcResult = (bclibc.HitResult?, double?);
 
 _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   final (profile, conditions, stepM, cachedZeroElevRad) = args;
   try {
-    final calc = Calculator();
+    final calc = bclibc.Calculator();
     final cartridge = profile.cartridge!;
 
     // Отримуємо дистанцію обнулення з умов картриджа
@@ -28,7 +29,7 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
     if (cachedZeroElevRad != null) {
       weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      Shot zeroShot;
+      bclibc.Shot zeroShot;
       try {
         zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
@@ -44,8 +45,8 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
       trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
       trajectoryStep: Distance.meter(stepM),
       filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -56,13 +57,13 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
 // (profile, conditions, targetDistM, chartStepM, cachedZeroElevationRad?)
 typedef _HomeCalcArgs = (ShotProfile, Conditions, double, double, double?);
 // (hitResult, freshZeroElevationRad?)
-typedef _HomeCalcResult = (HitResult?, double?);
+typedef _HomeCalcResult = (bclibc.HitResult?, double?);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
   final (profile, conditions, targetDistM, stepM, cachedZeroElevRad) = args;
   final internalStepM = stepM < 1.0 ? stepM : 1.0;
   try {
-    final calc = Calculator();
+    final calc = bclibc.Calculator();
     final cartridge = profile.cartridge!;
 
     // Отримуємо дистанцію обнулення з умов картриджа
@@ -74,7 +75,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     if (cachedZeroElevRad != null) {
       weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      Shot zeroShot;
+      bclibc.Shot zeroShot;
       try {
         zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
@@ -100,8 +101,8 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       trajectoryRange: Distance.meter(targetDistM),
       trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {

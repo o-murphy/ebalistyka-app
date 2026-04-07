@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:bclibc_ffi/unit.dart';
 
 import '_storage.dart';
 import 'conditions_data.dart';
@@ -70,16 +71,18 @@ class Cartridge {
   bool get isMultiBC => dragType != DragModelType.custom && coefRows.length > 1;
 
   /// Build a runtime [DragModel] for the ballistics solver.
-  DragModel toDragModel() {
+  bclibc.DragModel toDragModel() {
     switch (dragType) {
       case DragModelType.g1:
       case DragModelType.g7:
-        final baseTable = dragType == DragModelType.g7 ? tableG7 : tableG1;
+        final baseTable = dragType == DragModelType.g7
+            ? bclibc.tableG7
+            : bclibc.tableG1;
         if (coefRows.length <= 1) {
           final bc = coefRows.isEmpty || coefRows.first.bcCd == 0
               ? 1.0
               : coefRows.first.bcCd;
-          return DragModel(
+          return bclibc.DragModel(
             bc: bc,
             dragTable: baseTable,
             weight: weight,
@@ -89,9 +92,9 @@ class Cartridge {
         }
         // Multi-BC: mv values are in m/s
         final bcPoints = coefRows
-            .map((r) => BCPoint(bc: r.bcCd, v: Velocity(r.mv, Unit.mps)))
+            .map((r) => bclibc.BCPoint(bc: r.bcCd, v: Velocity(r.mv, Unit.mps)))
             .toList();
-        return createDragModelMultiBC(
+        return bclibc.createDragModelMultiBC(
           bcPoints: bcPoints,
           dragTable: baseTable,
           weight: weight,
@@ -102,14 +105,14 @@ class Cartridge {
         // coefRows: bcCd = Cd, mv = Mach
         final table = coefRows.map((r) => (mach: r.mv, cd: r.bcCd)).toList();
         final sd = (weight.raw > 0 && diameter.raw > 0)
-            ? calculateSectionalDensity(
+            ? bclibc.calculateSectionalDensity(
                 weight.in_(Unit.grain),
                 diameter.in_(Unit.inch),
               )
             : 0.0;
-        return DragModel(
+        return bclibc.DragModel(
           bc: sd > 0 ? sd : 1.0,
-          dragTable: table.isNotEmpty ? table : tableG1,
+          dragTable: table.isNotEmpty ? table : bclibc.tableG1,
           weight: weight,
           diameter: diameter,
           length: length,
@@ -117,7 +120,7 @@ class Cartridge {
     }
   }
 
-  Ammo toAmmo() => Ammo(
+  bclibc.Ammo toAmmo() => bclibc.Ammo(
     dm: toDragModel(),
     mv: mv,
     powderTemp: powderTemp,

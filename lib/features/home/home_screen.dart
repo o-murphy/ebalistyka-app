@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';

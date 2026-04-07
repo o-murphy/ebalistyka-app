@@ -1,3 +1,4 @@
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
@@ -8,7 +9,7 @@ import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 // ── Data classes ─────────────────────────────────────────────────────────────
 
@@ -210,7 +211,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final refPowderTempC = cartridge?.powderTemp.in_(Unit.celsius) ?? 15.0;
     final powderSensitivity = cartridge?.powderSensitivity;
 
-    double mvAtTempC(double tCurC) => velocityForPowderTemp(
+    double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
       refMvMps,
       refPowderTempC,
       tCurC,

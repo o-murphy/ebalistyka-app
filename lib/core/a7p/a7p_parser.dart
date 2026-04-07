@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/cartridge.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/rifle.dart';

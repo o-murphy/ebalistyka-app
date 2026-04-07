@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 class UnitSettings {
   final Unit angular;

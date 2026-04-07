@@ -14,7 +14,8 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -160,7 +161,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }
 
   FormattedTableData _buildTable(
-    List<TrajectoryData> rows,
+    List<bclibc.TrajectoryData> rows,
     UnitSettings units,
     TableConfig cfg, {
     bool isZeroTable = false,
@@ -176,7 +177,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             String,
             String,
             String Function(Dimension?),
-            double? Function(TrajectoryData),
+            double? Function(bclibc.TrajectoryData),
             int,
           )
         >[
@@ -218,7 +219,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
               'adjDrop_${u.name}',
               'Drop° ${u.symbol}',
               (_) => u.symbol,
-              (TrajectoryData r) => r.dropAngle.in_(u),
+              (bclibc.TrajectoryData r) => r.dropAngle.in_(u),
               FC.adjustment.accuracyFor(u),
             ),
           if (!hidden.contains('wind'))
@@ -234,7 +235,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
               'adjWind_${u.name}',
               'Wind° ${u.symbol}',
               (_) => u.symbol,
-              (TrajectoryData r) => r.windageAngle.in_(u),
+              (bclibc.TrajectoryData r) => r.windageAngle.in_(u),
               FC.adjustment.accuracyFor(u),
             ),
           if (!hidden.contains('mach'))
@@ -263,9 +264,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
       // For zero table, add arrow indicator
       if (isZeroTable) {
-        final arrow = (row.flag & TrajFlag.zeroUp.value) != 0
+        final arrow = (row.flag & bclibc.TrajFlag.zeroUp.value) != 0
             ? ' ↑'
-            : (row.flag & TrajFlag.zeroDown.value) != 0
+            : (row.flag & bclibc.TrajFlag.zeroDown.value) != 0
             ? ' ↓'
             : '';
         distHeaders.add('$rangeStr$arrow');
@@ -302,7 +303,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
         final row = rows[pi];
         final val = col.$4(row);
         final valStr = val != null ? val.toStringAsFixed(col.$5) : '—';
-        final isZero = (row.flag & TrajFlag.zero.value) != 0;
+        final isZero = (row.flag & bclibc.TrajFlag.zero.value) != 0;
         final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
         cells.add(
           FormattedCell(
@@ -325,13 +326,13 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     );
   }
 
-  List<TrajectoryData> _filterTraj(
-    List<TrajectoryData> traj,
+  List<bclibc.TrajectoryData> _filterTraj(
+    List<bclibc.TrajectoryData> traj,
     double startM,
     double endM,
     double stepM,
   ) {
-    final result = <TrajectoryData>[];
+    final result = <bclibc.TrajectoryData>[];
     double nextM = startM;
     for (final p in traj) {
       final d = p.distance.in_(Unit.meter);

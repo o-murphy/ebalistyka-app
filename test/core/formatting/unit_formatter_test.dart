@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
 import 'package:ebalistyka/core/models/unit_settings.dart';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 void main() {
   group('UnitFormatterImpl — metric defaults', () {

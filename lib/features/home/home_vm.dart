@@ -19,7 +19,8 @@ import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -346,7 +347,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   AdjustmentData _buildAdjustment(
-    HitResult hit,
+    bclibc.HitResult hit,
     double targetM,
     AppSettings settings,
   ) {
@@ -390,7 +391,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   FormattedTableData _buildHomeTable(
-    HitResult hit,
+    bclibc.HitResult hit,
     double targetM,
     AppSettings settings,
     UnitFormatter fmt,
@@ -421,39 +422,40 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final milAcc = FC.adjustment.accuracyFor(Unit.mil);
     final moaAcc = FC.adjustment.accuracyFor(Unit.moa);
 
-    final rowDefs = <(String, String, double? Function(TrajectoryData), int)>[
-      (
-        'Height',
-        units.drop.symbol,
-        (p) => p.height.in_(units.drop),
-        FC.drop.accuracyFor(units.drop),
-      ),
-      (
-        'Slant Ht',
-        units.drop.symbol,
-        (p) => p.slantHeight.in_(units.drop),
-        FC.drop.accuracyFor(units.drop),
-      ),
-      ('Angle', 'MIL', (p) => p.angle.in_(Unit.mil), milAcc),
-      ('Angle', 'MOA', (p) => p.angle.in_(Unit.moa), moaAcc),
-      ('Drop', 'MIL', (p) => p.dropAngle.in_(Unit.mil), milAcc),
-      ('Drop', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
-      ('Windage', 'MIL', (p) => p.windageAngle.in_(Unit.mil), milAcc),
-      ('Windage', 'MOA', (p) => p.windageAngle.in_(Unit.moa), moaAcc),
-      (
-        'Velocity',
-        units.velocity.symbol,
-        (p) => p.velocity.in_(units.velocity),
-        FC.velocity.accuracyFor(units.velocity),
-      ),
-      (
-        'Energy',
-        units.energy.symbol,
-        (p) => p.energy.in_(units.energy),
-        FC.energy.accuracyFor(units.energy),
-      ),
-      ('Time', 's', (p) => p.time, 3),
-    ];
+    final rowDefs =
+        <(String, String, double? Function(bclibc.TrajectoryData), int)>[
+          (
+            'Height',
+            units.drop.symbol,
+            (p) => p.height.in_(units.drop),
+            FC.drop.accuracyFor(units.drop),
+          ),
+          (
+            'Slant Ht',
+            units.drop.symbol,
+            (p) => p.slantHeight.in_(units.drop),
+            FC.drop.accuracyFor(units.drop),
+          ),
+          ('Angle', 'MIL', (p) => p.angle.in_(Unit.mil), milAcc),
+          ('Angle', 'MOA', (p) => p.angle.in_(Unit.moa), moaAcc),
+          ('Drop', 'MIL', (p) => p.dropAngle.in_(Unit.mil), milAcc),
+          ('Drop', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
+          ('Windage', 'MIL', (p) => p.windageAngle.in_(Unit.mil), milAcc),
+          ('Windage', 'MOA', (p) => p.windageAngle.in_(Unit.moa), moaAcc),
+          (
+            'Velocity',
+            units.velocity.symbol,
+            (p) => p.velocity.in_(units.velocity),
+            FC.velocity.accuracyFor(units.velocity),
+          ),
+          (
+            'Energy',
+            units.energy.symbol,
+            (p) => p.energy.in_(units.energy),
+            FC.energy.accuracyFor(units.energy),
+          ),
+          ('Time', 's', (p) => p.time, 3),
+        ];
 
     final rows = rowDefs.map((rd) {
       final cells = <FormattedCell>[];
@@ -491,7 +493,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   ChartData _buildChartData(
-    HitResult hit,
+    bclibc.HitResult hit,
     double targetM,
     AppSettings settings,
   ) {
@@ -503,8 +505,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         .map((d) {
           final td = hit.getAtDistance(Distance.meter(d));
 
-          final isZero = (td.flag & TrajFlag.zero.value) != 0;
-          final isMach = (td.flag & TrajFlag.mach.value) != 0;
+          final isZero = (td.flag & bclibc.TrajFlag.zero.value) != 0;
+          final isMach = (td.flag & bclibc.TrajFlag.mach.value) != 0;
 
           return ChartPoint(
             distanceM: td.distance.in_(Unit.meter),

@@ -1,7 +1,9 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:async';
-import 'package:bclibc_ffi/bclibc.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -123,7 +125,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     Conditions conditions,
     AppSettings settings,
     UnitFormatter formatter,
-    HitResult hit,
+    bclibc.HitResult hit,
   ) {
     final cartridge = profile.cartridge!;
     final targetDistM = conditions.distance.in_(Unit.meter);
@@ -145,7 +147,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     final zeroUseDiffTemp =
         zeroPowderSensOn && zeroConditions.useDiffPowderTemp;
 
-    double mvAtTempC(double tCurC) => velocityForPowderTemp(
+    double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
       refMvMps,
       refPowderTempC,
       tCurC,
@@ -181,7 +183,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
     // Trajectory markers
     final firstPoint = traj.isNotEmpty ? traj[0] : null;
-    TrajectoryData? apexPoint;
+    bclibc.TrajectoryData? apexPoint;
     if (traj.length > 1) {
       apexPoint = traj.reduce(
         (a, b) => a.height.in_(Unit.meter) >= b.height.in_(Unit.meter) ? a : b,
