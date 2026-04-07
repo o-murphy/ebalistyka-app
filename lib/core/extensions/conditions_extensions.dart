@@ -40,7 +40,7 @@ extension ConditionsExtension on ShootingConditions {
 
   // ── bclibc conversion ────────────────────────────────────────────────────────
 
-  bclibc.Atmo toAtmo() => bclibc.Atmo(
+  bclibc.Atmo toCurrentAtmo() => bclibc.Atmo(
     altitude: altitude,
     pressure: pressure,
     temperature: temperature,

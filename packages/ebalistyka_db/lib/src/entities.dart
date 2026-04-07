@@ -2,12 +2,6 @@ import 'dart:typed_data';
 
 import 'package:objectbox/objectbox.dart';
 
-enum FocalPlane { ffp, sfp, lwir }
-
-enum DragType { g1, g7, custom }
-
-enum AdjustmentDisplayFormat { arrows, signs, letters }
-
 @Entity()
 class Owner {
   @Id()
@@ -28,6 +22,7 @@ class Owner {
   @Backlink('owner')
   final profiles = ToMany<Profile>();
 
+  final activeProfile = ToOne<Profile>();
 }
 
 @Entity()
@@ -59,17 +54,7 @@ class Sight {
   @Index()
   String name = "";
 
-  @Transient()
-  FocalPlane focalPlane = FocalPlane.ffp;
-
-  String get focalPlaneValue => focalPlane.name;
-
-  set focalPlaneValue(String value) {
-    focalPlane = FocalPlane.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => FocalPlane.ffp,
-    );
-  }
+  String focalPlaneValue = "ffp";
 
   double sightHeightInch = 0.0;
   double sightHorizontalOffsetInch = 0.0;
@@ -104,17 +89,7 @@ class Ammo {
   double weightGrain = 0.0;
   double lengthInch = 0.0;
 
-  @Transient()
-  DragType dragType = DragType.g1;
-
-  String get dragTypeValue => dragType.name;
-
-  set dragTypeValue(String value) {
-    dragType = DragType.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => DragType.g1,
-    );
-  }
+  String dragTypeValue = "g1";
 
   double bcG1 = 1.0;
   double bcG7 = 1.0;
@@ -124,6 +99,9 @@ class Ammo {
   double muzzleVelocityTemperatureC = 15.0;
   double powderTemperatureC = 15.0;
   double powderSensitivityFrac = 0.0;
+
+  bool usePowderSensitivity = false;
+  bool usePowderTempForMv = false;
 
   Float64List? powderSensitivityTC;
   Float64List? powderSensitivityVMps;
@@ -136,13 +114,15 @@ class Ammo {
 
   double zeroDistanceMeter = 100.0;
   double zeroLookAngleRad = 0.0;
+  double zeroAltitudeMeter = 0.0;
   double zeroTemperatureC = 15.0;
   double zeroPressurehPa = 1013;
   double zeroHumidityFrac = 0.0;
   double zeroPowderTemperatureC = 15.0;
-  bool usePowderSensitivity = false;
+
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
+
   double zerolatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;
 
@@ -184,18 +164,7 @@ class GeneralSettings {
   String languageCode = "en";
   String themeMode = "system";
 
-  @Transient()
-  AdjustmentDisplayFormat adjustmentDisplayFormat =
-      AdjustmentDisplayFormat.arrows;
-
-  String get adjustmentDisplayFormatValue => adjustmentDisplayFormat.name;
-
-  set adjustmentDisplayFormatValue(String value) {
-    adjustmentDisplayFormat = AdjustmentDisplayFormat.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => AdjustmentDisplayFormat.arrows,
-    );
-  }
+  String adjustmentDisplayFormatValue = "arrows";
 
   bool homeShowMil = false;
   bool homeShowMrad = false;
@@ -205,8 +174,6 @@ class GeneralSettings {
   double homeChartDistanceStep = 10;
   double homeTableDistanceStep = 10;
   bool homeShowSubsonicTransition = false;
-
-  final activeProfile = ToOne<Profile>();
 
   final owner = ToOne<Owner>();
 }
@@ -286,20 +253,20 @@ class ConvertorsState {
   int id = 0;
 
   double lengthValueInch = 100.0;
-  String lengthUnit = "inch";
+  String lengthLastUnit = "inch";
   double weightValueGrain = 100.0;
-  String weightUnit = "grain";
+  String weightLastUnit = "grain";
   double pressureValueMmHg = 1013.0;
-  String pressureUnit = "hPa";
+  String pressureLastUnit = "hPa";
   double temperatureValueF = 68.0;
-  String temperatureUnit = "celsius";
+  String temperatureLastUnit = "celsius";
   double torqueValueNewtonMeter = 100.0;
-  String torqueUnit = "newtonMeter";
-  double anglesConvertorDistanceValueMeter = 100.0;
-  String anglesConvertorDistanceUnit = "meter";
-  double anglesConvertorAngularValueMil = 1.0;
-  String anglesConvertorAngularUnit = "mil";
-  String anglesConvertorOutputUnit = "centimeter";
+  String torqueLastUnit = "newtonMeter";
+  double anglesConvDistanceValueMeter = 100.0;
+  String anglesConvDistanceLastUnit = "meter";
+  double anglesConvAngularValueMil = 1.0;
+  String anglesConvAngularLastUnit = "mil";
+  String anglesConvOutputLastUnit = "centimeter";
 
   final owner = ToOne<Owner>();
 }

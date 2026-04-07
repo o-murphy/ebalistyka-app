@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:481047032094263803",
-      "lastPropertyId": "59:3182962183369396844",
+      "lastPropertyId": "61:6275749238367959778",
       "name": "Ammo",
       "properties": [
         {
@@ -208,13 +208,23 @@
           "id": "59:3182962183369396844",
           "name": "zeroOffsetYRad",
           "type": 8
+        },
+        {
+          "id": "60:7509424573994252574",
+          "name": "zeroAltitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "61:6275749238367959778",
+          "name": "usePowderTempForMv",
+          "type": 1
         }
       ],
       "relations": []
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "25:8552267728328334166",
+      "lastPropertyId": "35:570052440190756322",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -227,11 +237,6 @@
           "id": "2:6771566658215870639",
           "name": "lengthValueInch",
           "type": 8
-        },
-        {
-          "id": "3:4025591754516451395",
-          "name": "lengthUnit",
-          "type": 9
         },
         {
           "id": "4:1951570794484611444",
@@ -249,16 +254,6 @@
           "type": 8
         },
         {
-          "id": "12:351391817273593368",
-          "name": "anglesConvertorDistanceValueMeter",
-          "type": 8
-        },
-        {
-          "id": "14:3384127170950481517",
-          "name": "anglesConvertorAngularValueMil",
-          "type": 8
-        },
-        {
           "id": "17:8290030605337265686",
           "name": "ownerId",
           "indexId": "3:5622245447060915548",
@@ -267,43 +262,58 @@
           "relationTarget": "Owner"
         },
         {
-          "id": "18:8557219818830111210",
-          "name": "weightUnit",
-          "type": 9
-        },
-        {
-          "id": "19:1104253833503703564",
-          "name": "pressureUnit",
-          "type": 9
-        },
-        {
           "id": "20:460269895754369290",
           "name": "temperatureValueF",
           "type": 8
         },
         {
-          "id": "21:8353998891114488076",
-          "name": "temperatureUnit",
+          "id": "26:6553047008658544469",
+          "name": "lengthLastUnit",
           "type": 9
         },
         {
-          "id": "22:8371375436333097253",
-          "name": "torqueUnit",
+          "id": "27:7901532312767610182",
+          "name": "weightLastUnit",
           "type": 9
         },
         {
-          "id": "23:8038748045572178862",
-          "name": "anglesConvertorDistanceUnit",
+          "id": "28:7991094300202383164",
+          "name": "pressureLastUnit",
           "type": 9
         },
         {
-          "id": "24:8458352093651103584",
-          "name": "anglesConvertorAngularUnit",
+          "id": "29:5277185551697300866",
+          "name": "temperatureLastUnit",
           "type": 9
         },
         {
-          "id": "25:8552267728328334166",
-          "name": "anglesConvertorOutputUnit",
+          "id": "30:2434942852411901027",
+          "name": "torqueLastUnit",
+          "type": 9
+        },
+        {
+          "id": "31:1090629463503093675",
+          "name": "anglesConvDistanceValueMeter",
+          "type": 8
+        },
+        {
+          "id": "32:5800336955404355723",
+          "name": "anglesConvDistanceLastUnit",
+          "type": 9
+        },
+        {
+          "id": "33:7255061694118188101",
+          "name": "anglesConvAngularValueMil",
+          "type": 8
+        },
+        {
+          "id": "34:8607337428956066576",
+          "name": "anglesConvAngularLastUnit",
+          "type": 9
+        },
+        {
+          "id": "35:570052440190756322",
+          "name": "anglesConvOutputLastUnit",
           "type": 9
         }
       ],
@@ -376,14 +386,6 @@
           "type": 1
         },
         {
-          "id": "13:3711858234252380760",
-          "name": "activeProfileId",
-          "indexId": "4:8499428017894885351",
-          "type": 11,
-          "flags": 520,
-          "relationTarget": "Profile"
-        },
-        {
           "id": "14:9052054885912932392",
           "name": "ownerId",
           "indexId": "5:5387131100306356366",
@@ -396,7 +398,7 @@
     },
     {
       "id": "4:4146065780846629425",
-      "lastPropertyId": "3:4471585411904370915",
+      "lastPropertyId": "4:863764995835669819",
       "name": "Owner",
       "properties": [
         {
@@ -411,6 +413,14 @@
           "indexId": "6:4697863759429240582",
           "type": 9,
           "flags": 2048
+        },
+        {
+          "id": "4:863764995835669819",
+          "name": "activeProfileId",
+          "indexId": "22:5656087516355577029",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Profile"
         }
       ],
       "relations": []
@@ -899,7 +909,7 @@
     }
   ],
   "lastEntityId": "11:7626615768518305721",
-  "lastIndexId": "21:579530206861337038",
+  "lastIndexId": "22:5656087516355577029",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
@@ -909,7 +919,8 @@
   ],
   "retiredIndexUids": [
     7660367679200674607,
-    5886553554304794145
+    5886553554304794145,
+    8499428017894885351
   ],
   "retiredPropertyUids": [
     56589591724136369,
@@ -967,7 +978,18 @@
     916432832977451751,
     706360045788517632,
     7194175570403883704,
-    4471585411904370915
+    4471585411904370915,
+    4025591754516451395,
+    351391817273593368,
+    3384127170950481517,
+    8557219818830111210,
+    1104253833503703564,
+    8353998891114488076,
+    8371375436333097253,
+    8038748045572178862,
+    8458352093651103584,
+    8552267728328334166,
+    3711858234252380760
   ],
   "retiredRelationUids": [],
   "version": 1

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:ebalistyka_db/objectbox.g.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -54,10 +53,10 @@ void main() {
   });
 
   group('Sight', () {
-    test('stores focalPlane via transient enum', () {
+    test('stores focalPlane as string', () {
       final sight = Sight()
         ..name = 'Vortex Razor'
-        ..focalPlane = FocalPlane.ffp
+        ..focalPlaneValue = 'ffp'
         ..sightHeightInch = 1.5
         ..verticalClick = 0.1
         ..horizontalClick = 0.1;
@@ -66,18 +65,18 @@ void main() {
       final found = store.box<Sight>().get(id)!;
 
       expect(found.name, 'Vortex Razor');
-      expect(found.focalPlane, FocalPlane.ffp);
+      expect(found.focalPlaneValue, 'ffp');
       expect(found.sightHeightInch, closeTo(1.5, 1e-6));
     });
   });
 
   group('Ammo', () {
-    test('stores drag type via transient enum', () {
+    test('stores drag type as string', () {
       final ammo = Ammo()
         ..name = '.308 Win 175gr'
         ..weightGrain = 175.0
         ..caliberInch = 0.308
-        ..dragType = DragType.g7
+        ..dragTypeValue = 'g7'
         ..bcG7 = 0.475
         ..muzzleVelocityMps = 800.0
         ..powderTemperatureC = 15.0;
@@ -86,7 +85,7 @@ void main() {
       final found = store.box<Ammo>().get(id)!;
 
       expect(found.name, '.308 Win 175gr');
-      expect(found.dragType, DragType.g7);
+      expect(found.dragTypeValue, 'g7');
       expect(found.bcG7, closeTo(0.475, 1e-6));
       expect(found.muzzleVelocityMps, closeTo(800.0, 1e-6));
     });
@@ -157,27 +156,31 @@ void main() {
   });
 
   group('GeneralSettings', () {
-    test('stores active profile relation', () {
-      final owner = Owner()..token = 'local';
-      store.box<Owner>().put(owner);
-
-      final profile = Profile()
-        ..name = 'Active'
-        ..owner.target = owner;
+    test('stores settings and owner tracks active profile', () {
+      final profile = Profile()..name = 'Active';
       store.box<Profile>().put(profile);
+
+      final owner = Owner()
+        ..token = 'local'
+        ..activeProfile.target = profile;
+      store.box<Owner>().put(owner);
 
       final settings = GeneralSettings()
         ..languageCode = 'uk'
         ..themeMode = 'dark'
-        ..activeProfile.target = profile
         ..owner.target = owner;
+      store.box<GeneralSettings>().put(settings);
 
-      final id = store.box<GeneralSettings>().put(settings);
-      final found = store.box<GeneralSettings>().get(id)!;
+      final foundOwner = store.box<Owner>().get(owner.id)!;
+      expect(foundOwner.activeProfile.target?.name, 'Active');
 
-      expect(found.languageCode, 'uk');
-      expect(found.themeMode, 'dark');
-      expect(found.activeProfile.target?.name, 'Active');
+      final foundSettings = store
+          .box<GeneralSettings>()
+          .query(GeneralSettings_.owner.equals(owner.id))
+          .build()
+          .findFirst()!;
+      expect(foundSettings.languageCode, 'uk');
+      expect(foundSettings.themeMode, 'dark');
     });
   });
 
@@ -214,14 +217,14 @@ void main() {
     test('stores convertor fields', () {
       final state = ConvertorsState()
         ..lengthValueInch = 50.0
-        ..lengthUnit = 'centimeter'
+        ..lengthLastUnit = 'centimeter'
         ..weightValueGrain = 200.0;
 
       final id = store.box<ConvertorsState>().put(state);
       final found = store.box<ConvertorsState>().get(id)!;
 
       expect(found.lengthValueInch, closeTo(50.0, 1e-6));
-      expect(found.lengthUnit, 'centimeter');
+      expect(found.lengthLastUnit, 'centimeter');
       expect(found.weightValueGrain, closeTo(200.0, 1e-6));
     });
   });

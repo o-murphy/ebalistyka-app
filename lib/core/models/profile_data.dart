@@ -41,8 +41,7 @@ class ProfileData {
       cartridge!.mv.in_(Unit.mps) > 0 &&
       cartridge!.coefRows.isNotEmpty &&
       cartridge!.diameter.in_(Unit.inch) > 0 &&
-      cartridge!.weight.in_(Unit.grain) > 0 &&
-      rifle.twist.in_(Unit.inch) != 0;
+      cartridge!.weight.in_(Unit.grain) > 0;
 
   // ── toShot ────────────────────────────────────────────────────────────────
 

@@ -152,12 +152,13 @@ store.runInTransaction(TxMode.write, () {
 
 ### `conditions_extensions.dart` — `extension ConditionsData on ShootingConditions`
 - `bclibc.Atmo get atmo`
-- `List<Wind> get winds` (з parallel Float64Lists)
+- `Wind get wind`
 
 ### `settings_extensions.dart`
 - `extension AppSettings on GeneralSettings`: `ThemeMode get flutterThemeMode`, `AdjustmentFormat get adjustmentFormat`
 - `extension AppUnitSettings on UnitSettings`: `UnitPrefs get unitPrefs`
 
+### `convertors_extensions.dart` — `extension ConvertorsData on ConvertorsState`
 ---
 
 ## ShotProfileNotifier — Спрощення
@@ -203,18 +204,25 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 - Додати `ShootingConditions` entity та `sortOrder` до `Profile`
 - `dart run build_runner build --delete-conflicting-outputs`
 
-### Step 3 — `storeProvider` + `ownerProvider`
+### |Done| Step 3 — `storeProvider` + `ownerProvider`
 - `lib/core/providers/store_provider.dart`
 - `ownerProvider`: шукає `Owner` з `token="local"`, створює якщо немає
 - Seed: якщо Owner не має profiles → seed в одній транзакції
 
-### Step 4 — Create extension files
-- `lib/core/extensions/weapon_extensions.dart`
-- `lib/core/extensions/ammo_extensions.dart`
-- `lib/core/extensions/sight_extensions.dart`
-- `lib/core/extensions/profile_extensions.dart`
-- `lib/core/extensions/conditions_extensions.dart`
-- `lib/core/extensions/settings_extensions.dart`
+### |WIP| Step 4 — Create extension files
+- |Done| `lib/core/extensions/weapon_extensions.dart`
+- |Done| `lib/core/extensions/ammo_extensions.dart`
+- |Done| `lib/core/extensions/sight_extensions.dart`
+- |Done| `lib/core/extensions/conditions_extensions.dart`
+- |Done| `lib/core/extensions/settings_extensions.dart`
+- |Done| `lib/core/extensions/convertors_extensions.dart`
+- |Done| `lib/core/extensions/profile_extensions.dart`
+- |?| Do we need to add https://pub.dev/packages/json_serializable, https://pub.dev/packages/json_annotation to entities.dart?
+
+### Step - before 5, 6, 7 - Think
+- Do we need separate Providers/Notifiers for different settings sections? Я думаю треба центральний провайде і прості селектори, враховуючи що кілька секцій може бути використано одним віджетом - треба один сорс оф тру
+- ConvertorsNotifier - може бути окремим, не зав'язаний нікуди окрім convertors_screen.
+- Провайдер для User/Profile/Rifle/Ammo/Sight - має бути один сорс оф тру, окрім треба написати логіку: коли коли Rifle/Ammo/Sight relative to Profile - отримує внутрішню зміну, Profile або профайл нотіфєр має про це дізнатись. Коли ж profile є активним - то юзермає дізнатись про всі зміни в профайлі або у relative сутностях профіля. Можливо схема зі єдиним агрегатором для StreamProvider та селекторами, або якесь інше рішення.
 
 ### Step 5 — Rewrite `AppStateNotifier`
 - `build()`: читає всі Box<T> з ObjectBox
@@ -223,7 +231,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 - `saveConditions()` → `ShootingConditions` в ObjectBox
 
 ### Step 6 — Simplify `ShotProfileNotifier`
-- Прибрати `_resolve()`, backward-compat migration
+- Прибрати `_resolve()`, backward-compat migration (backward compat - взагалі не потрібен)
 - Делегувати writes до `AppStateNotifier`
 
 ### Step 7 — Update `SettingsNotifier` / `ConvertorsNotifier`

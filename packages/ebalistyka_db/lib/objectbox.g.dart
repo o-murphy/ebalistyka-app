@@ -21,7 +21,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(1, 481047032094263803),
     name: 'Ammo',
-    lastPropertyId: const obx_int.IdUid(59, 3182962183369396844),
+    lastPropertyId: const obx_int.IdUid(61, 6275749238367959778),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -262,6 +262,18 @@ final _entities = <obx_int.ModelEntity>[
         type: 8,
         flags: 0,
       ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(60, 7509424573994252574),
+        name: 'zeroAltitudeMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(61, 6275749238367959778),
+        name: 'usePowderTempForMv',
+        type: 1,
+        flags: 0,
+      ),
     ],
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[
@@ -275,7 +287,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 3319446897955563326),
     name: 'ConvertorsState',
-    lastPropertyId: const obx_int.IdUid(25, 8552267728328334166),
+    lastPropertyId: const obx_int.IdUid(35, 570052440190756322),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -288,12 +300,6 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(2, 6771566658215870639),
         name: 'lengthValueInch',
         type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(3, 4025591754516451395),
-        name: 'lengthUnit',
-        type: 9,
         flags: 0,
       ),
       obx_int.ModelProperty(
@@ -315,18 +321,6 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(12, 351391817273593368),
-        name: 'anglesConvertorDistanceValueMeter',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(14, 3384127170950481517),
-        name: 'anglesConvertorAngularValueMil',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(17, 8290030605337265686),
         name: 'ownerId',
         type: 11,
@@ -336,50 +330,68 @@ final _entities = <obx_int.ModelEntity>[
         relationTarget: 'Owner',
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(18, 8557219818830111210),
-        name: 'weightUnit',
-        type: 9,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(19, 1104253833503703564),
-        name: 'pressureUnit',
-        type: 9,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(20, 460269895754369290),
         name: 'temperatureValueF',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(21, 8353998891114488076),
-        name: 'temperatureUnit',
+        id: const obx_int.IdUid(26, 6553047008658544469),
+        name: 'lengthLastUnit',
         type: 9,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(22, 8371375436333097253),
-        name: 'torqueUnit',
+        id: const obx_int.IdUid(27, 7901532312767610182),
+        name: 'weightLastUnit',
         type: 9,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(23, 8038748045572178862),
-        name: 'anglesConvertorDistanceUnit',
+        id: const obx_int.IdUid(28, 7991094300202383164),
+        name: 'pressureLastUnit',
         type: 9,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(24, 8458352093651103584),
-        name: 'anglesConvertorAngularUnit',
+        id: const obx_int.IdUid(29, 5277185551697300866),
+        name: 'temperatureLastUnit',
         type: 9,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(25, 8552267728328334166),
-        name: 'anglesConvertorOutputUnit',
+        id: const obx_int.IdUid(30, 2434942852411901027),
+        name: 'torqueLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(31, 1090629463503093675),
+        name: 'anglesConvDistanceValueMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(32, 5800336955404355723),
+        name: 'anglesConvDistanceLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(33, 7255061694118188101),
+        name: 'anglesConvAngularValueMil',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(34, 8607337428956066576),
+        name: 'anglesConvAngularLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(35, 570052440190756322),
+        name: 'anglesConvOutputLastUnit',
         type: 9,
         flags: 0,
       ),
@@ -466,15 +478,6 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(13, 3711858234252380760),
-        name: 'activeProfileId',
-        type: 11,
-        flags: 520,
-        indexId: const obx_int.IdUid(4, 8499428017894885351),
-        relationField: 'activeProfile',
-        relationTarget: 'Profile',
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(14, 9052054885912932392),
         name: 'ownerId',
         type: 11,
@@ -490,7 +493,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(4, 4146065780846629425),
     name: 'Owner',
-    lastPropertyId: const obx_int.IdUid(3, 4471585411904370915),
+    lastPropertyId: const obx_int.IdUid(4, 863764995835669819),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -505,6 +508,15 @@ final _entities = <obx_int.ModelEntity>[
         type: 9,
         flags: 2048,
         indexId: const obx_int.IdUid(6, 4697863759429240582),
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 863764995835669819),
+        name: 'activeProfileId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(22, 5656087516355577029),
+        relationField: 'activeProfile',
+        relationTarget: 'Profile',
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -1146,11 +1158,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
     lastEntityId: const obx_int.IdUid(11, 7626615768518305721),
-    lastIndexId: const obx_int.IdUid(21, 579530206861337038),
+    lastIndexId: const obx_int.IdUid(22, 5656087516355577029),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [6584000130387526342],
-    retiredIndexUids: const [7660367679200674607, 5886553554304794145],
+    retiredIndexUids: const [
+      7660367679200674607,
+      5886553554304794145,
+      8499428017894885351,
+    ],
     retiredPropertyUids: const [
       56589591724136369,
       7435866408476540470,
@@ -1208,6 +1224,17 @@ obx_int.ModelDefinition getObjectBoxModel() {
       706360045788517632,
       7194175570403883704,
       4471585411904370915,
+      4025591754516451395,
+      351391817273593368,
+      3384127170950481517,
+      8557219818830111210,
+      1104253833503703564,
+      8353998891114488076,
+      8371375436333097253,
+      8038748045572178862,
+      8458352093651103584,
+      8552267728328334166,
+      3711858234252380760,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1266,7 +1293,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final cusomDragTableMachOffset = object.cusomDragTableMach == null
             ? null
             : fbb.writeListFloat64(object.cusomDragTableMach!);
-        fbb.startTable(60);
+        fbb.startTable(62);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(5, dragTypeValueOffset);
@@ -1306,6 +1333,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(56, object.zeroPowderTemperatureC);
         fbb.addFloat64(57, object.zeroOffsetXRad);
         fbb.addFloat64(58, object.zeroOffsetYRad);
+        fbb.addFloat64(59, object.zeroAltitudeMeter);
+        fbb.addBool(60, object.usePowderTempForMv);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1478,6 +1507,18 @@ obx_int.ModelDefinition getObjectBoxModel() {
             rootOffset,
             120,
             0,
+          )
+          ..zeroAltitudeMeter = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            122,
+            0,
+          )
+          ..usePowderTempForMv = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            124,
+            false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1507,38 +1548,40 @@ obx_int.ModelDefinition getObjectBoxModel() {
         object.id = id;
       },
       objectToFB: (ConvertorsState object, fb.Builder fbb) {
-        final lengthUnitOffset = fbb.writeString(object.lengthUnit);
-        final weightUnitOffset = fbb.writeString(object.weightUnit);
-        final pressureUnitOffset = fbb.writeString(object.pressureUnit);
-        final temperatureUnitOffset = fbb.writeString(object.temperatureUnit);
-        final torqueUnitOffset = fbb.writeString(object.torqueUnit);
-        final anglesConvertorDistanceUnitOffset = fbb.writeString(
-          object.anglesConvertorDistanceUnit,
+        final lengthLastUnitOffset = fbb.writeString(object.lengthLastUnit);
+        final weightLastUnitOffset = fbb.writeString(object.weightLastUnit);
+        final pressureLastUnitOffset = fbb.writeString(object.pressureLastUnit);
+        final temperatureLastUnitOffset = fbb.writeString(
+          object.temperatureLastUnit,
         );
-        final anglesConvertorAngularUnitOffset = fbb.writeString(
-          object.anglesConvertorAngularUnit,
+        final torqueLastUnitOffset = fbb.writeString(object.torqueLastUnit);
+        final anglesConvDistanceLastUnitOffset = fbb.writeString(
+          object.anglesConvDistanceLastUnit,
         );
-        final anglesConvertorOutputUnitOffset = fbb.writeString(
-          object.anglesConvertorOutputUnit,
+        final anglesConvAngularLastUnitOffset = fbb.writeString(
+          object.anglesConvAngularLastUnit,
         );
-        fbb.startTable(26);
+        final anglesConvOutputLastUnitOffset = fbb.writeString(
+          object.anglesConvOutputLastUnit,
+        );
+        fbb.startTable(36);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.lengthValueInch);
-        fbb.addOffset(2, lengthUnitOffset);
         fbb.addFloat64(3, object.weightValueGrain);
         fbb.addFloat64(5, object.pressureValueMmHg);
         fbb.addFloat64(9, object.torqueValueNewtonMeter);
-        fbb.addFloat64(11, object.anglesConvertorDistanceValueMeter);
-        fbb.addFloat64(13, object.anglesConvertorAngularValueMil);
         fbb.addInt64(16, object.owner.targetId);
-        fbb.addOffset(17, weightUnitOffset);
-        fbb.addOffset(18, pressureUnitOffset);
         fbb.addFloat64(19, object.temperatureValueF);
-        fbb.addOffset(20, temperatureUnitOffset);
-        fbb.addOffset(21, torqueUnitOffset);
-        fbb.addOffset(22, anglesConvertorDistanceUnitOffset);
-        fbb.addOffset(23, anglesConvertorAngularUnitOffset);
-        fbb.addOffset(24, anglesConvertorOutputUnitOffset);
+        fbb.addOffset(25, lengthLastUnitOffset);
+        fbb.addOffset(26, weightLastUnitOffset);
+        fbb.addOffset(27, pressureLastUnitOffset);
+        fbb.addOffset(28, temperatureLastUnitOffset);
+        fbb.addOffset(29, torqueLastUnitOffset);
+        fbb.addFloat64(30, object.anglesConvDistanceValueMeter);
+        fbb.addOffset(31, anglesConvDistanceLastUnitOffset);
+        fbb.addFloat64(32, object.anglesConvAngularValueMil);
+        fbb.addOffset(33, anglesConvAngularLastUnitOffset);
+        fbb.addOffset(34, anglesConvOutputLastUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1554,9 +1597,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             6,
             0,
           )
-          ..lengthUnit = const fb.StringReader(
-            asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 8, '')
           ..weightValueGrain = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
@@ -1575,41 +1615,48 @@ obx_int.ModelDefinition getObjectBoxModel() {
             22,
             0,
           )
-          ..anglesConvertorDistanceValueMeter = const fb.Float64Reader()
-              .vTableGet(buffer, rootOffset, 26, 0)
-          ..anglesConvertorAngularValueMil = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            30,
-            0,
-          )
-          ..weightUnit = const fb.StringReader(
-            asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 38, '')
-          ..pressureUnit = const fb.StringReader(
-            asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 40, '')
           ..temperatureValueF = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             42,
             0,
           )
-          ..temperatureUnit = const fb.StringReader(
+          ..lengthLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 44, '')
-          ..torqueUnit = const fb.StringReader(
+          ).vTableGet(buffer, rootOffset, 54, '')
+          ..weightLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 46, '')
-          ..anglesConvertorDistanceUnit = const fb.StringReader(
+          ).vTableGet(buffer, rootOffset, 56, '')
+          ..pressureLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 48, '')
-          ..anglesConvertorAngularUnit = const fb.StringReader(
+          ).vTableGet(buffer, rootOffset, 58, '')
+          ..temperatureLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 50, '')
-          ..anglesConvertorOutputUnit = const fb.StringReader(
+          ).vTableGet(buffer, rootOffset, 60, '')
+          ..torqueLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 52, '');
+          ).vTableGet(buffer, rootOffset, 62, '')
+          ..anglesConvDistanceValueMeter = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            64,
+            0,
+          )
+          ..anglesConvDistanceLastUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 66, '')
+          ..anglesConvAngularValueMil = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            68,
+            0,
+          )
+          ..anglesConvAngularLastUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 70, '')
+          ..anglesConvOutputLastUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 72, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -1622,10 +1669,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
     ),
     GeneralSettings: obx_int.EntityDefinition<GeneralSettings>(
       model: _entities[2],
-      toOneRelations: (GeneralSettings object) => [
-        object.activeProfile,
-        object.owner,
-      ],
+      toOneRelations: (GeneralSettings object) => [object.owner],
       toManyRelations: (GeneralSettings object) => {},
       getId: (GeneralSettings object) => object.id,
       setId: (GeneralSettings object, int id) {
@@ -1650,7 +1694,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(9, object.homeChartDistanceStep);
         fbb.addFloat64(10, object.homeTableDistanceStep);
         fbb.addBool(11, object.homeShowSubsonicTransition);
-        fbb.addInt64(12, object.activeProfile.targetId);
         fbb.addInt64(13, object.owner.targetId);
         fbb.finish(fbb.endTable());
         return object.id;
@@ -1718,13 +1761,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             26,
             false,
           );
-        object.activeProfile.targetId = const fb.Int64Reader().vTableGet(
-          buffer,
-          rootOffset,
-          28,
-          0,
-        );
-        object.activeProfile.attach(store);
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -1737,7 +1773,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
     ),
     Owner: obx_int.EntityDefinition<Owner>(
       model: _entities[3],
-      toOneRelations: (Owner object) => [],
+      toOneRelations: (Owner object) => [object.activeProfile],
       toManyRelations: (Owner object) => {
         obx_int.RelInfo<Weapon>.toOneBacklink(
           8,
@@ -1768,9 +1804,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final tokenOffset = object.token == null
             ? null
             : fbb.writeString(object.token!);
-        fbb.startTable(4);
+        fbb.startTable(5);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, tokenOffset);
+        fbb.addInt64(3, object.activeProfile.targetId);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1783,6 +1820,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ..token = const fb.StringReader(
             asciiOptimization: true,
           ).vTableGetNullable(buffer, rootOffset, 6);
+        object.activeProfile.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          10,
+          0,
+        );
+        object.activeProfile.attach(store);
         obx_int.InternalToManyAccess.setRelInfo<Owner>(
           object.weapons,
           store,
@@ -2654,6 +2698,16 @@ class Ammo_ {
     _entities[0].properties[38],
   );
 
+  /// See [Ammo.zeroAltitudeMeter].
+  static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
+    _entities[0].properties[39],
+  );
+
+  /// See [Ammo.usePowderTempForMv].
+  static final usePowderTempForMv = obx.QueryBooleanProperty<Ammo>(
+    _entities[0].properties[40],
+  );
+
   /// see [Ammo.profiles]
   static final profiles = obx.QueryBacklinkToMany<Profile, Ammo>(Profile_.ammo);
 }
@@ -2670,73 +2724,73 @@ class ConvertorsState_ {
     _entities[1].properties[1],
   );
 
-  /// See [ConvertorsState.lengthUnit].
-  static final lengthUnit = obx.QueryStringProperty<ConvertorsState>(
-    _entities[1].properties[2],
-  );
-
   /// See [ConvertorsState.weightValueGrain].
   static final weightValueGrain = obx.QueryDoubleProperty<ConvertorsState>(
-    _entities[1].properties[3],
+    _entities[1].properties[2],
   );
 
   /// See [ConvertorsState.pressureValueMmHg].
   static final pressureValueMmHg = obx.QueryDoubleProperty<ConvertorsState>(
-    _entities[1].properties[4],
+    _entities[1].properties[3],
   );
 
   /// See [ConvertorsState.torqueValueNewtonMeter].
   static final torqueValueNewtonMeter =
-      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[5]);
-
-  /// See [ConvertorsState.anglesConvertorDistanceValueMeter].
-  static final anglesConvertorDistanceValueMeter =
-      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[6]);
-
-  /// See [ConvertorsState.anglesConvertorAngularValueMil].
-  static final anglesConvertorAngularValueMil =
-      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[7]);
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[4]);
 
   /// See [ConvertorsState.owner].
   static final owner = obx.QueryRelationToOne<ConvertorsState, Owner>(
-    _entities[1].properties[8],
-  );
-
-  /// See [ConvertorsState.weightUnit].
-  static final weightUnit = obx.QueryStringProperty<ConvertorsState>(
-    _entities[1].properties[9],
-  );
-
-  /// See [ConvertorsState.pressureUnit].
-  static final pressureUnit = obx.QueryStringProperty<ConvertorsState>(
-    _entities[1].properties[10],
+    _entities[1].properties[5],
   );
 
   /// See [ConvertorsState.temperatureValueF].
   static final temperatureValueF = obx.QueryDoubleProperty<ConvertorsState>(
+    _entities[1].properties[6],
+  );
+
+  /// See [ConvertorsState.lengthLastUnit].
+  static final lengthLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[7],
+  );
+
+  /// See [ConvertorsState.weightLastUnit].
+  static final weightLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[8],
+  );
+
+  /// See [ConvertorsState.pressureLastUnit].
+  static final pressureLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[9],
+  );
+
+  /// See [ConvertorsState.temperatureLastUnit].
+  static final temperatureLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[10],
+  );
+
+  /// See [ConvertorsState.torqueLastUnit].
+  static final torqueLastUnit = obx.QueryStringProperty<ConvertorsState>(
     _entities[1].properties[11],
   );
 
-  /// See [ConvertorsState.temperatureUnit].
-  static final temperatureUnit = obx.QueryStringProperty<ConvertorsState>(
-    _entities[1].properties[12],
-  );
+  /// See [ConvertorsState.anglesConvDistanceValueMeter].
+  static final anglesConvDistanceValueMeter =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[12]);
 
-  /// See [ConvertorsState.torqueUnit].
-  static final torqueUnit = obx.QueryStringProperty<ConvertorsState>(
-    _entities[1].properties[13],
-  );
+  /// See [ConvertorsState.anglesConvDistanceLastUnit].
+  static final anglesConvDistanceLastUnit =
+      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[13]);
 
-  /// See [ConvertorsState.anglesConvertorDistanceUnit].
-  static final anglesConvertorDistanceUnit =
-      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[14]);
+  /// See [ConvertorsState.anglesConvAngularValueMil].
+  static final anglesConvAngularValueMil =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[14]);
 
-  /// See [ConvertorsState.anglesConvertorAngularUnit].
-  static final anglesConvertorAngularUnit =
+  /// See [ConvertorsState.anglesConvAngularLastUnit].
+  static final anglesConvAngularLastUnit =
       obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[15]);
 
-  /// See [ConvertorsState.anglesConvertorOutputUnit].
-  static final anglesConvertorOutputUnit =
+  /// See [ConvertorsState.anglesConvOutputLastUnit].
+  static final anglesConvOutputLastUnit =
       obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[16]);
 }
 
@@ -2800,14 +2854,9 @@ class GeneralSettings_ {
   static final homeShowSubsonicTransition =
       obx.QueryBooleanProperty<GeneralSettings>(_entities[2].properties[11]);
 
-  /// See [GeneralSettings.activeProfile].
-  static final activeProfile = obx.QueryRelationToOne<GeneralSettings, Profile>(
-    _entities[2].properties[12],
-  );
-
   /// See [GeneralSettings.owner].
   static final owner = obx.QueryRelationToOne<GeneralSettings, Owner>(
-    _entities[2].properties[13],
+    _entities[2].properties[12],
   );
 }
 
@@ -2819,6 +2868,11 @@ class Owner_ {
   /// See [Owner.token].
   static final token = obx.QueryStringProperty<Owner>(
     _entities[3].properties[1],
+  );
+
+  /// See [Owner.activeProfile].
+  static final activeProfile = obx.QueryRelationToOne<Owner, Profile>(
+    _entities[3].properties[2],
   );
 
   /// see [Owner.weapons]
