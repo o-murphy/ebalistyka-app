@@ -209,7 +209,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 - `ownerProvider`: шукає `Owner` з `token="local"`, створює якщо немає
 - Seed: якщо Owner не має profiles → seed в одній транзакції
 
-### |WIP| Step 4 — Create extension files
+### |Done| Step 4 — Create extension files
 - |Done| `lib/core/extensions/weapon_extensions.dart`
 - |Done| `lib/core/extensions/ammo_extensions.dart`
 - |Done| `lib/core/extensions/sight_extensions.dart`
@@ -237,7 +237,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 ### |Done| Step 7 — Update `SettingsNotifier` / `ConvertorsNotifier`
 - Читають з `appStateProvider`, пишуть через `appStateProvider.notifier`
 
-### |WIP| Step 8 — Delete old code
+### |Done| Step 8 — Delete old code
 Files to delete:
 - `lib/core/storage/json_file_storage.dart`
 - `lib/core/storage/app_storage.dart`
@@ -250,7 +250,7 @@ Files to delete:
 - |DONE| `lib/core/models/convertors_state.dart`
 - `lib/core/models/conditions_data.dart`
 
-### |WIP| Step 8.1 — Update old code
+### |Done| Step 8.1 — Update old code
 - `lib/core/collection/collection_parser.dart`
 - `lib/core/providers/builtin_collection_provider.dart`
 - `lib/core/a7p/a7p_parser.dart`
