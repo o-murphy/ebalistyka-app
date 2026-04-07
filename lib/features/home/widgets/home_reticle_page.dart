@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:ebalistyka/core/models/app_settings.dart' show AdjustmentFormat;
+import 'package:ebalistyka/core/extensions/settings_extensions.dart' show AdjustmentDisplayFormat;
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 
@@ -155,15 +155,15 @@ class _AdjPanel extends StatelessWidget {
   const _AdjPanel({required this.adjustment, required this.fmt});
 
   final AdjustmentData adjustment;
-  final AdjustmentFormat fmt;
+  final AdjustmentDisplayFormat fmt;
 
   String _elevDir() {
     if (adjustment.elevation.isEmpty) return '';
     final pos = adjustment.elevation.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows => pos ? '↑' : '↓',
-      AdjustmentFormat.signs => pos ? '+' : '−',
-      AdjustmentFormat.letters => pos ? 'U' : 'D',
+      AdjustmentDisplayFormat.arrows => pos ? '↑' : '↓',
+      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
+      AdjustmentDisplayFormat.letters => pos ? 'U' : 'D',
     };
   }
 
@@ -171,9 +171,9 @@ class _AdjPanel extends StatelessWidget {
     if (adjustment.windage.isEmpty) return '';
     final pos = adjustment.windage.first.isPositive;
     return switch (fmt) {
-      AdjustmentFormat.arrows => pos ? '→' : '←',
-      AdjustmentFormat.signs => pos ? '+' : '−',
-      AdjustmentFormat.letters => pos ? 'R' : 'L',
+      AdjustmentDisplayFormat.arrows => pos ? '→' : '←',
+      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
+      AdjustmentDisplayFormat.letters => pos ? 'R' : 'L',
     };
   }
 

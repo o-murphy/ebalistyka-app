@@ -4,23 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+    final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
 
     final notifier = ref.read(settingsProvider.notifier);
     final tt = Theme.of(context).textTheme;
 
-    final distanceUnit = ref.watch(unitSettingsProvider).distance;
+    final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
 
     return BaseScreen(
       title: 'Settings',
@@ -39,14 +40,13 @@ class SettingsScreen extends ConsumerWidget {
               notifier.setLanguage,
             ),
           ),
-          // const Divider(height: 1),
 
           // ── Appearance ─────────────────────────────────────────────────
           ListSectionTile('Appearance'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: _ThemeSelector(
-              current: settings.themeMode,
+              current: settings.flutterThemeMode,
               onChanged: notifier.setThemeMode,
             ),
           ),
@@ -72,8 +72,8 @@ class SettingsScreen extends ConsumerWidget {
           SwitchListTile(
             secondary: const Icon(Icons.speed_outlined),
             title: const Text('Show subsonic transition'),
-            value: settings.showSubsonicTransition,
-            onChanged: (v) => notifier.setSwitch('subsonicTransition', v),
+            value: settings.homeShowSubsonicTransition,
+            onChanged: (v) => notifier.setAdjustmentToggle('subsonicTransition', v),
             dense: true,
           ),
           const Divider(height: 1),
@@ -84,7 +84,7 @@ class SettingsScreen extends ConsumerWidget {
           UnitValueFieldTile(
             icon: Icons.table_rows_outlined,
             label: 'Table distance step',
-            rawValue: settings.homeTableStep,
+            rawValue: settings.homeTableDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
             onChanged: (v) => notifier.setHomeTableStep(v),
@@ -92,7 +92,7 @@ class SettingsScreen extends ConsumerWidget {
           UnitValueFieldTile(
             icon: Icons.show_chart_outlined,
             label: 'Chart distance step',
-            rawValue: settings.chartDistanceStep,
+            rawValue: settings.homeChartDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
             onChanged: (v) => notifier.setChartDistanceStep(v),

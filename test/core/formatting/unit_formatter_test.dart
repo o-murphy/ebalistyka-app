@@ -1,16 +1,32 @@
 import 'package:test/test.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
-import 'package:ebalistyka/core/models/unit_settings.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';
+
+/// Metric UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
+UnitSettings _metricSettings() => UnitSettings()
+  ..sightHeight = Unit.millimeter.name;
+
+/// Imperial UnitSettings
+UnitSettings _imperialSettings() => UnitSettings()
+  ..velocity = Unit.fps.name
+  ..distance = Unit.yard.name
+  ..temperature = Unit.fahrenheit.name
+  ..pressure = Unit.inHg.name
+  ..drop = Unit.inch.name
+  ..adjustment = Unit.moa.name
+  ..energy = Unit.footPound.name
+  ..weight = Unit.gram.name
+  ..sightHeight = Unit.inch.name
+  ..twist = Unit.inch.name;
 
 void main() {
   group('UnitFormatterImpl — metric defaults', () {
-    // Default UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     // ── Formatted strings ──────────────────────────────────────────────────
@@ -187,20 +203,7 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(
-        const UnitSettings(
-          velocity: Unit.fps,
-          distance: Unit.yard,
-          temperature: Unit.fahrenheit,
-          pressure: Unit.inHg,
-          drop: Unit.inch,
-          adjustment: Unit.moa,
-          energy: Unit.footPound,
-          weight: Unit.gram,
-          sightHeight: Unit.inch,
-          twist: Unit.inch,
-        ),
-      );
+      fmt = UnitFormatterImpl(_imperialSettings());
     });
 
     test('velocity() formats fps', () {
@@ -268,7 +271,7 @@ void main() {
     late UnitFormatterImpl fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     test('velocity: round-trip mps → raw → mps', () {
@@ -331,7 +334,7 @@ void main() {
     test('sightHeight: mm round-trip', () {
       const display = 38.0;
       final raw = fmt.inputToRaw(display, InputField.sightHeight);
-      // raw is in millimeters (same as display unit for default settings)
+      // raw is in millimeters (same as display unit for metric settings)
       expect(raw, closeTo(38.0, 1e-6));
       expect(
         fmt.rawToInput(raw, InputField.sightHeight),
@@ -364,13 +367,12 @@ void main() {
 
     setUp(() {
       fmt = UnitFormatterImpl(
-        const UnitSettings(
-          velocity: Unit.fps,
-          distance: Unit.yard,
-          temperature: Unit.fahrenheit,
-          pressure: Unit.inHg,
-          sightHeight: Unit.inch,
-        ),
+        UnitSettings()
+          ..velocity = Unit.fps.name
+          ..distance = Unit.yard.name
+          ..temperature = Unit.fahrenheit.name
+          ..pressure = Unit.inHg.name
+          ..sightHeight = Unit.inch.name,
       );
     });
 
@@ -428,7 +430,7 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     test('zero values format correctly', () {
@@ -444,8 +446,8 @@ void main() {
       expect(s, contains('cm'));
     });
 
-    test('const constructor works', () {
-      const formatter = UnitFormatterImpl(UnitSettings());
+    test('default constructor works', () {
+      final formatter = UnitFormatterImpl(UnitSettings()..sightHeight = Unit.millimeter.name);
       expect(formatter.velocitySymbol, Unit.mps.symbol);
     });
   });

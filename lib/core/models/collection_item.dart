@@ -1,27 +1,26 @@
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 abstract interface class CollectionItem<T> {
   String get id;
   T get ref;
 }
 
-class CartridgeCollectionItem extends CollectionItem<AmmoData> {
+class CartridgeCollectionItem extends CollectionItem<Ammo> {
   CartridgeCollectionItem({required this.ref});
 
   @override
-  String get id => ref.id;
+  String get id => ref.id.toString();
 
   @override
-  final AmmoData ref;
+  final Ammo ref;
 }
 
-class SightCollectionItem extends CollectionItem<SightData> {
+class SightCollectionItem extends CollectionItem<Sight> {
   SightCollectionItem({required this.ref});
 
   @override
-  String get id => ref.id;
+  String get id => ref.id.toString();
 
   @override
-  final SightData ref;
+  final Sight ref;
 }

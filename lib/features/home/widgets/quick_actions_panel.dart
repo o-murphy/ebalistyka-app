@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,7 @@ class QuickActionsPanel extends ConsumerWidget {
             label: 'Wind speed',
             rawValue: state.windSpeedMps,
             constraints: FC.windVelocity,
-            displayUnit: units.velocity,
+            displayUnit: units.velocityUnit,
             onChanged: notifier.updateWindSpeed,
           ),
         ),
@@ -61,7 +62,7 @@ class QuickActionsPanel extends ConsumerWidget {
             label: 'Target range',
             rawValue: state.targetDistanceM,
             constraints: FC.targetDistance,
-            displayUnit: units.distance,
+            displayUnit: units.distanceUnit,
             onChanged: notifier.updateTargetDistance,
           ),
         ),

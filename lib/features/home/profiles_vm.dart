@@ -1,12 +1,13 @@
-// profiles_vm.dart
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 
 // ── Display model ─────────────────────────────────────────────────────────────
@@ -59,13 +60,11 @@ class ProfilesReady extends ProfilesUiState {
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
-  // Кешуємо дані, щоб не перебудовуватись при змінах appState
   List<ProfileCardData>? _cachedProfiles;
   String? _cachedActiveProfileId;
 
   @override
   Future<ProfilesUiState> build() async {
-    // Завантажуємо дані один раз при створенні
     await _loadData();
     return ProfilesReady(
       profiles: _cachedProfiles ?? [],
@@ -76,68 +75,61 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   Future<void> _loadData() async {
     final appState = await ref.read(appStateProvider.future);
     final formatter = ref.read(unitFormatterProvider);
+    final units = ref.read(unitSettingsProvider);
 
     _cachedProfiles = appState.profiles
-        .map((p) => _buildCardData(p, appState, formatter))
+        .map((p) => _buildCardData(p, formatter, units))
         .toList();
-    _cachedActiveProfileId = appState.activeProfileId;
+    _cachedActiveProfileId = appState.activeProfile?.id.toString();
   }
 
   ProfileCardData _buildCardData(
-    ProfileData profile,
-    AppState appState,
+    Profile profile,
     UnitFormatter fmt,
+    UnitSettings units,
   ) {
-    final cartridge = profile.cartridgeId != null
-        ? appState.cartridges.firstWhere(
-            (c) => c.id == profile.cartridgeId,
-            orElse: () =>
-                throw StateError('Cartridge ${profile.cartridgeId} not found'),
-          )
-        : null;
-
-    final sight = profile.sightId != null
-        ? appState.sights.firstWhere(
-            (s) => s.id == profile.sightId,
-            orElse: () =>
-                throw StateError('Sight ${profile.sightId} not found'),
-          )
-        : null;
+    final ammo = profile.ammo.target;
+    final sight = profile.sight.target;
+    final weapon = profile.weapon.target;
 
     String dragModel = '—';
     String caliber = '—';
     String muzzleVelocity = '—';
     String weight = '—';
 
-    if (cartridge != null) {
+    if (ammo != null) {
       final bcAcc = FC.ballisticCoefficient.accuracy;
-      final firstBc = cartridge.coefRows.isNotEmpty
-          ? cartridge.coefRows.first.bcCd
-          : 0.0;
-      dragModel = switch (cartridge.dragType) {
-        DragModelType.g1 =>
-          cartridge.isMultiBC
+      final firstBc = ammo.isMultiBC
+          ? 0.0
+          : (ammo.dragType == DragType.g7 ? ammo.bcG7 : ammo.bcG1);
+      dragModel = switch (ammo.dragType) {
+        DragType.g1 =>
+          ammo.isMultiBC
               ? 'G1 Multi'
               : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
-        DragModelType.g7 =>
-          cartridge.isMultiBC
+        DragType.g7 =>
+          ammo.isMultiBC
               ? 'G7 Multi'
               : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
-        DragModelType.custom => 'CUSTOM',
+        DragType.custom => 'CUSTOM',
       };
-      caliber = fmt.diameter(cartridge.diameter);
-      muzzleVelocity = fmt.velocity(cartridge.mv);
-      weight = fmt.weight(cartridge.weight);
+      caliber = fmt.diameter(ammo.caliber);
+      muzzleVelocity = fmt.velocity(ammo.mv);
+      weight = fmt.weight(ammo.weight);
     }
 
+    final twistStr = weapon != null && weapon.twistInch.abs() > 0
+        ? fmt.twist(weapon.twist)
+        : '—';
+
     return ProfileCardData(
-      id: profile.id,
+      id: profile.id.toString(),
       name: profile.name,
-      rifleName: profile.rifle.name,
+      rifleName: weapon?.name ?? '—',
       caliber: caliber,
-      twist: fmt.twist(profile.rifle.twist),
-      twistDirection: profile.rifle.isRightHandTwist ? 'right' : 'left',
-      cartridgeName: cartridge?.name ?? 'Not selected',
+      twist: twistStr,
+      twistDirection: 'right',
+      cartridgeName: ammo?.name ?? 'Not selected',
       dragModel: dragModel,
       muzzleVelocity: muzzleVelocity,
       weight: weight,
@@ -146,72 +138,54 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 
   Future<void> selectProfile(String id) async {
-    final appStateNotifier = ref.read(appStateProvider.notifier);
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
 
-    final profile = appState.profiles.firstWhere(
-      (p) => p.id == id,
-      orElse: () => throw StateError('Profile $id not found'),
-    );
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == id)
+        .firstOrNull;
+    if (profile == null) return;
 
-    // Відновлює повний стан профілю
     await ref.read(shotProfileProvider.notifier).selectProfile(profile);
 
-    // Переміщуємо профіль на першу позицію (в бекграунді)
-    await appStateNotifier.moveProfileToFirst(id);
+    // Move to first by setting sortOrder = 0, push others up
+    await ref.read(appStateProvider.notifier).reorderProfile(profile.id, 0);
 
-    // Оновлюємо кеш після зміни порядку
     await _loadData();
-
-    // Оновлюємо стан ViewModel тихо, без перебудови UI (якщо сторінка ще відкрита)
-    final current = state.value;
-    if (current is ProfilesReady) {
-      state = AsyncData(
-        ProfilesReady(
-          profiles: _cachedProfiles ?? [],
-          activeProfileId: _cachedActiveProfileId,
-        ),
-      );
-    }
-  }
-
-  Future<void> updateProfileRifle(String profileId, WeaponData rifle) async {
-    final appStateNotifier = ref.read(appStateProvider.notifier);
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-
-    final idx = appState.profiles.indexWhere((p) => p.id == profileId);
-    if (idx < 0) return;
-
-    final updated = appState.profiles[idx].copyWith(rifle: rifle);
-    await appStateNotifier.saveProfile(updated);
-
-    final activeId = appState.activeProfileId;
-    if (activeId == profileId) {
-      await ref.read(shotProfileProvider.notifier).selectRifle(rifle);
-    }
-
-    // Оновлюємо кеш
-    await _loadData();
-
-    final current = state.value;
-    if (current is ProfilesReady) {
-      state = AsyncData(
-        ProfilesReady(
-          profiles: _cachedProfiles ?? [],
-          activeProfileId: _cachedActiveProfileId,
-        ),
-      );
-    }
+    _notifyReady();
   }
 
   Future<void> removeProfile(String id) async {
-    final appStateNotifier = ref.read(appStateProvider.notifier);
-    await appStateNotifier.deleteProfile(id);
+    final intId = int.tryParse(id);
+    if (intId == null) return;
+
+    await ref.read(appStateProvider.notifier).deleteProfile(intId);
 
     await _loadData();
+    _notifyReady();
+  }
 
+  Future<void> updateProfileWeapon(String profileId, Weapon weapon) async {
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == profileId)
+        .firstOrNull;
+    if (profile == null) return;
+
+    profile.weapon.target = weapon;
+    await ref.read(appStateProvider.notifier).saveProfile(profile);
+
+    if (appState.activeProfile?.id.toString() == profileId) {
+      await ref.read(shotProfileProvider.notifier).selectWeapon(weapon);
+    }
+
+    await _loadData();
+    _notifyReady();
+  }
+
+  void _notifyReady() {
     final current = state.value;
     if (current is ProfilesReady) {
       state = AsyncData(
@@ -221,27 +195,6 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
         ),
       );
     }
-  }
-
-  Future<void> saveProfile(ProfileData profile) async {
-    final appStateNotifier = ref.read(appStateProvider.notifier);
-    await appStateNotifier.saveProfile(profile);
-
-    await _loadData();
-
-    final current = state.value;
-    if (current is ProfilesReady) {
-      state = AsyncData(
-        ProfilesReady(
-          profiles: _cachedProfiles ?? [],
-          activeProfileId: _cachedActiveProfileId,
-        ),
-      );
-    }
-  }
-
-  Future<void> importFromA7pBytes(List<int> bytes, {String? fileName}) async {
-    // A7pParser implementation
   }
 }
 

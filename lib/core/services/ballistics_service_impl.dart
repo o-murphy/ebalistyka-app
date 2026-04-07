@@ -1,47 +1,50 @@
-import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show compute;
-
-import 'package:ebalistyka/core/domain/ballistics_service.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
-// (profile, conditions, stepM, cachedZeroElevationRad?)
-typedef _TableCalcArgs = (ProfileData, Conditions, double, double?);
+// (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevationRad?)
+typedef _TableCalcArgs = (bclibc.Shot, bclibc.Shot, Distance, double, double?);
 // (hitResult, freshZeroElevationRad?)
 typedef _TableCalcResult = (bclibc.HitResult?, double?);
 
 _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
-  final (profile, conditions, stepM, cachedZeroElevRad) = args;
+  final (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevRad) = args;
   try {
     final calc = bclibc.Calculator();
-    final cartridge = profile.cartridge!;
-
-    // Отримуємо дистанцію обнулення з умов картриджа
-    final zeroDistance = cartridge.zeroConditions.distance;
-
-    final weapon = profile.rifle.toWeapon();
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      currentShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      zeroShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      bclibc.Shot zeroShot;
       try {
-        zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       } catch (_) {
-        zeroShot = profile.toZeroShot(Angular.radian(0.0), weapon);
-        calc.setWeaponZero(zeroShot, zeroDistance);
+        final flatShot = bclibc.Shot(
+          weapon: zeroShot.weapon,
+          ammo: zeroShot.ammo,
+          lookAngle: Angular.radian(0.0),
+          atmo: zeroShot.atmo,
+          winds: zeroShot.winds,
+        );
+        calc.setWeaponZero(flatShot, zeroDistance);
+        zeroShot.weapon.zeroElevation = flatShot.weapon.zeroElevation;
       }
-      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
+      freshZeroElevRad = zeroShot.weapon.zeroElevation.in_(Unit.radian);
+      currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
     final result = calc.fire(
-      shot: profile.toCurrentShot(conditions, weapon),
+      shot: currentShot,
       trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
       trajectoryStep: Distance.meter(stepM),
       filterFlags:
@@ -54,50 +57,57 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   }
 }
 
-// (profile, conditions, targetDistM, chartStepM, cachedZeroElevationRad?)
-typedef _HomeCalcArgs = (ProfileData, Conditions, double, double, double?);
-// (hitResult, freshZeroElevationRad?)
+// (zeroShot, currentShot, zeroDistance, targetDistM, chartStepM, cachedZeroElevationRad?)
+typedef _HomeCalcArgs = (
+  bclibc.Shot,
+  bclibc.Shot,
+  Distance,
+  double,
+  double,
+  double?,
+);
 typedef _HomeCalcResult = (bclibc.HitResult?, double?);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
-  final (profile, conditions, targetDistM, stepM, cachedZeroElevRad) = args;
+  final (zeroShot, currentShot, zeroDistance, targetDistM, stepM, cachedZeroElevRad) =
+      args;
   final internalStepM = stepM < 1.0 ? stepM : 1.0;
   try {
     final calc = bclibc.Calculator();
-    final cartridge = profile.cartridge!;
-
-    // Отримуємо дистанцію обнулення з умов картриджа
-    final zeroDistance = cartridge.zeroConditions.distance;
-
-    final weapon = profile.rifle.toWeapon();
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      currentShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      zeroShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      bclibc.Shot zeroShot;
       try {
-        zeroShot = profile.toZeroShot(conditions.lookAngle, weapon);
         calc.setWeaponZero(zeroShot, zeroDistance);
       } catch (_) {
-        zeroShot = profile.toZeroShot(Angular.radian(0.0), weapon);
-        calc.setWeaponZero(zeroShot, zeroDistance);
+        final flatShot = bclibc.Shot(
+          weapon: zeroShot.weapon,
+          ammo: zeroShot.ammo,
+          lookAngle: Angular.radian(0.0),
+          atmo: zeroShot.atmo,
+          winds: zeroShot.winds,
+        );
+        calc.setWeaponZero(flatShot, zeroDistance);
+        zeroShot.weapon.zeroElevation = flatShot.weapon.zeroElevation;
       }
-      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
+      freshZeroElevRad = zeroShot.weapon.zeroElevation.in_(Unit.radian);
+      currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
-    final shot = profile.toCurrentShot(conditions, weapon);
 
     final targetElev = calc.barrelElevationForTarget(
-      shot,
+      currentShot,
       Distance.meter(targetDistM),
     );
     final holdRad =
         targetElev.in_(Unit.radian) -
-        shot.weapon.zeroElevation.in_(Unit.radian);
-    shot.relativeAngle = Angular.radian(holdRad);
+        currentShot.weapon.zeroElevation.in_(Unit.radian);
+    currentShot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
-      shot: shot,
+      shot: currentShot,
       trajectoryRange: Distance.meter(targetDistM),
       trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
@@ -127,16 +137,30 @@ class CalculationException implements Exception {
 // ── Implementation ───────────────────────────────────────────────────────────
 
 class BallisticsServiceImpl implements BallisticsService {
+  /// Builds bclibc.Weapon from OB entities.
+  bclibc.Weapon _buildWeapon(Profile profile) {
+    final weapon = profile.weapon.target!;
+    final sight = profile.sight.target;
+    final sightHeight = sight?.sightHeight ?? Distance.inch(0);
+    return weapon.toWeapon(sightHeight);
+  }
+
   @override
   Future<BallisticsResult> calculateTable(
-    ProfileData profile,
-    Conditions conditions,
+    Profile profile,
+    ShootingConditions conditions,
     TableCalcOptions opts, {
     double? cachedZeroElevRad,
   }) async {
+    final bcWeapon = _buildWeapon(profile);
+    final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+
     final (hit, freshZero) = await compute(_runTableCalculation, (
-      profile,
-      conditions,
+      zeroShot,
+      currentShot,
+      zeroDistance,
       opts.stepM,
       cachedZeroElevRad,
     ));
@@ -149,14 +173,20 @@ class BallisticsServiceImpl implements BallisticsService {
 
   @override
   Future<BallisticsResult> calculateForTarget(
-    ProfileData profile,
-    Conditions conditions,
+    Profile profile,
+    ShootingConditions conditions,
     TargetCalcOptions opts, {
     double? cachedZeroElevRad,
   }) async {
+    final bcWeapon = _buildWeapon(profile);
+    final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+
     final (hit, freshZero) = await compute(_runHomeCalculation, (
-      profile,
-      conditions,
+      zeroShot,
+      currentShot,
+      zeroDistance,
       opts.targetDistM,
       opts.stepM,
       cachedZeroElevRad,

@@ -1,5 +1,5 @@
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/rifle_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -171,7 +171,7 @@ final appRouter = GoRouter(
                     GoRoute(
                       path: 'rifle-edit',
                       builder: (_, state) => RifleWizardScreen(
-                        initial: state.extra as WeaponData?,
+                        initial: state.extra as Weapon?,
                       ),
                     ),
                     GoRoute(

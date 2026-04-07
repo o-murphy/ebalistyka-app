@@ -1,20 +1,22 @@
 import 'dart:math' as math;
 
-import 'package:ebalistyka/core/models/ammo_data.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:riverpod/riverpod.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
@@ -55,7 +57,7 @@ class HomeUiReady extends HomeUiState {
   // Bottom block — Page 1 (Reticle)
   final String cartridgeInfoLine;
   final AdjustmentData adjustment;
-  final AdjustmentFormat adjustmentFormat;
+  final AdjustmentDisplayFormat adjustmentFormat;
 
   // Bottom block — Page 2 (Table)
   final FormattedTableData tableData;
@@ -81,7 +83,7 @@ class HomeUiReady extends HomeUiState {
     required this.targetDistanceDisplay,
     required this.targetDistanceM,
     required this.adjustment,
-    this.adjustmentFormat = AdjustmentFormat.arrows,
+    this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
     required this.tableData,
     required this.chartData,
     this.selectedPointInfo,
@@ -129,10 +131,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final profile = ref.read(shotProfileProvider).value;
     final conditions = ref.read(shotConditionsProvider).value;
     final settings = ref.read(settingsProvider).value;
+    final units = ref.read(unitSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
     if (profile == null || conditions == null || settings == null) return;
-    if (profile.cartridge == null) return;
+    if (profile.ammo.target == null) return;
 
     if (state.value is! HomeUiReady) {
       state = const AsyncData(HomeUiLoading());
@@ -141,8 +144,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     try {
       final opts = TargetCalcOptions(
         targetDistM:
-            conditions.distance.in_(Unit.meter) + 2 * settings.homeTableStep,
-        stepM: math.min(settings.chartDistanceStep, settings.homeTableStep),
+            conditions.distanceMeter + 2 * settings.homeTableDistanceStep,
+        stepM: math.min(
+          settings.homeChartDistanceStep,
+          settings.homeTableDistanceStep,
+        ),
       );
 
       final zeroKey = _buildZeroKey(profile, conditions);
@@ -164,6 +170,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         profile: profile,
         conditions: conditions,
         settings: settings,
+        units: units,
         formatter: formatter,
         result: result,
       );
@@ -209,17 +216,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   Future<void> updateWindDirection(double degrees) async {
-    final current = ref.read(shotConditionsProvider).value;
-    if (current == null) return;
-
     await ref
         .read(shotConditionsProvider.notifier)
-        .updateWinds(
-          WindData(
-            velocity: _currentWindVelocity(),
-            directionFrom: Angular.degree(degrees),
-          ),
-        );
+        .updateWindDirection(degrees);
   }
 
   Future<void> updateWindSpeed(double rawMps) async {
@@ -231,38 +230,32 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   Future<void> updateTargetDistance(double meters) async {
-    await ref
-        .read(shotConditionsProvider.notifier)
-        .updateTargetDistance(meters);
+    await ref.read(shotConditionsProvider.notifier).updateDistance(meters);
   }
 
   // ── Private builders ───────────────────────────────────────────────────────
 
-  Velocity _currentWindVelocity() {
-    final conditions = ref.read(shotConditionsProvider).value;
-    final wind = conditions?.wind ?? WindData.empty();
-    return wind.velocity;
-  }
-
   HomeUiReady _buildReadyState({
-    required ProfileData profile,
-    required Conditions conditions,
-    required AppSettings settings,
+    required Profile profile,
+    required ShootingConditions conditions,
+    required GeneralSettings settings,
+    required UnitSettings units,
     required UnitFormatter formatter,
     required BallisticsResult result,
   }) {
     final hit = result.hitResult;
-    final targetM = conditions.distance.in_(Unit.meter);
+    final targetM = conditions.distanceMeter;
 
-    final windDirDeg = conditions.wind.directionFrom.in_(Unit.degree);
+    final windDirDeg = conditions.windDirectionDeg;
+    final windMps = conditions.windSpeedMps;
 
-    final atmo = conditions.atmo;
-    final tempStr = formatter.temperature(atmo.temperature);
-    final altStr = formatter.distance(atmo.altitude);
-    final pressStr = formatter.pressure(atmo.pressure);
-    final humidStr = formatter.humidity(Ratio(atmo.humidity, Unit.fraction));
+    final tempStr = formatter.temperature(conditions.temperature);
+    final altStr = formatter.distance(conditions.altitude);
+    final pressStr = formatter.pressure(conditions.pressure);
+    final humidStr = formatter.humidity(
+      Ratio(conditions.humidityFrac, Unit.fraction),
+    );
 
-    final windMps = conditions.wind.velocity.in_(Unit.mps);
     final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
@@ -278,7 +271,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
 
     final adjustment = _buildAdjustment(hit, targetM, settings);
-    final tableData = _buildHomeTable(hit, targetM, settings, formatter);
+    final tableData = _buildHomeTable(hit, targetM, settings, units, formatter);
     final chartData = _buildChartData(hit, targetM, settings);
     final autoIndex = _closestIndex(chartData.points, targetM);
     final autoInfo = autoIndex != null
@@ -286,8 +279,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         : null;
 
     return HomeUiReady(
-      rifleName: profile.rifle.name,
-      cartridgeName: profile.cartridge?.name ?? '',
+      rifleName: profile.weapon.target?.name ?? '',
+      cartridgeName: profile.ammo.target?.name ?? '',
       windAngleDeg: windDirDeg,
       tempDisplay: tempStr,
       altDisplay: altStr,
@@ -301,7 +294,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetDistanceDisplay: targetDistanceDisplay,
       targetDistanceM: targetM,
       adjustment: adjustment,
-      adjustmentFormat: settings.adjustmentFormat,
+      adjustmentFormat: settings.adjustmentDisplayFormat,
       tableData: tableData,
       chartData: chartData,
       selectedPointInfo: autoInfo,
@@ -310,43 +303,56 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   String _buildCartridgeInfoLine(
-    ProfileData profile,
-    Conditions conditions,
+    Profile profile,
+    ShootingConditions conditions,
     UnitFormatter fmt,
   ) {
-    final cart = profile.cartridge!;
-    final mvStr = fmt.velocity(profile.cartridge!.mv);
+    final ammo = profile.ammo.target!;
+    final weapon = profile.weapon.target;
+    final sight = profile.sight.target;
+
+    final mvStr = fmt.velocity(ammo.mv);
     final bcAcc = FC.ballisticCoefficient.accuracy;
-    final firstBc = cart.coefRows.isNotEmpty ? cart.coefRows.first.bcCd : 0.0;
-    final dragStr = switch (cart.dragType) {
-      DragModelType.g1 =>
-        cart.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragModelType.g7 =>
-        cart.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragModelType.custom => 'CUSTOM',
+    final firstBc = switch (ammo.dragType) {
+      DragType.g7 => ammo.bcG7,
+      DragType.g1 => ammo.bcG1,
+      DragType.custom => 0.0,
+    };
+    final dragStr = switch (ammo.dragType) {
+      DragType.g1 =>
+        ammo.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
+      DragType.g7 =>
+        ammo.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
+      DragType.custom => 'CUSTOM',
     };
 
     String? sgStr;
-    final twistInch = profile.rifle.twist.in_(Unit.inch);
-    final weightGr = cart.weight.in_(Unit.grain);
-    final diamInch = cart.diameter.in_(Unit.inch);
-    final lenInch = cart.length.in_(Unit.inch);
-    if (weightGr > 0 && diamInch > 0 && lenInch > 0 && twistInch > 0) {
-      final currentShot = profile.toCurrentShot(
-        conditions,
-        profile.rifle.toWeapon(),
-      );
+    final twistInch = weapon?.twistInch ?? 0.0;
+    final weightGr = ammo.weightGrain;
+    final diamInch = ammo.caliberInch;
+    final lenInch = ammo.lengthInch;
+    if (weapon != null &&
+        weightGr > 0 &&
+        diamInch > 0 &&
+        lenInch > 0 &&
+        twistInch > 0) {
+      final sightHeight =
+          sight != null
+              ? Distance.inch(sight.sightHeightInch)
+              : Distance.inch(0);
+      final bcWeapon = weapon.toWeapon(sightHeight);
+      final currentShot = profile.toCurrentShot(conditions, bcWeapon);
       final sg = currentShot.calculateStabilityCoefficient();
       sgStr = 'Sg ${sg.toStringAsFixed(2)}';
     }
 
-    return '${profile.cartridge!.projectileName ?? profile.cartridge!.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
+    return '${ammo.projectileName ?? ammo.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
   }
 
   AdjustmentData _buildAdjustment(
     bclibc.HitResult hit,
     double targetM,
-    AppSettings settings,
+    GeneralSettings settings,
   ) {
     final elevAngle = hit.shot.relativeAngle;
     final point = hit.trajectory.isNotEmpty
@@ -355,11 +361,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final windAngle = point?.windageAngle;
 
     final dispUnits = <(Unit, String)>[
-      if (settings.showMrad) (Unit.mRad, 'MRAD'),
-      if (settings.showMoa) (Unit.moa, 'MOA'),
-      if (settings.showMil) (Unit.mil, 'MIL'),
-      if (settings.showCmPer100m) (Unit.cmPer100m, 'cm/100m'),
-      if (settings.showInPer100yd) (Unit.inPer100Yd, 'in/100yd'),
+      if (settings.homeShowMrad) (Unit.mRad, 'MRAD'),
+      if (settings.homeShowMoa) (Unit.moa, 'MOA'),
+      if (settings.homeShowMil) (Unit.mil, 'MIL'),
+      if (settings.homeShowCmPer100m) (Unit.cmPer100m, 'cm/100m'),
+      if (settings.homeShowInPer100yd) (Unit.inPer100Yd, 'in/100yd'),
     ];
 
     final elevValues = dispUnits.map((u) {
@@ -390,12 +396,16 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   FormattedTableData _buildHomeTable(
     bclibc.HitResult hit,
     double targetM,
-    AppSettings settings,
+    GeneralSettings settings,
+    UnitSettings units,
     UnitFormatter fmt,
   ) {
-    final stepM = settings.homeTableStep;
-    final units = settings.units;
-    final distAcc = FC.targetDistance.accuracyFor(units.distance);
+    final stepM = settings.homeTableDistanceStep;
+    final distUnit = units.distanceUnit;
+    final dropUnit = units.dropUnit;
+    final velUnit = units.velocityUnit;
+    final energyUnit = units.energyUnit;
+    final distAcc = FC.targetDistance.accuracyFor(distUnit);
 
     final dists = [
       targetM - 2 * stepM,
@@ -411,7 +421,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final distHeaders = dists.map<String>((m) {
       if (m < 0) return '—';
-      final disp = Distance.meter(m).in_(units.distance);
+      final disp = Distance.meter(m).in_(distUnit);
       return disp.toStringAsFixed(distAcc);
     }).toList();
 
@@ -423,15 +433,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         <(String, String, double? Function(bclibc.TrajectoryData), int)>[
           (
             'Height',
-            units.drop.symbol,
-            (p) => p.height.in_(units.drop),
-            FC.drop.accuracyFor(units.drop),
+            dropUnit.symbol,
+            (p) => p.height.in_(dropUnit),
+            FC.drop.accuracyFor(dropUnit),
           ),
           (
             'Slant Ht',
-            units.drop.symbol,
-            (p) => p.slantHeight.in_(units.drop),
-            FC.drop.accuracyFor(units.drop),
+            dropUnit.symbol,
+            (p) => p.slantHeight.in_(dropUnit),
+            FC.drop.accuracyFor(dropUnit),
           ),
           ('Angle', 'MIL', (p) => p.angle.in_(Unit.mil), milAcc),
           ('Angle', 'MOA', (p) => p.angle.in_(Unit.moa), moaAcc),
@@ -441,15 +451,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           ('Windage', 'MOA', (p) => p.windageAngle.in_(Unit.moa), moaAcc),
           (
             'Velocity',
-            units.velocity.symbol,
-            (p) => p.velocity.in_(units.velocity),
-            FC.velocity.accuracyFor(units.velocity),
+            velUnit.symbol,
+            (p) => p.velocity.in_(velUnit),
+            FC.velocity.accuracyFor(velUnit),
           ),
           (
             'Energy',
-            units.energy.symbol,
-            (p) => p.energy.in_(units.energy),
-            FC.energy.accuracyFor(units.energy),
+            energyUnit.symbol,
+            (p) => p.energy.in_(energyUnit),
+            FC.energy.accuracyFor(energyUnit),
           ),
           ('Time', 's', (p) => p.time, 3),
         ];
@@ -471,7 +481,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     return FormattedTableData(
       distanceHeaders: distHeaders,
       rows: rows,
-      distanceUnit: units.distance.symbol,
+      distanceUnit: distUnit.symbol,
     );
   }
 
@@ -492,13 +502,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   ChartData _buildChartData(
     bclibc.HitResult hit,
     double targetM,
-    AppSettings settings,
+    GeneralSettings settings,
   ) {
-    final step = settings.chartDistanceStep;
+    final step = settings.homeChartDistanceStep;
 
-    // Генеруємо всі точки по кроках до targetM
     final points = List.generate((targetM / step).ceil() + 1, (i) => i * step)
-        .where((d) => d <= targetM) // фільтр по цілі
+        .where((d) => d <= targetM)
         .map((d) {
           final td = hit.getAtDistance(Distance.meter(d));
 
@@ -518,7 +527,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
             isSubsonic: isMach || td.mach < 1.0,
           );
         })
-        .whereType<ChartPoint>() // прибираємо null
+        .whereType<ChartPoint>()
         .toList();
 
     return ChartData(points: points, snapDistM: step);
@@ -538,36 +547,46 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
   }
 
-  // ── Zero key (logic for detecting zero-relevant changes) ───────────────────
-  // Використовує нову структуру cartridge.zeroConditions
+  // ── Zero key ───────────────────────────────────────────────────────────────
 
-  List<double> _buildZeroKey(ProfileData profile, Conditions conditions) {
-    final c = profile.cartridge!;
-    // Використовуємо умови обнулення з картриджа
-    final zeroConditions = c.zeroConditions;
-    final zeroAtmo = zeroConditions.atmo;
-    final r = profile.rifle;
+  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
+    final ammo = profile.ammo.target!;
+    final weapon = profile.weapon.target;
+    final sight = profile.sight.target;
+
+    final bcCount = switch (ammo.dragType) {
+      DragType.g7 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
+      DragType.g1 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
+      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
+    };
+    final firstBc = switch (ammo.dragType) {
+      DragType.g7 => ammo.bcG7,
+      DragType.g1 => ammo.bcG1,
+      DragType.custom => 0.0,
+    };
 
     return [
-      r.sightHeight.in_(Unit.meter),
-      r.twist.in_(Unit.inch),
-      c.mv.in_(Unit.mps),
-      c.powderTemp.in_(Unit.celsius),
-      c.powderSensitivity.in_(Unit.fraction),
-      c.coefRows.isNotEmpty ? c.coefRows.first.bcCd : 0.0,
-      c.weight.in_(Unit.gram),
-      c.diameter.in_(Unit.inch),
-      c.length.in_(Unit.inch),
-      c.coefRows.length.toDouble(),
-      zeroAtmo.altitude.in_(Unit.meter),
-      zeroAtmo.pressure.in_(Unit.hPa),
-      zeroAtmo.temperature.in_(Unit.celsius),
-      zeroAtmo.humidity,
-      zeroAtmo.powderTemp.in_(Unit.celsius),
-      zeroConditions.distance.in_(Unit.meter), // ← zeroDistance з conditions
-      conditions.lookAngle.in_(Unit.radian),
-      zeroConditions.usePowderSensitivity ? 1.0 : 0.0, // ← з zeroConditions
-      zeroConditions.useDiffPowderTemp ? 1.0 : 0.0, // ← з zeroConditions
+      sight?.sightHeightInch ?? 0.0,
+      weapon?.twistInch ?? 0.0,
+      ammo.muzzleVelocityMps ?? 0.0,
+      ammo.powderTemperatureC,
+      ammo.powderSensitivityFrac,
+      firstBc,
+      ammo.weightGrain,
+      ammo.caliberInch,
+      ammo.lengthInch,
+      bcCount.toDouble(),
+      ammo.zeroAltitudeMeter,
+      ammo.zeroPressurehPa,
+      ammo.zeroTemperatureC,
+      ammo.zeroHumidityFrac,
+      ammo.zeroPowderTemperatureC,
+      ammo.zeroDistanceMeter,
+      conditions.lookAngleRad,
+      ammo.usePowderSensitivity ? 1.0 : 0.0,
+      ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
     ];
   }
 }

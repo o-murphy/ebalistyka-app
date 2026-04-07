@@ -1,5 +1,5 @@
-import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_card.dart';
 import 'package:ebalistyka/router.dart';
@@ -102,17 +102,19 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
 
-    final profile = appState.profiles.where((p) => p.id == data.id).firstOrNull;
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == data.id)
+        .firstOrNull;
     if (profile == null) return;
 
-    final result = await context.push<WeaponData?>(
+    final result = await context.push<Weapon?>(
       Routes.profileEditRifle,
-      extra: profile.rifle,
+      extra: profile.weapon.target,
     );
     if (result != null && mounted) {
       await ref
           .read(rifleSelectVmProvider.notifier)
-          .updateProfileRifle(data.id, result);
+          .updateProfileWeapon(data.id, result);
     }
   }
 

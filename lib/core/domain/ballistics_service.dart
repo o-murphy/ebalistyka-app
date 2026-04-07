@@ -1,5 +1,4 @@
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 class TableCalcOptions {
@@ -29,15 +28,15 @@ class BallisticsResult {
 
 abstract interface class BallisticsService {
   Future<BallisticsResult> calculateTable(
-    ProfileData profile,
-    Conditions conditions,
+    Profile profile,
+    ShootingConditions conditions,
     TableCalcOptions opts, {
     double? cachedZeroElevRad,
   });
 
   Future<BallisticsResult> calculateForTarget(
-    ProfileData profile,
-    Conditions conditions,
+    Profile profile,
+    ShootingConditions conditions,
     TargetCalcOptions opts, {
     double? cachedZeroElevRad,
   });

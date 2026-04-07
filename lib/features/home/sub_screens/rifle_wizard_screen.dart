@@ -1,11 +1,13 @@
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,9 +16,9 @@ import 'package:bclibc_ffi/unit.dart';
 class RifleWizardScreen extends ConsumerStatefulWidget {
   const RifleWizardScreen({this.initial, this.caliberEditable, super.key});
 
-  /// Pre-fill the form with an existing rifle (edit / copy-from-collection).
-  /// null = new empty rifle.
-  final WeaponData? initial;
+  /// Pre-fill the form with an existing weapon (edit mode).
+  /// null = new empty weapon.
+  final Weapon? initial;
 
   /// Whether the caliber diameter field is editable.
   /// Defaults to true when [initial] is null (manual create), false otherwise.
@@ -32,8 +34,6 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
   // caliberDiameter: Unit.millimeter (FC.bulletDiameter)
   late double _caliberRaw;
-  // sightHeight: Unit.millimeter (FC.sightHeight)
-  late double _sightHeightRaw;
   // twist magnitude: Unit.inch (FC.twist) — always positive, direction via _rightHand
   late double _twistRaw;
   late bool _rightHand;
@@ -49,17 +49,19 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
     final r = widget.initial;
     _nameCtrl = TextEditingController(text: r?.name ?? '');
     _caliberRaw =
-        r?.caliber?.in_(FC.bulletDiameter.rawUnit) ?? FC.bulletDiameter.minRaw;
-    _sightHeightRaw =
-        r?.sightHeight.in_(FC.sightHeight.rawUnit) ?? FC.sightHeight.minRaw;
-    _twistRaw = r != null
-        ? r.twist.in_(FC.twist.rawUnit).abs()
+        r != null
+            ? Distance.inch(r.caliberInch).in_(FC.bulletDiameter.rawUnit)
+            : FC.bulletDiameter.minRaw;
+    final twistAbs = r != null ? r.twistInch.abs() : 0.0;
+    _twistRaw = twistAbs > 0
+        ? Distance.inch(twistAbs).in_(FC.twist.rawUnit)
         : FC.twist.minRaw;
-    _rightHand = r?.isRightHandTwist ?? true;
-    final bl = r?.barrelLength;
-    _hasBarrelLength = bl != null;
-    _barrelLengthRaw =
-        bl?.in_(FC.barrelLength.rawUnit) ?? FC.barrelLength.minRaw;
+    _rightHand = r != null ? r.twistInch >= 0 : true;
+    final blInch = r?.barrelLengthInch;
+    _hasBarrelLength = blInch != null;
+    _barrelLengthRaw = blInch != null
+        ? Distance.inch(blInch).in_(FC.barrelLength.rawUnit)
+        : FC.barrelLength.minRaw;
   }
 
   @override
@@ -80,25 +82,26 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
 
   // ── Build result ──────────────────────────────────────────────────────────
 
-  WeaponData _buildRifle() {
-    final signedTwist = _rightHand ? _twistRaw : -_twistRaw;
-    return WeaponData(
-      id: widget.initial?.id,
-      name: _nameCtrl.text.trim(),
-      vendor: widget.initial?.vendor,
-      sightHeight: Distance(_sightHeightRaw, FC.sightHeight.rawUnit),
-      twist: Distance(signedTwist, FC.twist.rawUnit),
-      caliber: Distance(_caliberRaw, FC.bulletDiameter.rawUnit),
-      barrelLength: (_hasBarrelLength && _barrelLengthRaw != null)
-          ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit)
-          : null,
-    );
+  Weapon _buildWeapon() {
+    final signedTwistInch =
+        Distance(_rightHand ? _twistRaw : -_twistRaw, FC.twist.rawUnit).in_(
+          Unit.inch,
+        );
+    final weapon = widget.initial ?? Weapon();
+    weapon.name = _nameCtrl.text.trim();
+    weapon.caliberInch =
+        Distance(_caliberRaw, FC.bulletDiameter.rawUnit).in_(Unit.inch);
+    weapon.twistInch = signedTwistInch;
+    weapon.barrelLengthInch = (_hasBarrelLength && _barrelLengthRaw != null)
+        ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit).in_(Unit.inch)
+        : null;
+    return weapon;
   }
 
   void _onSave() {
     _validateName();
     if (!_isValid) return;
-    context.pop(_buildRifle());
+    context.pop(_buildWeapon());
   }
 
   void _onDiscard() => context.pop(null);
@@ -147,34 +150,26 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                     label: 'Caliber diameter',
                     rawValue: _caliberRaw,
                     constraints: FC.bulletDiameter,
-                    displayUnit: units.diameter,
+                    displayUnit: units.diameterUnit,
                     icon: Icons.circle_outlined,
                     onChanged: (v) => setState(() => _caliberRaw = v),
                   )
                 else
                   InfoListTile(
                     label: 'Caliber diameter',
-                    value: widget.initial?.caliber != null
-                        ? fmt.diameter(widget.initial!.caliber!)
+                    value: widget.initial != null
+                        ? fmt.diameter(widget.initial!.caliber)
                         : '—',
                     icon: Icons.circle_outlined,
                   ),
                 // ── Hardware ─────────────────────────────────────────────────
                 const ListSectionTile('Hardware'),
                 UnitValueFieldTile(
-                  label: 'Sight height',
-                  rawValue: _sightHeightRaw,
-                  constraints: FC.sightHeight,
-                  displayUnit: units.sightHeight,
-                  icon: Icons.vertical_align_center_outlined,
-                  onChanged: (v) => setState(() => _sightHeightRaw = v),
-                ),
-                UnitValueFieldTile(
                   label: 'Twist rate',
                   rawValue: _twistRaw,
                   constraints: FC.twist,
-                  displayUnit: units.twist,
-                  symbol: '1:${units.twist.symbol}',
+                  displayUnit: units.twistUnit,
+                  symbol: '1:${units.twistUnit.symbol}',
                   icon: Icons.rotate_right_outlined,
                   onChanged: (v) => setState(() => _twistRaw = v),
                 ),
@@ -202,7 +197,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                     label: 'Barrel length',
                     rawValue: _barrelLengthRaw,
                     constraints: FC.barrelLength,
-                    displayUnit: units.barrelLength,
+                    displayUnit: units.barrelLengthUnit,
                     icon: Icons.straighten_outlined,
                     onChanged: (v) => setState(() => _barrelLengthRaw = v),
                   ),

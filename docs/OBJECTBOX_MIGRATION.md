@@ -250,7 +250,7 @@ Files to delete:
 - `lib/core/models/convertors_state.dart`
 - `lib/core/models/conditions_data.dart`
 
-### Step 9 — Update all consumers
+### |WIP| Step 9 — Update all consumers
 - `WeaponData` → `Weapon`, `AmmoData` → `Ammo`, `SightData` → `Sight`
 - `profile.rifle` → `profile.weapon.target`
 - `profile.cartridge` → `profile.ammo.target`

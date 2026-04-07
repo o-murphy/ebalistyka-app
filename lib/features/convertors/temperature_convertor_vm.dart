@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
@@ -24,7 +25,7 @@ class TemperatureConvertorViewModel
   TemperatureConvertorUiState build() {
     final convertorsState = ref.watch(convertorStateProvider);
     return _buildState(
-      convertorsState.temperatureValueFahrenheit,
+      convertorsState.temperatureValueF,
       convertorsState.temperatureUnit,
     );
   }

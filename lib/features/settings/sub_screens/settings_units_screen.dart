@@ -3,6 +3,7 @@ import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:bclibc_ffi/unit.dart';
 
@@ -14,7 +15,7 @@ class UnitsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final units = ref.watch(unitSettingsProvider);
-    final notifier = ref.read(settingsProvider.notifier);
+    final notifier = ref.read(unitSettingsNotifierProvider.notifier);
 
     void set(String key, Unit unit) => notifier.setUnit(key, unit);
 
@@ -26,42 +27,42 @@ class UnitsScreen extends ConsumerWidget {
           UnitPickerListTile(
             icon: Icons.speed_outlined,
             label: 'Velocity',
-            current: units.velocity,
+            current: units.velocityUnit,
             options: const [Unit.mps, Unit.fps, Unit.kmh, Unit.mph],
             onChanged: (u) => set('velocity', u),
           ),
           UnitPickerListTile(
             icon: Icons.straighten_outlined,
             label: 'Distance',
-            current: units.distance,
+            current: units.distanceUnit,
             options: const [Unit.meter, Unit.yard, Unit.foot],
             onChanged: (u) => set('distance', u),
           ),
           UnitPickerListTile(
             icon: Icons.vertical_align_center_outlined,
             label: 'Sight Height',
-            current: units.sightHeight,
+            current: units.sightHeightUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('sightHeight', u),
           ),
           UnitPickerListTile(
             icon: Icons.compress_outlined,
             label: 'Pressure',
-            current: units.pressure,
+            current: units.pressureUnit,
             options: const [Unit.hPa, Unit.mmHg, Unit.inHg, Unit.psi],
             onChanged: (u) => set('pressure', u),
           ),
           UnitPickerListTile(
             icon: Icons.device_thermostat_outlined,
             label: 'Temperature',
-            current: units.temperature,
+            current: units.temperatureUnit,
             options: const [Unit.celsius, Unit.fahrenheit],
             onChanged: (u) => set('temperature', u),
           ),
           UnitPickerListTile(
             icon: Icons.height_outlined,
             label: 'Drop / Windage',
-            current: units.drop,
+            current: units.dropUnit,
             options: const [
               Unit.meter,
               Unit.centimeter,
@@ -74,7 +75,7 @@ class UnitsScreen extends ConsumerWidget {
           UnitPickerListTile(
             icon: Icons.rotate_90_degrees_cw_outlined,
             label: 'Drop / Windage angle',
-            current: units.adjustment,
+            current: units.adjustmentUnit,
             options: const [
               Unit.mil,
               Unit.moa,
@@ -87,28 +88,28 @@ class UnitsScreen extends ConsumerWidget {
           UnitPickerListTile(
             icon: Icons.bolt_outlined,
             label: 'Energy',
-            current: units.energy,
+            current: units.energyUnit,
             options: const [Unit.joule, Unit.footPound],
             onChanged: (u) => set('energy', u),
           ),
           UnitPickerListTile(
             icon: Icons.balance_outlined,
             label: 'Bullet weight',
-            current: units.weight,
+            current: units.weightUnit,
             options: const [Unit.grain, Unit.gram],
             onChanged: (u) => set('weight', u),
           ),
           UnitPickerListTile(
             icon: Icons.linear_scale_outlined,
             label: 'Bullet length',
-            current: units.length,
+            current: units.lengthUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('length', u),
           ),
           UnitPickerListTile(
             icon: Icons.circle_outlined,
             label: 'Bullet diameter',
-            current: units.diameter,
+            current: units.diameterUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('diameter', u),
           ),

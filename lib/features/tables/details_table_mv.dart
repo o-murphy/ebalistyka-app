@@ -1,13 +1,15 @@
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
@@ -61,72 +63,67 @@ class DetailsTableData {
 // ── Private builder ──────────────────────────────────────────────────────────
 
 DetailsTableData _buildDetails(
-  ProfileData profile,
-  Conditions conditions,
-  AppSettings settings,
+  Profile profile,
+  ShootingConditions conditions,
+  UnitSettings units,
 ) {
-  final units = settings.units;
-  final rifle = profile.rifle;
-  final cart = profile.cartridge!;
-  final atmo = conditions.atmo;
-  final wind = conditions.wind;
+  final distUnit = units.distanceUnit;
+  final velUnit = units.velocityUnit;
+  final weapon = profile.weapon.target!;
+  final ammo = profile.ammo.target!;
+  final sight = profile.sight.target;
 
-  final twistInch = rifle.twist.in_(Unit.inch);
-  final weightGr = cart.weight.in_(Unit.grain);
-  final diamInch = cart.diameter.in_(Unit.inch);
-  final lenInch = cart.length.in_(Unit.inch);
+  final twistInch = weapon.twistInch;
+  final weightGr = ammo.weightGrain;
+  final diamInch = ammo.caliberInch;
+  final lenInch = ammo.lengthInch;
 
-  // Powder sensitivity — separate flags for zero and current
   final currentPowderSensOn = conditions.usePowderSensitivity;
-  // Zero conditions from cartridge
-  final zeroConditions = cart.zeroConditions;
-  final zeroPowderSensOn = zeroConditions.usePowderSensitivity;
-  final currentUseDiffTemp =
-      currentPowderSensOn && conditions.useDiffPowderTemp;
-  final zeroUseDiffTemp = zeroPowderSensOn && zeroConditions.useDiffPowderTemp;
+  final currentUseDiffTemp = currentPowderSensOn && conditions.useDiffPowderTemp;
+  final zeroUseDiffTemp = ammo.zeroUseDiffPowderTemperature;
 
-  final refMvMps = cart.mv.in_(Unit.mps);
-  final refPowderTempC = cart.powderTemp.in_(Unit.celsius);
+  final refMvMps = ammo.muzzleVelocityMps ?? 0.0;
+  final refPowderTempC = ammo.powderTemperatureC;
 
   double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
     refMvMps,
     refPowderTempC,
     tCurC,
-    cart.powderSensitivity.in_(Unit.fraction),
+    ammo.powderSensitivityFrac,
   );
 
-  // Zero MV - використовуємо zeroConditions замість cart.atmo
-  final zeroAtmo = zeroConditions.atmo;
+  // Zero MV
   final zeroPowderTempC = zeroUseDiffTemp
-      ? zeroAtmo.powderTemp.in_(Unit.celsius)
-      : zeroAtmo.temperature.in_(Unit.celsius);
-  final zeroMvMps = zeroPowderSensOn ? mvAtTempC(zeroPowderTempC) : refMvMps;
+      ? ammo.zeroPowderTemperatureC
+      : ammo.zeroTemperatureC;
+  final zeroMvMps = ammo.usePowderSensitivity
+      ? mvAtTempC(zeroPowderTempC)
+      : refMvMps;
 
   // Current MV
   final currTempC = currentUseDiffTemp
-      ? atmo.powderTemp.in_(Unit.celsius)
-      : atmo.temperature.in_(Unit.celsius);
+      ? conditions.powderTemperatureC
+      : conditions.temperatureC;
   final currentMvMps = currentPowderSensOn ? mvAtTempC(currTempC) : refMvMps;
 
   // Gyrostability (Miller)
-  final currentShot = profile.toCurrentShot(
-    conditions,
-    profile.rifle.toWeapon(),
-  );
-  double sg = currentShot.calculateStabilityCoefficient();
+  final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
+  final bcWeapon = weapon.toWeapon(sightHeight);
+  final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+  final sg = currentShot.calculateStabilityCoefficient();
 
   // Sectional density + form factor
   final sd = (weightGr > 0 && diamInch > 0)
       ? (weightGr / 7000.0) / (diamInch * diamInch)
       : null;
-  final displayBc = (!cart.isMultiBC && cart.coefRows.isNotEmpty)
-      ? cart.coefRows.first.bcCd
-      : 0.0;
+  final displayBc = ammo.isMultiBC
+      ? 0.0
+      : (ammo.dragType == DragType.g7 ? ammo.bcG7 : ammo.bcG1);
   final ff = (sd != null && displayBc > 0) ? sd / displayBc : null;
 
   String fmtV(double mps) {
-    final disp = Velocity.mps(mps).in_(units.velocity);
-    return '${disp.toStringAsFixed(FC.velocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+    final disp = Velocity.mps(mps).in_(velUnit);
+    return '${disp.toStringAsFixed(FC.velocity.accuracyFor(velUnit))} ${velUnit.symbol}';
   }
 
   String fmtWithAcc(Dimension dim, Unit dispUnit, FieldConstraints fc) {
@@ -134,20 +131,20 @@ DetailsTableData _buildDetails(
   }
 
   return DetailsTableData(
-    rifleName: rifle.name,
+    rifleName: weapon.name,
     caliber: diamInch > 0
-        ? fmtWithAcc(cart.diameter, units.diameter, FC.bulletDiameter)
+        ? fmtWithAcc(ammo.caliber, units.diameterUnit, FC.bulletDiameter)
         : null,
-    twist: twistInch > 0
+    twist: twistInch.abs() > 0
         ? () {
-            final tw = Distance.inch(twistInch).in_(units.twist);
-            return '1:${tw.toStringAsFixed(FC.twist.accuracyFor(units.twist))} ${units.twist.symbol}';
+            final tw = Distance.inch(twistInch.abs()).in_(units.twistUnit);
+            return '1:${tw.toStringAsFixed(FC.twist.accuracyFor(units.twistUnit))} ${units.twistUnit.symbol}';
           }()
         : null,
-    dragModel: switch (cart.dragType) {
-      DragModelType.g1 => 'G1',
-      DragModelType.g7 => 'G7',
-      DragModelType.custom => 'Custom',
+    dragModel: switch (ammo.dragType) {
+      DragType.g1 => 'G1',
+      DragType.g7 => 'G7',
+      DragType.custom => 'Custom',
     },
     bc: displayBc > 0
         ? displayBc.toStringAsFixed(FC.ballisticCoefficient.accuracy)
@@ -155,40 +152,40 @@ DetailsTableData _buildDetails(
     zeroMv: fmtV(zeroMvMps),
     currentMv: fmtV(currentMvMps),
     zeroDist: fmtWithAcc(
-      zeroConditions.distance,
-      units.distance,
+      ammo.zeroDistance,
+      distUnit,
       FC.zeroDistance,
     ),
     bulletLen: lenInch > 0
-        ? fmtWithAcc(cart.length, units.length, FC.bulletLength)
+        ? fmtWithAcc(ammo.length, units.lengthUnit, FC.bulletLength)
         : null,
     bulletDiam: diamInch > 0
-        ? fmtWithAcc(cart.diameter, units.diameter, FC.bulletDiameter)
+        ? fmtWithAcc(ammo.caliber, units.diameterUnit, FC.bulletDiameter)
         : null,
     bulletWeight: weightGr > 0
         ? () {
-            final wDisp = Weight.grain(weightGr).in_(units.weight);
-            return '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weight))} ${units.weight.symbol}';
+            final wDisp = Weight.grain(weightGr).in_(units.weightUnit);
+            return '${wDisp.toStringAsFixed(FC.bulletWeight.accuracyFor(units.weightUnit))} ${units.weightUnit.symbol}';
           }()
         : null,
     formFactor: ff?.toStringAsFixed(3),
     sectionalDensity: sd?.toStringAsFixed(3),
     gyroStability: sg.toStringAsFixed(2),
     temperature: () {
-      final t = atmo.temperature.in_(units.temperature);
-      return '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperature))} ${units.temperature.symbol}';
+      final t = conditions.temperature.in_(units.temperatureUnit);
+      return '${t.toStringAsFixed(FC.temperature.accuracyFor(units.temperatureUnit))} ${units.temperatureUnit.symbol}';
     }(),
     humidity:
-        '${(atmo.humidity.convert(Unit.fraction, Unit.percent)).toStringAsFixed(0)} %',
+        '${(conditions.humidityFrac * 100.0).toStringAsFixed(0)} %',
     pressure: () {
-      final p = atmo.pressure.in_(units.pressure);
-      return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressure))} ${units.pressure.symbol}';
+      final p = conditions.pressure.in_(units.pressureUnit);
+      return '${p.toStringAsFixed(FC.pressure.accuracyFor(units.pressureUnit))} ${units.pressureUnit.symbol}';
     }(),
     windSpeed: () {
-      final ws = wind.velocity.in_(units.velocity);
-      return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(units.velocity))} ${units.velocity.symbol}';
+      final ws = conditions.windSpeed.in_(velUnit);
+      return '${ws.toStringAsFixed(FC.windVelocity.accuracyFor(velUnit))} ${velUnit.symbol}';
     }(),
-    windDir: '${(wind.directionFrom).in_(Unit.degree).toStringAsFixed(0)}°',
+    windDir: '${conditions.windDirectionDeg.toStringAsFixed(0)}°',
   );
 }
 
@@ -197,10 +194,10 @@ DetailsTableData _buildDetails(
 final detailsTableMvProvider = Provider<DetailsTableData?>((ref) {
   final profile = ref.watch(shotProfileProvider).value;
   final conditions = ref.watch(shotConditionsProvider).value;
-  final settings = ref.watch(settingsProvider).value;
+  final units = ref.watch(unitSettingsProvider);
 
-  if (profile == null || conditions == null || settings == null) return null;
-  if (profile.cartridge == null) return null;
+  if (profile == null || conditions == null) return null;
+  if (profile.weapon.target == null || profile.ammo.target == null) return null;
 
-  return _buildDetails(profile, conditions, settings);
+  return _buildDetails(profile, conditions, units);
 });

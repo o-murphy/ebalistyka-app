@@ -78,4 +78,44 @@ extension UnitSettingsExtension on UnitSettings {
   set energyUnit(Unit v) => energy = v.name;
 }
 
-extension TablesSettingsExtension on TablesSettings {}
+extension TablesSettingsExtension on TablesSettings {
+  List<Unit> get enabledAdjUnits => [
+    if (showMil) Unit.mil,
+    if (showMrad) Unit.mRad,
+    if (showMoa) Unit.moa,
+    if (showCmPer100m) Unit.cmPer100m,
+    if (showInPer100yd) Unit.inPer100Yd,
+  ];
+}
+
+extension UnitSettingsFullExtension on UnitSettings {
+  Unit get adjustmentUnit => Unit.values.firstWhere(
+    (u) => u.name == adjustment,
+    orElse: () => Unit.mil,
+  );
+  set adjustmentUnit(Unit v) => adjustment = v.name;
+
+  Unit get sightHeightUnit => Unit.values.firstWhere(
+    (u) => u.name == sightHeight,
+    orElse: () => Unit.millimeter,
+  );
+  set sightHeightUnit(Unit v) => sightHeight = v.name;
+
+  Unit get twistUnit => Unit.values.firstWhere(
+    (u) => u.name == twist,
+    orElse: () => Unit.inch,
+  );
+  set twistUnit(Unit v) => twist = v.name;
+
+  Unit get barrelLengthUnit => Unit.values.firstWhere(
+    (u) => u.name == barrelLength,
+    orElse: () => Unit.inch,
+  );
+  set barrelLengthUnit(Unit v) => barrelLength = v.name;
+
+  Unit get torqueUnit => Unit.values.firstWhere(
+    (u) => u.name == torque,
+    orElse: () => Unit.newtonMeter,
+  );
+  set torqueUnit(Unit v) => torque = v.name;
+}

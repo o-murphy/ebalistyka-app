@@ -8,10 +8,24 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
   Owner get _owner => ref.read(ownerProvider);
 
   @override
-  Future<ShootingConditions> build() async => _load();
-
-  ShootingConditions _load() {
+  Future<ShootingConditions> build() async {
     final owner = _owner;
+    final cond = _loadOrCreate(owner);
+
+    final subscription = _store
+        .box<ShootingConditions>()
+        .query(ShootingConditions_.owner.equals(owner.id))
+        .watch(triggerImmediately: false)
+        .listen((query) {
+      final updated = query.findFirst();
+      if (updated != null) state = AsyncData(updated);
+    });
+    ref.onDispose(subscription.cancel);
+
+    return cond;
+  }
+
+  ShootingConditions _loadOrCreate(Owner owner) {
     final existing = _store
         .box<ShootingConditions>()
         .query(ShootingConditions_.owner.equals(owner.id))
@@ -23,9 +37,11 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
     return cond;
   }
 
+  ShootingConditions _load() => _loadOrCreate(_owner);
+
   Future<void> _save(ShootingConditions cond) async {
     _store.box<ShootingConditions>().put(cond);
-    state = AsyncData(cond);
+    // Stream subscription in build() fires and updates state reactively.
   }
 
   // ── Distance / geometry ───────────────────────────────────────────────────────

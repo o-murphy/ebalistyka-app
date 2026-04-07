@@ -110,29 +110,6 @@ class ConditionsScreen extends ConsumerWidget {
             onChanged: (v) => notifier.setCoriolis(v),
             dense: true,
           ),
-          SwitchListTile(
-            title: const Text('Spin drift (derivation)'),
-            secondary: const Icon(Icons.rotate_left_outlined),
-            value: state.derivationOn,
-            onChanged: (v) => notifier.setDerivation(v),
-            dense: true,
-          ),
-          // Always OFF — engine limitation, control disabled
-          SwitchListTile(
-            title: const Text('Aerodynamic jump'),
-            secondary: const Icon(Icons.air_outlined),
-            value: false,
-            onChanged: null,
-            dense: true,
-          ),
-          // Always ON — engine limitation, control disabled
-          SwitchListTile(
-            title: const Text('Pressure depends on altitude'),
-            secondary: const Icon(Icons.compress_outlined),
-            value: true,
-            onChanged: null,
-            dense: true,
-          ),
           const SizedBox(height: 16),
         ],
       ),

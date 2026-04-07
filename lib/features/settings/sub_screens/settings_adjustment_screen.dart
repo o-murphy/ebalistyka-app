@@ -3,8 +3,9 @@ import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 // ─── Adjustment Display Screen ────────────────────────────────────────────────
 
@@ -13,7 +14,7 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+    final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
     final notifier = ref.read(settingsProvider.notifier);
 
     return BaseScreen(
@@ -24,22 +25,22 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
           const ListSectionTile('Format'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-            child: SegmentedButton<AdjustmentFormat>(
+            child: SegmentedButton<AdjustmentDisplayFormat>(
               segments: const [
                 ButtonSegment(
-                  value: AdjustmentFormat.arrows,
+                  value: AdjustmentDisplayFormat.arrows,
                   label: Text('↑/↓'),
                 ),
                 ButtonSegment(
-                  value: AdjustmentFormat.signs,
+                  value: AdjustmentDisplayFormat.signs,
                   label: Text('+/−'),
                 ),
                 ButtonSegment(
-                  value: AdjustmentFormat.letters,
+                  value: AdjustmentDisplayFormat.letters,
                   label: Text('U/D'),
                 ),
               ],
-              selected: {settings.adjustmentFormat},
+              selected: {settings.adjustmentDisplayFormat},
               onSelectionChanged: (s) => notifier.setAdjustmentFormat(s.first),
               style: const ButtonStyle(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -51,31 +52,31 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
           const ListSectionTile('Show units'),
           SwitchListTile(
             title: const Text('MRAD'),
-            value: settings.showMrad,
+            value: settings.homeShowMrad,
             onChanged: (v) => notifier.setAdjustmentToggle('showMrad', v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('MOA'),
-            value: settings.showMoa,
+            value: settings.homeShowMoa,
             onChanged: (v) => notifier.setAdjustmentToggle('showMoa', v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('MIL'),
-            value: settings.showMil,
+            value: settings.homeShowMil,
             onChanged: (v) => notifier.setAdjustmentToggle('showMil', v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('cm / 100m'),
-            value: settings.showCmPer100m,
+            value: settings.homeShowCmPer100m,
             onChanged: (v) => notifier.setAdjustmentToggle('showCmPer100m', v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('in / 100yd'),
-            value: settings.showInPer100yd,
+            value: settings.homeShowInPer100yd,
             onChanged: (v) => notifier.setAdjustmentToggle('showInPer100yd', v),
             dense: true,
           ),

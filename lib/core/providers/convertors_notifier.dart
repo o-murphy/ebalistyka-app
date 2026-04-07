@@ -9,10 +9,24 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   Owner get _owner => ref.read(ownerProvider);
 
   @override
-  Future<ConvertorsState> build() async => _load();
-
-  ConvertorsState _load() {
+  Future<ConvertorsState> build() async {
     final owner = _owner;
+    final s = _loadOrCreate(owner);
+
+    final subscription = _store
+        .box<ConvertorsState>()
+        .query(ConvertorsState_.owner.equals(owner.id))
+        .watch(triggerImmediately: false)
+        .listen((query) {
+      final updated = query.findFirst();
+      if (updated != null) state = AsyncData(updated);
+    });
+    ref.onDispose(subscription.cancel);
+
+    return s;
+  }
+
+  ConvertorsState _loadOrCreate(Owner owner) {
     final existing = _store
         .box<ConvertorsState>()
         .query(ConvertorsState_.owner.equals(owner.id))
@@ -24,9 +38,11 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     return s;
   }
 
+  ConvertorsState _load() => _loadOrCreate(_owner);
+
   Future<void> _save(ConvertorsState s) async {
     _store.box<ConvertorsState>().put(s);
-    state = AsyncData(s);
+    // Stream subscription in build() fires and updates state reactively.
   }
 
   // ── Length ────────────────────────────────────────────────────────────────────
