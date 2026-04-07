@@ -1,34 +1,36 @@
-import 'package:riverpod/riverpod.dart';
-
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart'; // ← додати
+import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:riverpod/riverpod.dart';
 
 /// Centralises all recalculation triggers.
 ///
-/// Listens to [shotProfileProvider], [shotConditionsProvider] and [settingsProvider]
-/// and triggers the ViewModels for the active features.
+/// Listens to [shotProfileProvider], [shotConditionsProvider],
+/// [settingsProvider], and [unitSettingsNotifierProvider] and triggers the
+/// ViewModels for the active features.
 class RecalcCoordinator extends Notifier<void> {
   @override
   void build() {
-    // Слухаємо зміни профілю
     ref.listen(shotProfileProvider, (_, next) {
       if (next.hasValue) _triggerAll();
     });
 
-    // Слухаємо зміни умов (це те, чого не вистачало!)
     ref.listen(shotConditionsProvider, (_, next) {
       if (next.hasValue) _triggerAll();
     });
 
-    // Слухаємо зміни налаштувань
-    ref.listen<AsyncValue<AppSettings>>(settingsProvider, (prev, next) {
+    ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
-      if (_needsRecalc(prev?.value, next.value!)) _triggerAll();
+      if (_generalNeedsRecalc(prev?.value, next.value!)) _triggerAll();
+    });
+
+    ref.listen<AsyncValue<UnitSettings>>(unitSettingsNotifierProvider, (prev, next) {
+      if (!next.hasValue) return;
+      if (prev?.value != null) _triggerAll(); // any unit change → recalc
     });
   }
 
@@ -49,17 +51,16 @@ class RecalcCoordinator extends Notifier<void> {
     ref.read(shotDetailsVmProvider.notifier).recalculate();
   }
 
-  bool _needsRecalc(AppSettings? prev, AppSettings next) {
+  bool _generalNeedsRecalc(GeneralSettings? prev, GeneralSettings next) {
     if (prev == null) return true;
-    return prev.chartDistanceStep != next.chartDistanceStep ||
-        prev.homeTableStep != next.homeTableStep ||
-        prev.units != next.units ||
-        prev.showMrad != next.showMrad ||
-        prev.showMoa != next.showMoa ||
-        prev.showMil != next.showMil ||
-        prev.showCmPer100m != next.showCmPer100m ||
-        prev.showInPer100yd != next.showInPer100yd ||
-        !identical(prev.tableConfig, next.tableConfig);
+    return prev.homeChartDistanceStep != next.homeChartDistanceStep ||
+        prev.homeTableDistanceStep != next.homeTableDistanceStep ||
+        prev.homeShowMrad != next.homeShowMrad ||
+        prev.homeShowMoa != next.homeShowMoa ||
+        prev.homeShowMil != next.homeShowMil ||
+        prev.homeShowCmPer100m != next.homeShowCmPer100m ||
+        prev.homeShowInPer100yd != next.homeShowInPer100yd ||
+        prev.homeShowSubsonicTransition != next.homeShowSubsonicTransition;
   }
 }
 

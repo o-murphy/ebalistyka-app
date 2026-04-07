@@ -1,116 +1,141 @@
-import 'package:riverpod/riverpod.dart';
-import 'package:ebalistyka/core/models/convertors_state.dart';
-import 'package:ebalistyka/core/providers/app_state_provider.dart'; // Змінений імпорт
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
+import 'package:ebalistyka/core/providers/db_provider.dart';
+import 'package:riverpod/riverpod.dart';
 
 class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
+  Store get _store => ref.read(dbProvider);
+  Owner get _owner => ref.read(ownerProvider);
+
   @override
-  Future<ConvertorsState> build() async {
-    // Отримуємо стан конвертора з глобального стану
-    final appState = await ref.watch(appStateProvider.future);
-    return appState.convertors ?? const ConvertorsState();
+  Future<ConvertorsState> build() async => _load();
+
+  ConvertorsState _load() {
+    final owner = _owner;
+    final existing = _store
+        .box<ConvertorsState>()
+        .query(ConvertorsState_.owner.equals(owner.id))
+        .build()
+        .findFirst();
+    if (existing != null) return existing;
+    final s = ConvertorsState()..owner.target = owner;
+    _store.box<ConvertorsState>().put(s);
+    return s;
   }
 
+  Future<void> _save(ConvertorsState s) async {
+    _store.box<ConvertorsState>().put(s);
+    state = AsyncData(s);
+  }
+
+  // ── Length ────────────────────────────────────────────────────────────────────
+
   Future<void> updateLengthValue(double? valueInInches) async {
-    if (valueInInches != null && valueInInches >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(current.copyWith(lengthValueInch: valueInInches));
-    }
+    if (valueInInches == null || valueInInches < 0) return;
+    final s = state.value ?? _load();
+    s.lengthValueInch = valueInInches;
+    await _save(s);
   }
 
   Future<void> updateLengthUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(lengthUnit: unit));
+    final s = state.value ?? _load();
+    s.lengthUnit = unit;
+    await _save(s);
   }
 
+  // ── Weight ────────────────────────────────────────────────────────────────────
+
   Future<void> updateWeightValue(double? valueInGrains) async {
-    if (valueInGrains != null && valueInGrains >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(current.copyWith(weightValueGrain: valueInGrains));
-    }
+    if (valueInGrains == null || valueInGrains < 0) return;
+    final s = state.value ?? _load();
+    s.weightValueGrain = valueInGrains;
+    await _save(s);
   }
 
   Future<void> updateWeightUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(weightUnit: unit));
+    final s = state.value ?? _load();
+    s.weightUnit = unit;
+    await _save(s);
   }
 
+  // ── Pressure ──────────────────────────────────────────────────────────────────
+
   Future<void> updatePressureValue(double? valueInMmHg) async {
-    if (valueInMmHg != null && valueInMmHg >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(current.copyWith(pressureValueMmHg: valueInMmHg));
-    }
+    if (valueInMmHg == null || valueInMmHg < 0) return;
+    final s = state.value ?? _load();
+    s.pressureValueMmHg = valueInMmHg;
+    await _save(s);
   }
 
   Future<void> updatePressureUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(pressureUnit: unit));
+    final s = state.value ?? _load();
+    s.pressureUnit = unit;
+    await _save(s);
   }
 
+  // ── Temperature ───────────────────────────────────────────────────────────────
+
   Future<void> updateTemperatureValue(double? valueInFahrenheit) async {
-    if (valueInFahrenheit != null) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(
-        current.copyWith(temperatureValueFahrenheit: valueInFahrenheit),
-      );
-    }
+    if (valueInFahrenheit == null) return;
+    final s = state.value ?? _load();
+    s.temperatureValueF = valueInFahrenheit;
+    await _save(s);
   }
 
   Future<void> updateTemperatureUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(temperatureUnit: unit));
+    final s = state.value ?? _load();
+    s.temperatureUnit = unit;
+    await _save(s);
   }
 
+  // ── Torque ────────────────────────────────────────────────────────────────────
+
   Future<void> updateTorqueValue(double? valueInNewtonMeter) async {
-    if (valueInNewtonMeter != null && valueInNewtonMeter >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(current.copyWith(torqueValueNewtonMeter: valueInNewtonMeter));
-    }
+    if (valueInNewtonMeter == null || valueInNewtonMeter < 0) return;
+    final s = state.value ?? _load();
+    s.torqueValueNewtonMeter = valueInNewtonMeter;
+    await _save(s);
   }
 
   Future<void> updateTorqueUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(torqueUnit: unit));
+    final s = state.value ?? _load();
+    s.torqueUnit = unit;
+    await _save(s);
   }
 
-  Future<void> updateAnglesConvertorDistanceValue(double? valueInMeters) async {
-    if (valueInMeters != null && valueInMeters >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(
-        current.copyWith(anglesConvertorDistanceValueMeter: valueInMeters),
-      );
-    }
+  // ── Angles convertor ──────────────────────────────────────────────────────────
+
+  Future<void> updateAnglesConvDistanceValue(double? valueInMeters) async {
+    if (valueInMeters == null || valueInMeters < 0) return;
+    final s = state.value ?? _load();
+    s.anglesConvDistanceValueMeter = valueInMeters;
+    await _save(s);
   }
 
-  Future<void> updateAnglesConvertorDistanceUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(anglesConvertorDistanceUnit: unit));
+  Future<void> updateAnglesConvDistanceUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.anglesConvDistanceUnit = unit;
+    await _save(s);
   }
 
-  Future<void> updateAnglesConvertorAngularValue(double? valueInMil) async {
-    if (valueInMil != null && valueInMil >= 0) {
-      final current = state.value ?? const ConvertorsState();
-      await _save(current.copyWith(anglesConvertorAngularValueMil: valueInMil));
-    }
+  Future<void> updateAnglesConvAngularValue(double? valueInMil) async {
+    if (valueInMil == null || valueInMil < 0) return;
+    final s = state.value ?? _load();
+    s.anglesConvAngularValueMil = valueInMil;
+    await _save(s);
   }
 
-  Future<void> updateAnglesConvertorAngularUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(anglesConvertorAngularUnit: unit));
+  Future<void> updateAnglesConvAngularUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.anglesConvAngularUnit = unit;
+    await _save(s);
   }
 
-  Future<void> updateAnglesConvertorOutputUnit(Unit unit) async {
-    final current = state.value ?? const ConvertorsState();
-    await _save(current.copyWith(anglesConvertorOutputUnit: unit));
-  }
-
-  Future<void> _save(ConvertorsState newState) async {
-    // Оновлюємо локальний стан
-    state = AsyncData(newState);
-
-    // Оновлюємо глобальний стан через appStateProvider
-    final appStateNotifier = ref.read(appStateProvider.notifier);
-    await appStateNotifier.saveConvertorsState(newState);
+  Future<void> updateAnglesConvOutputUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.anglesConvOutputUnit = unit;
+    await _save(s);
   }
 }
 
@@ -119,7 +144,7 @@ final convertorsProvider =
       ConvertorsNotifier.new,
     );
 
-// Синхронний доступ до стану конвертора
+/// Synchronous access — returns defaults while loading.
 final convertorStateProvider = Provider<ConvertorsState>((ref) {
-  return ref.watch(convertorsProvider).value ?? const ConvertorsState();
+  return ref.watch(convertorsProvider).value ?? ConvertorsState();
 });

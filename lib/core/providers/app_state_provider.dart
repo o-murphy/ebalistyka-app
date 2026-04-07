@@ -1,326 +1,281 @@
-// app_state.dart
-import 'package:ebalistyka/core/providers/storage_provider.dart';
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/convertors_state.dart';
-import 'package:ebalistyka/core/models/seed_data.dart';
-import 'package:flutter/material.dart' show debugPrint;
-import 'package:riverpod/riverpod.dart'; // Додайте цей імпорт
+import 'package:ebalistyka/core/providers/db_provider.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:riverpod/riverpod.dart';
+
+// ── AppState ──────────────────────────────────────────────────────────────────
 
 class AppState {
-  // ВСІ дані в одному місці
-  final List<AmmoData> cartridges;
-  final List<SightData> sights;
-  final List<ProfileData> profiles;
-  final AppSettings? settings;
-  final Conditions? conditions;
-  final ConvertorsState? convertors;
-  final String? activeProfileId;
+  final List<Ammo> cartridges;
+  final List<Sight> sights;
+  final List<Profile> profiles;
+  final Profile? activeProfile;
 
   const AppState({
     required this.cartridges,
     required this.sights,
     required this.profiles,
-    this.settings,
-    this.conditions,
-    this.convertors,
-    this.activeProfileId,
+    this.activeProfile,
   });
 
-  // Пустий стан для початку
-  factory AppState.empty() =>
-      const AppState(cartridges: [], sights: [], profiles: []);
+  factory AppState.empty() => const AppState(
+    cartridges: [],
+    sights: [],
+    profiles: [],
+  );
 
-  // Копіювання зі змінами (імутабельність)
   AppState copyWith({
-    List<AmmoData>? cartridges,
-    List<SightData>? sights,
-    List<ProfileData>? profiles,
-    AppSettings? settings,
-    Conditions? conditions,
-    ConvertorsState? convertors,
-    String? activeProfileId,
-  }) {
-    return AppState(
-      cartridges: cartridges ?? this.cartridges,
-      sights: sights ?? this.sights,
-      profiles: profiles ?? this.profiles,
-      settings: settings ?? this.settings,
-      conditions: conditions ?? this.conditions,
-      convertors: convertors ?? this.convertors,
-      activeProfileId: activeProfileId ?? this.activeProfileId,
-    );
-  }
-
-  // Допоміжні методи для цілісності даних
-  List<ProfileData> getValidProfiles() {
-    final validCartridgeIds = cartridges.map((c) => c.id).toSet();
-    final validSightIds = sights.map((s) => s.id).toSet();
-
-    return profiles.where((profile) {
-      return validCartridgeIds.contains(profile.cartridgeId) &&
-          validSightIds.contains(profile.sightId);
-    }).toList();
-  }
+    List<Ammo>? cartridges,
+    List<Sight>? sights,
+    List<Profile>? profiles,
+    Profile? activeProfile,
+    bool clearActiveProfile = false,
+  }) => AppState(
+    cartridges: cartridges ?? this.cartridges,
+    sights: sights ?? this.sights,
+    profiles: profiles ?? this.profiles,
+    activeProfile: clearActiveProfile
+        ? null
+        : (activeProfile ?? this.activeProfile),
+  );
 }
 
+// ── AppStateNotifier ──────────────────────────────────────────────────────────
+
 class AppStateNotifier extends AsyncNotifier<AppState> {
+  Store get _store => ref.read(dbProvider);
+  Owner get _owner => ref.read(ownerProvider);
+
   @override
   Future<AppState> build() async {
-    final storage = ref.read(appStorageProvider);
+    return _load();
+  }
 
-    debugPrint('AppStateNotifier: Loading data from storage...');
+  AppState _load() {
+    final owner = _owner;
 
-    // Завантажуємо дані
-    var cartridges = await storage.loadCartridges();
-    var sights = await storage.loadSights();
-    var profiles = await storage.loadProfiles();
-    final settings = await storage.loadSettings();
-    final conditions = await storage.loadConditions();
-    final convertors = await storage.loadConvertorsState();
-    var activeProfileId = await storage.loadActiveProfileId();
+    var cartridges = _store.box<Ammo>()
+        .query(Ammo_.owner.equals(owner.id))
+        .build()
+        .find();
+    var sights = _store.box<Sight>()
+        .query(Sight_.owner.equals(owner.id))
+        .build()
+        .find();
+    var profiles = _store.box<Profile>()
+        .query(Profile_.owner.equals(owner.id))
+        .order(Profile_.sortOrder)
+        .build()
+        .find();
 
-    // ============================================================
-    // ДОДАЄМО SEED ДАНІ, ЯКЩО СХОВИЩЕ ПУСТЕ
-    // ============================================================
-
-    // Seed sights
-    if (sights.isEmpty) {
-      debugPrint('AppStateNotifier: No sights found, adding seed sights...');
-      sights = [seedSight]; // seedSights має бути List<Sight> абощо
-      for (final sight in sights) {
-        await storage.saveSight(sight);
-      }
+    // ── Seed on first run ──────────────────────────────────────────────────────
+    if (cartridges.isEmpty && sights.isEmpty && profiles.isEmpty) {
+      debugPrint('AppStateNotifier: seeding initial data...');
+      _seed(owner);
+      cartridges = _store.box<Ammo>()
+          .query(Ammo_.owner.equals(owner.id))
+          .build()
+          .find();
+      sights = _store.box<Sight>()
+          .query(Sight_.owner.equals(owner.id))
+          .build()
+          .find();
+      profiles = _store.box<Profile>()
+          .query(Profile_.owner.equals(owner.id))
+          .order(Profile_.sortOrder)
+          .build()
+          .find();
     }
 
-    // Seed cartridges
-    if (cartridges.isEmpty) {
-      debugPrint(
-        'AppStateNotifier: No cartridges found, adding seed cartridges...',
-      );
-      cartridges = seedCartridges; // seedCartridges має бути List<Cartridge>
-      for (final cartridge in cartridges) {
-        await storage.saveCartridge(cartridge);
-      }
-    }
-
-    // Seed profiles
-    if (profiles.isEmpty) {
-      debugPrint(
-        'AppStateNotifier: No profiles found, adding seed profiles...',
-      );
-      profiles =
-          seedShotProfiles; // seedShotProfiles має бути List<ShotProfile>
-      for (final profile in profiles) {
-        await storage.saveProfile(profile);
-      }
-
-      // Якщо немає активного профілю і ми додали seed, встановлюємо перший як активний
-      if (activeProfileId == null && profiles.isNotEmpty) {
-        activeProfileId = profiles.first.id;
-        await storage.saveActiveProfileId(activeProfileId);
-      }
-    }
+    final activeProfile = owner.activeProfile.target
+        ?? (profiles.isNotEmpty ? profiles.first : null);
 
     debugPrint(
-      'AppStateNotifier: Loaded ${cartridges.length} cartridges, ${sights.length} sights, ${profiles.length} profiles',
+      'AppStateNotifier: ${cartridges.length} ammo, '
+      '${sights.length} sights, ${profiles.length} profiles',
     );
-    debugPrint('AppStateNotifier: Active profile ID: $activeProfileId');
 
     return AppState(
       cartridges: cartridges,
       sights: sights,
       profiles: profiles,
-      settings: settings,
-      conditions: conditions,
-      convertors: convertors,
-      activeProfileId: activeProfileId,
+      activeProfile: activeProfile,
     );
   }
 
-  Future<void> saveActiveProfileId(String id) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveActiveProfileId(id);
-    final currentState = state.value!;
-    state = AsyncData(currentState.copyWith(activeProfileId: id));
+  void _seed(Owner owner) {
+    _store.runInTransaction(TxMode.write, () {
+      final sight = Sight()
+        ..name = 'Generic Long-Range Scope'
+        ..owner.target = owner;
+      _store.box<Sight>().put(sight);
+
+      final weapon = Weapon()
+        ..name = '.338 Lapua Magnum'
+        ..caliberInch = 0.338
+        ..twistInch = 10.0
+        ..owner.target = owner;
+      _store.box<Weapon>().put(weapon);
+
+      final ammos = [
+        Ammo()
+          ..name = '.338LM UKROP 250GR SMK'
+          ..dragTypeValue = 'g7'
+          ..weightGrain = 250.0
+          ..caliberInch = 0.338
+          ..lengthInch = 1.555
+          ..bcG7 = 0.314
+          ..muzzleVelocityMps = 888.0
+          ..powderTemperatureC = 29.0
+          ..powderSensitivityFrac = 0.02
+          ..zeroDistanceMeter = 100.0
+          ..owner.target = owner,
+        Ammo()
+          ..name = '.338LM Hornady 250GR BTHP'
+          ..dragTypeValue = 'g7'
+          ..weightGrain = 250.0
+          ..caliberInch = 0.338
+          ..lengthInch = 1.567
+          ..bcG7 = 0.322
+          ..muzzleVelocityMps = 885.0
+          ..powderTemperatureC = 15.0
+          ..powderSensitivityFrac = 0.02
+          ..zeroDistanceMeter = 100.0
+          ..owner.target = owner,
+        Ammo()
+          ..name = '.338LM Lapua 300GR SMK'
+          ..dragTypeValue = 'g7'
+          ..weightGrain = 300.0
+          ..caliberInch = 0.338
+          ..lengthInch = 1.700
+          ..bcG7 = 0.381
+          ..muzzleVelocityMps = 825.0
+          ..powderTemperatureC = 15.0
+          ..powderSensitivityFrac = 0.123
+          ..zeroDistanceMeter = 100.0
+          ..owner.target = owner,
+      ];
+      _store.box<Ammo>().putMany(ammos);
+
+      for (var i = 0; i < ammos.length; i++) {
+        final profile = Profile()
+          ..name = ammos[i].name
+          ..sortOrder = i
+          ..weapon.target = weapon
+          ..sight.target = sight
+          ..ammo.target = ammos[i]
+          ..owner.target = owner;
+        _store.box<Profile>().put(profile);
+      }
+    });
   }
 
-  // ---- Операції з патронами ----
-  Future<void> saveCartridge(AmmoData cartridge) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveCartridge(cartridge);
-    final currentState = state.value!;
-    final newCartridges = [...currentState.cartridges];
-    final index = newCartridges.indexWhere((c) => c.id == cartridge.id);
-    if (index >= 0) {
-      newCartridges[index] = cartridge;
+  // ── Active profile ────────────────────────────────────────────────────────────
+
+  Future<void> setActiveProfile(Profile profile) async {
+    final owner = _owner;
+    owner.activeProfile.target = profile;
+    _store.box<Owner>().put(owner);
+    state = AsyncData(_load());
+  }
+
+  // ── Ammo CRUD ─────────────────────────────────────────────────────────────────
+
+  Future<void> saveAmmo(Ammo ammo) async {
+    ammo.owner.target = _owner;
+    _store.box<Ammo>().put(ammo);
+    // Full reload so activeProfile.ammo.target reflects the updated entity.
+    state = AsyncData(_load());
+  }
+
+  Future<void> deleteAmmo(int id) async {
+    _store.runInTransaction(TxMode.write, () {
+      // Nullify ammo relation on linked profiles (keep profiles, just unlink)
+      final linked = _store.box<Profile>()
+          .query(Profile_.ammo.equals(id))
+          .build()
+          .find();
+      for (final p in linked) {
+        p.ammo.targetId = 0;
+        _store.box<Profile>().put(p);
+      }
+      _store.box<Ammo>().remove(id);
+    });
+    state = AsyncData(_load());
+  }
+
+  // ── Sight CRUD ────────────────────────────────────────────────────────────────
+
+  Future<void> saveSight(Sight sight) async {
+    sight.owner.target = _owner;
+    _store.box<Sight>().put(sight);
+    // Full reload so activeProfile.sight.target reflects the updated entity.
+    state = AsyncData(_load());
+  }
+
+  Future<void> deleteSight(int id) async {
+    _store.runInTransaction(TxMode.write, () {
+      final linked = _store.box<Profile>()
+          .query(Profile_.sight.equals(id))
+          .build()
+          .find();
+      for (final p in linked) {
+        p.sight.targetId = 0;
+        _store.box<Profile>().put(p);
+      }
+      _store.box<Sight>().remove(id);
+    });
+    state = AsyncData(_load());
+  }
+
+  // ── Profile CRUD ──────────────────────────────────────────────────────────────
+
+  Future<void> saveProfile(Profile profile) async {
+    profile.owner.target = _owner;
+    _store.box<Profile>().put(profile);
+    // Full reload so activeProfile is always fresh from ObjectBox.
+    state = AsyncData(_load());
+  }
+
+  Future<void> deleteProfile(int id) async {
+    final wasActive = state.value?.activeProfile?.id == id;
+    _store.box<Profile>().remove(id);
+    final fresh = _load();
+    // If deleted profile was active — pick the first remaining profile.
+    if (wasActive && fresh.activeProfile == null && fresh.profiles.isNotEmpty) {
+      await setActiveProfile(fresh.profiles.first);
     } else {
-      newCartridges.add(cartridge);
-    }
-    state = AsyncData(currentState.copyWith(cartridges: newCartridges));
-  }
-
-  Future<void> deleteCartridge(String id) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.deleteCartridge(id);
-    final currentState = state.value!;
-    final newCartridges = currentState.cartridges
-        .where((c) => c.id != id)
-        .toList();
-    final newProfiles = currentState.profiles
-        .where((p) => p.cartridgeId != id)
-        .toList();
-    state = AsyncData(
-      currentState.copyWith(cartridges: newCartridges, profiles: newProfiles),
-    );
-    for (final profile in currentState.profiles.where(
-      (p) => p.cartridgeId == id,
-    )) {
-      await storage.deleteProfile(profile.id);
+      state = AsyncData(fresh);
     }
   }
 
-  // ---- Операції з прицілами ----
-  Future<void> saveSight(SightData sight) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveSight(sight);
-    final currentState = state.value!;
-    final newSights = [...currentState.sights];
-    final index = newSights.indexWhere((s) => s.id == sight.id);
-    if (index >= 0) {
-      newSights[index] = sight;
-    } else {
-      newSights.add(sight);
-    }
-    state = AsyncData(currentState.copyWith(sights: newSights));
-  }
-
-  Future<void> deleteSight(String id) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.deleteSight(id);
-    final currentState = state.value!;
-    final newSights = currentState.sights.where((s) => s.id != id).toList();
-    final newProfiles = currentState.profiles
-        .where((p) => p.sightId != id)
-        .toList();
-    state = AsyncData(
-      currentState.copyWith(sights: newSights, profiles: newProfiles),
-    );
-    for (final profile in currentState.profiles.where((p) => p.sightId == id)) {
-      await storage.deleteProfile(profile.id);
-    }
-  }
-
-  // ---- Операції з профілями ----
-  Future<void> saveProfile(ProfileData profile) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveProfile(profile);
-    final currentState = state.value!;
-    final newProfiles = [...currentState.profiles];
-    final index = newProfiles.indexWhere((p) => p.id == profile.id);
-    if (index >= 0) {
-      newProfiles[index] = profile;
-    } else {
-      newProfiles.add(profile);
-    }
-    state = AsyncData(currentState.copyWith(profiles: newProfiles));
-  }
-
-  Future<void> deleteProfile(String id) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.deleteProfile(id);
-    final currentState = state.value!;
-    final newProfiles = currentState.profiles.where((p) => p.id != id).toList();
-    state = AsyncData(currentState.copyWith(profiles: newProfiles));
-  }
-
-  // Додайте в AppStateNotifier (app_state.dart)
-  Future<void> moveProfileToFirst(String id) async {
-    final storage = ref.read(appStorageProvider);
-    final currentState = state.value!;
-
-    final currentIndex = currentState.profiles.indexWhere((p) => p.id == id);
-    if (currentIndex <= 0) return; // Вже перший або не знайдено
-
-    // Створюємо новий порядок
-    final reorderedProfiles = [
-      currentState.profiles[currentIndex],
-      ...currentState.profiles.sublist(0, currentIndex),
-      ...currentState.profiles.sublist(currentIndex + 1),
-    ];
-
-    // Зберігаємо новий порядок у сховищі
-    for (final profile in reorderedProfiles) {
-      await storage.saveProfile(profile);
-    }
-
-    // Оновлюємо стан
-    state = AsyncData(currentState.copyWith(profiles: reorderedProfiles));
-  }
-
-  // ---- Допоміжні геттери ----
-  List<ProfileData> getValidProfiles() {
-    return state.value?.getValidProfiles() ?? [];
-  }
-
-  ProfileData? getActiveProfile() {
-    final appState = state.value;
-    if (appState?.activeProfileId == null) return null;
-    return appState?.profiles.firstWhere(
-      (p) => p.id == appState.activeProfileId,
-      orElse: () => throw Exception('Active profile not found'),
-    );
-  }
-
-  Future<void> saveSettings(AppSettings settings) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveSettings(settings);
-
-    final currentState = state.value!;
-    state = AsyncData(currentState.copyWith(settings: settings));
-  }
-
-  Future<void> saveConditions(Conditions conditions) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveConditions(conditions);
-
-    final currentState = state.value!;
-    state = AsyncData(currentState.copyWith(conditions: conditions));
-  }
-
-  Future<void> saveConvertorsState(ConvertorsState convertors) async {
-    final storage = ref.read(appStorageProvider);
-    await storage.saveConvertorsState(convertors);
-
-    final currentState = state.value!;
-    state = AsyncData(currentState.copyWith(convertors: convertors));
+  Future<void> reorderProfile(int id, int newSortOrder) async {
+    final profile = _store.box<Profile>().get(id);
+    if (profile == null) return;
+    profile.sortOrder = newSortOrder;
+    _store.box<Profile>().put(profile);
+    state = AsyncData(_load());
   }
 }
+
+// ── Providers ─────────────────────────────────────────────────────────────────
 
 final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
 
-// Селектори для зручності
-final cartridgesProvider = Provider((ref) {
-  final appState = ref.watch(appStateProvider);
-  return appState.value?.cartridges ?? [];
+final cartridgesProvider = Provider<List<Ammo>>((ref) {
+  return ref.watch(appStateProvider).value?.cartridges ?? [];
 });
 
-final sightsProvider = Provider((ref) {
-  final appState = ref.watch(appStateProvider);
-  return appState.value?.sights ?? [];
+final sightsProvider = Provider<List<Sight>>((ref) {
+  return ref.watch(appStateProvider).value?.sights ?? [];
 });
 
-final profilesProvider = Provider((ref) {
-  final appState = ref.watch(appStateProvider);
-  return appState.value?.profiles ?? [];
+final profilesProvider = Provider<List<Profile>>((ref) {
+  return ref.watch(appStateProvider).value?.profiles ?? [];
 });
 
-final validProfilesProvider = Provider((ref) {
-  final notifier = ref.watch(appStateProvider.notifier);
-  return notifier.getValidProfiles();
+final activeProfileProvider = Provider<Profile?>((ref) {
+  return ref.watch(appStateProvider).value?.activeProfile;
 });

@@ -1,103 +1,127 @@
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/providers/app_state_provider.dart'; // Змінений імпорт
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-class ShotConditionsNotifier extends AsyncNotifier<Conditions> {
+class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
+  Store get _store => ref.read(dbProvider);
+  Owner get _owner => ref.read(ownerProvider);
+
   @override
-  Future<Conditions> build() async {
-    // Отримуємо умови з глобального стану
-    final appState = await ref.watch(appStateProvider.future);
-    final conditions = appState.conditions;
+  Future<ShootingConditions> build() async => _load();
 
-    Conditions loaded = conditions ?? Conditions.withDefaults();
-    final laDeg = loaded.lookAngle.in_(Unit.degree);
-    if (laDeg.abs() > 45) {
-      loaded = loaded.copyWith(lookAngle: Angular.degree(0.0));
-    }
-
-    return loaded;
+  ShootingConditions _load() {
+    final owner = _owner;
+    final existing = _store
+        .box<ShootingConditions>()
+        .query(ShootingConditions_.owner.equals(owner.id))
+        .build()
+        .findFirst();
+    if (existing != null) return existing;
+    final cond = ShootingConditions()..owner.target = owner;
+    _store.box<ShootingConditions>().put(cond);
+    return cond;
   }
 
-  Future<void> updateAtmo(AtmoData atmo) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(atmo: atmo));
+  Future<void> _save(ShootingConditions cond) async {
+    _store.box<ShootingConditions>().put(cond);
+    state = AsyncData(cond);
   }
 
-  Future<void> updateWinds(WindData wind) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(wind: wind));
+  // ── Distance / geometry ───────────────────────────────────────────────────────
+
+  Future<void> updateDistance(double meters) async {
+    final s = state.value ?? _load();
+    s.distanceMeter = meters;
+    await _save(s);
   }
 
   Future<void> updateLookAngle(double degrees) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(lookAngle: Angular.degree(degrees)));
+    final s = state.value ?? _load();
+    s.lookAngleRad = Angular.degree(degrees).in_(Unit.radian);
+    await _save(s);
   }
 
-  Future<void> updateTargetDistance(double meters) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(distance: Distance.meter(meters)));
+  Future<void> updateAltitude(double meters) async {
+    final s = state.value ?? _load();
+    s.altitudeMeter = meters;
+    await _save(s);
   }
+
+  // ── Atmosphere ────────────────────────────────────────────────────────────────
+
+  Future<void> updateTemperature(double celsius) async {
+    final s = state.value ?? _load();
+    s.temperatureC = celsius;
+    await _save(s);
+  }
+
+  Future<void> updatePressure(double hpa) async {
+    final s = state.value ?? _load();
+    s.pressurehPa = hpa;
+    await _save(s);
+  }
+
+  Future<void> updateHumidity(double fraction) async {
+    final s = state.value ?? _load();
+    s.humidityFrac = fraction;
+    await _save(s);
+  }
+
+  Future<void> updatePowderTemperature(double celsius) async {
+    final s = state.value ?? _load();
+    s.powderTemperatureC = celsius;
+    await _save(s);
+  }
+
+  // ── Wind ──────────────────────────────────────────────────────────────────────
+
+  Future<void> updateWindSpeed(double mps) async {
+    final s = state.value ?? _load();
+    s.windSpeedMps = mps;
+    await _save(s);
+  }
+
+  Future<void> updateWindDirection(double degrees) async {
+    final s = state.value ?? _load();
+    s.windDirectionDeg = degrees;
+    await _save(s);
+  }
+
+  // ── Flags ─────────────────────────────────────────────────────────────────────
 
   Future<void> updateUsePowderSensitivity(bool value) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(usePowderSensitivity: value));
+    final s = state.value ?? _load();
+    s.usePowderSensitivity = value;
+    await _save(s);
   }
 
   Future<void> updateUseDiffPowderTemp(bool value) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(useDiffPowderTemp: value));
+    final s = state.value ?? _load();
+    s.useDiffPowderTemp = value;
+    await _save(s);
   }
 
   Future<void> updateUseCoriolis(bool value) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(useCoriolis: value));
+    final s = state.value ?? _load();
+    s.useCoriolis = value;
+    await _save(s);
   }
 
   Future<void> updateLatitude(double? degrees) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(latitudeDeg: degrees));
+    final s = state.value ?? _load();
+    s.latitudeDeg = degrees ?? 0.0;
+    await _save(s);
   }
 
   Future<void> updateAzimuth(double? degrees) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.copyWith(azimuthDeg: degrees));
-  }
-
-  Future<void> updateWindSpeed(double mps) async {
-    final current = state.value;
-    if (current == null) return;
-
-    final existing = current.wind;
-    final dir = existing.directionFrom;
-
-    await _save(
-      current.copyWith(
-        wind: WindData(velocity: Velocity.mps(mps), directionFrom: dir),
-      ),
-    );
-  }
-
-  Future<void> _save(Conditions newConditions) async {
-    // Оновлюємо локальний стан
-    state = AsyncData(newConditions);
-
-    // Оновлюємо глобальний стан через appStateProvider
-    final appStateNotifier = ref.read(appStateProvider.notifier);
-    await appStateNotifier.saveConditions(newConditions);
+    final s = state.value ?? _load();
+    s.azimuthDeg = degrees ?? 0.0;
+    await _save(s);
   }
 }
 
 final shotConditionsProvider =
-    AsyncNotifierProvider<ShotConditionsNotifier, Conditions>(
+    AsyncNotifierProvider<ShotConditionsNotifier, ShootingConditions>(
       ShotConditionsNotifier.new,
     );

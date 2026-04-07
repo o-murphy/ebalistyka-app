@@ -217,24 +217,24 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
 - |Done| `lib/core/extensions/settings_extensions.dart`
 - |Done| `lib/core/extensions/convertors_extensions.dart`
 - |Done| `lib/core/extensions/profile_extensions.dart`
-- |?| Do we need to add https://pub.dev/packages/json_serializable, https://pub.dev/packages/json_annotation to entities.dart?
+- |Late| Do we need to add https://pub.dev/packages/json_serializable, https://pub.dev/packages/json_annotation to entities.dart?
 
-### Step - before 5, 6, 7 - Think
+### |Done| - before 5, 6, 7 - Think
 - Do we need separate Providers/Notifiers for different settings sections? Я думаю треба центральний провайде і прості селектори, враховуючи що кілька секцій може бути використано одним віджетом - треба один сорс оф тру
 - ConvertorsNotifier - може бути окремим, не зав'язаний нікуди окрім convertors_screen.
 - Провайдер для User/Profile/Rifle/Ammo/Sight - має бути один сорс оф тру, окрім треба написати логіку: коли коли Rifle/Ammo/Sight relative to Profile - отримує внутрішню зміну, Profile або профайл нотіфєр має про це дізнатись. Коли ж profile є активним - то юзермає дізнатись про всі зміни в профайлі або у relative сутностях профіля. Можливо схема зі єдиним агрегатором для StreamProvider та селекторами, або якесь інше рішення.
 
-### Step 5 — Rewrite `AppStateNotifier`
+### |Done| Step 5 — Rewrite `AppStateNotifier`
 - `build()`: читає всі Box<T> з ObjectBox
 - CRUD через `store.runInTransaction()`
 - `saveSettings()` → `GeneralSettings` + `UnitSettings` в ObjectBox
 - `saveConditions()` → `ShootingConditions` в ObjectBox
 
-### Step 6 — Simplify `ShotProfileNotifier`
+### |Done| Step 6 — Simplify `ShotProfileNotifier`
 - Прибрати `_resolve()`, backward-compat migration (backward compat - взагалі не потрібен)
 - Делегувати writes до `AppStateNotifier`
 
-### Step 7 — Update `SettingsNotifier` / `ConvertorsNotifier`
+### |Done| Step 7 — Update `SettingsNotifier` / `ConvertorsNotifier`
 - Читають з `appStateProvider`, пишуть через `appStateProvider.notifier`
 
 ### Step 8 — Delete old code
