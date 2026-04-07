@@ -19,7 +19,7 @@ import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── State ────────────────────────────────────────────────────────────────────
 

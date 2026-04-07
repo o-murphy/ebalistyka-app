@@ -19,7 +19,7 @@ import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/sight.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

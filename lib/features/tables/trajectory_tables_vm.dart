@@ -14,7 +14,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── State ────────────────────────────────────────────────────────────────────
 

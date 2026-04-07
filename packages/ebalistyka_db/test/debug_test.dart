@@ -22,23 +22,26 @@ void main() {
     sightBox.put(sight);
 
     // Додаємо набій
-    final cartridge = Cartridge()
+    final ammo = Ammo()
       ..name = ".308 Win"
       ..caliber = 7.62
       ..weight = 168.0
       ..bcG1 = 0.462;
 
-    final cartridgeBox = store.box<Cartridge>();
-    cartridgeBox.put(cartridge);
+    final cartridgeBox = store.box<Ammo>();
+    cartridgeBox.put(ammo);
+
+    final weapon = Weapon()
+      ..name = "Мій ствол"
+      ..caliber = 7.62
+      ..twist = 254.0;
 
     // Додаємо профіль
-    final profile = Profile()
-      ..name = "Мій профіль"
-      ..caliber = 7.62
-      ..rTwist = 254.0;
+    final profile = Profile()..name = "Мій профіль";
 
+    profile.weapon.target = weapon;
     profile.sight.target = sight;
-    profile.cartridge.target = cartridge;
+    profile.ammo.target = ammo;
 
     final profileBox = store.box<Profile>();
     profileBox.put(profile);
@@ -51,11 +54,11 @@ void main() {
 
     // Прив'язуємо все до власника
     sight.owner.target = owner;
-    cartridge.owner.target = owner;
+    ammo.owner.target = owner;
     profile.owner.target = owner;
 
     sightBox.put(sight);
-    cartridgeBox.put(cartridge);
+    cartridgeBox.put(ammo);
     profileBox.put(profile);
 
     print('\n=== БАЗА ДАНИХ ===');

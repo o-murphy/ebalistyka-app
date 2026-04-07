@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/models/app_settings.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ─── Table Configuration Screen ───────────────────────────────────────────────
 

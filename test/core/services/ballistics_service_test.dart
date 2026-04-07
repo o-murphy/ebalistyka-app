@@ -12,7 +12,7 @@ import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
 import 'package:ebalistyka/core/models/sight.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 

@@ -7,7 +7,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 class QuickActionsPanel extends ConsumerWidget {
   const QuickActionsPanel({super.key});

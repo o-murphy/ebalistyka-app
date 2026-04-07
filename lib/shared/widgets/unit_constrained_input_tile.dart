@@ -2,7 +2,7 @@ import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dar
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Shared tile logic ───────────────────────────────────────────────────────
 

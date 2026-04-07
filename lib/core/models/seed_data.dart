@@ -8,7 +8,7 @@
 //   sc_height  / 10   → mm
 //   r_twist    / 100  → inch
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 import 'cartridge.dart';
 import 'conditions_data.dart';
 import 'rifle.dart';
@@ -21,10 +21,10 @@ import 'sight.dart';
 final seedRifle = Rifle(
   id: 'seed-rifle-338lm',
   name: '.338 Lapua Magnum',
-  description: 'Generic .338LM platform',
+  vendor: 'Generic .338LM platform',
   sightHeight: Distance.millimeter(8.5),
   twist: Distance.inch(10.0),
-  caliberDiameter: Distance.inch(0.338),
+  caliber: Distance.inch(0.338),
 );
 
 // ── Sight ─────────────────────────────────────────────────────────────────────

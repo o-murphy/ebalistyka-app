@@ -11,8 +11,13 @@
 
 import 'dart:math' as math;
 
-import 'package:bclibc_ffi/bclibc_bindings.g.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/ffi/bclibc_bindings.g.dart';
+import 'package:bclibc_ffi/ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/src/conditions.dart';
+import 'package:bclibc_ffi/src/constants.dart';
+import 'package:bclibc_ffi/src/shot.dart';
+import 'package:bclibc_ffi/src/trajectory_data.dart';
+import 'package:bclibc_ffi/src/unit.dart';
 
 // ---------------------------------------------------------------------------
 // Default config constants (mirror TS DEFAULT_CONFIG)

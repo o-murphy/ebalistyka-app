@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:async';
+import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';

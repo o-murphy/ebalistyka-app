@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Core conversion & validation logic ──────────────────────────────────────
 

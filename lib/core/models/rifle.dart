@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -7,13 +7,13 @@ import '_storage.dart';
 class Rifle {
   final String id;
   final String name;
-  final String? description;
+  final String? vendor;
   final Distance sightHeight;
   final Distance twist;
   final Angular zeroElevation;
   // Caliber diameter (inches) — used for filtering cartridges by caliber.
   // Optional: user-created rifles may not have this set.
-  final Distance? caliberDiameter;
+  final Distance? caliber;
   // Barrel length — optional, must be > 0 if set.
   final Distance? barrelLength;
   final String? notes;
@@ -21,11 +21,11 @@ class Rifle {
   Rifle({
     String? id,
     required this.name,
-    this.description,
+    this.vendor,
     required this.sightHeight,
     required this.twist,
     Angular? zeroElevation,
-    this.caliberDiameter,
+    this.caliber,
     this.barrelLength,
     this.notes,
   }) : id = id ?? const Uuid().v4(),
@@ -42,21 +42,21 @@ class Rifle {
 
   Rifle copyWith({
     String? name,
-    String? description,
+    String? vendor,
     Distance? sightHeight,
     Distance? twist,
     Angular? zeroElevation,
-    Distance? caliberDiameter,
+    Distance? caliber,
     Distance? barrelLength,
     String? notes,
   }) => Rifle(
     id: id,
     name: name ?? this.name,
-    description: description ?? this.description,
+    vendor: vendor ?? this.vendor,
     sightHeight: sightHeight ?? this.sightHeight,
     twist: twist ?? this.twist,
     zeroElevation: zeroElevation ?? this.zeroElevation,
-    caliberDiameter: caliberDiameter ?? this.caliberDiameter,
+    caliber: caliber ?? this.caliber,
     barrelLength: barrelLength ?? this.barrelLength,
     notes: notes ?? this.notes,
   );
@@ -64,15 +64,13 @@ class Rifle {
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
-    if (description != null) 'description': description,
+    if (vendor != null) 'vendor': vendor,
     'weapon': {
       'sightHeight': sightHeight.in_(StorageUnits.weaponSightHeight),
       'twist': twist.in_(StorageUnits.weaponTwist),
       'zeroElevation': zeroElevation.in_(StorageUnits.weaponZeroElevation),
-      if (caliberDiameter != null)
-        'caliberDiameter': caliberDiameter!.in_(
-          StorageUnits.projectileDiameter,
-        ),
+      if (caliber != null)
+        'caliberDiameter': caliber!.in_(StorageUnits.projectileDiameter),
       if (barrelLength != null)
         'barrelLength': barrelLength!.in_(StorageUnits.weaponBarrelLength),
     },
@@ -85,7 +83,7 @@ class Rifle {
     return Rifle(
       id: json['id'] as String,
       name: json['name'] as String,
-      description: json['description'] as String?,
+      vendor: json['vendor'] as String?,
       sightHeight: Distance(
         (w['sightHeight'] as num).toDouble(),
         StorageUnits.weaponSightHeight,
@@ -95,7 +93,7 @@ class Rifle {
         (w['zeroElevation'] as num).toDouble(),
         StorageUnits.weaponZeroElevation,
       ),
-      caliberDiameter: caliberRaw != null
+      caliber: caliberRaw != null
           ? Distance(caliberRaw.toDouble(), StorageUnits.projectileDiameter)
           : null,
       barrelLength: (w['barrelLength'] as num?) != null

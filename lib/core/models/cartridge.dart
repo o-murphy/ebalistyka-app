@@ -1,6 +1,6 @@
 import 'package:uuid/uuid.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 import '_storage.dart';
 import 'conditions_data.dart';

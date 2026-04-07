@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/shared/widgets/unit_picker_button.dart';
 import 'package:flutter/material.dart';
 

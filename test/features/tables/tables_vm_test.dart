@@ -22,7 +22,7 @@ import 'package:ebalistyka/core/models/sight.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 

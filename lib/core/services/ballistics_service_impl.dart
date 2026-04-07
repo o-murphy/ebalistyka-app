@@ -1,11 +1,10 @@
-import 'package:bclibc_ffi/bclibc_bindings.g.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:flutter/foundation.dart' show compute;
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/models/shot_profile.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 

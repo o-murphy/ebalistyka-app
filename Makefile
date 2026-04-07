@@ -54,4 +54,4 @@ unit:
 
 clean:
 	$(RM_DIR) build/bclibc
-	$(RM_DIR) packages/bclibc_ffi/lib/*.g.dart
+	$(RM_DIR) packages/bclibc_ffi/lib/ffi/*.g.dart

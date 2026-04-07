@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 class SettingsNotifier extends AsyncNotifier<AppSettings> {
   @override

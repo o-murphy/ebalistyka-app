@@ -9,7 +9,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 class RifleWizardScreen extends ConsumerStatefulWidget {
   const RifleWizardScreen({this.initial, this.caliberEditable, super.key});
@@ -49,8 +49,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
     final r = widget.initial;
     _nameCtrl = TextEditingController(text: r?.name ?? '');
     _caliberRaw =
-        r?.caliberDiameter?.in_(FC.bulletDiameter.rawUnit) ??
-        FC.bulletDiameter.minRaw;
+        r?.caliber?.in_(FC.bulletDiameter.rawUnit) ?? FC.bulletDiameter.minRaw;
     _sightHeightRaw =
         r?.sightHeight.in_(FC.sightHeight.rawUnit) ?? FC.sightHeight.minRaw;
     _twistRaw = r != null
@@ -86,10 +85,10 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
     return Rifle(
       id: widget.initial?.id,
       name: _nameCtrl.text.trim(),
-      description: widget.initial?.description,
+      vendor: widget.initial?.vendor,
       sightHeight: Distance(_sightHeightRaw, FC.sightHeight.rawUnit),
       twist: Distance(signedTwist, FC.twist.rawUnit),
-      caliberDiameter: Distance(_caliberRaw, FC.bulletDiameter.rawUnit),
+      caliber: Distance(_caliberRaw, FC.bulletDiameter.rawUnit),
       barrelLength: (_hasBarrelLength && _barrelLengthRaw != null)
           ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit)
           : null,
@@ -155,8 +154,8 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                 else
                   InfoListTile(
                     label: 'Caliber diameter',
-                    value: widget.initial?.caliberDiameter != null
-                        ? fmt.diameter(widget.initial!.caliberDiameter!)
+                    value: widget.initial?.caliber != null
+                        ? fmt.diameter(widget.initial!.caliber!)
                         : '—',
                     icon: Icons.circle_outlined,
                   ),

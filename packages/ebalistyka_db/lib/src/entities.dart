@@ -20,7 +20,7 @@ class Owner {
   final sights = ToMany<Sight>();
 
   @Backlink('owner')
-  final cartridges = ToMany<Cartridge>();
+  final cartridges = ToMany<Ammo>();
 
   @Backlink('owner')
   final profiles = ToMany<Profile>();
@@ -36,6 +36,25 @@ class Owner {
 
   @Backlink('owner')
   final convertorsState = ToMany<ConvertorsState>();
+}
+
+@Entity()
+class Weapon {
+  @Id()
+  int id = 0;
+
+  @Index()
+  String name = "";
+
+  double caliber = 0.0;
+  double twist = 0.0;
+
+  double? barrelLength;
+
+  String? vendor;
+  String? image;
+
+  final owner = ToOne<Owner>();
 }
 
 @Entity()
@@ -80,7 +99,7 @@ class Sight {
 }
 
 @Entity()
-class Cartridge {
+class Ammo {
   @Id()
   int id = 0;
 
@@ -140,7 +159,7 @@ class Cartridge {
   String? vendor;
   String? image;
 
-  @Backlink('cartridge')
+  @Backlink('ammo')
   final profiles = ToMany<Profile>();
 
   final owner = ToOne<Owner>();
@@ -154,17 +173,9 @@ class Profile {
   @Index()
   String name = "";
 
-  double caliber = 0.0;
-  double rTwist = 0.0;
-
-  double? barrelLength;
-
-  String? caliberName;
-  String? vendor;
-  String? image;
-
+  final weapon = ToOne<Weapon>();
   final sight = ToOne<Sight>();
-  final cartridge = ToOne<Cartridge>();
+  final ammo = ToOne<Ammo>();
 
   final owner = ToOne<Owner>();
 }

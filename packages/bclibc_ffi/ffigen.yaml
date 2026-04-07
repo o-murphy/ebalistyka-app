@@ -4,7 +4,7 @@ description: |
   Bindings for the bclibc ballistics engine C API.
   
   Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
-output: 'lib/bclibc_bindings.g.dart'
+output: 'lib/ffi/bclibc_bindings.g.dart'
 
 headers:
   entry-points:

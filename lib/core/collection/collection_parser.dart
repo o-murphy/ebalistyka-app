@@ -4,7 +4,7 @@ import 'package:ebalistyka/core/models/cartridge.dart';
 import 'package:ebalistyka/core/models/conditions_data.dart';
 import 'package:ebalistyka/core/models/rifle.dart';
 import 'package:ebalistyka/core/models/sight.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 class BuiltinCollection {
   final List<Rifle> rifles;
@@ -64,12 +64,10 @@ abstract final class CollectionParser {
         (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
     return Rifle(
       name: j['name'] as String,
-      description: j['vendor'] as String?,
+      vendor: j['vendor'] as String?,
       sightHeight: Distance.millimeter(0.0),
       twist: Distance.inch((j['rTwist'] as num).toDouble()),
-      caliberDiameter: diameterInch != null
-          ? Distance.inch(diameterInch)
-          : null,
+      caliber: diameterInch != null ? Distance.inch(diameterInch) : null,
       barrelLength: barrelRaw != null
           ? Distance(barrelRaw.toDouble(), Unit.inch)
           : null,

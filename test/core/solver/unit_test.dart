@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:bclibc_ffi/bclibc_ffi.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 
 void main() {
   group('Angular normalization', () {

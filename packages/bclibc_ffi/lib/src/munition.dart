@@ -1,5 +1,5 @@
-import 'package:bclibc_ffi/solver/drag_model.dart';
-import 'package:bclibc_ffi/solver/unit.dart';
+import 'package:bclibc_ffi/src/drag_model.dart';
+import 'package:bclibc_ffi/src/unit.dart';
 
 class Weapon {
   final Distance sightHeight;
