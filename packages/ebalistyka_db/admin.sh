@@ -1,31 +1,24 @@
 #!/bin/bash
 
-# Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
+
+DB_DIR="${HOME}/.eBallistyka"
 
 echo "========================================="
 echo "   ObjectBox Database Manager"
+echo "   DB: ${DB_DIR}"
 echo "========================================="
 
-# Перевіряємо чи існує база даних
-if [ -d "objectbox" ] && [ -f "objectbox/data.mdb" ]; then
+if [ -f "${DB_DIR}/data.mdb" ]; then
     echo -e "${GREEN}✅ База даних знайдена!${NC}"
-    echo "   Розмір: $(du -sh objectbox | cut -f1)"
-    echo "   Записів в Sight: $(dart -c 'print(require("objectbox.g.dart")...' 2>/dev/null || echo "?")"
+    echo "   Розмір: $(du -sh "${DB_DIR}" | cut -f1)"
 else
-    echo -e "${YELLOW}⚠️  База даних не знайдена!${NC}"
-    echo "   Створюємо тестову базу даних..."
-    
-    # Запускаємо тест для створення бази
-    if dart test test/debug_test.dart; then
-        echo -e "${GREEN}✅ Базу даних успішно створено!${NC}"
-    else
-        echo -e "${RED}❌ Помилка при створенні бази даних!${NC}"
-        exit 1
-    fi
+    echo -e "${YELLOW}⚠️  База даних не знайдена за шляхом ${DB_DIR}${NC}"
+    echo "   Запустіть застосунок хоча б раз, щоб створити базу."
+    exit 1
 fi
 
 echo ""
@@ -36,9 +29,8 @@ echo "🔒 Для зупинки натисніть Ctrl+C"
 echo "========================================="
 echo ""
 
-# Запускаємо Docker Admin
 docker run --rm -it \
-  --volume "$(pwd)/objectbox:/db" \
-  --user $(id -u):$(id -g) \
+  --volume "${DB_DIR}:/db" \
+  --user "$(id -u):$(id -g)" \
   --publish 8081:8081 \
   objectboxio/admin:latest

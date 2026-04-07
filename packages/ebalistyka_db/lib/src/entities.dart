@@ -267,7 +267,7 @@ class UnitSettings {
 }
 
 @Entity()
-class Conditions {
+class ShootingConditions {
   @Id()
   int id = 0;
 

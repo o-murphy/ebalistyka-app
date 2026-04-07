@@ -1007,101 +1007,101 @@ final _entities = <obx_int.ModelEntity>[
     backlinks: <obx_int.ModelBacklink>[],
   ),
   obx_int.ModelEntity(
-    id: const obx_int.IdUid(10, 6584000130387526342),
-    name: 'Conditions',
-    lastPropertyId: const obx_int.IdUid(15, 916432832977451751),
+    id: const obx_int.IdUid(11, 7626615768518305721),
+    name: 'ShootingConditions',
+    lastPropertyId: const obx_int.IdUid(15, 7194175570403883704),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(1, 5426442208853934967),
+        id: const obx_int.IdUid(1, 4346884862756985795),
         name: 'id',
         type: 6,
         flags: 1,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(2, 5037629548932659231),
+        id: const obx_int.IdUid(2, 8759961057820539593),
         name: 'distanceMeter',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(3, 2371951231907280109),
+        id: const obx_int.IdUid(3, 5763469888706085674),
         name: 'lookAngleRad',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(4, 4323419063753503766),
+        id: const obx_int.IdUid(4, 2226702895925973160),
         name: 'temperatureC',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(5, 5700219949944244664),
+        id: const obx_int.IdUid(5, 402290264083897875),
         name: 'pressurehPa',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(6, 3495671315189767458),
+        id: const obx_int.IdUid(6, 106875661664716788),
         name: 'humidityFrac',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(7, 1735874292186788102),
+        id: const obx_int.IdUid(7, 3300912871578291385),
         name: 'powderTemperatureC',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(8, 1650001243265687394),
+        id: const obx_int.IdUid(8, 5246550044459366362),
         name: 'usePowderSensitivity',
         type: 1,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(9, 216318801184607733),
+        id: const obx_int.IdUid(9, 706360045788517632),
         name: 'useDiffPowderTemperature',
         type: 1,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(10, 4000401922573370751),
+        id: const obx_int.IdUid(10, 2330276065485139737),
         name: 'useCoriolis',
         type: 1,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(11, 4955365735129140676),
+        id: const obx_int.IdUid(11, 4645739408618078198),
         name: 'latitudeDeg',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(12, 4972635236809095731),
+        id: const obx_int.IdUid(12, 2157753455296199467),
         name: 'azimuthDeg',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(13, 8332173160992404525),
+        id: const obx_int.IdUid(13, 236643955545130473),
         name: 'windDirectionDeg',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(14, 3538766144987324145),
+        id: const obx_int.IdUid(14, 3243679549726794891),
         name: 'windSpeedMps',
         type: 8,
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(15, 916432832977451751),
+        id: const obx_int.IdUid(15, 7194175570403883704),
         name: 'ownerId',
         type: 11,
         flags: 520,
-        indexId: const obx_int.IdUid(18, 5948883144970043596),
+        indexId: const obx_int.IdUid(19, 7660367679200674607),
         relationField: 'owner',
         relationTarget: 'Owner',
       ),
@@ -1153,11 +1153,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(10, 6584000130387526342),
-    lastIndexId: const obx_int.IdUid(18, 5948883144970043596),
+    lastEntityId: const obx_int.IdUid(11, 7626615768518305721),
+    lastIndexId: const obx_int.IdUid(19, 7660367679200674607),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
-    retiredEntityUids: const [],
+    retiredEntityUids: const [6584000130387526342],
     retiredIndexUids: const [],
     retiredPropertyUids: const [
       56589591724136369,
@@ -1198,6 +1198,21 @@ obx_int.ModelDefinition getObjectBoxModel() {
       6284527265072016857,
       6255307954200195809,
       3358995012307590845,
+      5426442208853934967,
+      5037629548932659231,
+      2371951231907280109,
+      4323419063753503766,
+      5700219949944244664,
+      3495671315189767458,
+      1735874292186788102,
+      1650001243265687394,
+      216318801184607733,
+      4000401922573370751,
+      4955365735129140676,
+      4972635236809095731,
+      8332173160992404525,
+      3538766144987324145,
+      916432832977451751,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -2370,15 +2385,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
-    Conditions: obx_int.EntityDefinition<Conditions>(
+    ShootingConditions: obx_int.EntityDefinition<ShootingConditions>(
       model: _entities[9],
-      toOneRelations: (Conditions object) => [object.owner],
-      toManyRelations: (Conditions object) => {},
-      getId: (Conditions object) => object.id,
-      setId: (Conditions object, int id) {
+      toOneRelations: (ShootingConditions object) => [object.owner],
+      toManyRelations: (ShootingConditions object) => {},
+      getId: (ShootingConditions object) => object.id,
+      setId: (ShootingConditions object, int id) {
         object.id = id;
       },
-      objectToFB: (Conditions object, fb.Builder fbb) {
+      objectToFB: (ShootingConditions object, fb.Builder fbb) {
         fbb.startTable(16);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.distanceMeter);
@@ -2402,7 +2417,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final buffer = fb.BufferContext(fbData);
         final rootOffset = buffer.derefObject(0);
 
-        final object = Conditions()
+        final object = ShootingConditions()
           ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
           ..distanceMeter = const fb.Float64Reader().vTableGet(
             buffer,
@@ -3213,80 +3228,78 @@ class Weapon_ {
   );
 }
 
-/// [Conditions] entity fields to define ObjectBox queries.
-class Conditions_ {
-  /// See [Conditions.id].
-  static final id = obx.QueryIntegerProperty<Conditions>(
+/// [ShootingConditions] entity fields to define ObjectBox queries.
+class ShootingConditions_ {
+  /// See [ShootingConditions.id].
+  static final id = obx.QueryIntegerProperty<ShootingConditions>(
     _entities[9].properties[0],
   );
 
-  /// See [Conditions.distanceMeter].
-  static final distanceMeter = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.distanceMeter].
+  static final distanceMeter = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[1],
   );
 
-  /// See [Conditions.lookAngleRad].
-  static final lookAngleRad = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.lookAngleRad].
+  static final lookAngleRad = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[2],
   );
 
-  /// See [Conditions.temperatureC].
-  static final temperatureC = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.temperatureC].
+  static final temperatureC = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[3],
   );
 
-  /// See [Conditions.pressurehPa].
-  static final pressurehPa = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.pressurehPa].
+  static final pressurehPa = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[4],
   );
 
-  /// See [Conditions.humidityFrac].
-  static final humidityFrac = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.humidityFrac].
+  static final humidityFrac = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[5],
   );
 
-  /// See [Conditions.powderTemperatureC].
-  static final powderTemperatureC = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.powderTemperatureC].
+  static final powderTemperatureC = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[6],
   );
 
-  /// See [Conditions.usePowderSensitivity].
-  static final usePowderSensitivity = obx.QueryBooleanProperty<Conditions>(
-    _entities[9].properties[7],
-  );
+  /// See [ShootingConditions.usePowderSensitivity].
+  static final usePowderSensitivity =
+      obx.QueryBooleanProperty<ShootingConditions>(_entities[9].properties[7]);
 
-  /// See [Conditions.useDiffPowderTemperature].
-  static final useDiffPowderTemperature = obx.QueryBooleanProperty<Conditions>(
-    _entities[9].properties[8],
-  );
+  /// See [ShootingConditions.useDiffPowderTemperature].
+  static final useDiffPowderTemperature =
+      obx.QueryBooleanProperty<ShootingConditions>(_entities[9].properties[8]);
 
-  /// See [Conditions.useCoriolis].
-  static final useCoriolis = obx.QueryBooleanProperty<Conditions>(
+  /// See [ShootingConditions.useCoriolis].
+  static final useCoriolis = obx.QueryBooleanProperty<ShootingConditions>(
     _entities[9].properties[9],
   );
 
-  /// See [Conditions.latitudeDeg].
-  static final latitudeDeg = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.latitudeDeg].
+  static final latitudeDeg = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[10],
   );
 
-  /// See [Conditions.azimuthDeg].
-  static final azimuthDeg = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.azimuthDeg].
+  static final azimuthDeg = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[11],
   );
 
-  /// See [Conditions.windDirectionDeg].
-  static final windDirectionDeg = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.windDirectionDeg].
+  static final windDirectionDeg = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[12],
   );
 
-  /// See [Conditions.windSpeedMps].
-  static final windSpeedMps = obx.QueryDoubleProperty<Conditions>(
+  /// See [ShootingConditions.windSpeedMps].
+  static final windSpeedMps = obx.QueryDoubleProperty<ShootingConditions>(
     _entities[9].properties[13],
   );
 
-  /// See [Conditions.owner].
-  static final owner = obx.QueryRelationToOne<Conditions, Owner>(
+  /// See [ShootingConditions.owner].
+  static final owner = obx.QueryRelationToOne<ShootingConditions, Owner>(
     _entities[9].properties[14],
   );
 }

@@ -46,7 +46,7 @@ run:
 	flutter run
 
 run-clean:
-	rm -rf ~/.eBalistyka && flutter run
+	rm -rf ~/.eBallistyka && flutter run
 
 # Run only unit tests (no native dependency)
 unit:

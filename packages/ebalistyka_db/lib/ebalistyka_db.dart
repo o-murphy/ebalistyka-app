@@ -1,14 +1,13 @@
-// import 'package:objectbox/objectbox.dart';
-import 'objectbox.g.dart';
 import 'dart:io';
+import 'objectbox.g.dart';
 
-late Store store;
+export 'src/entities.dart';
 
-Future<void> initObjectBox() async {
-  store = await openStore();
-
-  // Виведіть шлях до бази даних
-  final dbPath = Directory.current.path;
-  print('База даних знаходиться в: $dbPath');
-  print('Файли бази: ${Directory('$dbPath/objectbox').existsSync()}');
+/// Opens (or creates) the ObjectBox store at [directory].
+///
+/// Defaults to `~/.eBallistyka` when [directory] is not provided.
+Future<Store> initObjectBox({String? directory}) async {
+  final dir = directory ?? '${Platform.environment['HOME']}/.eBallistyka';
+  await Directory(dir).create(recursive: true);
+  return openStore(directory: dir);
 }
