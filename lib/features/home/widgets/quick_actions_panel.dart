@@ -33,7 +33,7 @@ class QuickActionsPanel extends ConsumerWidget {
             context,
             label: 'Wind speed',
             rawValue: state.windSpeedMps,
-            constraints: FC.windVelocity,
+            constraints: FC.windSpeed,
             displayUnit: units.velocityUnit,
             onChanged: notifier.updateWindSpeed,
           ),

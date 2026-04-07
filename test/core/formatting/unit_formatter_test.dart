@@ -5,8 +5,8 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';
 
 /// Metric UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
-UnitSettings _metricSettings() => UnitSettings()
-  ..sightHeight = Unit.millimeter.name;
+UnitSettings _metricSettings() =>
+    UnitSettings()..sightHeight = Unit.millimeter.name;
 
 /// Imperial UnitSettings
 UnitSettings _imperialSettings() => UnitSettings()
@@ -129,59 +129,6 @@ void main() {
       expect(fmt.time(0.0), '0.000 s');
     });
 
-    // ── Raw numbers ────────────────────────────────────────────────────────
-
-    test('rawVelocity() returns value in display unit', () {
-      final v = Velocity.mps(800.0);
-      expect(fmt.rawVelocity(v), closeTo(800.0, 1e-6));
-    });
-
-    test('rawDistance() returns value in display unit', () {
-      final d = Distance.yard(1.0);
-      // 1 yard ≈ 0.9144 m
-      expect(fmt.rawDistance(d), closeTo(0.9144, 1e-3));
-    });
-
-    test('rawTemperature() returns celsius', () {
-      final t = Temperature.fahrenheit(32.0);
-      expect(fmt.rawTemperature(t), closeTo(0.0, 1e-6));
-    });
-
-    test('rawPressure() returns hPa', () {
-      final p = Pressure.inHg(29.92);
-      expect(fmt.rawPressure(p), closeTo(1013.25, 0.5));
-    });
-
-    test('rawDrop() returns centimeters', () {
-      final d = Distance.foot(1.0);
-      // 1 ft = 30.48 cm
-      expect(fmt.rawDrop(d), closeTo(30.48, 0.01));
-    });
-
-    test('rawAdjustment() returns MIL', () {
-      final a = Angular.moa(3.438);
-      // 1 MOA ≈ 0.2909 MIL
-      expect(fmt.rawAdjustment(a), closeTo(1.0, 0.02));
-    });
-
-    test('rawEnergy() returns joules', () {
-      final e = Energy.footPound(1000.0);
-      // 1 ft·lbf ≈ 1.3558 J
-      expect(fmt.rawEnergy(e), closeTo(1355.8, 1.0));
-    });
-
-    test('rawWeight() returns grains', () {
-      final w = Weight.gram(10.0);
-      // 1 gram ≈ 15.432 grains
-      expect(fmt.rawWeight(w), closeTo(154.32, 0.5));
-    });
-
-    test('rawSightHeight() returns millimeters', () {
-      final d = Distance.inch(1.5);
-      // 1 inch = 25.4 mm
-      expect(fmt.rawSightHeight(d), closeTo(38.1, 0.01));
-    });
-
     // ── Symbols ────────────────────────────────────────────────────────────
 
     test('symbols return correct unit symbols', () {
@@ -247,12 +194,6 @@ void main() {
       final e = Energy.joule(1000.0);
       final s = fmt.energy(e);
       expect(s, contains('ft·lb'));
-    });
-
-    test('rawVelocity() returns fps', () {
-      final v = Velocity.mps(100.0);
-      // 100 m/s ≈ 328.08 fps
-      expect(fmt.rawVelocity(v), closeTo(328.08, 0.5));
     });
 
     test('symbols reflect imperial settings', () {
@@ -447,7 +388,9 @@ void main() {
     });
 
     test('default constructor works', () {
-      final formatter = UnitFormatterImpl(UnitSettings()..sightHeight = Unit.millimeter.name);
+      final formatter = UnitFormatterImpl(
+        UnitSettings()..sightHeight = Unit.millimeter.name,
+      );
       expect(formatter.velocitySymbol, Unit.mps.symbol);
     });
   });

@@ -69,8 +69,14 @@ typedef _HomeCalcArgs = (
 typedef _HomeCalcResult = (bclibc.HitResult?, double?);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
-  final (zeroShot, currentShot, zeroDistance, targetDistM, stepM, cachedZeroElevRad) =
-      args;
+  final (
+    zeroShot,
+    currentShot,
+    zeroDistance,
+    targetDistM,
+    stepM,
+    cachedZeroElevRad,
+  ) = args;
   final internalStepM = stepM < 1.0 ? stepM : 1.0;
   try {
     final calc = bclibc.Calculator();

@@ -246,9 +246,15 @@ Files to delete:
 - `lib/core/models/ammo_data.dart`
 - `lib/core/models/sight_data.dart`
 - `lib/core/models/profile_data.dart`
-- `lib/core/models/app_settings.dart`
-- `lib/core/models/convertors_state.dart`
+- |Done| `lib/core/models/app_settings.dart`
+- |DONE| `lib/core/models/convertors_state.dart`
 - `lib/core/models/conditions_data.dart`
+
+### |WIP| Step 8.1 — Update old code
+- `lib/core/collection/collection_parser.dart`
+- `lib/core/providers/builtin_collection_provider.dart`
+- `lib/core/a7p/a7p_parser.dart`
+- `lib/core/collection/collection_parser.dart`
 
 ### |Done| Step 9 — Update all consumers
 - `WeaponData` → `Weapon`, `AmmoData` → `Ammo`, `SightData` → `Sight`

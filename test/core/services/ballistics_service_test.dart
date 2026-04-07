@@ -20,38 +20,35 @@ Ammo _makeAmmo({
   bool usePowderSensitivity = false,
   bool zeroUseDiffPowderTemperature = false,
   double zeroPowderTemperatureC = 15.0,
-}) =>
-    Ammo()
-      ..name = 'Test .308 175gr'
-      ..dragTypeValue = 'g7'
-      ..weightGrain = 175.0
-      ..caliberInch = 0.308
-      ..lengthInch = 1.220
-      ..bcG7 = 0.475
-      ..muzzleVelocityMps = muzzleVelocityMps
-      ..powderTemperatureC = 15.0
-      ..powderSensitivityFrac = powderSensitivityFrac
-      ..usePowderSensitivity = usePowderSensitivity
-      ..zeroDistanceMeter = zeroDistanceMeter
-      ..zeroTemperatureC = 15.0
-      ..zeroPressurehPa = 1013.25
-      ..zeroAltitudeMeter = 0.0
-      ..zeroHumidityFrac = 0.0
-      ..zeroPowderTemperatureC = zeroPowderTemperatureC
-      ..zeroUseDiffPowderTemperature = zeroUseDiffPowderTemperature;
+}) => Ammo()
+  ..name = 'Test .308 175gr'
+  ..dragTypeValue = 'g7'
+  ..weightGrain = 175.0
+  ..caliberInch = 0.308
+  ..lengthInch = 1.220
+  ..bcG7 = 0.475
+  ..muzzleVelocityMps = muzzleVelocityMps
+  ..powderTemperatureC = 15.0
+  ..powderSensitivityFrac = powderSensitivityFrac
+  ..usePowderSensitivity = usePowderSensitivity
+  ..zeroDistanceMeter = zeroDistanceMeter
+  ..zeroTemperatureC = 15.0
+  ..zeroPressurehPa = 1013.25
+  ..zeroAltitudeMeter = 0.0
+  ..zeroHumidityFrac = 0.0
+  ..zeroPowderTemperatureC = zeroPowderTemperatureC
+  ..zeroUseDiffPowderTemperature = zeroUseDiffPowderTemperature;
 
 /// Builds an in-memory Weapon entity.
-Weapon _makeWeapon() =>
-    Weapon()
-      ..name = 'Test Rifle'
-      ..caliberInch = 0.308
-      ..twistInch = 11.0;
+Weapon _makeWeapon() => Weapon()
+  ..name = 'Test Rifle'
+  ..caliberInch = 0.308
+  ..twistInch = 11.0;
 
 /// Builds an in-memory Sight entity.
-Sight _makeSight() =>
-    Sight()
-      ..name = 'Test Scope'
-      ..sightHeightInch = 1.496; // 38 mm ≈ 1.496 in
+Sight _makeSight() => Sight()
+  ..name = 'Test Scope'
+  ..sightHeightInch = 1.496; // 38 mm ≈ 1.496 in
 
 /// Assembles a Profile with in-memory ToOne relations.
 Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) {
@@ -72,20 +69,19 @@ ShootingConditions _makeConditions({
   double powderTempC = 15.0,
   double windSpeedMps = 0.0,
   double windDirectionDeg = 0.0,
-}) =>
-    ShootingConditions()
-      ..distanceMeter = targetM
-      ..temperatureC = tempC
-      ..altitudeMeter = altM
-      ..pressurehPa = pressHPa
-      ..humidityFrac = humidity
-      ..powderTemperatureC = powderTempC
-      ..windSpeedMps = windSpeedMps
-      ..windDirectionDeg = windDirectionDeg
-      ..lookAngleRad = 0.0
-      ..usePowderSensitivity = false
-      ..useDiffPowderTemp = false
-      ..useCoriolis = false;
+}) => ShootingConditions()
+  ..distanceMeter = targetM
+  ..temperatureC = tempC
+  ..altitudeMeter = altM
+  ..pressurehPa = pressHPa
+  ..humidityFrac = humidity
+  ..powderTemperatureC = powderTempC
+  ..windSpeedMps = windSpeedMps
+  ..windDirectionDeg = windDirectionDeg
+  ..lookAngleRad = 0.0
+  ..usePowderSensitivity = false
+  ..useDiffPowderTemp = false
+  ..useCoriolis = false;
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -357,10 +353,7 @@ void main() {
         const TableCalcOptions(stepM: 100),
       );
 
-      expect(
-        r1.zeroElevationRad,
-        isNot(closeTo(r2.zeroElevationRad, 1e-6)),
-      );
+      expect(r1.zeroElevationRad, isNot(closeTo(r2.zeroElevationRad, 1e-6)));
     });
   });
 

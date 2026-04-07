@@ -1,128 +1,116 @@
-import 'package:bclibc_ffi/unit.dart';
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
-import '../proto/profedit.pb.dart' hide CoefRow;
+import 'dart:typed_data';
+
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import '../proto/profedit.pb.dart' as proto;
 import 'a7p_validator.dart';
 
-/// Converts a validated [Payload] into a [ProfileData].
+/// Converts a validated [proto.Payload] into a [Profile] (ObjectBox entity).
 ///
 /// Call [A7pValidator.validate] before this if you want explicit error
 /// reporting; [fromPayload] will throw [A7pValidationException] on its own
 /// by default (pass [validate] = false to skip).
 class A7pParser {
-  static ProfileData fromPayload(Payload payload, {bool validate = true}) {
+  static Profile fromPayload(proto.Payload payload, {bool validate = true}) {
     if (validate) A7pValidator.validate(payload);
     return _parseProfile(payload.profile);
   }
 
   // ── main ───────────────────────────────────────────────────────────────────
 
-  static ProfileData _parseProfile(Profile p) {
-    final rifle = WeaponData(
-      name: p.profileName,
-      sightHeight: Distance.millimeter(p.scHeight.toDouble()),
-      twist: Distance.inch(p.rTwist / 100.0),
-    );
+  static Profile _parseProfile(proto.Profile p) {
+    final weapon = Weapon()
+      ..name = p.profileName
+      ..twistInch = p.rTwist / 100.0;
 
-    final sight = SightData(name: p.profileName);
+    final sight = Sight()
+      ..name = p.profileName
+      ..sightHeightInch = p.scHeight / 25.4; // mm → inch
 
-    // Будуємо zeroConditions
-    final zeroAtmo = _buildAtmoData(
-      altitudeM: 0,
-      pressureHPa: p.cZeroAirPressure / 10.0,
-      tempC: p.cZeroAirTemperature.toDouble(),
-      humidity: p.cZeroAirHumidity.toDouble(),
-      powderTempC: p.cZeroPTemperature.toDouble(),
-    );
+    final ammo = Ammo()
+      ..name = p.cartridgeName
+      ..projectileName = p.bulletName
+      ..dragTypeValue = _dragTypeStr(p.bcType)
+      ..weightGrain = p.bWeight / 10.0
+      ..caliberInch = p.bDiameter / 1000.0
+      ..lengthInch = p.bLength / 1000.0
+      ..muzzleVelocityMps = p.cMuzzleVelocity / 10.0
+      ..muzzleVelocityTemperatureC = p.cZeroTemperature.toDouble()
+      ..powderTemperatureC = p.cZeroPTemperature.toDouble()
+      ..powderSensitivityFrac = p.cTCoeff / 1000.0
+      ..usePowderSensitivity = p.cTCoeff != 0
+      ..zeroDistanceMeter = _zeroDistanceMeter(p)
+      ..zeroTemperatureC = p.cZeroAirTemperature.toDouble()
+      ..zeroPressurehPa = p.cZeroAirPressure / 10.0
+      ..zeroHumidityFrac = p.cZeroAirHumidity / 100.0
+      ..zeroPowderTemperatureC = p.cZeroPTemperature.toDouble()
+      ..zeroUseDiffPowderTemperature =
+          p.cZeroPTemperature != p.cZeroAirTemperature;
 
-    final zeroDistance = _zeroDistance(p);
-    final hasPowderSens = p.cTCoeff != 0;
-    final useDiffPowderTemp = p.cZeroPTemperature != p.cZeroAirTemperature;
+    _applyBc(ammo, p);
 
-    final zeroConditions = Conditions.withDefaults(
-      atmo: zeroAtmo,
-      distance: zeroDistance,
-      lookAngle: Angular.degree(0.0),
-      usePowderSensitivity: hasPowderSens,
-      useDiffPowderTemp: useDiffPowderTemp,
-    );
+    final profile = Profile()..name = p.profileName;
+    profile.weapon.target = weapon;
+    profile.sight.target = sight;
+    profile.ammo.target = ammo;
+    return profile;
+  }
 
-    final cartridge = AmmoData(
-      name: p.cartridgeName,
-      projectileName: p.bulletName,
-      dragType: _dragType(p.bcType),
-      weight: Weight.grain(p.bWeight / 10.0),
-      diameter: Distance.inch(p.bDiameter / 1000.0),
-      length: Distance.inch(p.bLength / 1000.0),
-      coefRows: _parseCoefRows(p),
-      mv: Velocity.mps(p.cMuzzleVelocity / 10.0),
-      powderTemp: Temperature.celsius(p.cZeroTemperature.toDouble()),
-      powderSensitivity: Ratio.fraction(p.cTCoeff / 1000.0),
-      zeroConditions: zeroConditions,
-    );
+  // ── BC / drag model ────────────────────────────────────────────────────────
 
-    return ProfileData(
-      name: p.profileName,
-      rifle: rifle,
-      cartridgeId: cartridge.id,
-      cartridge: cartridge,
-      sightId: sight.id,
-      sight: sight,
-    );
+  static void _applyBc(Ammo ammo, proto.Profile p) {
+    switch (p.bcType) {
+      case proto.GType.G7:
+        if (p.coefRows.isNotEmpty) {
+          ammo.bcG7 = p.coefRows.first.bcCd / 10000.0;
+          if (p.coefRows.length > 1) {
+            ammo.useMultiBcG7 = true;
+            ammo.multiBcTableG7VMps = Float64List.fromList(
+              p.coefRows.map((r) => r.mv / 10.0).toList(),
+            );
+            ammo.multiBcTableG7Bc = Float64List.fromList(
+              p.coefRows.map((r) => r.bcCd / 10000.0).toList(),
+            );
+          }
+        }
+      case proto.GType.CUSTOM:
+        final sorted = List.of(p.coefRows)
+          ..sort((a, b) => a.mv.compareTo(b.mv));
+        ammo.cusomDragTableMach = Float64List.fromList(
+          sorted.map((r) => r.mv / 10000.0).toList(),
+        );
+        ammo.cusomDragTableCd = Float64List.fromList(
+          sorted.map((r) => r.bcCd / 10000.0).toList(),
+        );
+      default: // G1
+        if (p.coefRows.isNotEmpty) {
+          ammo.bcG1 = p.coefRows.first.bcCd / 10000.0;
+          if (p.coefRows.length > 1) {
+            ammo.useMultiBcG1 = true;
+            ammo.multiBcTableG1VMps = Float64List.fromList(
+              p.coefRows.map((r) => r.mv / 10.0).toList(),
+            );
+            ammo.multiBcTableG1Bc = Float64List.fromList(
+              p.coefRows.map((r) => r.bcCd / 10000.0).toList(),
+            );
+          }
+        }
+    }
   }
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
-  static AtmoData _buildAtmoData({
-    required double altitudeM,
-    required double pressureHPa,
-    required double tempC,
-    required double humidity,
-    required double powderTempC,
-  }) => AtmoData(
-    altitude: Distance.meter(altitudeM),
-    pressure: Pressure.hPa(pressureHPa),
-    temperature: Temperature.celsius(tempC),
-    humidity: humidity / 100.0,
-    powderTemp: Temperature.celsius(powderTempC),
-  );
-
-  static Distance _zeroDistance(Profile p) {
+  static double _zeroDistanceMeter(proto.Profile p) {
     if (p.distances.isNotEmpty) {
       final idx = p.cZeroDistanceIdx.clamp(0, p.distances.length - 1);
-      return Distance.meter(p.distances[idx] / 100.0);
+      return p.distances[idx] / 100.0;
     }
-    return Distance.meter(100.0);
+    return 100.0;
   }
 
-  static DragModelType _dragType(GType t) => switch (t) {
-    GType.G1 => DragModelType.g1,
-    GType.G7 => DragModelType.g7,
-    GType.CUSTOM => DragModelType.custom,
-    _ => DragModelType.g1,
+  static String _dragTypeStr(proto.GType t) => switch (t) {
+    proto.GType.G1 => 'g1',
+    proto.GType.G7 => 'g7',
+    proto.GType.CUSTOM => 'custom',
+    _ => 'g1',
   };
-
-  /// Parse coefRows from the a7p payload into storage-ready [CoeficientRow] objects.
-  ///
-  /// G1/G7: bcCd = BC value (bcCd/10000), mv = velocity m/s (mv/10)
-  /// CUSTOM: bcCd = Cd value (bcCd/10000), mv = Mach (mv/10000)
-  static List<CoeficientRow> _parseCoefRows(Profile p) {
-    if (p.bcType == GType.CUSTOM) {
-      final sorted = List.of(p.coefRows)..sort((a, b) => a.mv.compareTo(b.mv));
-      return sorted
-          .map<CoeficientRow>(
-            (r) => CoeficientRow(bcCd: r.bcCd / 10000.0, mv: r.mv / 10000.0),
-          )
-          .toList();
-    }
-    // G1 / G7
-    return p.coefRows
-        .map<CoeficientRow>(
-          (r) => CoeficientRow(bcCd: r.bcCd / 10000.0, mv: r.mv / 10.0),
-        )
-        .toList();
-  }
 }

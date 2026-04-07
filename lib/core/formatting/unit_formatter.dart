@@ -26,17 +26,8 @@ abstract interface class UnitFormatter {
   String powderSensitivity(Ratio dim); // "2.00 %"
   String torque(Torque dim);
 
-  // --- Raw numbers (without units, for sliders/input fields) ---
-  double rawVelocity(Velocity dim);
-  double rawDistance(Distance dim);
-  double rawTemperature(Temperature dim);
-  double rawPressure(Pressure dim);
-  double rawDrop(Distance dim);
-  double rawAdjustment(Angular dim);
-  double rawEnergy(Energy dim);
-  double rawWeight(Weight dim);
-  double rawSightHeight(Distance dim);
-  double rawTorque(Torque dim);
+  String windSpeed(Velocity dim);
+  String windDirection(Angular dim);
 
   // --- Current unit symbols ---
   String get velocitySymbol;

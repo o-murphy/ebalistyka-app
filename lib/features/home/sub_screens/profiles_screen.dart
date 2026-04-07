@@ -45,11 +45,62 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     return state.profiles[idx];
   }
 
-  Future<void> _onAdd() async {
-    // TODO: navigate to profile wizard (Phase 5)
+  // ── Add (bottom sheet) ────────────────────────────────────────────────────
+
+  Future<void> _showAddSheet() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Add Profile',
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text('Create new'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.push(Routes.profileAddRifleCreate);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.folder_open_outlined),
+              title: const Text('From collection'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.push(Routes.profileAddRifleCollection);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.file_open_outlined),
+              title: const Text('Import from file'),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Import not yet available')),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
-  Future<void> _onDuplicate() async {
+  // ── FAB actions (current profile) ─────────────────────────────────────────
+
+  Future<void> _onDuplicate(ProfileCardData? profile) async {
     // TODO: make profile copy with name input dialog
   }
 
@@ -85,20 +136,12 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     }
   }
 
-  Future<void> _onImport() async {
-    // TODO: add file_picker to pubspec.yaml to enable .a7p import
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Import not yet available')));
-  }
-
   Future<void> _onExport(ProfileCardData? profile) async {
     if (profile == null) return;
     // TODO: serialize profile and share (Phase 5+)
   }
 
   Future<void> _onEditRifle(ProfileCardData data) async {
-    // Отримуємо профіль з глобального стану
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
 
@@ -127,9 +170,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   Widget build(BuildContext context) {
     final vmState = ref.watch(rifleSelectVmProvider);
 
-    ref.listen(appStateProvider, (previous, next) {
-      // Нічого не робимо - ігноруємо оновлення
-    });
+    ref.listen(appStateProvider, (previous, next) {});
 
     return vmState.when(
       loading: () => BaseScreen(
@@ -147,10 +188,9 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           floatingActionButton: _ExpandableFab(
             animationNotifier: _fabAnimValue,
             onRegisterClose: (fn) => _closeFab = fn,
-            onAdd: _onAdd,
-            onDuplicate: _onDuplicate,
+            onAdd: _showAddSheet,
+            onDuplicate: () => _onDuplicate(profile),
             onRemove: () => _onRemove(profile),
-            onImport: _onImport,
             onExport: () => _onExport(profile),
           ),
           body: state is ProfilesReady && state.profiles.isNotEmpty
@@ -225,6 +265,9 @@ class _ProfilePageView extends StatelessWidget {
                       isActive: p.id == activeProfileId,
                       onSelect: () => onSelect(p),
                       onEditRifle: () => onEditRifle(p),
+                      onDuplicate: () {},
+                      onExport: () {},
+                      onRemove: () {},
                     ),
                   ),
                 )
@@ -249,7 +292,7 @@ class _ProfilePageView extends StatelessWidget {
   }
 }
 
-// ── FAB ───────────────────────────────────────────────────────────────────────
+// ── Expandable FAB ────────────────────────────────────────────────────────────
 
 class _ExpandableFab extends StatefulWidget {
   const _ExpandableFab({
@@ -258,7 +301,6 @@ class _ExpandableFab extends StatefulWidget {
     required this.onAdd,
     required this.onDuplicate,
     required this.onRemove,
-    required this.onImport,
     required this.onExport,
   });
 
@@ -267,7 +309,6 @@ class _ExpandableFab extends StatefulWidget {
   final VoidCallback onAdd;
   final VoidCallback onDuplicate;
   final VoidCallback onRemove;
-  final VoidCallback onImport;
   final VoidCallback onExport;
 
   @override
@@ -278,8 +319,6 @@ class _ExpandableFabState extends State<_ExpandableFab>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
-
-  Animation<double> get animation => _expandAnimation;
 
   @override
   void initState() {
@@ -357,15 +396,6 @@ class _ExpandableFabState extends State<_ExpandableFab>
                   onPressed: () {
                     _collapse();
                     widget.onExport();
-                  },
-                ),
-                const SizedBox(height: 12),
-                _ActionButton(
-                  icon: Icons.file_open_outlined,
-                  label: 'Import',
-                  onPressed: () {
-                    _collapse();
-                    widget.onImport();
                   },
                 ),
                 const SizedBox(height: 12),

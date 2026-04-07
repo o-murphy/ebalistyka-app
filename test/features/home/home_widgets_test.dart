@@ -3,11 +3,11 @@
 // Uses homeVmProvider overrides — no FFI, no real ballistics.
 //   flutter test test/home_widgets_test.dart
 
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ebalistyka/core/models/app_settings.dart' show AdjustmentFormat;
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
@@ -110,7 +110,7 @@ const _kDefaultTableData = FormattedTableData(
 
 HomeUiReady _makeReady({
   AdjustmentData? adjustment,
-  AdjustmentFormat fmt = AdjustmentFormat.arrows,
+  AdjustmentDisplayFormat fmt = AdjustmentDisplayFormat.arrows,
   String cartridgeInfoLine = 'Test 175gr · G7 · 800 m/s',
   List<ChartPoint> chartPoints = _kDefaultPoints,
   HomeChartPointInfo? selectedPointInfo = _kDefaultInfo,
@@ -378,7 +378,7 @@ void main() {
   group('HomeReticlePage — AdjustmentFormat direction indicators', () {
     testWidgets('arrows format: positive elevation shows ↑', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.arrows,
+        fmt: AdjustmentDisplayFormat.arrows,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -407,7 +407,7 @@ void main() {
 
     testWidgets('arrows format: negative elevation shows ↓', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.arrows,
+        fmt: AdjustmentDisplayFormat.arrows,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -436,7 +436,7 @@ void main() {
 
     testWidgets('signs format: positive shows +', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.signs,
+        fmt: AdjustmentDisplayFormat.signs,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -467,7 +467,7 @@ void main() {
       tester,
     ) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.letters,
+        fmt: AdjustmentDisplayFormat.letters,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -498,7 +498,7 @@ void main() {
       tester,
     ) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.letters,
+        fmt: AdjustmentDisplayFormat.letters,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(

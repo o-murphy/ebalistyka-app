@@ -6,6 +6,8 @@ extension WeaponExtension on Weapon {
   Distance get twist => Distance.inch(twistInch);
   set twist(Distance value) => twistInch = value.in_(Unit.inch);
 
+  bool get isRightHandTwist => twistInch >= 0.0;
+
   Distance get caliber => Distance.inch(caliberInch);
   set caliber(Distance value) => caliberInch = value.in_(Unit.inch);
 

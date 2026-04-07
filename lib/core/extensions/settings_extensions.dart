@@ -101,10 +101,8 @@ extension UnitSettingsFullExtension on UnitSettings {
   );
   set sightHeightUnit(Unit v) => sightHeight = v.name;
 
-  Unit get twistUnit => Unit.values.firstWhere(
-    (u) => u.name == twist,
-    orElse: () => Unit.inch,
-  );
+  Unit get twistUnit =>
+      Unit.values.firstWhere((u) => u.name == twist, orElse: () => Unit.inch);
   set twistUnit(Unit v) => twist = v.name;
 
   Unit get barrelLengthUnit => Unit.values.firstWhere(

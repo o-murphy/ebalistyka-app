@@ -12,6 +12,9 @@ class ProfileCard extends StatelessWidget {
     required this.isActive,
     required this.onSelect,
     required this.onEditRifle,
+    required this.onDuplicate,
+    required this.onExport,
+    required this.onRemove,
     super.key,
   });
 
@@ -19,6 +22,9 @@ class ProfileCard extends StatelessWidget {
   final bool isActive;
   final VoidCallback onSelect;
   final VoidCallback onEditRifle;
+  final VoidCallback onDuplicate;
+  final VoidCallback onExport;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,13 @@ class ProfileCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _ProfileTitleRow(title: data.name, isActive: isActive),
+            _ProfileTitleRow(
+              title: data.name,
+              isActive: isActive,
+              onDuplicate: onDuplicate,
+              onExport: onExport,
+              onRemove: onRemove,
+            ),
             const SizedBox(height: 16),
             Expanded(
               child: ListView(
@@ -123,11 +135,22 @@ class ProfileCard extends StatelessWidget {
   }
 }
 
+enum _ProfileMenuAction { duplicate, export, remove }
+
 class _ProfileTitleRow extends StatelessWidget {
-  const _ProfileTitleRow({required this.title, required this.isActive});
+  const _ProfileTitleRow({
+    required this.title,
+    required this.isActive,
+    required this.onDuplicate,
+    required this.onExport,
+    required this.onRemove,
+  });
 
   final String title;
   final bool isActive;
+  final VoidCallback onDuplicate;
+  final VoidCallback onExport;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +161,46 @@ class _ProfileTitleRow extends StatelessWidget {
       children: [
         Expanded(child: Text(title, style: theme.textTheme.titleLarge)),
         if (isActive) Icon(Icons.check_circle, color: colorScheme.primary),
+        PopupMenuButton<_ProfileMenuAction>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (action) {
+            switch (action) {
+              case _ProfileMenuAction.duplicate:
+                onDuplicate();
+              case _ProfileMenuAction.export:
+                onExport();
+              case _ProfileMenuAction.remove:
+                onRemove();
+            }
+          },
+          itemBuilder: (_) => const [
+            PopupMenuItem(
+              value: _ProfileMenuAction.duplicate,
+              child: ListTile(
+                leading: Icon(Icons.copy_outlined),
+                title: Text('Duplicate'),
+                dense: true,
+              ),
+            ),
+            PopupMenuItem(
+              value: _ProfileMenuAction.export,
+              child: ListTile(
+                leading: Icon(Icons.file_upload_outlined),
+                title: Text('Export'),
+                dense: true,
+              ),
+            ),
+            PopupMenuDivider(),
+            PopupMenuItem(
+              value: _ProfileMenuAction.remove,
+              child: ListTile(
+                leading: Icon(Icons.delete_outline),
+                title: Text('Remove'),
+                dense: true,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

@@ -73,7 +73,8 @@ class SettingsScreen extends ConsumerWidget {
             secondary: const Icon(Icons.speed_outlined),
             title: const Text('Show subsonic transition'),
             value: settings.homeShowSubsonicTransition,
-            onChanged: (v) => notifier.setAdjustmentToggle('subsonicTransition', v),
+            onChanged: (v) =>
+                notifier.setAdjustmentToggle('subsonicTransition', v),
             dense: true,
           ),
           const Divider(height: 1),

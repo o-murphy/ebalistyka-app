@@ -35,6 +35,7 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
   }
 }
 
-final shotProfileProvider = AsyncNotifierProvider<ShotProfileNotifier, Profile?>(
-  ShotProfileNotifier.new,
-);
+final shotProfileProvider =
+    AsyncNotifierProvider<ShotProfileNotifier, Profile?>(
+      ShotProfileNotifier.new,
+    );

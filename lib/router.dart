@@ -32,12 +32,9 @@ abstract final class Routes {
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
 
-  // Profile add → rifle selection
-  static const profileAdd = '/home/profiles/profile-add';
-  static const profileAddRifleCreate =
-      '/home/profiles/profile-add/rifle-create';
-  static const profileAddRifleCollection =
-      '/home/profiles/profile-add/rifle-collection';
+  // Profile add — rifle selection
+  static const profileAddRifleCreate = '/home/profiles/rifle-create';
+  static const profileAddRifleCollection = '/home/profiles/rifle-collection';
 
   // Cartridge select (from profile card)
   static const cartridgeSelect = '/home/profiles/cartridge-select';
@@ -103,19 +100,12 @@ final appRouter = GoRouter(
                   routes: [
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
-                      path: 'profile-add',
-                      builder: (_, _) => const ProfileAddScreen(),
-                      routes: [
-                        GoRoute(
-                          path: 'rifle-create',
-                          builder: (_, _) => const RifleWizardScreen(),
-                        ),
-                        GoRoute(
-                          path: 'rifle-collection',
-                          builder: (_, _) =>
-                              const SelectRifleCollectionScreen(),
-                        ),
-                      ],
+                      path: 'rifle-create',
+                      builder: (_, _) => const RifleWizardScreen(),
+                    ),
+                    GoRoute(
+                      path: 'rifle-collection',
+                      builder: (_, _) => const SelectRifleCollectionScreen(),
                     ),
                     // ── Cartridge select ────────────────────────────────────
                     GoRoute(
@@ -170,9 +160,8 @@ final appRouter = GoRouter(
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
                       path: 'rifle-edit',
-                      builder: (_, state) => RifleWizardScreen(
-                        initial: state.extra as Weapon?,
-                      ),
+                      builder: (_, state) =>
+                          RifleWizardScreen(initial: state.extra as Weapon?),
                     ),
                     GoRoute(
                       path: 'cartridge-edit',

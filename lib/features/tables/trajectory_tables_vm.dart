@@ -183,13 +183,15 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final energyUnit = units.energyUnit;
 
     final colDefs =
-        <(
-          String,
-          String,
-          String Function(Dimension?),
-          double? Function(bclibc.TrajectoryData),
-          int,
-        )>[
+        <
+          (
+            String,
+            String,
+            String Function(Dimension?),
+            double? Function(bclibc.TrajectoryData),
+            int,
+          )
+        >[
           (
             'range',
             'Range',
@@ -349,10 +351,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
   // ── Zero key ───────────────────────────────────────────────────────────────
 
-  List<double> _buildZeroKey(
-    Profile profile,
-    ShootingConditions conditions,
-  ) {
+  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
     final ammo = profile.ammo.target!;
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;

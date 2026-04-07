@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:ebalistyka/core/extensions/settings_extensions.dart' show AdjustmentDisplayFormat;
+import 'package:ebalistyka/core/extensions/settings_extensions.dart'
+    show AdjustmentDisplayFormat;
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 

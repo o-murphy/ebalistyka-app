@@ -25,17 +25,15 @@ extension SightExtension on Sight {
 
   // ── Click units ──────────────────────────────────────────────────────────────
 
-  Unit get verticalClickUnitValue =>
-      Unit.values.firstWhere(
-        (u) => u.name == verticalClickUnit,
-        orElse: () => Unit.mil,
-      );
+  Unit get verticalClickUnitValue => Unit.values.firstWhere(
+    (u) => u.name == verticalClickUnit,
+    orElse: () => Unit.mil,
+  );
   set verticalClickUnitValue(Unit v) => verticalClickUnit = v.name;
 
-  Unit get horizontalClickUnitValue =>
-      Unit.values.firstWhere(
-        (u) => u.name == horizontalClickUnit,
-        orElse: () => Unit.mil,
-      );
+  Unit get horizontalClickUnitValue => Unit.values.firstWhere(
+    (u) => u.name == horizontalClickUnit,
+    orElse: () => Unit.mil,
+  );
   set horizontalClickUnitValue(Unit v) => horizontalClickUnit = v.name;
 }

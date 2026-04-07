@@ -64,6 +64,7 @@ extension AmmoExtension on Ammo {
 
   // ── Drag model helpers ────────────────────────────────────────────────────────
 
+  /// True when G1/G7 with multiple BC breakpoints (velocity-dependent BC).
   bool get isMultiBC => switch (dragType) {
     DragType.g1 => useMultiBcG1 && (multiBcTableG1VMps?.isNotEmpty ?? false),
     DragType.g7 => useMultiBcG7 && (multiBcTableG7VMps?.isNotEmpty ?? false),

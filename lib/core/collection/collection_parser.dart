@@ -1,16 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
-import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 class BuiltinCollection {
-  final List<WeaponData> rifles;
-  final List<AmmoData> cartridges;
-  final List<AmmoData> projectiles;
-  final List<SightData> sights;
+  final List<Weapon> rifles;
+  final List<Ammo> cartridges;
+  final List<Ammo> projectiles;
+  final List<Sight> sights;
 
   const BuiltinCollection({
     required this.rifles,
@@ -57,104 +54,112 @@ abstract final class CollectionParser {
 
   // ── Rifle ──────────────────────────────────────────────────────────────────
 
-  static WeaponData _parseRifle(
-    Map<String, dynamic> j,
-    Map<int, double> calibers,
-  ) {
+  static Weapon _parseRifle(Map<String, dynamic> j, Map<int, double> calibers) {
     final caliberId = j['caliberId'] as int?;
     final diameterInch = caliberId != null ? calibers[caliberId] : null;
     final barrelRaw =
         (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
-    return WeaponData(
-      name: j['name'] as String,
-      vendor: j['vendor'] as String?,
-      sightHeight: Distance.millimeter(0.0),
-      twist: Distance.inch((j['rTwist'] as num).toDouble()),
-      caliber: diameterInch != null ? Distance.inch(diameterInch) : null,
-      barrelLength: barrelRaw != null
-          ? Distance(barrelRaw.toDouble(), Unit.inch)
-          : null,
-    );
+    return Weapon()
+      ..name = j['name'] as String
+      ..vendor = j['vendor'] as String?
+      ..twistInch = (j['rTwist'] as num).toDouble()
+      ..caliberInch = diameterInch ?? 0.0
+      ..barrelLengthInch = barrelRaw?.toDouble();
   }
 
   // ── Cartridge ──────────────────────────────────────────────────────────────
 
-  static AmmoData _parseCartridge(
+  static Ammo _parseCartridge(
     Map<String, dynamic> j,
     Map<int, double> calibers,
   ) {
     final caliberId = j['caliberId'] as int?;
     final diameterInch =
         (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
-    final dType = _dragType(j['dType'] as String? ?? 'G1');
-    final name = j['name'] as String;
-
-    // Використовуємо Conditions.fromJson для парсингу zeroConditions
-    final zeroConditionsJson = j['zeroConditions'] as Map<String, dynamic>?;
-    final zeroConditions = zeroConditionsJson != null
-        ? Conditions.fromJson(zeroConditionsJson)
-        : Conditions.withDefaults();
+    final dragTypeStr = _dragTypeStr(j['dType'] as String? ?? 'G1');
 
     final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
     final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
 
-    final List<CoeficientRow> coefRows;
-    if (dType == DragModelType.g7 && useMultiG7) {
-      coefRows = _multiBC(j['multiBCtableG7'] as List? ?? []);
-    } else if (dType == DragModelType.g1 && useMultiG1) {
-      coefRows = _multiBC(j['multiBCtableG1'] as List? ?? []);
+    final ammo = Ammo()
+      ..name = j['name'] as String
+      ..vendor = j['vendor'] as String?
+      ..projectileName = j['projectileName'] as String?
+      ..dragTypeValue = dragTypeStr
+      ..caliberInch = diameterInch
+      ..weightGrain = (j['bulletWeight'] as num? ?? 0.0).toDouble()
+      ..lengthInch = (j['bulletLength'] as num? ?? 0.0).toDouble()
+      ..muzzleVelocityMps = (j['muzzleVelocity'] as num? ?? 0.0).toDouble()
+      ..muzzleVelocityTemperatureC = (j['powderTemperature'] as num? ?? 15.0)
+          .toDouble()
+      ..powderTemperatureC = (j['powderTemperature'] as num? ?? 15.0).toDouble()
+      ..powderSensitivityFrac = (j['powderSensitivity'] as num? ?? 0.0)
+          .toDouble()
+      ..useMultiBcG1 = useMultiG1
+      ..useMultiBcG7 = useMultiG7;
+
+    // BC values
+    if (dragTypeStr == 'g7') {
+      ammo.bcG7 = (j['bcG7'] as num? ?? 0.0).toDouble();
+      if (useMultiG7) {
+        _applyMultiBc(ammo, j['multiBCtableG7'] as List? ?? [], isG7: true);
+      }
     } else {
-      final bc = dType == DragModelType.g7
-          ? (j['bcG7'] as num? ?? 0.0).toDouble()
-          : (j['bcG1'] as num? ?? 0.0).toDouble();
-      coefRows = [CoeficientRow(bcCd: bc, mv: 0.0)];
+      ammo.bcG1 = (j['bcG1'] as num? ?? 0.0).toDouble();
+      if (useMultiG1) {
+        _applyMultiBc(ammo, j['multiBCtableG1'] as List? ?? [], isG7: false);
+      }
     }
 
-    return AmmoData(
-      name: name,
-      vendor: j['vendor'] as String?,
-      projectileName: j['projectileName'] as String?,
-      type: AmmoType.cartridge,
-      dragType: dType,
-      weight: Weight((j['bulletWeight'] as num? ?? 0.0).toDouble(), Unit.grain),
-      diameter: Distance.inch(diameterInch),
-      length: Distance(
-        (j['bulletLength'] as num? ?? 0.0).toDouble(),
-        Unit.inch,
-      ),
-      coefRows: coefRows,
-      mv: Velocity((j['muzzleVelocity'] as num).toDouble(), Unit.mps),
-      powderTemp: Temperature(
-        (j['powderTemperature'] as num? ?? 15.0).toDouble(),
-        Unit.celsius,
-      ),
-      powderSensitivity: Ratio(
-        (j['powderSensitivity'] as num? ?? 0.0).toDouble(),
-        Unit.fraction,
-      ),
-      zeroConditions: zeroConditions,
-    );
+    // Zero conditions
+    final zc = j['zeroConditions'] as Map<String, dynamic>?;
+    if (zc != null) {
+      ammo.zeroDistanceMeter = (zc['targetDistance'] as num? ?? 100.0)
+          .toDouble();
+      final atmo = zc['atmo'] as Map<String, dynamic>?;
+      if (atmo != null) {
+        ammo.zeroAltitudeMeter = (atmo['altitude'] as num? ?? 0.0).toDouble();
+        ammo.zeroTemperatureC = (atmo['temperature'] as num? ?? 15.0)
+            .toDouble();
+        ammo.zeroPressurehPa = (atmo['pressure'] as num? ?? 1013.0).toDouble();
+        ammo.zeroHumidityFrac = (atmo['humidity'] as num? ?? 0.0).toDouble();
+        ammo.zeroPowderTemperatureC = (atmo['powderTemp'] as num? ?? 15.0)
+            .toDouble();
+      }
+    }
+
+    return ammo;
+  }
+
+  static void _applyMultiBc(Ammo ammo, List rows, {required bool isG7}) {
+    if (rows.isEmpty) return;
+    final vList = rows
+        .map<double>((r) => ((r as Map)['v'] as num).toDouble())
+        .toList();
+    final bcList = rows
+        .map<double>((r) => ((r as Map)['bc'] as num).toDouble())
+        .toList();
+    if (isG7) {
+      ammo.multiBcTableG7VMps = Float64List.fromList(vList);
+      ammo.multiBcTableG7Bc = Float64List.fromList(bcList);
+      ammo.bcG7 = bcList.first;
+    } else {
+      ammo.multiBcTableG1VMps = Float64List.fromList(vList);
+      ammo.multiBcTableG1Bc = Float64List.fromList(bcList);
+      ammo.bcG1 = bcList.first;
+    }
   }
 
   // ── Sight ──────────────────────────────────────────────────────────────────
 
-  static SightData _parseSight(Map<String, dynamic> j) => SightData(
-    name: j['name'] as String,
-    manufacturer: j['vendor'] as String?,
-  );
+  static Sight _parseSight(Map<String, dynamic> j) => Sight()
+    ..name = j['name'] as String
+    ..vendor = j['vendor'] as String?;
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  static List<CoeficientRow> _multiBC(List table) => table.map((r) {
-    final row = r as Map<String, dynamic>;
-    return CoeficientRow(
-      bcCd: (row['bc'] as num).toDouble(),
-      mv: (row['v'] as num).toDouble(),
-    );
-  }).toList();
-
-  static DragModelType _dragType(String raw) => switch (raw.toUpperCase()) {
-    'G7' => DragModelType.g7,
-    _ => DragModelType.g1,
+  static String _dragTypeStr(String raw) => switch (raw.toUpperCase()) {
+    'G7' => 'g7',
+    _ => 'g1',
   };
 }

@@ -21,7 +21,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String velocity(Velocity dim) => _fmt(dim, FC.velocity, _u.velocityUnit);
 
   @override
-  String distance(Distance dim) => _fmt(dim, FC.targetDistance, _u.distanceUnit);
+  String distance(Distance dim) =>
+      _fmt(dim, FC.targetDistance, _u.distanceUnit);
 
   @override
   String temperature(Temperature dim) =>
@@ -49,7 +50,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String length(Distance dim) => _fmt(dim, FC.bulletLength, _u.lengthUnit);
 
   @override
-  String diameter(Distance dim) => _fmt(dim, FC.bulletDiameter, _u.diameterUnit);
+  String diameter(Distance dim) =>
+      _fmt(dim, FC.bulletDiameter, _u.diameterUnit);
 
   @override
   String sightHeight(Distance dim) =>
@@ -78,28 +80,11 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   String torque(Torque dim) => _fmt(dim, FC.torque, _u.torqueUnit);
 
-  // --- Raw numbers ---
+  @override
+  String windSpeed(Velocity dim) => _fmt(dim, FC.windSpeed, _u.velocityUnit);
 
   @override
-  double rawVelocity(Velocity dim) => dim.in_(_u.velocityUnit);
-  @override
-  double rawDistance(Distance dim) => dim.in_(_u.distanceUnit);
-  @override
-  double rawTemperature(Temperature dim) => dim.in_(_u.temperatureUnit);
-  @override
-  double rawPressure(Pressure dim) => dim.in_(_u.pressureUnit);
-  @override
-  double rawDrop(Distance dim) => dim.in_(_u.dropUnit);
-  @override
-  double rawAdjustment(Angular dim) => dim.in_(_u.adjustmentUnit);
-  @override
-  double rawEnergy(Energy dim) => dim.in_(_u.energyUnit);
-  @override
-  double rawWeight(Weight dim) => dim.in_(_u.weightUnit);
-  @override
-  double rawSightHeight(Distance dim) => dim.in_(_u.sightHeightUnit);
-  @override
-  double rawTorque(Torque dim) => dim.in_(_u.torqueUnit);
+  String windDirection(Angular dim) => _fmt(dim, FC.windDirection, Unit.degree);
 
   // --- Symbols ---
 
@@ -131,20 +116,50 @@ class UnitFormatterImpl implements UnitFormatter {
     return switch (field) {
       InputField.velocity => displayValue.convert(_u.velocityUnit, Unit.mps),
       InputField.distance => displayValue.convert(_u.distanceUnit, Unit.meter),
-      InputField.targetDistance => displayValue.convert(_u.distanceUnit, Unit.meter),
-      InputField.zeroDistance => displayValue.convert(_u.distanceUnit, Unit.meter),
-      InputField.temperature => displayValue.convert(_u.temperatureUnit, Unit.celsius),
+      InputField.targetDistance => displayValue.convert(
+        _u.distanceUnit,
+        Unit.meter,
+      ),
+      InputField.zeroDistance => displayValue.convert(
+        _u.distanceUnit,
+        Unit.meter,
+      ),
+      InputField.temperature => displayValue.convert(
+        _u.temperatureUnit,
+        Unit.celsius,
+      ),
       InputField.pressure => displayValue.convert(_u.pressureUnit, Unit.hPa),
       InputField.humidity => displayValue / 100.0,
-      InputField.windVelocity => displayValue.convert(_u.velocityUnit, Unit.mps),
+      InputField.windVelocity => displayValue.convert(
+        _u.velocityUnit,
+        Unit.mps,
+      ),
       InputField.lookAngle => displayValue,
-      InputField.sightHeight => displayValue.convert(_u.sightHeightUnit, Unit.millimeter),
+      InputField.sightHeight => displayValue.convert(
+        _u.sightHeightUnit,
+        Unit.millimeter,
+      ),
       InputField.twist => displayValue.convert(_u.twistUnit, Unit.inch),
-      InputField.bulletWeight => displayValue.convert(_u.weightUnit, Unit.grain),
-      InputField.bulletLength => displayValue.convert(_u.lengthUnit, Unit.millimeter),
-      InputField.bulletDiameter => displayValue.convert(_u.diameterUnit, Unit.millimeter),
-      InputField.barrelLength => displayValue.convert(_u.barrelLengthUnit, Unit.inch),
-      InputField.torque => displayValue.convert(_u.torqueUnit, Unit.newtonMeter),
+      InputField.bulletWeight => displayValue.convert(
+        _u.weightUnit,
+        Unit.grain,
+      ),
+      InputField.bulletLength => displayValue.convert(
+        _u.lengthUnit,
+        Unit.millimeter,
+      ),
+      InputField.bulletDiameter => displayValue.convert(
+        _u.diameterUnit,
+        Unit.millimeter,
+      ),
+      InputField.barrelLength => displayValue.convert(
+        _u.barrelLengthUnit,
+        Unit.inch,
+      ),
+      InputField.torque => displayValue.convert(
+        _u.torqueUnit,
+        Unit.newtonMeter,
+      ),
       InputField.bc => displayValue,
     };
   }
@@ -154,19 +169,37 @@ class UnitFormatterImpl implements UnitFormatter {
     return switch (field) {
       InputField.velocity => rawValue.convert(Unit.mps, _u.velocityUnit),
       InputField.distance => rawValue.convert(Unit.meter, _u.distanceUnit),
-      InputField.targetDistance => rawValue.convert(Unit.meter, _u.distanceUnit),
+      InputField.targetDistance => rawValue.convert(
+        Unit.meter,
+        _u.distanceUnit,
+      ),
       InputField.zeroDistance => rawValue.convert(Unit.meter, _u.distanceUnit),
-      InputField.temperature => rawValue.convert(Unit.celsius, _u.temperatureUnit),
+      InputField.temperature => rawValue.convert(
+        Unit.celsius,
+        _u.temperatureUnit,
+      ),
       InputField.pressure => rawValue.convert(Unit.hPa, _u.pressureUnit),
       InputField.humidity => rawValue * 100.0,
       InputField.windVelocity => rawValue.convert(Unit.mps, _u.velocityUnit),
       InputField.lookAngle => rawValue,
-      InputField.sightHeight => rawValue.convert(Unit.millimeter, _u.sightHeightUnit),
+      InputField.sightHeight => rawValue.convert(
+        Unit.millimeter,
+        _u.sightHeightUnit,
+      ),
       InputField.twist => rawValue.convert(Unit.inch, _u.twistUnit),
       InputField.bulletWeight => rawValue.convert(Unit.grain, _u.weightUnit),
-      InputField.bulletLength => rawValue.convert(Unit.millimeter, _u.lengthUnit),
-      InputField.bulletDiameter => rawValue.convert(Unit.millimeter, _u.diameterUnit),
-      InputField.barrelLength => rawValue.convert(Unit.inch, _u.barrelLengthUnit),
+      InputField.bulletLength => rawValue.convert(
+        Unit.millimeter,
+        _u.lengthUnit,
+      ),
+      InputField.bulletDiameter => rawValue.convert(
+        Unit.millimeter,
+        _u.diameterUnit,
+      ),
+      InputField.barrelLength => rawValue.convert(
+        Unit.inch,
+        _u.barrelLengthUnit,
+      ),
       InputField.torque => rawValue.convert(Unit.newtonMeter, _u.torqueUnit),
       InputField.bc => rawValue,
     };

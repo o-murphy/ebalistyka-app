@@ -10,6 +10,18 @@ extension ProfileExtension on Profile {
     return ammo != null && ammo.isReadyForCalculation;
   }
 
+  Velocity getCalculatedZeroVelocity() {
+    final ammo = this.ammo.target!;
+    return ammo.toZeroAmmo().getVelocityForTemp(ammo.toZeroAtmo().powderTemp);
+  }
+
+  Velocity getCalculatedCurrentVelocity(ShootingConditions cond) {
+    final ammo = this.ammo.target!;
+    return ammo
+        .toCurrentAmmo(cond)
+        .getVelocityForTemp(cond.toCurrentAtmo().powderTemp);
+  }
+
   bclibc.Shot toZeroShot(bclibc.Weapon weapon, Angular lookAngle) {
     final ammo = this.ammo.target!;
 

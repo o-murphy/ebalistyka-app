@@ -18,11 +18,8 @@ class AppState {
     this.activeProfile,
   });
 
-  factory AppState.empty() => const AppState(
-    cartridges: [],
-    sights: [],
-    profiles: [],
-  );
+  factory AppState.empty() =>
+      const AppState(cartridges: [], sights: [], profiles: []);
 
   AppState copyWith({
     List<Ammo>? cartridges,
@@ -54,15 +51,18 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   AppState _load() {
     final owner = _owner;
 
-    var cartridges = _store.box<Ammo>()
+    var cartridges = _store
+        .box<Ammo>()
         .query(Ammo_.owner.equals(owner.id))
         .build()
         .find();
-    var sights = _store.box<Sight>()
+    var sights = _store
+        .box<Sight>()
         .query(Sight_.owner.equals(owner.id))
         .build()
         .find();
-    var profiles = _store.box<Profile>()
+    var profiles = _store
+        .box<Profile>()
         .query(Profile_.owner.equals(owner.id))
         .order(Profile_.sortOrder)
         .build()
@@ -72,15 +72,18 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     if (cartridges.isEmpty && sights.isEmpty && profiles.isEmpty) {
       debugPrint('AppStateNotifier: seeding initial data...');
       _seed(owner);
-      cartridges = _store.box<Ammo>()
+      cartridges = _store
+          .box<Ammo>()
           .query(Ammo_.owner.equals(owner.id))
           .build()
           .find();
-      sights = _store.box<Sight>()
+      sights = _store
+          .box<Sight>()
           .query(Sight_.owner.equals(owner.id))
           .build()
           .find();
-      profiles = _store.box<Profile>()
+      profiles = _store
+          .box<Profile>()
           .query(Profile_.owner.equals(owner.id))
           .order(Profile_.sortOrder)
           .build()
@@ -196,7 +199,8 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<void> deleteAmmo(int id) async {
     _store.runInTransaction(TxMode.write, () {
       // Nullify ammo relation on linked profiles (keep profiles, just unlink)
-      final linked = _store.box<Profile>()
+      final linked = _store
+          .box<Profile>()
           .query(Profile_.ammo.equals(id))
           .build()
           .find();
@@ -211,6 +215,12 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
   // ── Sight CRUD ────────────────────────────────────────────────────────────────
 
+  Future<void> saveWeapon(Weapon weapon) async {
+    weapon.owner.target = _owner;
+    _store.box<Weapon>().put(weapon);
+    state = AsyncData(_load());
+  }
+
   Future<void> saveSight(Sight sight) async {
     sight.owner.target = _owner;
     _store.box<Sight>().put(sight);
@@ -220,7 +230,8 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
   Future<void> deleteSight(int id) async {
     _store.runInTransaction(TxMode.write, () {
-      final linked = _store.box<Profile>()
+      final linked = _store
+          .box<Profile>()
           .query(Profile_.sight.equals(id))
           .build()
           .find();

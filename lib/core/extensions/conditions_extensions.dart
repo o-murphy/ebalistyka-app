@@ -31,7 +31,8 @@ extension ConditionsExtension on ShootingConditions {
   Pressure get pressure => Pressure.hPa(pressurehPa);
   set pressure(Pressure v) => pressurehPa = v.in_(Unit.hPa);
 
-  // humidity stored as fraction 0.0–1.0, no typed wrapper needed
+  Ratio get humidity => Ratio.fraction(humidityFrac);
+  set humidity(Ratio v) => humidityFrac = v.in_(Unit.fraction);
 
   // ── Wind ────────────────────────────────────────────────────────────────────
 

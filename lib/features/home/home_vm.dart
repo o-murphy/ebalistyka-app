@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -312,34 +313,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final sight = profile.sight.target;
 
     final mvStr = fmt.velocity(ammo.mv);
-    final bcAcc = FC.ballisticCoefficient.accuracy;
-    final firstBc = switch (ammo.dragType) {
-      DragType.g7 => ammo.bcG7,
-      DragType.g1 => ammo.bcG1,
-      DragType.custom => 0.0,
-    };
-    final dragStr = switch (ammo.dragType) {
-      DragType.g1 =>
-        ammo.isMultiBC ? 'G1 Multi' : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragType.g7 =>
-        ammo.isMultiBC ? 'G7 Multi' : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
-      DragType.custom => 'CUSTOM',
-    };
+    final dragStr = ammo.dragModelFormattedInfo;
 
     String? sgStr;
-    final twistInch = weapon?.twistInch ?? 0.0;
-    final weightGr = ammo.weightGrain;
-    final diamInch = ammo.caliberInch;
-    final lenInch = ammo.lengthInch;
-    if (weapon != null &&
-        weightGr > 0 &&
-        diamInch > 0 &&
-        lenInch > 0 &&
-        twistInch > 0) {
-      final sightHeight =
-          sight != null
-              ? Distance.inch(sight.sightHeightInch)
-              : Distance.inch(0);
+    if (weapon != null && ammo.weightGrain > 0 && ammo.caliberInch > 0) {
+      final sightHeight = sight != null
+          ? Distance.inch(sight.sightHeightInch)
+          : Distance.inch(0);
       final bcWeapon = weapon.toWeapon(sightHeight);
       final currentShot = profile.toCurrentShot(conditions, bcWeapon);
       final sg = currentShot.calculateStabilityCoefficient();

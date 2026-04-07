@@ -28,7 +28,10 @@ class RecalcCoordinator extends Notifier<void> {
       if (_generalNeedsRecalc(prev?.value, next.value!)) _triggerAll();
     });
 
-    ref.listen<AsyncValue<UnitSettings>>(unitSettingsNotifierProvider, (prev, next) {
+    ref.listen<AsyncValue<UnitSettings>>(unitSettingsNotifierProvider, (
+      prev,
+      next,
+    ) {
       if (!next.hasValue) return;
       if (prev?.value != null) _triggerAll(); // any unit change → recalc
     });

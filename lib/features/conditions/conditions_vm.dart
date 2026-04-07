@@ -1,5 +1,7 @@
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -98,7 +100,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   Future<void> updateHumidity(double rawPercent) async {
     await ref
         .read(shotConditionsProvider.notifier)
-        .updateHumidity(rawPercent.convert(Unit.percent, Unit.fraction));
+        .updateHumidity(rawPercent / 100.0);
   }
 
   Future<void> updatePressure(double rawHPa) async {
@@ -143,7 +145,6 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     UnitSettings units,
     UnitFormatter formatter,
   ) {
-    final velUnit = units.velocityUnit;
     final tempUnit = units.temperatureUnit;
     final distUnit = units.distanceUnit;
     final pressUnit = units.pressureUnit;
@@ -151,7 +152,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final tempRaw = conditions.temperatureC;
     final altRaw = conditions.altitudeMeter;
     final pressRaw = conditions.pressurehPa;
-    final humRaw = conditions.humidityFrac;
+    final humRaw = conditions.humidityFrac * 100.0;
 
     final powderSensOn = conditions.usePowderSensitivity;
     final useDiffPowderTemp = powderSensOn && conditions.useDiffPowderTemp;
@@ -159,24 +160,14 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         ? conditions.powderTemperatureC
         : tempRaw;
 
-    // MV at powder temp
+    final curVelocity = profile?.getCalculatedCurrentVelocity(conditions);
+    final mvStr = curVelocity != null ? formatter.velocity(curVelocity) : "";
+
+    String sensStr = "";
     final ammo = profile?.ammo.target;
-    final refMvMps = ammo?.muzzleVelocityMps ?? 0.0;
-    final refPowderTempC = ammo?.powderTemperatureC ?? 15.0;
-    final sensitivityFrac = ammo?.powderSensitivityFrac ?? 0.0;
-
-    double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
-      refMvMps,
-      refPowderTempC,
-      tCurC,
-      sensitivityFrac,
-    );
-
-    final currentMvMps = mvAtTempC(powderTempRaw);
-    final currentMvDisp = Velocity.mps(currentMvMps).in_(velUnit);
-    final mvStr =
-        '${currentMvDisp.toStringAsFixed(FC.velocity.accuracyFor(velUnit))} ${velUnit.symbol}';
-    final sensStr = '${(sensitivityFrac * 100.0).toStringAsFixed(2)} %/15°C';
+    if (ammo != null) {
+      sensStr = formatter.powderSensitivity(ammo.powderSensitivity);
+    }
 
     return ConditionsUiState(
       temperature: _field(

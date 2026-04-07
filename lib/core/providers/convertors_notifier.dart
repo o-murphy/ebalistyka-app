@@ -18,9 +18,9 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
         .query(ConvertorsState_.owner.equals(owner.id))
         .watch(triggerImmediately: false)
         .listen((query) {
-      final updated = query.findFirst();
-      if (updated != null) state = AsyncData(updated);
-    });
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
     ref.onDispose(subscription.cancel);
 
     return s;

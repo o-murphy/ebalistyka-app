@@ -48,10 +48,9 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
     super.initState();
     final r = widget.initial;
     _nameCtrl = TextEditingController(text: r?.name ?? '');
-    _caliberRaw =
-        r != null
-            ? Distance.inch(r.caliberInch).in_(FC.bulletDiameter.rawUnit)
-            : FC.bulletDiameter.minRaw;
+    _caliberRaw = r != null
+        ? Distance.inch(r.caliberInch).in_(FC.bulletDiameter.rawUnit)
+        : FC.bulletDiameter.minRaw;
     final twistAbs = r != null ? r.twistInch.abs() : 0.0;
     _twistRaw = twistAbs > 0
         ? Distance.inch(twistAbs).in_(FC.twist.rawUnit)
@@ -83,14 +82,16 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
   // ── Build result ──────────────────────────────────────────────────────────
 
   Weapon _buildWeapon() {
-    final signedTwistInch =
-        Distance(_rightHand ? _twistRaw : -_twistRaw, FC.twist.rawUnit).in_(
-          Unit.inch,
-        );
+    final signedTwistInch = Distance(
+      _rightHand ? _twistRaw : -_twistRaw,
+      FC.twist.rawUnit,
+    ).in_(Unit.inch);
     final weapon = widget.initial ?? Weapon();
     weapon.name = _nameCtrl.text.trim();
-    weapon.caliberInch =
-        Distance(_caliberRaw, FC.bulletDiameter.rawUnit).in_(Unit.inch);
+    weapon.caliberInch = Distance(
+      _caliberRaw,
+      FC.bulletDiameter.rawUnit,
+    ).in_(Unit.inch);
     weapon.twistInch = signedTwistInch;
     weapon.barrelLengthInch = (_hasBarrelLength && _barrelLengthRaw != null)
         ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit).in_(Unit.inch)

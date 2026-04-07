@@ -17,9 +17,9 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
         .query(ShootingConditions_.owner.equals(owner.id))
         .watch(triggerImmediately: false)
         .listen((query) {
-      final updated = query.findFirst();
-      if (updated != null) state = AsyncData(updated);
-    });
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
     ref.onDispose(subscription.cancel);
 
     return cond;

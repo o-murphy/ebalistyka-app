@@ -66,17 +66,17 @@ abstract final class FC {
     accuracy: 0,
   );
 
-  /// Humidity in percent (0–100). No unit conversion.
+  /// Humidity in percent (0–100). rawUnit == displayUnit so toDisplay is identity.
   static const humidity = FieldConstraints(
-    rawUnit: Unit.fraction, // sentinel — no conversion used for humidity
+    rawUnit: Unit.percent,
     minRaw: 0.0,
-    maxRaw: 1.0,
-    stepRaw: 0.01,
-    accuracy: 2,
+    maxRaw: 100.0,
+    stepRaw: 1.0,
+    accuracy: 0,
   );
 
   // Ballistic inputs
-  static const windVelocity = FieldConstraints(
+  static const windSpeed = FieldConstraints(
     rawUnit: Unit.mps,
     minRaw: 0.0,
     maxRaw: 30.0,
@@ -119,7 +119,7 @@ abstract final class FC {
 
   static const twist = FieldConstraints(
     rawUnit: Unit.inch,
-    minRaw: 1.0,
+    minRaw: -30.0,
     maxRaw: 30.0,
     stepRaw: 0.25,
     accuracy: 2,

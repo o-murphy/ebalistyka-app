@@ -51,10 +51,12 @@ void main() async {
 
   final store = await initObjectBox();
 
-  runApp(ProviderScope(
-    overrides: [dbProvider.overrideWithValue(store)],
-    child: const MyApp(),
-  ));
+  runApp(
+    ProviderScope(
+      overrides: [dbProvider.overrideWithValue(store)],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class _AppScrollBehavior extends MaterialScrollBehavior {

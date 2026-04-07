@@ -24,9 +24,9 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
         .query(GeneralSettings_.owner.equals(owner.id))
         .watch(triggerImmediately: false)
         .listen((query) {
-      final updated = query.findFirst();
-      if (updated != null) state = AsyncData(updated);
-    });
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
     ref.onDispose(subscription.cancel);
 
     return settings;
@@ -116,9 +116,9 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
         .query(UnitSettings_.owner.equals(owner.id))
         .watch(triggerImmediately: false)
         .listen((query) {
-      final updated = query.findFirst();
-      if (updated != null) state = AsyncData(updated);
-    });
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
     ref.onDispose(subscription.cancel);
 
     return settings;
@@ -186,9 +186,9 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
         .query(TablesSettings_.owner.equals(owner.id))
         .watch(triggerImmediately: false)
         .listen((query) {
-      final updated = query.findFirst();
-      if (updated != null) state = AsyncData(updated);
-    });
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
     ref.onDispose(subscription.cancel);
 
     return settings;
@@ -215,9 +215,10 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
 
 // ── Providers ─────────────────────────────────────────────────────────────────
 
-final settingsProvider = AsyncNotifierProvider<SettingsNotifier, GeneralSettings>(
-  SettingsNotifier.new,
-);
+final settingsProvider =
+    AsyncNotifierProvider<SettingsNotifier, GeneralSettings>(
+      SettingsNotifier.new,
+    );
 
 final unitSettingsNotifierProvider =
     AsyncNotifierProvider<UnitSettingsNotifier, UnitSettings>(
@@ -240,5 +241,6 @@ final tablesSettingsProvider = Provider<TablesSettings>((ref) {
 });
 
 final themeModeProvider = Provider<ThemeMode>((ref) {
-  return ref.watch(settingsProvider).value?.flutterThemeMode ?? ThemeMode.system;
+  return ref.watch(settingsProvider).value?.flutterThemeMode ??
+      ThemeMode.system;
 });

@@ -82,9 +82,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   void updateDistanceValue(double? rawValueInInputUnit) {
     final convertorsState = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateAnglesConvDistanceValue(null);
+      ref.read(convertorsProvider.notifier).updateAnglesConvDistanceValue(null);
       return;
     }
     final metersValue = rawValueInInputUnit.convert(
@@ -101,9 +99,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   void updateAngularValue(double? rawValueInInputUnit) {
     final convertorsState = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateAnglesConvAngularValue(null);
+      ref.read(convertorsProvider.notifier).updateAnglesConvAngularValue(null);
       return;
     }
     final milValue = rawValueInInputUnit.convert(
@@ -118,21 +114,15 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   }
 
   void changeDistanceUnit(Unit newUnit) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateAnglesConvDistanceUnit(newUnit);
+    ref.read(convertorsProvider.notifier).updateAnglesConvDistanceUnit(newUnit);
   }
 
   void changeAngularUnit(Unit newUnit) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateAnglesConvAngularUnit(newUnit);
+    ref.read(convertorsProvider.notifier).updateAnglesConvAngularUnit(newUnit);
   }
 
   void changeOutputUnit(Unit newUnit) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateAnglesConvOutputUnit(newUnit);
+    ref.read(convertorsProvider.notifier).updateAnglesConvOutputUnit(newUnit);
   }
 
   FieldConstraints getDistanceConstraintsForUnit(Unit unit) {

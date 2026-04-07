@@ -124,17 +124,6 @@ abstract interface class UnitFormatter {
   String time(double seconds);         // "1.234 s"
   String muzzleVelocity(dynamic dim);  // спеціальна точність для MV
 
-  // --- Сирі числа (без одиниці, для слайдерів/полів вводу) ---
-  double rawVelocity(dynamic dim);
-  double rawDistance(dynamic dim);
-  double rawTemperature(dynamic dim);
-  double rawPressure(dynamic dim);
-  double rawDrop(dynamic dim);
-  double rawAdjustment(dynamic dim);
-  double rawEnergy(dynamic dim);
-  double rawWeight(dynamic dim);
-  double rawSightHeight(dynamic dim);
-
   // --- Символи поточних одиниць ---
   String get velocitySymbol;
   String get distanceSymbol;
@@ -953,7 +942,6 @@ class ConditionsUiState {
   final bool powderSensOn;
   final bool useDiffPowderTemp;
   final bool coriolisOn;
-  final bool derivationOn;
 
   // Readonly computed
   final String? mvAtPowderTemp;     // "888 m/s" або null
@@ -968,7 +956,6 @@ class ConditionsUiState {
     required this.powderSensOn,
     required this.useDiffPowderTemp,
     required this.coriolisOn,
-    required this.derivationOn,
     this.mvAtPowderTemp,
     this.powderSensitivity,
   });

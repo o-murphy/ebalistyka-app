@@ -6,14 +6,6 @@ export 'my_sights_screen.dart';
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
 
-// ── Profile Add ───────────────────────────────────────────────────────────────
-
-class ProfileAddScreen extends StatelessWidget {
-  const ProfileAddScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Add Profile');
-}
-
 // ── Rifle ─────────────────────────────────────────────────────────────────────
 
 class CreateRifleWizardScreen extends StatelessWidget {

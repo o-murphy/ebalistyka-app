@@ -1,10 +1,10 @@
+import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -85,42 +85,32 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
 
   ProfileCardData _buildCardData(
     Profile profile,
-    UnitFormatter fmt,
+    UnitFormatter formatter,
     UnitSettings units,
   ) {
     final ammo = profile.ammo.target;
     final sight = profile.sight.target;
     final weapon = profile.weapon.target;
 
-    String dragModel = '—';
+    String dragStr = '—';
     String caliber = '—';
     String muzzleVelocity = '—';
     String weight = '—';
 
     if (ammo != null) {
-      final bcAcc = FC.ballisticCoefficient.accuracy;
-      final firstBc = ammo.isMultiBC
-          ? 0.0
-          : (ammo.dragType == DragType.g7 ? ammo.bcG7 : ammo.bcG1);
-      dragModel = switch (ammo.dragType) {
-        DragType.g1 =>
-          ammo.isMultiBC
-              ? 'G1 Multi'
-              : 'G1 ${firstBc.toStringAsFixed(bcAcc)}',
-        DragType.g7 =>
-          ammo.isMultiBC
-              ? 'G7 Multi'
-              : 'G7 ${firstBc.toStringAsFixed(bcAcc)}',
-        DragType.custom => 'CUSTOM',
-      };
-      caliber = fmt.diameter(ammo.caliber);
-      muzzleVelocity = fmt.velocity(ammo.mv);
-      weight = fmt.weight(ammo.weight);
+      dragStr = ammo.dragModelFormattedInfo;
+      caliber = formatter.diameter(ammo.caliber);
+      muzzleVelocity = formatter.velocity(ammo.mv);
+      weight = formatter.weight(ammo.weight);
     }
 
     final twistStr = weapon != null && weapon.twistInch.abs() > 0
-        ? fmt.twist(weapon.twist)
+        ? formatter.twist(weapon.twist)
         : '—';
+
+    final twistDirStr = weapon != null && weapon.isRightHandTwist
+        ? "right"
+        : "left";
 
     return ProfileCardData(
       id: profile.id.toString(),
@@ -128,9 +118,9 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       rifleName: weapon?.name ?? '—',
       caliber: caliber,
       twist: twistStr,
-      twistDirection: 'right',
+      twistDirection: twistDirStr,
       cartridgeName: ammo?.name ?? 'Not selected',
-      dragModel: dragModel,
+      dragModel: dragStr,
       muzzleVelocity: muzzleVelocity,
       weight: weight,
       sightName: sight?.name ?? 'Not selected',
@@ -174,6 +164,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
         .firstOrNull;
     if (profile == null) return;
 
+    await ref.read(appStateProvider.notifier).saveWeapon(weapon);
     profile.weapon.target = weapon;
     await ref.read(appStateProvider.notifier).saveProfile(profile);
 

@@ -1,7 +1,8 @@
 // Unit tests for ConditionsViewModel (Phase 2).
 //
-// No FFI required — uses only Riverpod container with provider overrides.
-//   flutter test test/viewmodels/conditions_vm_test.dart
+// Uses Riverpod container with provider overrides.
+// ObjectBox entities used directly (no old model classes).
+//   flutter test test/features/conditions/conditions_vm_test.dart
 
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,46 +11,33 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
-import 'package:ebalistyka/core/models/app_settings.dart';
-import 'package:ebalistyka/core/models/ammo_data.dart';
-import 'package:ebalistyka/core/models/weapon_data.dart';
-import 'package:ebalistyka/core/models/profile_data.dart';
-import 'package:ebalistyka/core/models/conditions_data.dart';
-import 'package:ebalistyka/core/models/sight_data.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:bclibc_ffi/unit.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-ProfileData _makeProfile() {
-  final cartridge = AmmoData(
-    name: 'Test .308',
-    projectileName: 'Test 175gr',
-    dragType: DragModelType.g7,
-    weight: Weight.grain(175),
-    diameter: Distance.millimeter(7.62),
-    length: Distance.millimeter(31.0),
-    coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-    mv: Velocity.mps(800),
-    powderTemp: Temperature.celsius(15.0),
-    powderSensitivity: Ratio.fraction(1.0),
-    zeroConditions: Conditions.withDefaults(usePowderSensitivity: true),
-  );
-  final rifle = WeaponData(
-    name: 'Test Rifle',
-    sightHeight: Distance.millimeter(38.0),
-    twist: Distance.inch(11.0),
-  );
-  final sight = SightData(name: 'Test Scope');
-  return ProfileData(
-    name: 'Test Shot',
-    rifle: rifle,
-    sight: sight,
-    cartridge: cartridge,
-  );
+Profile _makeProfile() {
+  final ammo = Ammo()
+    ..name = 'Test .308'
+    ..projectileName = 'Test 175gr'
+    ..dragTypeValue = 'g7'
+    ..bcG7 = 0.475
+    ..weightGrain = 175.0
+    ..caliberInch = 0.308
+    ..lengthInch = 1.22
+    ..muzzleVelocityMps = 800.0
+    ..muzzleVelocityTemperatureC = 15.0
+    ..powderTemperatureC = 15.0
+    ..powderSensitivityFrac = 0.001
+    ..usePowderSensitivity = true;
+
+  final profile = Profile()..name = 'Test Shot';
+  profile.ammo.target = ammo;
+  return profile;
 }
 
-Conditions _makeConditions({
+ShootingConditions _makeConditions({
   double tempC = 20.0,
   double altM = 150.0,
   double pressHPa = 1013.25,
@@ -58,67 +46,50 @@ Conditions _makeConditions({
   bool usePowderSensitivity = false,
   bool useDiffPowderTemp = false,
 }) {
-  return Conditions(
-    atmo: AtmoData(
-      temperature: Temperature.celsius(tempC),
-      altitude: Distance.meter(altM),
-      pressure: Pressure.hPa(pressHPa),
-      humidity: humidity,
-      powderTemp: Temperature.celsius(powderTempC),
-    ),
-    lookAngle: Angular.degree(0),
-    distance: Distance.meter(300.0),
-    wind: WindData.empty(),
-    usePowderSensitivity: usePowderSensitivity,
-    useDiffPowderTemp: useDiffPowderTemp,
-    useCoriolis: false,
-    latitudeDeg: null,
-    azimuthDeg: null,
-  );
+  return ShootingConditions()
+    ..temperatureC = tempC
+    ..altitudeMeter = altM
+    ..pressurehPa = pressHPa
+    ..humidityFrac = humidity
+    ..powderTemperatureC = powderTempC
+    ..usePowderSensitivity = usePowderSensitivity
+    ..useDiffPowderTemp = useDiffPowderTemp;
 }
 
 // ── Fake notifiers for provider overrides ────────────────────────────────────
 
 class _FakeProfileNotifier extends ShotProfileNotifier {
-  final ProfileData _profile;
+  final Profile? _profile;
   _FakeProfileNotifier(this._profile);
   @override
-  Future<ProfileData> build() async => _profile;
-}
-
-class _FakeSettingsNotifier extends SettingsNotifier {
-  final AppSettings _settings;
-  _FakeSettingsNotifier(this._settings);
-  @override
-  Future<AppSettings> build() async => _settings;
+  Future<Profile?> build() async => _profile;
 }
 
 class _FakeConditionsNotifier extends ShotConditionsNotifier {
-  Conditions _conditions;
+  ShootingConditions _conditions;
   _FakeConditionsNotifier(this._conditions);
 
   @override
-  Future<Conditions> build() async => _conditions;
+  Future<ShootingConditions> build() async => _conditions;
 
-  // Не використовуємо update, замість цього робимо push метод
-  void push(Conditions c) {
+  void push(ShootingConditions c) {
     _conditions = c;
     state = AsyncData(c);
   }
 
-  Conditions get currentValue => _conditions;
+  ShootingConditions get currentValue => _conditions;
 }
 
-/// Creates a ProviderContainer with the given profile, conditions and settings.
+/// Creates a ProviderContainer with the given profile, conditions and unit settings.
 ProviderContainer _createContainer({
-  required ProfileData profile,
-  required Conditions conditions,
-  AppSettings settings = const AppSettings(),
+  required Profile? profile,
+  required ShootingConditions conditions,
+  UnitSettings? settings,
 }) {
   return ProviderContainer(
     overrides: [
       shotProfileProvider.overrideWith(() => _FakeProfileNotifier(profile)),
-      settingsProvider.overrideWith(() => _FakeSettingsNotifier(settings)),
+      unitSettingsProvider.overrideWith((ref) => settings ?? UnitSettings()),
       shotConditionsProvider.overrideWith(
         () => _FakeConditionsNotifier(conditions),
       ),
@@ -131,7 +102,6 @@ Future<ConditionsUiState> _waitForConditions(
   ProviderContainer container,
 ) async {
   await container.read(shotProfileProvider.future);
-  await container.read(settingsProvider.future);
   await container.read(shotConditionsProvider.future);
   await Future<void>.delayed(Duration.zero);
   return container.read(conditionsVmProvider.future);
@@ -176,7 +146,8 @@ void main() {
     });
 
     test('humidity displays as percentage', () {
-      expect(state.humidity.displayValue, closeTo(50.0, 0.1));
+      // rawValue is stored in percent (UI uses rawValue directly via UnitValueFieldTile)
+      expect(state.humidity.rawValue, closeTo(50.0, 0.1));
       expect(state.humidity.symbol, '%');
     });
 
@@ -202,7 +173,6 @@ void main() {
 
     test('coriolis and derivation are off by default', () {
       expect(state.coriolisOn, false);
-      expect(state.derivationOn, false);
     });
   });
 
@@ -211,12 +181,11 @@ void main() {
     late ConditionsUiState state;
 
     setUp(() async {
-      const imperial = UnitSettings(
-        temperature: Unit.fahrenheit,
-        distance: Unit.yard,
-        velocity: Unit.fps,
-        pressure: Unit.mmHg,
-      );
+      final imperial = UnitSettings()
+        ..temperature = 'fahrenheit'
+        ..distance = 'yard'
+        ..velocity = 'fps'
+        ..pressure = 'mmHg';
       container = _createContainer(
         profile: _makeProfile(),
         conditions: _makeConditions(
@@ -224,7 +193,7 @@ void main() {
           altM: 150.0,
           pressHPa: 1013.25,
         ),
-        settings: const AppSettings(units: imperial),
+        settings: imperial,
       );
       state = await _waitForConditions(container);
     });
@@ -323,31 +292,23 @@ void main() {
 
   group('ConditionsViewModel — empty state', () {
     test('provides default values when conditions not loaded', () async {
-      // Використовуємо реальний notifier з null значенням
       final container = ProviderContainer(
         overrides: [
           shotProfileProvider.overrideWith(
             () => _FakeProfileNotifier(_makeProfile()),
           ),
-          settingsProvider.overrideWith(
-            () => _FakeSettingsNotifier(const AppSettings()),
-          ),
-          // Мокуємо умови як "не завантажені" (default empty conditions)
+          unitSettingsProvider.overrideWith((ref) => UnitSettings()),
           shotConditionsProvider.overrideWith(
-            () => _FakeConditionsNotifier(Conditions.withDefaults()),
+            () => _FakeConditionsNotifier(ShootingConditions()),
           ),
         ],
       );
       addTearDown(container.dispose);
 
-      // Чекаємо тільки settings і profile
-      await container.read(settingsProvider.future);
       await container.read(shotProfileProvider.future);
-
-      // Даємо час для VM
+      await container.read(shotConditionsProvider.future);
       await Future<void>.delayed(Duration.zero);
 
-      // Отримуємо стан VM
       final state = await container.read(conditionsVmProvider.future);
       expect(state.temperature.label, 'Temperature');
       expect(state.humidity.label, 'Humidity');
@@ -397,15 +358,3 @@ void main() {
     });
   });
 }
-
-// /// Profile notifier that never completes — simulates "still loading" state.
-// class _PendingProfileNotifier extends ShotProfileNotifier {
-//   @override
-//   Future<ShotProfile> build() => Completer<ShotProfile>().future;
-// }
-
-// /// Conditions notifier that never completes — simulates "still loading" state.
-// class _PendingConditionsNotifier extends ShotConditionsNotifier {
-//   @override
-//   Future<Conditions> build() => Completer<Conditions>().future;
-// }

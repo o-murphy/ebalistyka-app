@@ -124,7 +124,6 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     UnitFormatter formatter,
     bclibc.HitResult hit,
   ) {
-    final ammo = profile.ammo.target!;
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;
 
@@ -132,35 +131,8 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     final traj = hit.trajectory;
     final atTarget = hit.getAtDistance(Distance.meter(targetDistM));
 
-    // MV logic with powder sensitivity
-    final refMvMps = ammo.muzzleVelocityMps ?? 0.0;
-    final refPowderTempC = ammo.powderTemperatureC;
-
-    final currentPowderSensOn = conditions.usePowderSensitivity;
-    final currentUseDiffTemp = currentPowderSensOn && conditions.useDiffPowderTemp;
-
-    // Zero conditions embedded in ammo
-    final zeroPowderSensOn = ammo.usePowderSensitivity;
-    final zeroUseDiffTemp = zeroPowderSensOn && ammo.zeroUseDiffPowderTemperature;
-
-    double mvAtTempC(double tCurC) => bclibc.velocityForPowderTemp(
-      refMvMps,
-      refPowderTempC,
-      tCurC,
-      ammo.powderSensitivityFrac,
-    );
-
-    final currentPowderTempC = currentUseDiffTemp
-        ? conditions.powderTemperatureC
-        : conditions.temperatureC;
-    final currentMvMps = currentPowderSensOn
-        ? mvAtTempC(currentPowderTempC)
-        : refMvMps;
-
-    final zeroPowderTempC = zeroUseDiffTemp
-        ? ammo.zeroPowderTemperatureC
-        : ammo.zeroTemperatureC;
-    final zeroMvMps = zeroPowderSensOn ? mvAtTempC(zeroPowderTempC) : refMvMps;
+    final zeroVelocity = profile.getCalculatedZeroVelocity();
+    final curVelocity = profile.getCalculatedCurrentVelocity(conditions);
 
     // Speed of sound estimation from first trajectory point
     final double? soundSpeedFps = (traj.isNotEmpty && traj[0].mach > 0)
@@ -187,8 +159,8 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     }
 
     return ShotDetailsReady(
-      currentMv: formatter.velocity(Velocity.mps(currentMvMps)),
-      zeroMv: formatter.velocity(Velocity.mps(zeroMvMps)),
+      currentMv: formatter.velocity(curVelocity),
+      zeroMv: formatter.velocity(zeroVelocity),
       speedOfSound: soundSpeedFps == null
           ? '—'
           : formatter.velocity(Velocity.fps(soundSpeedFps)),
