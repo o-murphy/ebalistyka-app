@@ -141,7 +141,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     try {
       final opts = TargetCalcOptions(
-        targetDistM:
+        targetDistM: conditions.distanceMeter,
+        trajectoryEndM:
             conditions.distanceMeter + 2 * settings.homeTableDistanceStep,
         stepM: math.min(
           settings.homeChartDistanceStep,
@@ -257,8 +258,20 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       formatter,
     );
 
-    final adjustment = _buildAdjustment(hit, targetM, settings);
-    final tableData = _buildHomeTable(hit, targetM, settings, units, formatter);
+    final adjustment = _buildAdjustment(
+      hit,
+      targetM,
+      result.holdRad,
+      settings,
+    );
+    final tableData = _buildHomeTable(
+      hit,
+      targetM,
+      result.zeroElevationRad,
+      settings,
+      units,
+      formatter,
+    );
     final chartData = _buildChartData(hit, targetM, settings);
     final autoIndex = _closestIndex(chartData.points, targetM);
     final autoInfo = autoIndex != null
@@ -318,9 +331,10 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   AdjustmentData _buildAdjustment(
     bclibc.HitResult hit,
     double targetM,
+    double holdRad,
     GeneralSettings settings,
   ) {
-    final elevAngle = hit.shot.relativeAngle;
+    final elevAngle = Angular.radian(holdRad);
     final point = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
@@ -362,6 +376,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   FormattedTableData _buildHomeTable(
     bclibc.HitResult hit,
     double targetM,
+    double zeroElevRad,
     GeneralSettings settings,
     UnitSettings units,
     UnitFormatter fmt,
@@ -411,8 +426,22 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           ),
           ('Angle', 'MIL', (p) => p.angle.in_(Unit.mil), milAcc),
           ('Angle', 'MOA', (p) => p.angle.in_(Unit.moa), moaAcc),
-          ('Drop', 'MIL', (p) => p.dropAngle.in_(Unit.mil), milAcc),
-          ('Drop', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
+          (
+            'Drop',
+            'MIL',
+            (p) =>
+                p.angle.in_(Unit.mil) -
+                Angular.radian(zeroElevRad).in_(Unit.mil),
+            milAcc,
+          ),
+          (
+            'Drop',
+            'MOA',
+            (p) =>
+                p.angle.in_(Unit.moa) -
+                Angular.radian(zeroElevRad).in_(Unit.moa),
+            moaAcc,
+          ),
           ('Windage', 'MIL', (p) => p.windageAngle.in_(Unit.mil), milAcc),
           ('Windage', 'MOA', (p) => p.windageAngle.in_(Unit.moa), moaAcc),
           (

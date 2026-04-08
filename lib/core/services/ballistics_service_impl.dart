@@ -59,16 +59,19 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   }
 }
 
-// (zeroShot, currentShot, zeroDistance, targetDistM, chartStepM, cachedZeroElevationRad?)
+// (zeroShot, currentShot, zeroDistance, targetDistM, trajectoryEndM, chartStepM, tableStepM, cachedZeroElevationRad?)
 typedef _HomeCalcArgs = (
   bclibc.Shot,
   bclibc.Shot,
   Distance,
   double,
   double,
+  double,
+  double,
   double?,
 );
-typedef _HomeCalcResult = (bclibc.HitResult?, double?);
+// (hitResult, freshZeroElevationRad?, holdRad, tableHolds)
+typedef _HomeCalcResult = (bclibc.HitResult?, double?, double, List<double>);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
   final (
@@ -76,7 +79,9 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     currentShot,
     zeroDistance,
     targetDistM,
+    trajectoryEndM,
     stepM,
+    tableStepM,
     cachedZeroElevRad,
   ) = args;
   final internalStepM = stepM < 1.0 ? stepM : 1.0;
@@ -105,24 +110,38 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
       currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
-    final targetElev = calc.barrelElevationForTarget(
-      currentShot,
-      Distance.meter(targetDistM),
-    );
-    final holdRad =
-        targetElev.in_(Unit.radian) -
-        currentShot.weapon.zeroElevation.in_(Unit.radian);
+    final zeroElevRad = currentShot.weapon.zeroElevation.in_(Unit.radian);
+
+    // Compute hold = barrelElevationForTarget(d) - zeroElevation for each
+    // table column. This gives exact drop corrections matching Page 1.
+    final tableDists = [
+      targetDistM - 2 * tableStepM,
+      targetDistM - tableStepM,
+      targetDistM,
+      targetDistM + tableStepM,
+      targetDistM + 2 * tableStepM,
+    ];
+    final tableHolds = tableDists.map((d) {
+      if (d <= 0) return double.nan;
+      return calc
+              .barrelElevationForTarget(currentShot, Distance.meter(d))
+              .in_(Unit.radian) -
+          zeroElevRad;
+    }).toList();
+
+    // Hold for the target (center column) — same as tableHolds[2].
+    final holdRad = tableHolds[2].isNaN ? 0.0 : tableHolds[2];
     currentShot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
       shot: currentShot,
-      trajectoryRange: Distance.meter(targetDistM),
+      trajectoryRange: Distance.meter(trajectoryEndM),
       trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
           bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
           bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
-    return (result, freshZeroElevRad);
+    return (result, freshZeroElevRad, holdRad, tableHolds);
   } catch (e, st) {
     throw CalculationException('Home calculation failed', e, st);
   }
@@ -251,17 +270,27 @@ class BallisticsServiceImpl implements BallisticsService {
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
     final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
 
-    final (hit, freshZero) = await compute(_runHomeCalculation, (
+    final (hit, freshZero, holdRad, tableHolds) = await compute<
+      _HomeCalcArgs,
+      _HomeCalcResult
+    >(_runHomeCalculation, (
       zeroShot,
       currentShot,
       zeroDistance,
       opts.targetDistM,
+      opts.trajectoryEndM ?? opts.targetDistM,
       opts.stepM,
+      opts.tableStepM ?? 0.0,
       cached,
     ));
     if (hit == null) throw StateError('Target calculation returned null');
     final zeroElevRad = freshZero ?? cached ?? 0.0;
     if (freshZero != null) _updateZeroCache(profile, conditions, freshZero);
-    return BallisticsResult(hitResult: hit, zeroElevationRad: zeroElevRad);
+    return BallisticsResult(
+      hitResult: hit,
+      zeroElevationRad: zeroElevRad,
+      holdRad: holdRad,
+      tableHolds: tableHolds,
+    );
   }
 }
