@@ -31,8 +31,7 @@ class ProfileCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final rightHanded = data.twistDirection == "right";
-    final twistDirIcon = rightHanded
+    final twistDirIcon = data.rightHanded
         ? Icons.rotate_right_outlined
         : Icons.rotate_left_outlined;
 
@@ -81,7 +80,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                   InfoListTile(
                     label: "Twist direction",
-                    value: data.twistDirection,
+                    value: data.rightHanded ? 'right' : 'left',
                     icon: twistDirIcon,
                   ),
                   const Divider(height: 1),

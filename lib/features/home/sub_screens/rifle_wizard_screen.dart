@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:bclibc_ffi/unit.dart' show Distance;
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
@@ -11,7 +12,6 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bclibc_ffi/unit.dart';
 
 class RifleWizardScreen extends ConsumerStatefulWidget {
   const RifleWizardScreen({this.initial, this.caliberEditable, super.key});
@@ -50,22 +50,17 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
     final r = widget.initial;
     _nameCtrl = TextEditingController(text: r?.name ?? '');
     _caliberRaw = r != null
-        ? Distance.inch(r.caliberInch).in_(FC.bulletDiameter.rawUnit)
+        ? r.caliber.in_(FC.bulletDiameter.rawUnit)
         : FC.bulletDiameter.minRaw;
-    final twistAbs = r != null ? r.twistInch.abs() : 0.0;
-    _twistRaw = twistAbs > 0
-        ? Distance.inch(twistAbs).in_(FC.twist.rawUnit)
-        : FC.twist.minRaw;
-    _rightHand = r != null ? r.twistInch >= 0 : true;
+    final twistAbs = r?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
+    _twistRaw = twistAbs > 0 ? twistAbs : FC.twist.minRaw;
+    _rightHand = r != null ? r.isRightHandTwist : true;
 
     // Ініціалізуємо barrel length з існуючого значення, якщо воно є
-    final blInch = r?.barrelLengthInch;
-    _barrelLengthRaw = blInch != null
-        ? Distance.inch(blInch).in_(FC.barrelLength.rawUnit)
-        : null;
+    _barrelLengthRaw = r?.barrelLength?.in_(FC.barrelLength.rawUnit);
 
     // Показуємо секцію, якщо є значення в базі
-    _showExtraFields = blInch != null;
+    _showExtraFields = _barrelLengthRaw != null;
   }
 
   @override
@@ -87,19 +82,15 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
   // ── Build result ──────────────────────────────────────────────────────────
 
   Weapon _buildWeapon() {
-    final signedTwistInch = Distance(
-      _rightHand ? _twistRaw : -_twistRaw,
-      FC.twist.rawUnit,
-    ).in_(Unit.inch);
     final weapon = widget.initial ?? Weapon();
     weapon.name = _nameCtrl.text.trim();
-    weapon.caliberInch = Distance(
-      _caliberRaw,
-      FC.bulletDiameter.rawUnit,
-    ).in_(Unit.inch);
-    weapon.twistInch = signedTwistInch;
-    weapon.barrelLengthInch = (_showExtraFields && _barrelLengthRaw != null)
-        ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit).in_(Unit.inch)
+    weapon.caliber = Distance(_caliberRaw, FC.bulletDiameter.rawUnit);
+    weapon.twist = Distance(
+      _rightHand ? _twistRaw : -_twistRaw,
+      FC.twist.rawUnit,
+    );
+    weapon.barrelLength = (_showExtraFields && _barrelLengthRaw != null)
+        ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit)
         : null;
     return weapon;
   }
@@ -185,7 +176,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                 SwitchListTile(
                   secondary: Icon(twistDirIcon),
                   title: const Text('Twist direction'),
-                  subtitle: Text(_rightHand ? 'Right hand' : 'Left hand'),
+                  subtitle: Text(_rightHand ? 'right' : 'left'),
                   value: _rightHand,
                   onChanged: (v) => setState(() => _rightHand = v),
                   dense: true,

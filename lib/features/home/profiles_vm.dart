@@ -19,7 +19,7 @@ class ProfileCardData {
     required this.rifleName,
     required this.caliber,
     required this.twist,
-    required this.twistDirection,
+    required this.rightHanded,
     required this.cartridgeName,
     required this.dragModel,
     required this.muzzleVelocity,
@@ -32,7 +32,7 @@ class ProfileCardData {
   final String rifleName;
   final String caliber;
   final String twist;
-  final String twistDirection;
+  final bool rightHanded;
   final String cartridgeName;
   final String dragModel;
   final String muzzleVelocity;
@@ -108,9 +108,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
         ? formatter.twist(weapon.twist)
         : '—';
 
-    final twistDirStr = weapon != null && weapon.isRightHandTwist
-        ? "right"
-        : "left";
+    final twistDir = weapon != null ? weapon.isRightHandTwist : null;
 
     return ProfileCardData(
       id: profile.id.toString(),
@@ -118,7 +116,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       rifleName: weapon?.name ?? '—',
       caliber: caliber,
       twist: twistStr,
-      twistDirection: twistDirStr,
+      rightHanded: weapon?.isRightHandTwist ?? true,
       cartridgeName: ammo?.name ?? 'Not selected',
       dragModel: dragStr,
       muzzleVelocity: muzzleVelocity,

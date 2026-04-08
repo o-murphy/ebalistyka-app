@@ -1,6 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import '../proto/profedit.pb.dart' as proto;
 import 'a7p_validator.dart';
 
@@ -20,29 +24,29 @@ class A7pParser {
   static Profile _parseProfile(proto.Profile p) {
     final weapon = Weapon()
       ..name = p.profileName
-      ..twistInch = p.rTwist / 100.0;
+      ..twist = Distance.inch(p.rTwist / 100.0);
 
     final sight = Sight()
       ..name = p.profileName
-      ..sightHeightInch = p.scHeight / 25.4; // mm → inch
+      ..sightHeight = Distance.millimeter(p.scHeight.toDouble());
 
     final ammo = Ammo()
       ..name = p.cartridgeName
       ..projectileName = p.bulletName
-      ..dragTypeValue = _dragTypeStr(p.bcType)
-      ..weightGrain = p.bWeight / 10.0
-      ..caliberInch = p.bDiameter / 1000.0
-      ..lengthInch = p.bLength / 1000.0
-      ..muzzleVelocityMps = p.cMuzzleVelocity / 10.0
-      ..muzzleVelocityTemperatureC = p.cZeroTemperature.toDouble()
-      ..powderTemperatureC = p.cZeroPTemperature.toDouble()
-      ..powderSensitivityFrac = p.cTCoeff / 1000.0
+      ..dragType = _dragType(p.bcType)
+      ..weight = Weight.grain(p.bWeight / 10.0)
+      ..caliber = Distance.millimeter(p.bDiameter / 100.0)
+      ..length = Distance.millimeter(p.bLength / 100.0)
+      ..mv = Velocity.mps(p.cMuzzleVelocity / 10.0)
+      ..mvTemperature = Temperature.celsius(p.cZeroTemperature.toDouble())
+      ..powderTemp = Temperature.celsius(p.cZeroPTemperature.toDouble())
+      ..powderSensitivity = Ratio.fraction(p.cTCoeff / 1000.0)
       ..usePowderSensitivity = p.cTCoeff != 0
-      ..zeroDistanceMeter = _zeroDistanceMeter(p)
-      ..zeroTemperatureC = p.cZeroAirTemperature.toDouble()
-      ..zeroPressurehPa = p.cZeroAirPressure / 10.0
+      ..zeroDistance = Distance.meter(_zeroDistanceMeter(p))
+      ..zeroTemperature = Temperature.celsius(p.cZeroAirTemperature.toDouble())
+      ..zeroPressure = Pressure.hPa(p.cZeroAirPressure / 10.0)
       ..zeroHumidityFrac = p.cZeroAirHumidity / 100.0
-      ..zeroPowderTemperatureC = p.cZeroPTemperature.toDouble()
+      ..zeroPowderTemp = Temperature.celsius(p.cZeroPTemperature.toDouble())
       ..zeroUseDiffPowderTemperature =
           p.cZeroPTemperature != p.cZeroAirTemperature;
 
@@ -107,10 +111,10 @@ class A7pParser {
     return 100.0;
   }
 
-  static String _dragTypeStr(proto.GType t) => switch (t) {
-    proto.GType.G1 => 'g1',
-    proto.GType.G7 => 'g7',
-    proto.GType.CUSTOM => 'custom',
-    _ => 'g1',
+  static DragType _dragType(proto.GType t) => switch (t) {
+    proto.GType.G1 => DragType.g1,
+    proto.GType.G7 => DragType.g7,
+    proto.GType.CUSTOM => DragType.custom,
+    _ => DragType.g1,
   };
 }

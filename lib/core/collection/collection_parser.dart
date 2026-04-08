@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 
 class BuiltinCollection {
   final List<Weapon> rifles;
@@ -62,9 +65,11 @@ abstract final class CollectionParser {
     return Weapon()
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
-      ..twistInch = (j['rTwist'] as num).toDouble()
-      ..caliberInch = diameterInch ?? 0.0
-      ..barrelLengthInch = barrelRaw?.toDouble();
+      ..twist = Distance.inch((j['rTwist'] as num).toDouble())
+      ..caliber = Distance.inch(diameterInch ?? 0.0)
+      ..barrelLength = barrelRaw != null
+          ? Distance.inch(barrelRaw.toDouble())
+          : null;
   }
 
   // ── Cartridge ──────────────────────────────────────────────────────────────
@@ -76,7 +81,7 @@ abstract final class CollectionParser {
     final caliberId = j['caliberId'] as int?;
     final diameterInch =
         (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
-    final dragTypeStr = _dragTypeStr(j['dType'] as String? ?? 'G1');
+    final dragType = _dragType(j['dType'] as String? ?? 'G1');
 
     final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
     final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
@@ -85,21 +90,25 @@ abstract final class CollectionParser {
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..projectileName = j['projectileName'] as String?
-      ..dragTypeValue = dragTypeStr
-      ..caliberInch = diameterInch
-      ..weightGrain = (j['bulletWeight'] as num? ?? 0.0).toDouble()
-      ..lengthInch = (j['bulletLength'] as num? ?? 0.0).toDouble()
-      ..muzzleVelocityMps = (j['muzzleVelocity'] as num? ?? 0.0).toDouble()
-      ..muzzleVelocityTemperatureC = (j['powderTemperature'] as num? ?? 15.0)
-          .toDouble()
-      ..powderTemperatureC = (j['powderTemperature'] as num? ?? 15.0).toDouble()
-      ..powderSensitivityFrac = (j['powderSensitivity'] as num? ?? 0.0)
-          .toDouble()
+      ..dragType = dragType
+      ..caliber = Distance.inch(diameterInch)
+      ..weight = Weight.grain((j['bulletWeight'] as num? ?? 0.0).toDouble())
+      ..length = Distance.inch((j['bulletLength'] as num? ?? 0.0).toDouble())
+      ..mv = Velocity.mps((j['muzzleVelocity'] as num? ?? 0.0).toDouble())
+      ..mvTemperature = Temperature.celsius(
+        (j['powderTemperature'] as num? ?? 15.0).toDouble(),
+      )
+      ..powderTemp = Temperature.celsius(
+        (j['powderTemperature'] as num? ?? 15.0).toDouble(),
+      )
+      ..powderSensitivity = Ratio.fraction(
+        (j['powderSensitivity'] as num? ?? 0.0).toDouble(),
+      )
       ..useMultiBcG1 = useMultiG1
       ..useMultiBcG7 = useMultiG7;
 
     // BC values
-    if (dragTypeStr == 'g7') {
+    if (dragType == DragType.g7) {
       ammo.bcG7 = (j['bcG7'] as num? ?? 0.0).toDouble();
       if (useMultiG7) {
         _applyMultiBc(ammo, j['multiBCtableG7'] as List? ?? [], isG7: true);
@@ -114,17 +123,24 @@ abstract final class CollectionParser {
     // Zero conditions
     final zc = j['zeroConditions'] as Map<String, dynamic>?;
     if (zc != null) {
-      ammo.zeroDistanceMeter = (zc['targetDistance'] as num? ?? 100.0)
-          .toDouble();
+      ammo.zeroDistance = Distance.meter(
+        (zc['targetDistance'] as num? ?? 100.0).toDouble(),
+      );
       final atmo = zc['atmo'] as Map<String, dynamic>?;
       if (atmo != null) {
-        ammo.zeroAltitudeMeter = (atmo['altitude'] as num? ?? 0.0).toDouble();
-        ammo.zeroTemperatureC = (atmo['temperature'] as num? ?? 15.0)
-            .toDouble();
-        ammo.zeroPressurehPa = (atmo['pressure'] as num? ?? 1013.0).toDouble();
+        ammo.zeroAltitude = Distance.meter(
+          (atmo['altitude'] as num? ?? 0.0).toDouble(),
+        );
+        ammo.zeroTemperature = Temperature.celsius(
+          (atmo['temperature'] as num? ?? 15.0).toDouble(),
+        );
+        ammo.zeroPressure = Pressure.hPa(
+          (atmo['pressure'] as num? ?? 1013.0).toDouble(),
+        );
         ammo.zeroHumidityFrac = (atmo['humidity'] as num? ?? 0.0).toDouble();
-        ammo.zeroPowderTemperatureC = (atmo['powderTemp'] as num? ?? 15.0)
-            .toDouble();
+        ammo.zeroPowderTemp = Temperature.celsius(
+          (atmo['powderTemp'] as num? ?? 15.0).toDouble(),
+        );
       }
     }
 
@@ -158,8 +174,9 @@ abstract final class CollectionParser {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  static String _dragTypeStr(String raw) => switch (raw.toUpperCase()) {
-    'G7' => 'g7',
-    _ => 'g1',
+  static DragType _dragType(String raw) => switch (raw.toUpperCase()) {
+    'G7' => DragType.g7,
+    'CUSTOM' => DragType.custom,
+    _ => DragType.g1,
   };
 }

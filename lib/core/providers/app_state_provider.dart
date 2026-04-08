@@ -1,3 +1,7 @@
+import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
@@ -113,53 +117,53 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     _store.runInTransaction(TxMode.write, () {
       final sight = Sight()
         ..name = 'Generic Long-Range Scope'
-        ..sightHeightInch = 1.5
+        ..sightHeight = Distance.inch(1.5)
         ..owner.target = owner;
       _store.box<Sight>().put(sight);
 
       final weapon = Weapon()
         ..name = '.338 Lapua Magnum'
-        ..caliberInch = 0.338
-        ..twistInch = 10.0
+        ..caliber = Distance.inch(0.338)
+        ..twist = Distance.inch(10.0)
         ..owner.target = owner;
       _store.box<Weapon>().put(weapon);
 
       final ammos = [
         Ammo()
           ..name = '.338LM UKROP 250GR SMK'
-          ..dragTypeValue = 'g7'
-          ..weightGrain = 250.0
-          ..caliberInch = 0.338
-          ..lengthInch = 1.555
+          ..dragType = DragType.g7
+          ..weight = Weight.grain(250.0)
+          ..caliber = Distance.inch(0.338)
+          ..length = Distance.inch(1.555)
           ..bcG7 = 0.314
-          ..muzzleVelocityMps = 888.0
-          ..powderTemperatureC = 29.0
-          ..powderSensitivityFrac = 0.02
-          ..zeroDistanceMeter = 100.0
+          ..mv = Velocity.mps(888.0)
+          ..powderTemp = Temperature.celsius(29.0)
+          ..powderSensitivity = Ratio.fraction(0.02)
+          ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
         Ammo()
           ..name = '.338LM Hornady 250GR BTHP'
-          ..dragTypeValue = 'g7'
-          ..weightGrain = 250.0
-          ..caliberInch = 0.338
-          ..lengthInch = 1.567
+          ..dragType = DragType.g7
+          ..weight = Weight.grain(250.0)
+          ..caliber = Distance.inch(0.338)
+          ..length = Distance.inch(1.567)
           ..bcG7 = 0.322
-          ..muzzleVelocityMps = 885.0
-          ..powderTemperatureC = 15.0
-          ..powderSensitivityFrac = 0.02
-          ..zeroDistanceMeter = 100.0
+          ..mv = Velocity.mps(885.0)
+          ..powderTemp = Temperature.celsius(15.0)
+          ..powderSensitivity = Ratio.fraction(0.02)
+          ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
         Ammo()
           ..name = '.338LM Lapua 300GR SMK'
-          ..dragTypeValue = 'g7'
-          ..weightGrain = 300.0
-          ..caliberInch = 0.338
-          ..lengthInch = 1.700
+          ..dragType = DragType.g7
+          ..weight = Weight.grain(300.0)
+          ..caliber = Distance.inch(0.338)
+          ..length = Distance.inch(1.700)
           ..bcG7 = 0.381
-          ..muzzleVelocityMps = 825.0
-          ..powderTemperatureC = 15.0
-          ..powderSensitivityFrac = 0.123
-          ..zeroDistanceMeter = 100.0
+          ..mv = Velocity.mps(825.0)
+          ..powderTemp = Temperature.celsius(15.0)
+          ..powderSensitivity = Ratio.fraction(0.123)
+          ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
       ];
       _store.box<Ammo>().putMany(ammos);

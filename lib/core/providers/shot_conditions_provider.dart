@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -50,19 +51,19 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> updateDistance(double meters) async {
     final s = state.value ?? _load();
-    s.distanceMeter = meters;
+    s.distanceMeter = meters; // raw — no unit conversion needed
     await _save(s);
   }
 
   Future<void> updateLookAngle(double degrees) async {
     final s = state.value ?? _load();
-    s.lookAngleRad = Angular.degree(degrees).in_(Unit.radian);
+    s.lookAngle = Angular.degree(degrees);
     await _save(s);
   }
 
   Future<void> updateAltitude(double meters) async {
     final s = state.value ?? _load();
-    s.altitudeMeter = meters;
+    s.altitudeMeter = meters; // raw — no unit conversion needed
     await _save(s);
   }
 
@@ -70,25 +71,25 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> updateTemperature(double celsius) async {
     final s = state.value ?? _load();
-    s.temperatureC = celsius;
+    s.temperature = Temperature.celsius(celsius);
     await _save(s);
   }
 
   Future<void> updatePressure(double hpa) async {
     final s = state.value ?? _load();
-    s.pressurehPa = hpa;
+    s.pressure = Pressure.hPa(hpa);
     await _save(s);
   }
 
   Future<void> updateHumidity(double fraction) async {
     final s = state.value ?? _load();
-    s.humidityFrac = fraction;
+    s.humidity = Ratio.fraction(fraction);
     await _save(s);
   }
 
   Future<void> updatePowderTemperature(double celsius) async {
     final s = state.value ?? _load();
-    s.powderTemperatureC = celsius;
+    s.powderTemperature = Temperature.celsius(celsius);
     await _save(s);
   }
 
@@ -96,13 +97,13 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> updateWindSpeed(double mps) async {
     final s = state.value ?? _load();
-    s.windSpeedMps = mps;
+    s.windSpeed = Velocity.mps(mps);
     await _save(s);
   }
 
   Future<void> updateWindDirection(double degrees) async {
     final s = state.value ?? _load();
-    s.windDirectionDeg = degrees;
+    s.windDirection = Angular.degree(degrees);
     await _save(s);
   }
 
