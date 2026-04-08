@@ -67,7 +67,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   Future<ProfilesUiState> build() async {
     await _loadData();
     return ProfilesReady(
-      profiles: _cachedProfiles ?? [],
+      profiles: _getSortedProfiles(),
       activeProfileId: _cachedActiveProfileId,
     );
   }
@@ -138,9 +138,6 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
 
     await ref.read(shotProfileProvider.notifier).selectProfile(profile);
 
-    // Move to first by setting sortOrder = 0, push others up
-    await ref.read(appStateProvider.notifier).reorderProfile(profile.id, 0);
-
     await _loadData();
     _notifyReady();
   }
@@ -181,11 +178,34 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     if (current is ProfilesReady) {
       state = AsyncData(
         ProfilesReady(
-          profiles: _cachedProfiles ?? [],
+          profiles: _getSortedProfiles(), // використовуємо спільний метод
           activeProfileId: _cachedActiveProfileId,
         ),
       );
     }
+  }
+
+  // Новий метод для отримання відсортованих профілів
+  List<ProfileCardData> _getSortedProfiles() {
+    final allProfiles = _cachedProfiles ?? [];
+    final activeId = _cachedActiveProfileId;
+
+    if (activeId == null) return allProfiles;
+
+    // Відокремлюємо активний профіль
+    ProfileCardData? activeProfile;
+    final otherProfiles = <ProfileCardData>[];
+
+    for (final profile in allProfiles) {
+      if (profile.id == activeId) {
+        activeProfile = profile;
+      } else {
+        otherProfiles.add(profile);
+      }
+    }
+
+    // Формуємо список: спочатку активний (якщо є), потім всі інші
+    return [?activeProfile, ...otherProfiles];
   }
 }
 

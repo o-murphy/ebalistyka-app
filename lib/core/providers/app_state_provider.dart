@@ -64,7 +64,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     var profiles = _store
         .box<Profile>()
         .query(Profile_.owner.equals(owner.id))
-        .order(Profile_.sortOrder)
         .build()
         .find();
 
@@ -85,7 +84,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       profiles = _store
           .box<Profile>()
           .query(Profile_.owner.equals(owner.id))
-          .order(Profile_.sortOrder)
           .build()
           .find();
     }
@@ -263,14 +261,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     } else {
       state = AsyncData(fresh);
     }
-  }
-
-  Future<void> reorderProfile(int id, int newSortOrder) async {
-    final profile = _store.box<Profile>().get(id);
-    if (profile == null) return;
-    profile.sortOrder = newSortOrder;
-    _store.box<Profile>().put(profile);
-    state = AsyncData(_load());
   }
 }
 
