@@ -50,15 +50,19 @@ class ProfileCard extends StatelessWidget {
               child: ListView(
                 children: [
                   _ProfileControlTile(profileId: data.id),
-                  ListSectionTile("Rifle"),
+                  ListSectionTile(
+                    "Rifle",
+                    onTap: onEditRifle,
+                    trailing: Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.military_tech_outlined),
                     title: Text(data.rifleName),
                     dense: true,
-                    trailing: IconButton(
-                      onPressed: onEditRifle,
-                      icon: Icon(Icons.edit_outlined, size: 16),
-                    ),
                   ),
                   InfoListTile(
                     label: "Caliber",
@@ -76,15 +80,19 @@ class ProfileCard extends StatelessWidget {
                     icon: Icons.rotate_left_outlined,
                   ),
                   const Divider(height: 1),
-                  ListSectionTile("Cartridge"),
+                  ListSectionTile(
+                    "Cartridge",
+                    onTap: () => context.go(Routes.profileEditCartridge),
+                    trailing: Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.grain_outlined),
                     title: Text(data.cartridgeName),
                     dense: true,
-                    trailing: IconButton(
-                      onPressed: () => context.go(Routes.profileEditCartridge),
-                      icon: Icon(Icons.edit_outlined, size: 16),
-                    ),
                   ),
                   InfoListTile(
                     label: "Drag model",
@@ -107,15 +115,19 @@ class ProfileCard extends StatelessWidget {
                     icon: Icons.balance_outlined,
                   ),
                   const Divider(height: 1),
-                  ListSectionTile("Sight"),
+                  ListSectionTile(
+                    "Sight",
+                    onTap: () => context.go(Routes.profileEditCartridge),
+                    trailing: Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                  ),
                   ListTile(
                     leading: const Icon(Icons.my_location_outlined),
                     title: Text(data.sightName),
                     dense: true,
-                    trailing: IconButton(
-                      onPressed: () => context.go(Routes.profileEditSight),
-                      icon: Icon(Icons.edit_outlined, size: 16),
-                    ),
                   ),
                 ],
               ),

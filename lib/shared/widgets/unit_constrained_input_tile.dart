@@ -51,7 +51,7 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
         children: [
           Text(_getDisplayText(), style: _getDisplayTextStyle(theme)),
           const SizedBox(width: 8),
-          const Icon(Icons.edit_outlined, size: 16),
+          Icon(Icons.edit_outlined, size: 16, color: theme.colorScheme.primary),
         ],
       ),
       onTap: () => _showDialog(context),
