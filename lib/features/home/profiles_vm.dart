@@ -8,7 +8,6 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
 
 // ── Display model ─────────────────────────────────────────────────────────────
 
@@ -60,150 +59,85 @@ class ProfilesReady extends ProfilesUiState {
 // ── ViewModel ─────────────────────────────────────────────────────────────────
 
 class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
-  List<ProfileCardData>? _cachedProfiles;
-  String? _cachedActiveProfileId;
-
   @override
   Future<ProfilesUiState> build() async {
-    await _loadData();
-    return ProfilesReady(
-      profiles: _getSortedProfiles(),
-      activeProfileId: _cachedActiveProfileId,
-    );
-  }
-
-  Future<void> _loadData() async {
-    final appState = await ref.read(appStateProvider.future);
+    final appState = await ref.watch(appStateProvider.future);
     final formatter = ref.read(unitFormatterProvider);
     final units = ref.read(unitSettingsProvider);
 
-    _cachedProfiles = appState.profiles
-        .map((p) => _buildCardData(p, formatter, units))
+    final activeId = appState.activeProfile?.id.toString();
+    final cards = appState.profiles
+        .map((p) => _buildCardData(p, appState, formatter, units))
         .toList();
-    _cachedActiveProfileId = appState.activeProfile?.id.toString();
+
+    return ProfilesReady(
+      profiles: _sortProfiles(cards, activeId),
+      activeProfileId: activeId,
+    );
   }
 
   ProfileCardData _buildCardData(
     Profile profile,
+    AppState appState,
     UnitFormatter formatter,
     UnitSettings units,
   ) {
-    final ammo = profile.ammo.target;
-    final sight = profile.sight.target;
-    final weapon = profile.weapon.target;
-
-    String dragStr = '—';
-    String caliber = '—';
-    String muzzleVelocity = '—';
-    String weight = '—';
-
-    if (ammo != null) {
-      dragStr = ammo.dragModelFormattedInfo;
-      caliber = formatter.diameter(ammo.caliber);
-      muzzleVelocity = formatter.velocity(ammo.mv);
-      weight = formatter.weight(ammo.weight);
-    }
-
-    final twistStr = weapon != null && weapon.twistInch.abs() > 0
-        ? formatter.twist(weapon.twist)
-        : '—';
-
-    final twistDir = weapon != null ? weapon.isRightHandTwist : null;
+    final weapon = appState.weapons
+        .where((w) => w.id == profile.weapon.targetId)
+        .firstOrNull;
+    final ammo = appState.cartridges
+        .where((a) => a.id == profile.ammo.targetId)
+        .firstOrNull;
+    final sight = appState.sights
+        .where((s) => s.id == profile.sight.targetId)
+        .firstOrNull;
 
     return ProfileCardData(
       id: profile.id.toString(),
       name: profile.name,
       rifleName: weapon?.name ?? '—',
-      caliber: caliber,
-      twist: twistStr,
+      caliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
+      twist: weapon != null && weapon.twistInch.abs() > 0
+          ? formatter.twist(weapon.twist)
+          : '—',
       rightHanded: weapon?.isRightHandTwist ?? true,
       cartridgeName: ammo?.name ?? 'Not selected',
-      dragModel: dragStr,
-      muzzleVelocity: muzzleVelocity,
-      weight: weight,
+      dragModel: ammo?.dragModelFormattedInfo ?? '—',
+      muzzleVelocity: ammo != null ? formatter.velocity(ammo.mv) : '—',
+      weight: ammo != null ? formatter.weight(ammo.weight) : '—',
       sightName: sight?.name ?? 'Not selected',
     );
   }
 
-  Future<void> selectProfile(String id) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
+  List<ProfileCardData> _sortProfiles(
+    List<ProfileCardData> all,
+    String? activeId,
+  ) {
+    if (activeId == null) return all;
+    ProfileCardData? active;
+    final others = <ProfileCardData>[];
+    for (final p in all) {
+      if (p.id == activeId) {
+        active = p;
+      } else {
+        others.add(p);
+      }
+    }
+    return [?active, ...others];
+  }
 
-    final profile = appState.profiles
+  Future<void> selectProfile(String id) async {
+    final profile = ref.read(appStateProvider).value?.profiles
         .where((p) => p.id.toString() == id)
         .firstOrNull;
     if (profile == null) return;
-
-    await ref.read(shotProfileProvider.notifier).selectProfile(profile);
-
-    await _loadData();
-    _notifyReady();
+    await ref.read(appStateProvider.notifier).setActiveProfile(profile);
   }
 
   Future<void> removeProfile(String id) async {
     final intId = int.tryParse(id);
     if (intId == null) return;
-
     await ref.read(appStateProvider.notifier).deleteProfile(intId);
-
-    await _loadData();
-    _notifyReady();
-  }
-
-  Future<void> updateProfileWeapon(String profileId, Weapon weapon) async {
-    final appState = ref.read(appStateProvider).value;
-    if (appState == null) return;
-
-    final profile = appState.profiles
-        .where((p) => p.id.toString() == profileId)
-        .firstOrNull;
-    if (profile == null) return;
-
-    await ref.read(appStateProvider.notifier).saveWeapon(weapon);
-    profile.weapon.target = weapon;
-    await ref.read(appStateProvider.notifier).saveProfile(profile);
-
-    if (appState.activeProfile?.id.toString() == profileId) {
-      await ref.read(shotProfileProvider.notifier).selectWeapon(weapon);
-    }
-
-    await _loadData();
-    _notifyReady();
-  }
-
-  void _notifyReady() {
-    final current = state.value;
-    if (current is ProfilesReady) {
-      state = AsyncData(
-        ProfilesReady(
-          profiles: _getSortedProfiles(), // використовуємо спільний метод
-          activeProfileId: _cachedActiveProfileId,
-        ),
-      );
-    }
-  }
-
-  // Новий метод для отримання відсортованих профілів
-  List<ProfileCardData> _getSortedProfiles() {
-    final allProfiles = _cachedProfiles ?? [];
-    final activeId = _cachedActiveProfileId;
-
-    if (activeId == null) return allProfiles;
-
-    // Відокремлюємо активний профіль
-    ProfileCardData? activeProfile;
-    final otherProfiles = <ProfileCardData>[];
-
-    for (final profile in allProfiles) {
-      if (profile.id == activeId) {
-        activeProfile = profile;
-      } else {
-        otherProfiles.add(profile);
-      }
-    }
-
-    // Формуємо список: спочатку активний (якщо є), потім всі інші
-    return [?activeProfile, ...otherProfiles];
   }
 }
 

@@ -12,27 +12,6 @@ class ShotProfileNotifier extends AsyncNotifier<Profile?> {
   Future<void> selectProfile(Profile profile) async {
     await ref.read(appStateProvider.notifier).setActiveProfile(profile);
   }
-
-  Future<void> selectWeapon(Weapon weapon) async {
-    final profile = state.value;
-    if (profile == null) return;
-    profile.weapon.target = weapon;
-    await ref.read(appStateProvider.notifier).saveProfile(profile);
-  }
-
-  Future<void> selectSight(Sight sight) async {
-    final profile = state.value;
-    if (profile == null) return;
-    profile.sight.target = sight;
-    await ref.read(appStateProvider.notifier).saveProfile(profile);
-  }
-
-  Future<void> selectAmmo(Ammo ammo) async {
-    final profile = state.value;
-    if (profile == null) return;
-    profile.ammo.target = ammo;
-    await ref.read(appStateProvider.notifier).saveProfile(profile);
-  }
 }
 
 final shotProfileProvider =

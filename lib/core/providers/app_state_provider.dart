@@ -10,12 +10,14 @@ import 'package:riverpod/riverpod.dart';
 // ── AppState ──────────────────────────────────────────────────────────────────
 
 class AppState {
+  final List<Weapon> weapons;
   final List<Ammo> cartridges;
   final List<Sight> sights;
   final List<Profile> profiles;
   final Profile? activeProfile;
 
   const AppState({
+    required this.weapons,
     required this.cartridges,
     required this.sights,
     required this.profiles,
@@ -23,15 +25,17 @@ class AppState {
   });
 
   factory AppState.empty() =>
-      const AppState(cartridges: [], sights: [], profiles: []);
+      const AppState(weapons: [], cartridges: [], sights: [], profiles: []);
 
   AppState copyWith({
+    List<Weapon>? weapons,
     List<Ammo>? cartridges,
     List<Sight>? sights,
     List<Profile>? profiles,
     Profile? activeProfile,
     bool clearActiveProfile = false,
   }) => AppState(
+    weapons: weapons ?? this.weapons,
     cartridges: cartridges ?? this.cartridges,
     sights: sights ?? this.sights,
     profiles: profiles ?? this.profiles,
@@ -55,6 +59,11 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   AppState _load() {
     final owner = _owner;
 
+    var weapons = _store
+        .box<Weapon>()
+        .query(Weapon_.owner.equals(owner.id))
+        .build()
+        .find();
     var cartridges = _store
         .box<Ammo>()
         .query(Ammo_.owner.equals(owner.id))
@@ -72,9 +81,14 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .find();
 
     // ── Seed on first run ──────────────────────────────────────────────────────
-    if (cartridges.isEmpty && sights.isEmpty && profiles.isEmpty) {
+    if (weapons.isEmpty && cartridges.isEmpty && sights.isEmpty && profiles.isEmpty) {
       debugPrint('AppStateNotifier: seeding initial data...');
       _seed(owner);
+      weapons = _store
+          .box<Weapon>()
+          .query(Weapon_.owner.equals(owner.id))
+          .build()
+          .find();
       cartridges = _store
           .box<Ammo>()
           .query(Ammo_.owner.equals(owner.id))
@@ -101,11 +115,12 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         : (profiles.isNotEmpty ? profiles.first : null);
 
     debugPrint(
-      'AppStateNotifier: ${cartridges.length} ammo, '
+      'AppStateNotifier: ${weapons.length} weapons, ${cartridges.length} ammo, '
       '${sights.length} sights, ${profiles.length} profiles',
     );
 
     return AppState(
+      weapons: weapons,
       cartridges: cartridges,
       sights: sights,
       profiles: profiles,
@@ -274,6 +289,10 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
+
+final weaponsProvider = Provider<List<Weapon>>((ref) {
+  return ref.watch(appStateProvider).value?.weapons ?? [];
+});
 
 final cartridgesProvider = Provider<List<Ammo>>((ref) {
   return ref.watch(appStateProvider).value?.cartridges ?? [];

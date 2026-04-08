@@ -150,14 +150,16 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         .firstOrNull;
     if (profile == null) return;
 
+    final weapon = appState.weapons
+        .where((w) => w.id == profile.weapon.targetId)
+        .firstOrNull;
+
     final result = await context.push<Weapon?>(
       Routes.profileEditRifle,
-      extra: profile.weapon.target,
+      extra: weapon,
     );
     if (result != null && mounted) {
-      await ref
-          .read(rifleSelectVmProvider.notifier)
-          .updateProfileWeapon(data.id, result);
+      await ref.read(appStateProvider.notifier).saveWeapon(result);
     }
   }
 
@@ -169,8 +171,6 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   @override
   Widget build(BuildContext context) {
     final vmState = ref.watch(rifleSelectVmProvider);
-
-    ref.listen(appStateProvider, (previous, next) {});
 
     return vmState.when(
       loading: () => BaseScreen(
