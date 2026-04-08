@@ -10,8 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
@@ -166,11 +165,13 @@ class _FakeBallisticsService implements BallisticsService {
   }
 }
 
-class _FakeProfileNotifier extends ShotProfileNotifier {
-  final Profile? _profile;
-  _FakeProfileNotifier(this._profile);
+class _FakeShotContextNotifier extends ShotContextNotifier {
+  final Profile _profile;
+  final ShootingConditions _conditions;
+  _FakeShotContextNotifier(this._profile, this._conditions);
   @override
-  Future<Profile?> build() async => _profile;
+  Future<ShotContext?> build() async =>
+      ShotContext(profile: _profile, conditions: _conditions);
 }
 
 class _FakeSettingsNotifier extends SettingsNotifier {
@@ -178,14 +179,6 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   _FakeSettingsNotifier(this._settings);
   @override
   Future<GeneralSettings> build() async => _settings;
-}
-
-class _FakeConditionsNotifier extends ShotConditionsNotifier {
-  final ShootingConditions _conditions;
-  _FakeConditionsNotifier(this._conditions);
-
-  @override
-  Future<ShootingConditions> build() async => _conditions;
 }
 
 ProviderContainer _createContainer({
@@ -197,15 +190,14 @@ ProviderContainer _createContainer({
 }) {
   return ProviderContainer(
     overrides: [
-      shotProfileProvider.overrideWith(() => _FakeProfileNotifier(profile)),
+      shotContextProvider.overrideWith(
+        () => _FakeShotContextNotifier(profile, conditions),
+      ),
       settingsProvider.overrideWith(
         () => _FakeSettingsNotifier(settings ?? _defaultSettings()),
       ),
       unitSettingsProvider.overrideWith(
         (ref) => unitSettings ?? UnitSettings(),
-      ),
-      shotConditionsProvider.overrideWith(
-        () => _FakeConditionsNotifier(conditions),
       ),
       ballisticsServiceProvider.overrideWithValue(service),
     ],
@@ -214,9 +206,8 @@ ProviderContainer _createContainer({
 
 /// Ensures async dependencies resolve, then triggers recalculate.
 Future<HomeUiReady> _recalculate(ProviderContainer container) async {
-  await container.read(shotProfileProvider.future);
+  await container.read(shotContextProvider.future);
   await container.read(settingsProvider.future);
-  await container.read(shotConditionsProvider.future);
   await Future<void>.delayed(Duration.zero);
   final notifier = container.read(homeVmProvider.notifier);
   await notifier.recalculate();
@@ -430,24 +421,20 @@ void main() {
       final badService = _ThrowingBallisticsService();
       final container = ProviderContainer(
         overrides: [
-          shotProfileProvider.overrideWith(
-            () => _FakeProfileNotifier(_makeProfile()),
+          shotContextProvider.overrideWith(
+            () => _FakeShotContextNotifier(_makeProfile(), _makeConditions()),
           ),
           settingsProvider.overrideWith(
             () => _FakeSettingsNotifier(_defaultSettings()),
           ),
           unitSettingsProvider.overrideWith((ref) => UnitSettings()),
-          shotConditionsProvider.overrideWith(
-            () => _FakeConditionsNotifier(_makeConditions()),
-          ),
           ballisticsServiceProvider.overrideWithValue(badService),
         ],
       );
       addTearDown(container.dispose);
 
-      await container.read(shotProfileProvider.future);
+      await container.read(shotContextProvider.future);
       await container.read(settingsProvider.future);
-      await container.read(shotConditionsProvider.future);
       await Future<void>.delayed(Duration.zero);
 
       final notifier = container.read(homeVmProvider.notifier);

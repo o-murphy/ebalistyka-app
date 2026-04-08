@@ -53,6 +53,43 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
   @override
   Future<AppState> build() async {
+    final owner = _owner;
+
+    void reload() => state = AsyncData(_load());
+
+    final subs = [
+      _store
+          .box<Owner>()
+          .query(Owner_.id.equals(owner.id))
+          .watch(triggerImmediately: false)
+          .listen((_) => reload()),
+      _store
+          .box<Weapon>()
+          .query(Weapon_.owner.equals(owner.id))
+          .watch(triggerImmediately: false)
+          .listen((_) => reload()),
+      _store
+          .box<Ammo>()
+          .query(Ammo_.owner.equals(owner.id))
+          .watch(triggerImmediately: false)
+          .listen((_) => reload()),
+      _store
+          .box<Sight>()
+          .query(Sight_.owner.equals(owner.id))
+          .watch(triggerImmediately: false)
+          .listen((_) => reload()),
+      _store
+          .box<Profile>()
+          .query(Profile_.owner.equals(owner.id))
+          .watch(triggerImmediately: false)
+          .listen((_) => reload()),
+    ];
+    ref.onDispose(() {
+      for (final s in subs) {
+        s.cancel();
+      }
+    });
+
     return _load();
   }
 
@@ -202,7 +239,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     final owner = _owner;
     owner.activeProfile.target = profile;
     _store.box<Owner>().put(owner);
-    state = AsyncData(_load());
+    // Owner stream triggers reload.
   }
 
   // ── Ammo CRUD ─────────────────────────────────────────────────────────────────
@@ -210,13 +247,11 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<void> saveAmmo(Ammo ammo) async {
     ammo.owner.target = _owner;
     _store.box<Ammo>().put(ammo);
-    // Full reload so activeProfile.ammo.target reflects the updated entity.
-    state = AsyncData(_load());
+    // Ammo stream triggers reload.
   }
 
   Future<void> deleteAmmo(int id) async {
     _store.runInTransaction(TxMode.write, () {
-      // Nullify ammo relation on linked profiles (keep profiles, just unlink)
       final linked = _store
           .box<Profile>()
           .query(Profile_.ammo.equals(id))
@@ -228,22 +263,23 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       }
       _store.box<Ammo>().remove(id);
     });
-    state = AsyncData(_load());
+    // Ammo + Profile streams trigger reload.
   }
 
-  // ── Sight CRUD ────────────────────────────────────────────────────────────────
+  // ── Weapon CRUD ───────────────────────────────────────────────────────────────
 
   Future<void> saveWeapon(Weapon weapon) async {
     weapon.owner.target = _owner;
     _store.box<Weapon>().put(weapon);
-    state = AsyncData(_load());
+    // Weapon stream triggers reload.
   }
+
+  // ── Sight CRUD ────────────────────────────────────────────────────────────────
 
   Future<void> saveSight(Sight sight) async {
     sight.owner.target = _owner;
     _store.box<Sight>().put(sight);
-    // Full reload so activeProfile.sight.target reflects the updated entity.
-    state = AsyncData(_load());
+    // Sight stream triggers reload.
   }
 
   Future<void> deleteSight(int id) async {
@@ -259,7 +295,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       }
       _store.box<Sight>().remove(id);
     });
-    state = AsyncData(_load());
+    // Sight + Profile streams trigger reload.
   }
 
   // ── Profile CRUD ──────────────────────────────────────────────────────────────
@@ -267,20 +303,21 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<void> saveProfile(Profile profile) async {
     profile.owner.target = _owner;
     _store.box<Profile>().put(profile);
-    // Full reload so activeProfile is always fresh from ObjectBox.
-    state = AsyncData(_load());
+    // Profile stream triggers reload.
   }
 
   Future<void> deleteProfile(int id) async {
     final wasActive = state.value?.activeProfile?.id == id;
-    _store.box<Profile>().remove(id);
-    final fresh = _load();
-    // If deleted profile was active — pick the first remaining profile.
-    if (wasActive && fresh.activeProfile == null && fresh.profiles.isNotEmpty) {
-      await setActiveProfile(fresh.profiles.first);
-    } else {
-      state = AsyncData(fresh);
-    }
+    _store.runInTransaction(TxMode.write, () {
+      _store.box<Profile>().remove(id);
+      // If deleted profile was active — reset Owner so _load() picks profiles.first.
+      if (wasActive) {
+        final owner = _owner;
+        owner.activeProfile.targetId = 0;
+        _store.box<Owner>().put(owner);
+      }
+    });
+    // Profile + Owner streams trigger reload; _load() picks profiles.first if activeId == 0.
   }
 }
 

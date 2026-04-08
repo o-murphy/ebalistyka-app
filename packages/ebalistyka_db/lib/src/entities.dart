@@ -34,6 +34,7 @@ class Weapon {
   String name = "";
 
   double caliberInch = 0.0;
+  String caliberName = "";
   double twistInch = 0.0;
 
   double? barrelLengthInch;

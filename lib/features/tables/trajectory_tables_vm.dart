@@ -7,8 +7,7 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
 
@@ -54,16 +53,18 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       const TrajectoryTablesUiLoading();
 
   Future<void> recalculate() async {
-    final profile = ref.read(shotProfileProvider).value;
-    final conditions = ref.read(shotConditionsProvider).value;
+    final ctx = ref.read(shotContextProvider).value;
     final tablesSettings = ref.read(tablesSettingsProvider);
     final units = ref.read(unitSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
-    if (profile == null || conditions == null) {
+    if (ctx == null) {
       state = const AsyncData(TrajectoryTablesUiEmpty());
       return;
     }
+
+    final profile = ctx.profile;
+    final conditions = ctx.conditions;
 
     if (profile.ammo.target == null) {
       state = const AsyncData(TrajectoryTablesUiEmpty());

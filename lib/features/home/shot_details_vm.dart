@@ -12,8 +12,7 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 
 sealed class ShotDetailsUiState {
   const ShotDetailsUiState();
@@ -84,14 +83,16 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
   Future<ShotDetailsUiState> _calculate() async {
     try {
-      final profile = await ref.read(shotProfileProvider.future);
-      final conditions = await ref.read(shotConditionsProvider.future);
+      final ctx = await ref.read(shotContextProvider.future);
       final settings = await ref.read(settingsProvider.future);
       final formatter = ref.read(unitFormatterProvider);
 
-      if (profile == null || profile.ammo.target == null) {
+      if (ctx == null || ctx.profile.ammo.target == null) {
         return const ShotDetailsError('No cartridge selected');
       }
+
+      final profile = ctx.profile;
+      final conditions = ctx.conditions;
 
       final opts = TargetCalcOptions(
         targetDistM: conditions.distanceMeter,
@@ -102,9 +103,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
           .read(ballisticsServiceProvider)
           .calculateForTarget(profile, conditions, opts);
 
-      final hit = result.hitResult;
-
-      return _buildReadyState(profile, conditions, formatter, hit);
+      return _buildReadyState(profile, conditions, formatter, result.hitResult);
     } catch (e) {
       return ShotDetailsError(e.toString());
     }

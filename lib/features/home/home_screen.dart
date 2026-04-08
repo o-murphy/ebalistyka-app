@@ -146,7 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 const SizedBox(width: 8),
                                 IconButton.filledTonal(
                                   onPressed: () =>
-                                      context.push(Routes.projectileSelect),
+                                      context.push(Routes.ammoSelect),
                                   icon: const Icon(
                                     Icons.rocket_launch_outlined,
                                   ),

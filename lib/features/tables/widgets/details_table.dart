@@ -47,8 +47,8 @@ class DetailsTableContent extends StatelessWidget {
 
     final items = <Widget>[
       // Rifle
-      section('Rifle'),
-      row('Name', v(details.rifleName.isNotEmpty ? details.rifleName : null)),
+      section('Weapon'),
+      row('Name', v(details.weaponName.isNotEmpty ? details.weaponName : null)),
       row('Caliber', v(details.caliber)),
       row('Twist', v(details.twist)),
       row('Zero distance', v(details.zeroDist)),

@@ -33,7 +33,9 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
         .build()
         .findFirst();
     if (existing != null) return existing;
-    final cond = ShootingConditions()..owner.target = owner;
+    final cond = ShootingConditions()
+      ..owner.target = owner
+      ..humidityFrac = 0.5;
     _store.box<ShootingConditions>().put(cond);
     return cond;
   }
@@ -42,9 +44,7 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> _save(ShootingConditions cond) async {
     _store.box<ShootingConditions>().put(cond);
-    // Re-read a fresh instance so Riverpod always sees a new object reference.
-    final fresh = _store.box<ShootingConditions>().get(cond.id);
-    if (fresh != null) state = AsyncData(fresh);
+    // Stream triggers state update.
   }
 
   // ── Distance / geometry ───────────────────────────────────────────────────────

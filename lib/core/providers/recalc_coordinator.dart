@@ -1,7 +1,6 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
@@ -9,17 +8,13 @@ import 'package:riverpod/riverpod.dart';
 
 /// Centralises all recalculation triggers.
 ///
-/// Listens to [shotProfileProvider], [shotConditionsProvider],
-/// [settingsProvider], and [unitSettingsNotifierProvider] and triggers the
-/// ViewModels for the active features.
+/// Listens to [shotContextProvider], [settingsProvider], and
+/// [unitSettingsNotifierProvider] and triggers the ViewModels for the active
+/// features.
 class RecalcCoordinator extends Notifier<void> {
   @override
   void build() {
-    ref.listen(shotProfileProvider, (_, next) {
-      if (next.hasValue) _triggerAll();
-    });
-
-    ref.listen(shotConditionsProvider, (_, next) {
+    ref.listen(shotContextProvider, (_, next) {
       if (next.hasValue) _triggerAll();
     });
 

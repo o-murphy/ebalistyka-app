@@ -70,7 +70,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
               title: const Text('Create new'),
               onTap: () {
                 Navigator.pop(ctx);
-                context.push(Routes.profileAddRifleCreate);
+                context.push(Routes.profileAddWeaponCreate);
               },
             ),
             ListTile(
@@ -78,7 +78,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
               title: const Text('From collection'),
               onTap: () {
                 Navigator.pop(ctx);
-                context.push(Routes.profileAddRifleCollection);
+                context.push(Routes.profileAddWeaponCollection);
               },
             ),
             ListTile(
@@ -124,7 +124,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       ),
     );
     if (confirmed == true) {
-      await ref.read(rifleSelectVmProvider.notifier).removeProfile(profile.id);
+      await ref.read(profilesVmProvider.notifier).removeProfile(profile.id);
       if (_currentPage > 0) {
         setState(() => _currentPage = _currentPage - 1);
         _pageController.animateToPage(
@@ -155,7 +155,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         .firstOrNull;
 
     final result = await context.push<Weapon?>(
-      Routes.profileEditRifle,
+      Routes.profileEditWeapon,
       extra: weapon,
     );
     if (result != null && mounted) {
@@ -164,13 +164,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   }
 
   Future<void> _onSelect(ProfileCardData profile) async {
-    await ref.read(rifleSelectVmProvider.notifier).selectProfile(profile.id);
+    await ref.read(profilesVmProvider.notifier).selectProfile(profile.id);
     if (mounted) context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final vmState = ref.watch(rifleSelectVmProvider);
+    final vmState = ref.watch(profilesVmProvider);
 
     return vmState.when(
       loading: () => BaseScreen(
@@ -264,7 +264,7 @@ class _ProfilePageView extends StatelessWidget {
                       data: p,
                       isActive: p.id == activeProfileId,
                       onSelect: () => onSelect(p),
-                      onEditRifle: () => onEditRifle(p),
+                      onEditWeapon: () => onEditRifle(p),
                       onDuplicate: () {},
                       onExport: () {},
                       onRemove: () {},

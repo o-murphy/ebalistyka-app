@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class RifleWizardScreen extends ConsumerStatefulWidget {
-  const RifleWizardScreen({this.initial, this.caliberEditable, super.key});
+class WeaponWizardScreen extends ConsumerStatefulWidget {
+  const WeaponWizardScreen({this.initial, this.caliberEditable, super.key});
 
   /// Pre-fill the form with an existing weapon (edit mode).
   /// null = new empty weapon.
@@ -25,10 +25,10 @@ class RifleWizardScreen extends ConsumerStatefulWidget {
   final bool? caliberEditable;
 
   @override
-  ConsumerState<RifleWizardScreen> createState() => _RifleWizardScreenState();
+  ConsumerState<WeaponWizardScreen> createState() => _WeaponWizardScreenState();
 }
 
-class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
+class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   late final TextEditingController _nameCtrl;
 
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────

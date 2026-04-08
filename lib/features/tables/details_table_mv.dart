@@ -9,8 +9,7 @@ import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -18,7 +17,7 @@ import 'package:bclibc_ffi/unit.dart';
 // ── Spoiler data ─────────────────────────────────────────────────────────────
 
 class DetailsTableData {
-  final String rifleName;
+  final String weaponName;
   final String? caliber;
   final String? twist;
   final String? dragModel;
@@ -39,7 +38,7 @@ class DetailsTableData {
   final String? windDir;
 
   const DetailsTableData({
-    required this.rifleName,
+    required this.weaponName,
     this.caliber,
     this.twist,
     this.dragModel,
@@ -93,7 +92,7 @@ DetailsTableData _buildDetails(
   final ff = (displayBc > 0) ? sd / displayBc : null;
 
   return DetailsTableData(
-    rifleName: weapon.name,
+    weaponName: weapon.name,
     caliber: weapon.caliberInch > 0 ? formatter.diameter(weapon.caliber) : null,
     twist: weapon.twistInch.abs() > 0 ? formatter.twist(weapon.twist) : null,
     dragModel: switch (ammo.dragType) {
@@ -124,13 +123,12 @@ DetailsTableData _buildDetails(
 // ── Provider ─────────────────────────────────────────────────────────────────
 
 final detailsTableMvProvider = Provider<DetailsTableData?>((ref) {
-  final profile = ref.watch(shotProfileProvider).value;
-  final conditions = ref.watch(shotConditionsProvider).value;
+  final ctx = ref.watch(shotContextProvider).value;
   final units = ref.watch(unitSettingsProvider);
   final formatter = ref.watch(unitFormatterProvider);
 
-  if (profile == null || conditions == null) return null;
-  if (profile.weapon.target == null || profile.ammo.target == null) return null;
+  if (ctx == null) return null;
+  if (ctx.profile.weapon.target == null || ctx.profile.ammo.target == null) return null;
 
-  return _buildDetails(profile, conditions, units, formatter);
+  return _buildDetails(ctx.profile, ctx.conditions, units, formatter);
 });

@@ -11,7 +11,7 @@ class ProfileCard extends StatelessWidget {
     required this.data,
     required this.isActive,
     required this.onSelect,
-    required this.onEditRifle,
+    required this.onEditWeapon,
     required this.onDuplicate,
     required this.onExport,
     required this.onRemove,
@@ -21,7 +21,7 @@ class ProfileCard extends StatelessWidget {
   final ProfileCardData data;
   final bool isActive;
   final VoidCallback onSelect;
-  final VoidCallback onEditRifle;
+  final VoidCallback onEditWeapon;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
   final VoidCallback onRemove;
@@ -55,8 +55,8 @@ class ProfileCard extends StatelessWidget {
                 children: [
                   _ProfileControlTile(profileId: data.id),
                   ListSectionTile(
-                    "Rifle",
-                    onTap: onEditRifle,
+                    "Weapon",
+                    onTap: onEditWeapon,
                     trailing: Icon(
                       Icons.edit_outlined,
                       size: 16,
@@ -65,7 +65,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                   ListTile(
                     leading: const Icon(Icons.military_tech_outlined),
-                    title: Text(data.rifleName),
+                    title: Text(data.weaponName),
                     dense: true,
                   ),
                   InfoListTile(
@@ -85,8 +85,8 @@ class ProfileCard extends StatelessWidget {
                   ),
                   const Divider(height: 1),
                   ListSectionTile(
-                    "Cartridge",
-                    onTap: () => context.go(Routes.profileEditCartridge),
+                    "Ammo",
+                    onTap: () => context.go(Routes.profileEditAmmo),
                     trailing: Icon(
                       Icons.edit_outlined,
                       size: 16,
@@ -121,7 +121,7 @@ class ProfileCard extends StatelessWidget {
                   const Divider(height: 1),
                   ListSectionTile(
                     "Sight",
-                    onTap: () => context.go(Routes.profileEditCartridge),
+                    onTap: () => context.go(Routes.profileEditAmmo),
                     trailing: Icon(
                       Icons.edit_outlined,
                       size: 16,
@@ -269,7 +269,7 @@ class _ProfileControlTile extends StatelessWidget {
               child: FloatingActionButton(
                 mini: true,
                 heroTag: 'cartridge_btn_$profileId',
-                onPressed: () => context.push(Routes.cartridgeSelect),
+                onPressed: () => context.push(Routes.ammoSelect),
                 backgroundColor: colorScheme.primaryContainer,
                 foregroundColor: colorScheme.onPrimaryContainer,
                 child: const Icon(Icons.rocket_launch_outlined, size: 20),

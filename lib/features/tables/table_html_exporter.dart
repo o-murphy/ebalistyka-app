@@ -32,7 +32,7 @@ class TableHtmlExporter {
           ),
         ],
         subject: details != null
-            ? '${details.rifleName} — Trajectory'
+            ? '${details.weaponName} — Trajectory'
             : 'Trajectory',
       );
     } else {
@@ -51,7 +51,7 @@ class TableHtmlExporter {
     required TrajectoryTablesUiReady tables,
   }) {
     final title = details != null
-        ? '${_esc(details.rifleName)} — Trajectory'
+        ? '${_esc(details.weaponName)} — Trajectory'
         : 'Trajectory';
     final sb = StringBuffer()
       ..writeln('<!DOCTYPE html>')
@@ -96,12 +96,12 @@ class TableHtmlExporter {
   static String _buildDetails(DetailsTableData d) {
     final sb = StringBuffer()
       ..writeln('<section class="details">')
-      ..writeln('<h1>${_esc(d.rifleName)}</h1>');
+      ..writeln('<h1>${_esc(d.weaponName)}</h1>');
 
     // Rifle
     sb.writeln('<div class="card">');
-    sb.writeln('<h2>Rifle</h2><table class="info">');
-    sb.write(_row('Name', d.rifleName));
+    sb.writeln('<h2>Weapon</h2><table class="info">');
+    sb.write(_row('Name', d.weaponName));
     if (d.caliber != null) sb.write(_row('Caliber', d.caliber!));
     if (d.twist != null) sb.write(_row('Twist', d.twist!));
     if (d.zeroDist != null) sb.write(_row('Zero distance', d.zeroDist!));

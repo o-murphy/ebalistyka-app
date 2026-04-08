@@ -16,7 +16,7 @@ import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 import 'package:ebalistyka/shared/models/formatted_row.dart';
@@ -125,13 +125,14 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   Future<HomeUiState> build() async => const HomeUiLoading();
 
   Future<void> recalculate() async {
-    final profile = ref.read(shotProfileProvider).value;
-    final conditions = ref.read(shotConditionsProvider).value;
+    final ctx = ref.read(shotContextProvider).value;
     final settings = ref.read(settingsProvider).value;
     final units = ref.read(unitSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
-    if (profile == null || conditions == null || settings == null) return;
+    if (ctx == null || settings == null) return;
+    final profile = ctx.profile;
+    final conditions = ctx.conditions;
     if (profile.ammo.target == null) return;
 
     if (state.value is! HomeUiReady) {

@@ -12,8 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
@@ -177,11 +176,13 @@ class _FakeBallisticsService implements BallisticsService {
   }
 }
 
-class _FakeProfileNotifier extends ShotProfileNotifier {
-  final Profile? _profile;
-  _FakeProfileNotifier(this._profile);
+class _FakeShotContextNotifier extends ShotContextNotifier {
+  final Profile _profile;
+  final ShootingConditions _conditions;
+  _FakeShotContextNotifier(this._profile, this._conditions);
   @override
-  Future<Profile?> build() async => _profile;
+  Future<ShotContext?> build() async =>
+      ShotContext(profile: _profile, conditions: _conditions);
 }
 
 class _FakeSettingsNotifier extends SettingsNotifier {
@@ -189,14 +190,6 @@ class _FakeSettingsNotifier extends SettingsNotifier {
   _FakeSettingsNotifier(this._settings);
   @override
   Future<GeneralSettings> build() async => _settings;
-}
-
-class _FakeConditionsNotifier extends ShotConditionsNotifier {
-  final ShootingConditions _conditions;
-  _FakeConditionsNotifier(this._conditions);
-
-  @override
-  Future<ShootingConditions> build() async => _conditions;
 }
 
 ProviderContainer _createContainer({
@@ -208,7 +201,9 @@ ProviderContainer _createContainer({
 }) {
   return ProviderContainer(
     overrides: [
-      shotProfileProvider.overrideWith(() => _FakeProfileNotifier(profile)),
+      shotContextProvider.overrideWith(
+        () => _FakeShotContextNotifier(profile, conditions),
+      ),
       settingsProvider.overrideWith(
         () => _FakeSettingsNotifier(GeneralSettings()),
       ),
@@ -218,9 +213,6 @@ ProviderContainer _createContainer({
       tablesSettingsProvider.overrideWith(
         (ref) => tablesSettings ?? TablesSettings(),
       ),
-      shotConditionsProvider.overrideWith(
-        () => _FakeConditionsNotifier(conditions),
-      ),
       ballisticsServiceProvider.overrideWithValue(service),
     ],
   );
@@ -229,9 +221,8 @@ ProviderContainer _createContainer({
 Future<TrajectoryTablesUiReady> _recalculate(
   ProviderContainer container,
 ) async {
-  await container.read(shotProfileProvider.future);
+  await container.read(shotContextProvider.future);
   await container.read(settingsProvider.future);
-  await container.read(shotConditionsProvider.future);
   await Future<void>.delayed(Duration.zero);
   final notifier = container.read(trajectoryTablesVmProvider.notifier);
   await notifier.recalculate();
@@ -268,7 +259,7 @@ void main() {
     tearDown(() => container.dispose());
 
     test('spoiler has rifle name', () {
-      expect(details?.rifleName, 'Test Rifle');
+      expect(details?.weaponName, 'Test Rifle');
     });
 
     test('spoiler shows caliber', () {
@@ -448,15 +439,12 @@ void main() {
       final service = _FakeBallisticsService(_makeResult());
       final container = ProviderContainer(
         overrides: [
-          shotProfileProvider.overrideWith(() => _PendingProfileNotifier()),
+          shotContextProvider.overrideWith(() => _PendingShotContextNotifier()),
           settingsProvider.overrideWith(
             () => _FakeSettingsNotifier(GeneralSettings()),
           ),
           unitSettingsProvider.overrideWith((ref) => UnitSettings()),
           tablesSettingsProvider.overrideWith((ref) => TablesSettings()),
-          shotConditionsProvider.overrideWith(
-            () => _FakeConditionsNotifier(_makeConditions()),
-          ),
           ballisticsServiceProvider.overrideWithValue(service),
         ],
       );
@@ -476,17 +464,14 @@ void main() {
     test('returns error state on service failure', () async {
       final container = ProviderContainer(
         overrides: [
-          shotProfileProvider.overrideWith(
-            () => _FakeProfileNotifier(_makeProfile()),
+          shotContextProvider.overrideWith(
+            () => _FakeShotContextNotifier(_makeProfile(), _makeConditions()),
           ),
           settingsProvider.overrideWith(
             () => _FakeSettingsNotifier(GeneralSettings()),
           ),
           unitSettingsProvider.overrideWith((ref) => UnitSettings()),
           tablesSettingsProvider.overrideWith((ref) => TablesSettings()),
-          shotConditionsProvider.overrideWith(
-            () => _FakeConditionsNotifier(_makeConditions()),
-          ),
           ballisticsServiceProvider.overrideWithValue(
             _ThrowingBallisticsService(),
           ),
@@ -494,9 +479,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(shotProfileProvider.future);
+      await container.read(shotContextProvider.future);
       await container.read(settingsProvider.future);
-      await container.read(shotConditionsProvider.future);
       await Future<void>.delayed(Duration.zero);
 
       final notifier = container.read(trajectoryTablesVmProvider.notifier);
@@ -542,10 +526,10 @@ void main() {
   });
 }
 
-/// Profile notifier that never completes — simulates "still loading" state.
-class _PendingProfileNotifier extends ShotProfileNotifier {
+/// ShotContext notifier that never completes — simulates "still loading" state.
+class _PendingShotContextNotifier extends ShotContextNotifier {
   @override
-  Future<Profile?> build() => Completer<Profile?>().future;
+  Future<ShotContext?> build() => Completer<ShotContext?>().future;
 }
 
 class _ThrowingBallisticsService implements BallisticsService {

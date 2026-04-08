@@ -15,7 +15,7 @@ class ProfileCardData {
   const ProfileCardData({
     required this.id,
     required this.name,
-    required this.rifleName,
+    required this.weaponName,
     required this.caliber,
     required this.twist,
     required this.rightHanded,
@@ -28,7 +28,7 @@ class ProfileCardData {
 
   final String id;
   final String name;
-  final String rifleName;
+  final String weaponName;
   final String caliber;
   final String twist;
   final bool rightHanded;
@@ -95,7 +95,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     return ProfileCardData(
       id: profile.id.toString(),
       name: profile.name,
-      rifleName: weapon?.name ?? '—',
+      weaponName: weapon?.name ?? '—',
       caliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
       twist: weapon != null && weapon.twistInch.abs() > 0
           ? formatter.twist(weapon.twist)
@@ -141,7 +141,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 }
 
-final rifleSelectVmProvider =
+final profilesVmProvider =
     AsyncNotifierProvider<ProfilesViewModel, ProfilesUiState>(
       ProfilesViewModel.new,
     );

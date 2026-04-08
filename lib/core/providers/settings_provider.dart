@@ -39,15 +39,16 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
         .build()
         .findFirst();
     if (existing != null) return existing;
-    final s = GeneralSettings()..owner.target = owner;
+    final s = GeneralSettings()
+      ..owner.target = owner
+      ..homeShowMil = true;
     _store.box<GeneralSettings>().put(s);
     return s;
   }
 
   Future<void> _save(GeneralSettings s) async {
     _store.box<GeneralSettings>().put(s);
-    final fresh = _store.box<GeneralSettings>().get(s.id);
-    if (fresh != null) state = AsyncData(fresh);
+    // Stream triggers state update.
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
@@ -138,8 +139,7 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
 
   Future<void> _save(UnitSettings s) async {
     _store.box<UnitSettings>().put(s);
-    final fresh = _store.box<UnitSettings>().get(s.id);
-    if (fresh != null) state = AsyncData(fresh);
+    // Stream triggers state update.
   }
 
   Future<void> setUnit(String key, Unit unit) async {
@@ -201,15 +201,17 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
         .build()
         .findFirst();
     if (existing != null) return existing;
-    final s = TablesSettings()..owner.target = owner;
+    final s = TablesSettings()
+      ..owner.target = owner
+      ..distanceEndMeter = 1000.0
+      ..showMil = true;
     _store.box<TablesSettings>().put(s);
     return s;
   }
 
   Future<void> save(TablesSettings s) async {
     _store.box<TablesSettings>().put(s);
-    final fresh = _store.box<TablesSettings>().get(s.id);
-    if (fresh != null) state = AsyncData(fresh);
+    // Stream triggers state update.
   }
 }
 

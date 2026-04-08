@@ -1,70 +1,45 @@
 export 'shot_details_screen.dart';
 export 'profiles_screen.dart';
-export 'my_cartridges_screen.dart';
+export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
 
-// ── Rifle ─────────────────────────────────────────────────────────────────────
+// ── Weapon ────────────────────────────────────────────────────────────────────
 
-class CreateRifleWizardScreen extends StatelessWidget {
-  const CreateRifleWizardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Create Rifle');
-}
-
-class SelectRifleCollectionScreen extends StatelessWidget {
-  const SelectRifleCollectionScreen({super.key});
+class SelectWeaponCollectionScreen extends StatelessWidget {
+  const SelectWeaponCollectionScreen({super.key});
   @override
   Widget build(BuildContext context) =>
-      const StubScreen(title: 'Rifle Collection');
+      const StubScreen(title: 'Weapon Collection');
 }
 
-// ── Cartridge ─────────────────────────────────────────────────────────────────
+// ── Ammo ──────────────────────────────────────────────────────────────────────
 
-class SelectCartridgeCollectionScreen extends StatelessWidget {
-  const SelectCartridgeCollectionScreen({super.key});
+/// Shared collection screen for both cartridges and bullets.
+/// [filterBullet] — true → show bullets only, false → show cartridges only.
+class AmmoCollectionScreen extends StatelessWidget {
+  const AmmoCollectionScreen({required this.filterBullet, super.key});
+  final bool filterBullet;
   @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Select Cartridge');
+  Widget build(BuildContext context) => StubScreen(
+    title: filterBullet ? 'Bullet Collection' : 'Cartridge Collection',
+  );
 }
 
-class CreateCartridgeWizardScreen extends StatelessWidget {
-  const CreateCartridgeWizardScreen({super.key});
+class CreateAmmoWizardScreen extends StatelessWidget {
+  const CreateAmmoWizardScreen({super.key});
   @override
   Widget build(BuildContext context) =>
-      const StubScreen(title: 'Create Cartridge');
+      const StubScreen(title: 'Create Ammo');
 }
 
-class CartridgeEditScreen extends StatelessWidget {
-  const CartridgeEditScreen({super.key});
+class AmmoEditScreen extends StatelessWidget {
+  const AmmoEditScreen({super.key});
   @override
   Widget build(BuildContext context) =>
-      const StubScreen(title: 'Edit Cartridge');
-}
-
-// ── Projectile (future) ───────────────────────────────────────────────────────
-
-class ProjectileSelectScreen extends StatelessWidget {
-  const ProjectileSelectScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Select Projectile');
-}
-
-class CreateProjectileWizardScreen extends StatelessWidget {
-  const CreateProjectileWizardScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Create Projectile');
-}
-
-class SelectProjectileCollectionScreen extends StatelessWidget {
-  const SelectProjectileCollectionScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Projectile Collection');
+      const StubScreen(title: 'Edit Ammo');
 }
 
 // ── Sight ─────────────────────────────────────────────────────────────────────

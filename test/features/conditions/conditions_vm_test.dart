@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -58,11 +58,16 @@ ShootingConditions _makeConditions({
 
 // ── Fake notifiers for provider overrides ────────────────────────────────────
 
-class _FakeProfileNotifier extends ShotProfileNotifier {
+class _FakeShotContextNotifier extends ShotContextNotifier {
   final Profile? _profile;
-  _FakeProfileNotifier(this._profile);
+  final ShootingConditions _conditions;
+  _FakeShotContextNotifier(this._profile, this._conditions);
   @override
-  Future<Profile?> build() async => _profile;
+  Future<ShotContext?> build() async {
+    final p = _profile;
+    if (p == null) return null;
+    return ShotContext(profile: p, conditions: _conditions);
+  }
 }
 
 class _FakeConditionsNotifier extends ShotConditionsNotifier {
@@ -88,7 +93,9 @@ ProviderContainer _createContainer({
 }) {
   return ProviderContainer(
     overrides: [
-      shotProfileProvider.overrideWith(() => _FakeProfileNotifier(profile)),
+      shotContextProvider.overrideWith(
+        () => _FakeShotContextNotifier(profile, conditions),
+      ),
       unitSettingsProvider.overrideWith((ref) => settings ?? UnitSettings()),
       shotConditionsProvider.overrideWith(
         () => _FakeConditionsNotifier(conditions),
@@ -101,7 +108,7 @@ ProviderContainer _createContainer({
 Future<ConditionsUiState> _waitForConditions(
   ProviderContainer container,
 ) async {
-  await container.read(shotProfileProvider.future);
+  await container.read(shotContextProvider.future);
   await container.read(shotConditionsProvider.future);
   await Future<void>.delayed(Duration.zero);
   return container.read(conditionsVmProvider.future);
@@ -294,8 +301,8 @@ void main() {
     test('provides default values when conditions not loaded', () async {
       final container = ProviderContainer(
         overrides: [
-          shotProfileProvider.overrideWith(
-            () => _FakeProfileNotifier(_makeProfile()),
+          shotContextProvider.overrideWith(
+            () => _FakeShotContextNotifier(_makeProfile(), ShootingConditions()),
           ),
           unitSettingsProvider.overrideWith((ref) => UnitSettings()),
           shotConditionsProvider.overrideWith(
@@ -305,7 +312,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(shotProfileProvider.future);
+      await container.read(shotContextProvider.future);
       await container.read(shotConditionsProvider.future);
       await Future<void>.delayed(Duration.zero);
 

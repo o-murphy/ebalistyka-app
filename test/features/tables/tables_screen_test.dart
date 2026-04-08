@@ -54,7 +54,7 @@ FormattedTableData _makeTable({
 }
 
 DetailsTableData _makeFullDetailstable() => const DetailsTableData(
-  rifleName: 'Test Rifle',
+  weaponName: 'Test Rifle',
   caliber: '7.62 mm',
   twist: '1:11"',
   dragModel: 'G7',
@@ -314,7 +314,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('RIFLE'), findsOneWidget);
+      expect(find.text('WEAPON'), findsOneWidget);
       expect(find.text('PROJECTILE'), findsOneWidget);
       expect(find.text('CONDITIONS'), findsOneWidget);
     });
@@ -367,7 +367,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('RIFLE'), findsNothing);
+      expect(find.text('WEAPON'), findsNothing);
       expect(find.text('CONDITIONS'), findsNothing);
     });
   });

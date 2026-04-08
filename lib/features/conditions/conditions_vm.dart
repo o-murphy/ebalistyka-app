@@ -10,7 +10,7 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
-import 'package:ebalistyka/core/providers/shot_profile_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 
 // ── Data classes ─────────────────────────────────────────────────────────────
@@ -79,12 +79,12 @@ class ConditionsUiState {
 class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   @override
   Future<ConditionsUiState> build() async {
+    final ctx = await ref.watch(shotContextProvider.future);
     final conditions = await ref.watch(shotConditionsProvider.future);
-    final profile = await ref.watch(shotProfileProvider.future);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
 
-    return _buildState(profile, conditions, units, formatter);
+    return _buildState(ctx?.profile, conditions, units, formatter);
   }
 
   Future<void> updateTemperature(double rawCelsius) async {
