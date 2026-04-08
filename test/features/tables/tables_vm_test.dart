@@ -160,9 +160,8 @@ class _FakeBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
     callCount++;
     return result;
   }
@@ -171,9 +170,8 @@ class _FakeBallisticsService implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
     callCount++;
     return result;
   }

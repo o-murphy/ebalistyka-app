@@ -5,7 +5,9 @@ import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart' show compute, listEquals;
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
+    show DragType, AmmoExtension;
 import 'package:bclibc_ffi/unit.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
@@ -143,6 +145,67 @@ class CalculationException implements Exception {
 // ── Implementation ───────────────────────────────────────────────────────────
 
 class BallisticsServiceImpl implements BallisticsService {
+  List<double>? _lastZeroKey;
+  double? _cachedZeroElevRad;
+
+  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
+    final ammo = profile.ammo.target!;
+    final weapon = profile.weapon.target;
+    final sight = profile.sight.target;
+
+    final bcCount = switch (ammo.dragType) {
+      DragType.g7 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
+      DragType.g1 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
+      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
+    };
+    final firstBc = switch (ammo.dragType) {
+      DragType.g7 => ammo.bcG7,
+      DragType.g1 => ammo.bcG1,
+      DragType.custom => 0.0,
+    };
+
+    return [
+      sight?.sightHeightInch ?? 0.0,
+      weapon?.twistInch ?? 0.0,
+      ammo.muzzleVelocityMps ?? 0.0,
+      ammo.powderTemperatureC,
+      ammo.powderSensitivityFrac,
+      firstBc,
+      ammo.weightGrain,
+      ammo.caliberInch,
+      ammo.lengthInch,
+      bcCount.toDouble(),
+      ammo.zeroAltitudeMeter,
+      ammo.zeroPressurehPa,
+      ammo.zeroTemperatureC,
+      ammo.zeroHumidityFrac,
+      ammo.zeroPowderTemperatureC,
+      ammo.zeroDistanceMeter,
+      conditions.lookAngleRad,
+      ammo.usePowderSensitivity ? 1.0 : 0.0,
+      ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
+    ];
+  }
+
+  double? _resolveZeroCache(Profile profile, ShootingConditions conditions) {
+    final key = _buildZeroKey(profile, conditions);
+    if (_cachedZeroElevRad != null && listEquals(key, _lastZeroKey)) {
+      return _cachedZeroElevRad;
+    }
+    return null;
+  }
+
+  void _updateZeroCache(
+    Profile profile,
+    ShootingConditions conditions,
+    double zeroElevRad,
+  ) {
+    _lastZeroKey = _buildZeroKey(profile, conditions);
+    _cachedZeroElevRad = zeroElevRad;
+  }
+
   /// Builds bclibc.Weapon from OB entities.
   bclibc.Weapon _buildWeapon(Profile profile) {
     final weapon = profile.weapon.target!;
@@ -155,9 +218,9 @@ class BallisticsServiceImpl implements BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TableCalcOptions opts,
+  ) async {
+    final cached = _resolveZeroCache(profile, conditions);
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
@@ -168,22 +231,21 @@ class BallisticsServiceImpl implements BallisticsService {
       currentShot,
       zeroDistance,
       opts.stepM,
-      cachedZeroElevRad,
+      cached,
     ));
     if (hit == null) throw StateError('Table calculation returned null');
-    return BallisticsResult(
-      hitResult: hit,
-      zeroElevationRad: freshZero ?? cachedZeroElevRad ?? 0.0,
-    );
+    final zeroElevRad = freshZero ?? cached ?? 0.0;
+    if (freshZero != null) _updateZeroCache(profile, conditions, freshZero);
+    return BallisticsResult(hitResult: hit, zeroElevationRad: zeroElevRad);
   }
 
   @override
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    TargetCalcOptions opts,
+  ) async {
+    final cached = _resolveZeroCache(profile, conditions);
     final bcWeapon = _buildWeapon(profile);
     final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
@@ -195,12 +257,11 @@ class BallisticsServiceImpl implements BallisticsService {
       zeroDistance,
       opts.targetDistM,
       opts.stepM,
-      cachedZeroElevRad,
+      cached,
     ));
     if (hit == null) throw StateError('Target calculation returned null');
-    return BallisticsResult(
-      hitResult: hit,
-      zeroElevationRad: freshZero ?? cachedZeroElevRad ?? 0.0,
-    );
+    final zeroElevRad = freshZero ?? cached ?? 0.0;
+    if (freshZero != null) _updateZeroCache(profile, conditions, freshZero);
+    return BallisticsResult(hitResult: hit, zeroElevationRad: zeroElevRad);
   }
 }

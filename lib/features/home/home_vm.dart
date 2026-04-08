@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
-import 'package:flutter/foundation.dart' show listEquals;
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
@@ -122,9 +121,6 @@ class HomeChartPointInfo {
 // ── ViewModel ────────────────────────────────────────────────────────────────
 
 class HomeViewModel extends AsyncNotifier<HomeUiState> {
-  double? _cachedZeroElevRad;
-  List<double>? _lastZeroKey;
-
   @override
   Future<HomeUiState> build() async => const HomeUiLoading();
 
@@ -152,20 +148,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         ),
       );
 
-      final zeroKey = _buildZeroKey(profile, conditions);
-      final useCache = listEquals(zeroKey, _lastZeroKey);
-
       final result = await ref
           .read(ballisticsServiceProvider)
-          .calculateForTarget(
-            profile,
-            conditions,
-            opts,
-            cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
-          );
-
-      _cachedZeroElevRad = result.zeroElevationRad;
-      _lastZeroKey = zeroKey;
+          .calculateForTarget(profile, conditions, opts);
 
       final uiState = _buildReadyState(
         profile: profile,
@@ -525,49 +510,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           '${point.windageAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
       mach: fmt.mach(point.mach),
     );
-  }
-
-  // ── Zero key ───────────────────────────────────────────────────────────────
-
-  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
-    final ammo = profile.ammo.target!;
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
-
-    final bcCount = switch (ammo.dragType) {
-      DragType.g7 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
-      DragType.g1 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
-      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
-    };
-    final firstBc = switch (ammo.dragType) {
-      DragType.g7 => ammo.bcG7,
-      DragType.g1 => ammo.bcG1,
-      DragType.custom => 0.0,
-    };
-
-    return [
-      sight?.sightHeightInch ?? 0.0,
-      weapon?.twistInch ?? 0.0,
-      ammo.muzzleVelocityMps ?? 0.0,
-      ammo.powderTemperatureC,
-      ammo.powderSensitivityFrac,
-      firstBc,
-      ammo.weightGrain,
-      ammo.caliberInch,
-      ammo.lengthInch,
-      bcCount.toDouble(),
-      ammo.zeroAltitudeMeter,
-      ammo.zeroPressurehPa,
-      ammo.zeroTemperatureC,
-      ammo.zeroHumidityFrac,
-      ammo.zeroPowderTemperatureC,
-      ammo.zeroDistanceMeter,
-      conditions.lookAngleRad,
-      ammo.usePowderSensitivity ? 1.0 : 0.0,
-      ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
-    ];
   }
 }
 

@@ -30,14 +30,12 @@ abstract interface class BallisticsService {
   Future<BallisticsResult> calculateTable(
     Profile profile,
     ShootingConditions conditions,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  });
+    TableCalcOptions opts,
+  );
 
   Future<BallisticsResult> calculateForTarget(
     Profile profile,
     ShootingConditions conditions,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  });
+    TargetCalcOptions opts,
+  );
 }

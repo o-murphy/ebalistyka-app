@@ -66,8 +66,6 @@ class ShotDetailsReady extends ShotDetailsUiState {
 }
 
 class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
-  double? _cachedZeroElevRad;
-
   @override
   Future<ShotDetailsUiState> build() async {
     return _calculate();
@@ -102,14 +100,8 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
       final result = await ref
           .read(ballisticsServiceProvider)
-          .calculateForTarget(
-            profile,
-            conditions,
-            opts,
-            cachedZeroElevRad: _cachedZeroElevRad,
-          );
+          .calculateForTarget(profile, conditions, opts);
 
-      _cachedZeroElevRad = result.zeroElevationRad;
       final hit = result.hitResult;
 
       return _buildReadyState(profile, conditions, formatter, hit);

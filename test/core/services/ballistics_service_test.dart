@@ -147,7 +147,7 @@ void main() {
       );
     });
 
-    test('cached zero elevation skips re-zeroing', () async {
+    test('repeated call with same profile reuses cached zero', () async {
       final profile = _makeProfile();
       final cond = _makeConditions();
 
@@ -160,7 +160,6 @@ void main() {
         profile,
         cond,
         const TableCalcOptions(stepM: 100),
-        cachedZeroElevRad: first.zeroElevationRad,
       );
 
       expect(
@@ -233,18 +232,13 @@ void main() {
       expect(holdRad, isNot(0.0));
     });
 
-    test('cached zero elevation gives same results', () async {
+    test('repeated call with same profile reuses cached zero', () async {
       final profile = _makeProfile();
       final cond = _makeConditions(targetM: 300.0);
       const opts = TargetCalcOptions(targetDistM: 300.0, stepM: 10.0);
 
       final first = await service.calculateForTarget(profile, cond, opts);
-      final second = await service.calculateForTarget(
-        profile,
-        cond,
-        opts,
-        cachedZeroElevRad: first.zeroElevationRad,
-      );
+      final second = await service.calculateForTarget(profile, cond, opts);
 
       expect(
         second.hitResult.trajectory.length,

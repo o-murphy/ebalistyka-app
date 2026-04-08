@@ -183,7 +183,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                   onChanged: (v) => setState(() => _twistRaw = v),
                 ),
                 SwitchListTile(
-                  secondary: Icon(twistDirIcon, size: 20),
+                  secondary: Icon(twistDirIcon),
                   title: const Text('Twist direction'),
                   subtitle: Text(_rightHand ? 'Right hand' : 'Left hand'),
                   value: _rightHand,
@@ -193,7 +193,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                 // ── Extra fields section ────────────────────────────────────
                 Divider(height: 1),
                 SwitchListTile(
-                  secondary: const Icon(Icons.more_horiz_outlined, size: 20),
+                  secondary: const Icon(Icons.more_horiz_outlined),
                   title: const Text('Additional parameters'),
                   subtitle: const Text('Barrel length, etc.'),
                   value: _showExtraFields,

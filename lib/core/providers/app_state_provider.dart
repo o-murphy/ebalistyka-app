@@ -113,6 +113,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     _store.runInTransaction(TxMode.write, () {
       final sight = Sight()
         ..name = 'Generic Long-Range Scope'
+        ..sightHeightInch = 1.5
         ..owner.target = owner;
       _store.box<Sight>().put(sight);
 

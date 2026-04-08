@@ -1,6 +1,4 @@
-import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
@@ -51,9 +49,6 @@ class TrajectoryTablesUiError extends TrajectoryTablesUiState {
 // ── ViewModel ────────────────────────────────────────────────────────────────
 
 class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
-  double? _cachedZeroElevRad;
-  List<double>? _lastZeroKey;
-
   @override
   Future<TrajectoryTablesUiState> build() async =>
       const TrajectoryTablesUiLoading();
@@ -88,22 +83,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             : 1.0,
       );
 
-      final zeroKey = _buildZeroKey(profile, conditions);
-      final useCache = listEquals(zeroKey, _lastZeroKey);
-
       final result = await ref
           .read(ballisticsServiceProvider)
-          .calculateTable(
-            profile,
-            conditions,
-            opts,
-            cachedZeroElevRad: useCache ? _cachedZeroElevRad : null,
-          );
-
-      if (!useCache) {
-        _cachedZeroElevRad = result.zeroElevationRad;
-        _lastZeroKey = zeroKey;
-      }
+          .calculateTable(profile, conditions, opts);
 
       final uiState = _buildReadyState(
         profile: profile,
@@ -347,49 +329,6 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       if (stepM > 1.0) nextM = ((d / stepM).round() + 1) * stepM;
     }
     return result;
-  }
-
-  // ── Zero key ───────────────────────────────────────────────────────────────
-
-  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
-    final ammo = profile.ammo.target!;
-    final weapon = profile.weapon.target;
-    final sight = profile.sight.target;
-
-    final bcCount = switch (ammo.dragType) {
-      DragType.g7 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
-      DragType.g1 =>
-        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
-      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
-    };
-    final firstBc = switch (ammo.dragType) {
-      DragType.g7 => ammo.bcG7,
-      DragType.g1 => ammo.bcG1,
-      DragType.custom => 0.0,
-    };
-
-    return [
-      sight?.sightHeightInch ?? 0.0,
-      weapon?.twistInch ?? 0.0,
-      ammo.muzzleVelocityMps ?? 0.0,
-      ammo.powderTemperatureC,
-      ammo.powderSensitivityFrac,
-      firstBc,
-      ammo.weightGrain,
-      ammo.caliberInch,
-      ammo.lengthInch,
-      bcCount.toDouble(),
-      ammo.zeroAltitudeMeter,
-      ammo.zeroPressurehPa,
-      ammo.zeroTemperatureC,
-      ammo.zeroHumidityFrac,
-      ammo.zeroPowderTemperatureC,
-      ammo.zeroDistanceMeter,
-      conditions.lookAngleRad,
-      ammo.usePowderSensitivity ? 1.0 : 0.0,
-      ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
-    ];
   }
 }
 
