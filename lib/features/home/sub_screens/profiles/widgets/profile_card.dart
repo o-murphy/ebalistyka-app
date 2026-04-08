@@ -31,6 +31,11 @@ class ProfileCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final rightHanded = data.twistDirection == "right";
+    final twistDirIcon = rightHanded
+        ? Icons.rotate_right_outlined
+        : Icons.rotate_left_outlined;
+
     return Card(
       color: colorScheme.surfaceContainer,
       elevation: 3,
@@ -72,12 +77,12 @@ class ProfileCard extends StatelessWidget {
                   InfoListTile(
                     label: "Twist",
                     value: data.twist,
-                    icon: Icons.rotate_left_outlined,
+                    icon: twistDirIcon,
                   ),
                   InfoListTile(
                     label: "Twist direction",
                     value: data.twistDirection,
-                    icon: Icons.rotate_left_outlined,
+                    icon: twistDirIcon,
                   ),
                   const Divider(height: 1),
                   ListSectionTile(

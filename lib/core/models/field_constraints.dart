@@ -119,7 +119,7 @@ abstract final class FC {
 
   static const twist = FieldConstraints(
     rawUnit: Unit.inch,
-    minRaw: -30.0,
+    minRaw: 0.0,
     maxRaw: 30.0,
     stepRaw: 0.25,
     accuracy: 2,

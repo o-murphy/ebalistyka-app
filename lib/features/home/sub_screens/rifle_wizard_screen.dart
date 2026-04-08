@@ -37,8 +37,9 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
   // twist magnitude: Unit.inch (FC.twist) — always positive, direction via _rightHand
   late double _twistRaw;
   late bool _rightHand;
-  // barrelLength: Unit.inch (FC.barrelLength) — null when not set
-  bool _hasBarrelLength = false;
+
+  // ── Extra fields ──────────────────────────────────────────────────────────
+  bool _showExtraFields = false;
   late double? _barrelLengthRaw;
 
   String? _nameError;
@@ -56,11 +57,15 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
         ? Distance.inch(twistAbs).in_(FC.twist.rawUnit)
         : FC.twist.minRaw;
     _rightHand = r != null ? r.twistInch >= 0 : true;
+
+    // Ініціалізуємо barrel length з існуючого значення, якщо воно є
     final blInch = r?.barrelLengthInch;
-    _hasBarrelLength = blInch != null;
     _barrelLengthRaw = blInch != null
         ? Distance.inch(blInch).in_(FC.barrelLength.rawUnit)
-        : FC.barrelLength.minRaw;
+        : null;
+
+    // Показуємо секцію, якщо є значення в базі
+    _showExtraFields = blInch != null;
   }
 
   @override
@@ -93,7 +98,7 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
       FC.bulletDiameter.rawUnit,
     ).in_(Unit.inch);
     weapon.twistInch = signedTwistInch;
-    weapon.barrelLengthInch = (_hasBarrelLength && _barrelLengthRaw != null)
+    weapon.barrelLengthInch = (_showExtraFields && _barrelLengthRaw != null)
         ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit).in_(Unit.inch)
         : null;
     return weapon;
@@ -117,6 +122,9 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
         ? 'New Rifle'
         : _nameCtrl.text.trim();
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
+    final twistDirIcon = _rightHand
+        ? Icons.rotate_right_outlined
+        : Icons.rotate_left_outlined;
 
     return BaseScreen(
       title: title,
@@ -171,29 +179,29 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                   constraints: FC.twist,
                   displayUnit: units.twistUnit,
                   symbol: '1:${units.twistUnit.symbol}',
-                  icon: Icons.rotate_right_outlined,
+                  icon: twistDirIcon,
                   onChanged: (v) => setState(() => _twistRaw = v),
                 ),
                 SwitchListTile(
-                  secondary: const Icon(Icons.swap_horiz_outlined, size: 20),
+                  secondary: Icon(twistDirIcon, size: 20),
                   title: const Text('Twist direction'),
                   subtitle: Text(_rightHand ? 'Right hand' : 'Left hand'),
                   value: _rightHand,
                   onChanged: (v) => setState(() => _rightHand = v),
                   dense: true,
                 ),
-                // ── Barrel length (optional) ──────────────────────────────
+                // ── Extra fields section ────────────────────────────────────
+                Divider(height: 1),
                 SwitchListTile(
-                  secondary: const Icon(Icons.straighten_outlined, size: 20),
-                  title: const Text('Barrel length'),
-                  subtitle: Text(
-                    _hasBarrelLength ? 'Specified' : 'Not specified',
-                  ),
-                  value: _hasBarrelLength,
-                  onChanged: (v) => setState(() => _hasBarrelLength = v),
+                  secondary: const Icon(Icons.more_horiz_outlined, size: 20),
+                  title: const Text('Additional parameters'),
+                  subtitle: const Text('Barrel length, etc.'),
+                  value: _showExtraFields,
+                  onChanged: (v) => setState(() => _showExtraFields = v),
                   dense: true,
                 ),
-                if (_hasBarrelLength)
+                if (_showExtraFields) ...[
+                  const SizedBox(height: 8),
                   NullableUnitValueFieldTile(
                     label: 'Barrel length',
                     rawValue: _barrelLengthRaw,
@@ -202,6 +210,8 @@ class _RifleWizardScreenState extends ConsumerState<RifleWizardScreen> {
                     icon: Icons.straighten_outlined,
                     onChanged: (v) => setState(() => _barrelLengthRaw = v),
                   ),
+                  // Тут можна додати інші додаткові поля в майбутньому
+                ],
               ],
             ),
           ),
