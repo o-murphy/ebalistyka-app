@@ -62,6 +62,11 @@ class SettingsScreen extends ConsumerWidget {
             dense: true,
             onTap: () => context.push(Routes.settingsUnits),
           ),
+
+          const Divider(height: 1),
+
+          // ── Home screen props ─────────────────────────────────────────────────
+          ListSectionTile('Home screen'),
           ListTile(
             leading: const Icon(Icons.tune_outlined),
             title: const Text('Adjustment Display'),
@@ -72,15 +77,12 @@ class SettingsScreen extends ConsumerWidget {
           SwitchListTile(
             secondary: const Icon(Icons.speed_outlined),
             title: const Text('Show subsonic transition'),
+            subtitle: const Text('Displays on trajectory chart'),
             value: settings.homeShowSubsonicTransition,
             onChanged: (v) =>
                 notifier.setAdjustmentToggle('subsonicTransition', v),
             dense: true,
           ),
-          const Divider(height: 1),
-
-          // ── Home screen props ─────────────────────────────────────────────────
-          ListSectionTile('Main screen'),
 
           UnitValueFieldTile(
             icon: Icons.table_rows_outlined,

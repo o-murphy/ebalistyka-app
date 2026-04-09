@@ -149,7 +149,7 @@ abstract final class CollectionParser {
       ammo.zeroUseDiffPowderTemperature =
           zc['useDiffPowderTemperature'] as bool? ?? false;
       ammo.zeroUseCoriolis = zc['useCoriolis'] as bool? ?? false;
-      ammo.zerolatitudeDeg = (zc['latitudeDeg'] as num? ?? 0.0).toDouble();
+      ammo.zeroLatitudeDeg = (zc['latitudeDeg'] as num? ?? 0.0).toDouble();
       ammo.zeroAzimuthDeg = (zc['azimuthDeg'] as num? ?? 0.0).toDouble();
 
       final atmo = zc['atmo'] as Map<String, dynamic>?;
@@ -173,10 +173,8 @@ abstract final class CollectionParser {
     // Zero offset (x/y in mrad → radians)
     final zo = j['zeroOffset'] as Map<String, dynamic>?;
     if (zo != null) {
-      ammo.zeroOffsetXRad =
-          ((zo['x'] as num? ?? 0.0).toDouble()) / 1000.0;
-      ammo.zeroOffsetYRad =
-          ((zo['y'] as num? ?? 0.0).toDouble()) / 1000.0;
+      ammo.zeroOffsetXRad = ((zo['x'] as num? ?? 0.0).toDouble()) / 1000.0;
+      ammo.zeroOffsetYRad = ((zo['y'] as num? ?? 0.0).toDouble()) / 1000.0;
     }
 
     return ammo;
@@ -231,8 +229,8 @@ abstract final class CollectionParser {
       ..reticleImage = j['reticleImage'] as String?
       ..focalPlaneValue = j['focalPlane'] as String? ?? 'ffp'
       ..sightHeightInch = (j['sightHeight'] as num? ?? 0.0).toDouble()
-      ..sightHorizontalOffsetInch =
-          (j['sightHorizontalOffset'] as num? ?? 0.0).toDouble()
+      ..sightHorizontalOffsetInch = (j['sightHorizontalOffset'] as num? ?? 0.0)
+          .toDouble()
       ..verticalClick = (j['verticalClick'] as num? ?? 0.1).toDouble()
       ..horizontalClick = (j['horizontalClick'] as num? ?? 0.1).toDouble()
       ..verticalClickUnit = j['verticalClickUnit'] as String? ?? 'mil'

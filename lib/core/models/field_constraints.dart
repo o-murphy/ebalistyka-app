@@ -92,6 +92,22 @@ abstract final class FC {
     accuracy: 1,
   );
 
+  static const latitude = FieldConstraints(
+    rawUnit: Unit.degree,
+    minRaw: -90.0,
+    maxRaw: 90.0,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
+  static const azimuth = FieldConstraints(
+    rawUnit: Unit.degree,
+    minRaw: 0.0,
+    maxRaw: 360.0,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
   static const windDirection = FieldConstraints(
     rawUnit: Unit.degree,
     minRaw: 0.0,

@@ -74,8 +74,10 @@ class UnitFormatterImpl implements UnitFormatter {
   String time(double seconds) => '${seconds.toFixedSafe(3)} s';
 
   @override
-  String powderSensitivity(Ratio dim) =>
-      _fmt(dim, FC.powderSensitivity, Unit.percent);
+  String powderSensitivity(Ratio dim) {
+    final accuracy = FC.powderSensitivity.accuracyFor(Unit.percent);
+    return '${dim.in_(Unit.percent).toFixedSafe(accuracy)} %/15°C';
+  }
 
   @override
   String torque(Torque dim) => _fmt(dim, FC.torque, _u.torqueUnit);

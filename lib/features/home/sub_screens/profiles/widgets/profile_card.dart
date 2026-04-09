@@ -66,6 +66,7 @@ class ProfileCard extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.military_tech_outlined),
                     title: Text(data.weaponName),
+                    subtitle: const Text("Weapon name"),
                     dense: true,
                   ),
                   InfoListTile(
@@ -96,6 +97,13 @@ class ProfileCard extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.grain_outlined),
                     title: Text(data.cartridgeName),
+                    subtitle: const Text("Cartridge name"),
+                    dense: true,
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.grain_outlined),
+                    title: Text(data.projectileName),
+                    subtitle: const Text("Projectile name"),
                     dense: true,
                   ),
                   InfoListTile(

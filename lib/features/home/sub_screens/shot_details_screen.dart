@@ -57,7 +57,7 @@ class ShotDetailsScreen extends ConsumerWidget {
         const ListSectionTile('Energy'),
         InfoListTile(
           icon: Icons.bolt_outlined,
-          label: 'Energy at muzzle',
+          label: 'Energy at muzzle velocity',
           value: state.energyAtMuzzle,
         ),
         InfoListTile(

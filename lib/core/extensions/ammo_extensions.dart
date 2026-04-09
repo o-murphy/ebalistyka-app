@@ -62,6 +62,12 @@ extension AmmoExtension on Ammo {
   set zeroPowderTemp(Temperature v) =>
       zeroPowderTemperatureC = v.in_(Unit.celsius);
 
+  Angular get zeroLatitude => Angular.degree(zeroLatitudeDeg);
+  set zeroLatitude(Angular v) => zeroLatitudeDeg = v.in_(Unit.degree);
+
+  Angular get zeroAzimuth => Angular.degree(zeroAzimuthDeg);
+  set zeroAzimuth(Angular v) => zeroAzimuthDeg = v.in_(Unit.degree);
+
   // ── Drag model helpers ────────────────────────────────────────────────────────
 
   /// True when G1/G7 with multiple BC breakpoints (velocity-dependent BC).

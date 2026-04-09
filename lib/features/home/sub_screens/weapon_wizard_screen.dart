@@ -133,7 +133,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                   child: TextField(
                     controller: _nameCtrl,
                     decoration: InputDecoration(
-                      labelText: 'Rifle name',
+                      labelText: 'Weapon name',
                       errorText: _nameError,
                     ),
                     textCapitalization: TextCapitalization.words,

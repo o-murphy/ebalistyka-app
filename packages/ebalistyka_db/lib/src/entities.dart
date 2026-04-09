@@ -124,7 +124,7 @@ class Ammo {
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
 
-  double zerolatitudeDeg = 0.0;
+  double zeroLatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;
 
   double zeroOffsetXRad = 0.0;

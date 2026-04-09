@@ -20,6 +20,7 @@ class ProfileCardData {
     required this.twist,
     required this.rightHanded,
     required this.cartridgeName,
+    required this.projectileName,
     required this.dragModel,
     required this.muzzleVelocity,
     required this.weight,
@@ -33,6 +34,7 @@ class ProfileCardData {
   final String twist;
   final bool rightHanded;
   final String cartridgeName;
+  final String projectileName;
   final String dragModel;
   final String muzzleVelocity;
   final String weight;
@@ -101,7 +103,8 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
           ? formatter.twist(weapon.twist)
           : '—',
       rightHanded: weapon?.isRightHandTwist ?? true,
-      cartridgeName: ammo?.name ?? 'Not selected',
+      cartridgeName: ammo?.name ?? "—",
+      projectileName: ammo?.projectileName ?? '—',
       dragModel: ammo?.dragModelFormattedInfo ?? '—',
       muzzleVelocity: ammo != null ? formatter.velocity(ammo.mv) : '—',
       weight: ammo != null ? formatter.weight(ammo.weight) : '—',
@@ -127,7 +130,10 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
   }
 
   Future<void> selectProfile(String id) async {
-    final profile = ref.read(appStateProvider).value?.profiles
+    final profile = ref
+        .read(appStateProvider)
+        .value
+        ?.profiles
         .where((p) => p.id.toString() == id)
         .firstOrNull;
     if (profile == null) return;

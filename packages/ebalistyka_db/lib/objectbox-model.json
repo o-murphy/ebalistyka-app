@@ -78,7 +78,7 @@
         },
         {
           "id": "32:6747201973793974182",
-          "name": "zerolatitudeDeg",
+          "name": "zeroLatitudeDeg",
           "type": 8
         },
         {
@@ -758,7 +758,7 @@
     },
     {
       "id": "9:1731139601222753801",
-      "lastPropertyId": "13:8522935972810445349",
+      "lastPropertyId": "14:1674882739474789598",
       "name": "Weapon",
       "properties": [
         {
@@ -811,6 +811,11 @@
           "id": "13:8522935972810445349",
           "name": "zeroElevationRad",
           "type": 8
+        },
+        {
+          "id": "14:1674882739474789598",
+          "name": "caliberName",
+          "type": 9
         }
       ],
       "relations": []

@@ -129,13 +129,13 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
 
   Future<void> updateLatitude(double? degrees) async {
     final s = state.value ?? _load();
-    s.latitudeDeg = degrees ?? 0.0;
+    s.latitude = Angular.degree(degrees ?? 0.0);
     await _save(s);
   }
 
   Future<void> updateAzimuth(double? degrees) async {
     final s = state.value ?? _load();
-    s.azimuthDeg = degrees ?? 0.0;
+    s.azimuth = Angular.degree(degrees ?? 0.0);
     await _save(s);
   }
 }

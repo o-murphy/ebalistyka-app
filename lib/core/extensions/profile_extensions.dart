@@ -31,8 +31,8 @@ extension ProfileExtension on Profile {
       lookAngle: lookAngle,
       atmo: ammo.toZeroAtmo(),
       winds: const [],
-      latitudeDeg: ammo.zeroUseCoriolis ? ammo.zerolatitudeDeg : null,
-      azimuthDeg: ammo.zeroUseCoriolis ? ammo.zeroAzimuthDeg : null,
+      latitudeDeg: ammo.zeroUseCoriolis ? ammo.zeroLatitude.in_(Unit.degree) : null,
+      azimuthDeg: ammo.zeroUseCoriolis ? ammo.zeroAzimuth.in_(Unit.degree) : null,
     );
   }
 
@@ -45,8 +45,8 @@ extension ProfileExtension on Profile {
       lookAngle: cond.lookAngle,
       atmo: cond.toCurrentAtmo(),
       winds: [cond.toWind()],
-      latitudeDeg: cond.useCoriolis ? cond.latitudeDeg : null,
-      azimuthDeg: cond.useCoriolis ? cond.azimuthDeg : null,
+      latitudeDeg: cond.useCoriolis ? cond.latitude.in_(Unit.degree) : null,
+      azimuthDeg: cond.useCoriolis ? cond.azimuth.in_(Unit.degree) : null,
     );
   }
 }

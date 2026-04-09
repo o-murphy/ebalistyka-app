@@ -1,5 +1,8 @@
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -37,30 +40,58 @@ class ConditionsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
-          UnitValueFieldTile(
-            label: 'Altitude',
-            icon: Icons.terrain_outlined,
-            rawValue: state.altitude.rawValue,
-            constraints: FC.altitude,
-            displayUnit: state.altitude.displayUnit,
-            onChanged: (v) => notifier.updateAltitude(v),
-          ),
-          UnitValueFieldTile(
-            label: 'Humidity',
-            icon: Icons.water_drop_outlined,
-            rawValue: state.humidity.rawValue,
-            constraints: FC.humidity,
-            displayUnit: state.humidity.displayUnit,
-            symbol: '%',
-            onChanged: (v) => notifier.updateHumidity(v),
-          ),
-          UnitValueFieldTile(
-            label: 'Pressure',
-            icon: Icons.speed_outlined,
-            rawValue: state.pressure.rawValue,
-            constraints: FC.pressure,
-            displayUnit: state.pressure.displayUnit,
-            onChanged: (v) => notifier.updatePressure(v),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: IconValueButtonRow(
+              items: [
+                IconValueButton(
+                  icon: Icons.terrain_outlined,
+                  label: 'Altitude',
+                  heroTag: 'cond-alt',
+                  value:
+                      '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Altitude',
+                    rawValue: state.altitude.rawValue,
+                    constraints: FC.altitude,
+                    displayUnit: state.altitude.displayUnit,
+                    onChanged: notifier.updateAltitude,
+                  ),
+                ),
+                IconValueButton(
+                  icon: Icons.water_drop_outlined,
+                  label: 'Humidity',
+                  heroTag: 'cond-hum',
+                  value:
+                      '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Humidity',
+                    rawValue: state.humidity.rawValue,
+                    constraints: FC.humidity,
+                    displayUnit: state.humidity.displayUnit,
+                    symbol: '%',
+                    onChanged: notifier.updateHumidity,
+                  ),
+                ),
+                IconValueButton(
+                  icon: Icons.speed_outlined,
+                  label: 'Pressure',
+                  heroTag: 'cond-press',
+                  value:
+                      '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Pressure',
+                    rawValue: state.pressure.rawValue,
+                    constraints: FC.pressure,
+                    displayUnit: state.pressure.displayUnit,
+                    onChanged: notifier.updatePressure,
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(height: 1),
 
@@ -75,6 +106,11 @@ class ConditionsScreen extends ConsumerWidget {
           if (state.powderSensOn) ...[
             SwitchListTile(
               title: const Text('Use different powder temperature'),
+              subtitle: Text(
+                state.useDiffPowderTemp
+                    ? "Uses powder temperature"
+                    : "Uses atmospheric temperature",
+              ),
               secondary: const Icon(Icons.thermostat_outlined),
               value: state.useDiffPowderTemp,
               onChanged: (v) => notifier.setDiffPowderTemp(v),
@@ -91,7 +127,9 @@ class ConditionsScreen extends ConsumerWidget {
               ),
             if (state.mvAtPowderTemp != null)
               InfoListTile(
-                label: 'Muzzle velocity at powder temp',
+                label: state.useDiffPowderTemp
+                    ? 'Muzzle velocity at powder temperature'
+                    : 'Muzzle velocity at atmospheric temperature',
                 value: state.mvAtPowderTemp!,
                 icon: Icons.speed_outlined,
               ),
@@ -110,6 +148,26 @@ class ConditionsScreen extends ConsumerWidget {
             onChanged: (v) => notifier.setCoriolis(v),
             dense: true,
           ),
+          if (state.coriolisOn) ...[
+            UnitValueFieldTile(
+              label: 'Latitude',
+              icon: Icons.public_outlined,
+              rawValue: state.latitude.rawValue,
+              constraints: FC.latitude,
+              displayUnit: state.latitude.displayUnit,
+              symbol: '°',
+              onChanged: (v) => notifier.updateLatitude(v),
+            ),
+            UnitValueFieldTile(
+              label: 'Azimuth',
+              icon: Icons.explore_outlined,
+              rawValue: state.azimuth.rawValue,
+              constraints: FC.azimuth,
+              displayUnit: state.azimuth.displayUnit,
+              symbol: '°',
+              onChanged: (v) => notifier.updateAzimuth(v),
+            ),
+          ],
           const SizedBox(height: 16),
         ],
       ),

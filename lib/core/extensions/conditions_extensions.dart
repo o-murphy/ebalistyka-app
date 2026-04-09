@@ -19,6 +19,12 @@ extension ConditionsExtension on ShootingConditions {
   Angular get windDirection => Angular.degree(windDirectionDeg);
   set windDirection(Angular v) => windDirectionDeg = v.in_(Unit.degree);
 
+  Angular get latitude => Angular.degree(latitudeDeg);
+  set latitude(Angular v) => latitudeDeg = v.in_(Unit.degree);
+
+  Angular get azimuth => Angular.degree(azimuthDeg);
+  set azimuth(Angular v) => azimuthDeg = v.in_(Unit.degree);
+
   // ── Atmosphere ──────────────────────────────────────────────────────────────
 
   Temperature get temperature => Temperature.celsius(temperatureC);

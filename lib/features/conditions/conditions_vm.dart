@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
@@ -52,8 +53,8 @@ class ConditionsUiState {
   final bool useDiffPowderTemp;
   final bool coriolisOn;
 
-  final double? latitudeDeg;
-  final double? azimuthDeg;
+  final ConditionsField latitude;
+  final ConditionsField azimuth;
 
   final String? mvAtPowderTemp;
   final String? powderSensitivity;
@@ -67,8 +68,8 @@ class ConditionsUiState {
     required this.powderSensOn,
     required this.useDiffPowderTemp,
     required this.coriolisOn,
-    this.latitudeDeg,
-    this.azimuthDeg,
+    required this.latitude,
+    required this.azimuth,
     this.mvAtPowderTemp,
     this.powderSensitivity,
   });
@@ -215,8 +216,22 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       powderSensOn: powderSensOn,
       useDiffPowderTemp: useDiffPowderTemp,
       coriolisOn: conditions.useCoriolis,
-      latitudeDeg: conditions.latitudeDeg,
-      azimuthDeg: conditions.azimuthDeg,
+      latitude: _field(
+        label: 'Latitude',
+        rawValue: conditions.latitude.in_(Unit.degree),
+        fc: FC.latitude,
+        displayUnit: Unit.degree,
+        inputField: InputField.lookAngle,
+        formatter: formatter,
+      ),
+      azimuth: _field(
+        label: 'Azimuth',
+        rawValue: conditions.azimuth.in_(Unit.degree),
+        fc: FC.azimuth,
+        displayUnit: Unit.degree,
+        inputField: InputField.lookAngle,
+        formatter: formatter,
+      ),
       mvAtPowderTemp: powderSensOn ? mvStr : null,
       powderSensitivity: powderSensOn ? sensStr : null,
     );

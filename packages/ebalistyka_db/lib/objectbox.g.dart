@@ -105,7 +105,7 @@ final _entities = <obx_int.ModelEntity>[
       ),
       obx_int.ModelProperty(
         id: const obx_int.IdUid(32, 6747201973793974182),
-        name: 'zerolatitudeDeg',
+        name: 'zeroLatitudeDeg',
         type: 8,
         flags: 0,
       ),
@@ -939,7 +939,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(9, 1731139601222753801),
     name: 'Weapon',
-    lastPropertyId: const obx_int.IdUid(13, 8522935972810445349),
+    lastPropertyId: const obx_int.IdUid(14, 1674882739474789598),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -998,6 +998,12 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(13, 8522935972810445349),
         name: 'zeroElevationRad',
         type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(14, 1674882739474789598),
+        name: 'caliberName',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -1307,7 +1313,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addBool(28, object.usePowderSensitivity);
         fbb.addBool(29, object.zeroUseDiffPowderTemperature);
         fbb.addBool(30, object.zeroUseCoriolis);
-        fbb.addFloat64(31, object.zerolatitudeDeg);
+        fbb.addFloat64(31, object.zeroLatitudeDeg);
         fbb.addFloat64(32, object.zeroAzimuthDeg);
         fbb.addOffset(35, projectileNameOffset);
         fbb.addOffset(36, vendorOffset);
@@ -1388,7 +1394,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
             64,
             false,
           )
-          ..zerolatitudeDeg = const fb.Float64Reader().vTableGet(
+          ..zeroLatitudeDeg = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             66,
@@ -2314,7 +2320,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final imageOffset = object.image == null
             ? null
             : fbb.writeString(object.image!);
-        fbb.startTable(14);
+        final caliberNameOffset = fbb.writeString(object.caliberName);
+        fbb.startTable(15);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(5, vendorOffset);
@@ -2324,6 +2331,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(9, object.twistInch);
         fbb.addFloat64(10, object.barrelLengthInch);
         fbb.addFloat64(12, object.zeroElevationRad);
+        fbb.addOffset(13, caliberNameOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2364,7 +2372,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
             rootOffset,
             28,
             0,
-          );
+          )
+          ..caliberName = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 30, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2568,8 +2579,8 @@ class Ammo_ {
     _entities[0].properties[12],
   );
 
-  /// See [Ammo.zerolatitudeDeg].
-  static final zerolatitudeDeg = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroLatitudeDeg].
+  static final zeroLatitudeDeg = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[13],
   );
 
@@ -3219,6 +3230,11 @@ class Weapon_ {
   /// See [Weapon.zeroElevationRad].
   static final zeroElevationRad = obx.QueryDoubleProperty<Weapon>(
     _entities[8].properties[8],
+  );
+
+  /// See [Weapon.caliberName].
+  static final caliberName = obx.QueryStringProperty<Weapon>(
+    _entities[8].properties[9],
   );
 }
 
