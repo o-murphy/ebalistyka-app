@@ -3,10 +3,12 @@ import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   const ProfileCard({
     required this.data,
     required this.isActive,
@@ -15,6 +17,7 @@ class ProfileCard extends StatelessWidget {
     required this.onDuplicate,
     required this.onExport,
     required this.onRemove,
+    required this.onRename,
     super.key,
   });
 
@@ -25,210 +28,253 @@ class ProfileCard extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
   final VoidCallback onRemove;
+  final ValueChanged<String> onRename;
 
-  void _showEditActionsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Profile Actions',
-                style: Theme.of(ctx).textTheme.titleMedium,
-              ),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.copy_outlined),
-              title: const Text('Duplicate'),
-              onTap: () {
-                Navigator.pop(ctx);
-                onDuplicate();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.file_upload_outlined),
-              title: const Text('Export'),
-              onTap: () {
-                Navigator.pop(ctx);
-                onExport();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('Edit Weapon'),
-              onTap: () {
-                Navigator.pop(ctx);
-                onEditWeapon();
-              },
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: const Text('Remove', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Navigator.pop(ctx);
-                onRemove();
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
+  @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
+
+  ProfileCardData get data => widget.data;
+  bool get isActive => widget.isActive;
+  VoidCallback get onSelect => widget.onSelect;
+  VoidCallback get onEditWeapon => widget.onEditWeapon;
+  VoidCallback get onDuplicate => widget.onDuplicate;
+  VoidCallback get onExport => widget.onExport;
+  VoidCallback get onRemove => widget.onRemove;
+  ValueChanged<String> get onRename => widget.onRename;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final twistDirIcon = data.rightHanded
-        ? Icons.rotate_right_outlined
-        : Icons.rotate_left_outlined;
-
     return Card(
       color: colorScheme.surfaceContainer,
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Простий рядок з назвою без PopupMenuButton
-            Row(
-              children: [
-                Expanded(
-                  child: Text(data.name, style: theme.textTheme.titleLarge),
-                ),
-                if (isActive)
-                  Icon(Icons.check_circle_outline, color: colorScheme.primary),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView(
+      clipBehavior: Clip.antiAlias,
+      elevation: isActive ? 0 : 3,
+      shape: isActive
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: colorScheme.primaryContainer, width: 3),
+            )
+          : null,
+      child: Column(
+        children: [
+          // ── Scrollable content ──────────────────────────────────────────
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
                 children: [
-                  _ProfileControlTile(
-                    profileId: data.id,
-                    profileName: data.name,
-                    hasAmmo: data.hasAmmo,
-                    hasSight: data.hasSight,
-                    onDuplicate: onDuplicate,
-                    onExport: onExport,
-                    onEditWeapon: onEditWeapon,
-                    onRemove: onRemove,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          data.name,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                      ),
+                    ],
                   ),
-                  ListSectionTile(
-                    "Weapon",
-                    onTap: onEditWeapon,
-                    trailing: Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: colorScheme.primary,
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Scrollbar(
+                      controller: _scrollController,
+                      thumbVisibility: true,
+                      child: ListView(
+                        controller: _scrollController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                            child: _ProfileControlTile(
+                              profileId: data.id,
+                              profileName: data.name,
+                              hasAmmo: data.hasAmmo,
+                              hasSight: data.hasSight,
+                              onDuplicate: onDuplicate,
+                              onExport: onExport,
+                              onEditWeapon: onEditWeapon,
+                              onRemove: onRemove,
+                              onRename: onRename,
+                            ),
+                          ),
+                          // Використання функцій для побудови секцій
+                          _buildWeaponSection(context),
+                          if (data.hasAmmo) _buildAmmoSection(context),
+                          if (data.hasAmmo) _buildSightSection(context),
+                        ],
+                      ),
                     ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.military_tech_outlined),
-                    title: Text(data.weaponName),
-                    subtitle: const Text("Weapon name"),
-                    dense: true,
-                  ),
-                  InfoListTile(
-                    label: "Caliber",
-                    value: data.caliber,
-                    icon: Icons.circle_outlined,
-                  ),
-                  InfoListTile(
-                    label: "Twist",
-                    value: data.twist,
-                    icon: twistDirIcon,
-                  ),
-                  InfoListTile(
-                    label: "Twist direction",
-                    value: data.rightHanded ? 'right' : 'left',
-                    icon: twistDirIcon,
-                  ),
-                  const Divider(height: 1),
-                  ListSectionTile(
-                    "Ammo",
-                    onTap: () => context.go(Routes.profileEditAmmo),
-                    trailing: Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.grain_outlined),
-                    title: Text(data.cartridgeName),
-                    subtitle: const Text("Cartridge name"),
-                    dense: true,
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.grain_outlined),
-                    title: Text(data.projectileName),
-                    subtitle: const Text("Projectile name"),
-                    dense: true,
-                  ),
-                  InfoListTile(
-                    label: "Drag model",
-                    value: data.dragModel,
-                    icon: Icons.trending_up_outlined,
-                  ),
-                  InfoListTile(
-                    label: "Muzzle velocity",
-                    value: data.muzzleVelocity,
-                    icon: Icons.speed_outlined,
-                  ),
-                  InfoListTile(
-                    label: "Caliber",
-                    value: data.caliber,
-                    icon: Icons.circle_outlined,
-                  ),
-                  InfoListTile(
-                    label: "Weight",
-                    value: data.weight,
-                    icon: Icons.balance_outlined,
-                  ),
-                  const Divider(height: 1),
-                  ListSectionTile(
-                    "Sight",
-                    onTap: () => context.go(Routes.profileEditAmmo),
-                    trailing: Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.my_location_outlined),
-                    title: Text(data.sightName),
-                    dense: true,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.center,
-              child: FilledButton(
-                onPressed: onSelect,
-                child: Text(!isActive ? 'Select' : 'Go to calculations'),
+          ),
+          // ── Bottom action ───────────────────────────────────────────────
+          if (data.hasAmmo && data.hasSight)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Align(
+                alignment: Alignment.center,
+                child: FilledButton(
+                  onPressed: onSelect,
+                  child: Text(!isActive ? 'Select' : 'Go to calculations'),
+                ),
+              ),
+            )
+          else
+            ColoredBox(
+              color: colorScheme.errorContainer,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    'Select ammo and sight first',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: colorScheme.onErrorContainer),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
+    );
+  }
+
+  // Функція для створення секції Weapon
+  Widget _buildWeaponSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final twistDirIcon = data.rightHanded
+        ? Icons.rotate_right_outlined
+        : Icons.rotate_left_outlined;
+
+    return Column(
+      children: [
+        ListSectionTile(
+          "Weapon",
+          onTap: onEditWeapon,
+          trailing: Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: colorScheme.primary,
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.military_tech_outlined),
+          title: Text(data.weaponName),
+          subtitle: const Text("Weapon name"),
+          dense: true,
+        ),
+        InfoListTile(
+          label: "Caliber",
+          value: data.weaponCaliber,
+          icon: Icons.circle_outlined,
+        ),
+        InfoListTile(label: "Twist", value: data.twist, icon: twistDirIcon),
+        InfoListTile(
+          label: "Twist direction",
+          value: data.rightHanded ? 'right' : 'left',
+          icon: twistDirIcon,
+        ),
+      ],
+    );
+  }
+
+  // Функція для створення секції Ammo
+  Widget _buildAmmoSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        const Divider(height: 1),
+        ListSectionTile(
+          "Ammo",
+          onTap: () => context.go(Routes.profileEditAmmo),
+          trailing: Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: colorScheme.primary,
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.grain_outlined),
+          title: Text(data.cartridgeName),
+          subtitle: const Text("Cartridge name"),
+          dense: true,
+        ),
+        ListTile(
+          leading: const Icon(Icons.grain_outlined),
+          title: Text(data.projectileName),
+          subtitle: const Text("Projectile name"),
+          dense: true,
+        ),
+        InfoListTile(
+          label: "Drag model",
+          value: data.dragModel,
+          icon: Icons.trending_up_outlined,
+        ),
+        InfoListTile(
+          label: "Muzzle velocity",
+          value: data.muzzleVelocity,
+          icon: Icons.speed_outlined,
+        ),
+        InfoListTile(
+          label: "Caliber",
+          value: data.ammoCaliber,
+          icon: Icons.circle_outlined,
+        ),
+        InfoListTile(
+          label: "Weight",
+          value: data.weight,
+          icon: Icons.balance_outlined,
+        ),
+      ],
+    );
+  }
+
+  // Функція для створення секції Sight (додано!)
+  Widget _buildSightSection(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      children: [
+        const Divider(height: 1),
+        ListSectionTile(
+          "Sight",
+          onTap: () => context.go(
+            Routes.profileEditAmmo,
+          ), // Можливо має бути Routes.profileEditSight?
+          trailing: Icon(
+            Icons.edit_outlined,
+            size: 16,
+            color: colorScheme.primary,
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.my_location_outlined),
+          title: Text(data.sightName),
+          subtitle: const Text("Sight name"),
+          dense: true,
+        ),
+      ],
     );
   }
 }
 
+// ── Profile Control Tile (покращений з об'єднаними парами) ─────────────────────
 class _ProfileControlTile extends StatelessWidget {
   const _ProfileControlTile({
     required this.profileId,
@@ -239,6 +285,7 @@ class _ProfileControlTile extends StatelessWidget {
     required this.onExport,
     required this.onEditWeapon,
     required this.onRemove,
+    required this.onRename,
   });
 
   final String profileId;
@@ -249,123 +296,45 @@ class _ProfileControlTile extends StatelessWidget {
   final VoidCallback onExport;
   final VoidCallback onEditWeapon;
   final VoidCallback onRemove;
+  final ValueChanged<String> onRename;
 
-  void _showEditProfileNameDialog(BuildContext context) {
-    final controller = TextEditingController(text: profileName);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Edit Profile Name'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
+  Future<void> _showEditActionsSheet(BuildContext context) => showActionSheet(
+    context,
+    title: 'Edit Profile',
+    entries: [
+      ActionSheetItem(
+        icon: Icons.copy_outlined,
+        title: 'Duplicate',
+        onTap: () async => onDuplicate(),
+      ),
+      ActionSheetItem(
+        icon: Icons.file_upload_outlined,
+        title: 'Export',
+        onTap: () async => onExport(),
+      ),
+      ActionSheetItem(
+        icon: Icons.edit_outlined,
+        title: 'Edit profile name',
+        onTap: () async {
+          final name = await showTextInputDialog(
+            context,
+            title: 'Edit Profile Name',
+            initialValue: profileName,
             labelText: 'Profile name',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              // TODO: зберегти нове ім'я
-              Navigator.pop(ctx);
-            },
-            child: const Text('Save'),
-          ),
-        ],
+            confirmLabel: 'Save',
+          );
+          if (name != null) onRename(name);
+        },
       ),
-    );
-  }
-
-  void _showEditActionsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      const ActionSheetDivider(),
+      ActionSheetItem(
+        icon: Icons.delete_outline,
+        title: 'Remove',
+        isDestructive: true,
+        onTap: () async => onRemove(),
       ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Edit Profile',
-                style: Theme.of(ctx).textTheme.titleMedium,
-              ),
-            ),
-            const Divider(height: 1),
-            // ListTile(
-            //   leading: const Icon(Icons.my_location_outlined),
-            //   title: const Text('Select Sight'),
-            //   trailing: !hasSight
-            //       ? const Icon(
-            //           Icons.warning_amber_outlined,
-            //           color: Colors.orange,
-            //         )
-            //       : null,
-            //   onTap: () {
-            //     Navigator.pop(ctx);
-            //     context.push(Routes.sightSelect);
-            //   },
-            // ),
-            // ListTile(
-            //   leading: const Icon(Icons.rocket_launch_outlined),
-            //   title: const Text('Select Ammo'),
-            //   trailing: !hasAmmo
-            //       ? const Icon(
-            //           Icons.warning_amber_outlined,
-            //           color: Colors.orange,
-            //         )
-            //       : null,
-            //   onTap: () {
-            //     Navigator.pop(ctx);
-            //     context.push(Routes.ammoSelect);
-            //   },
-            // ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.copy_outlined),
-              title: const Text('Duplicate'),
-              onTap: () {
-                Navigator.pop(ctx);
-                onDuplicate();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.file_upload_outlined),
-              title: const Text('Export'),
-              onTap: () {
-                Navigator.pop(ctx);
-                onExport();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('Edit profile name'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showEditProfileNameDialog;
-              },
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: const Text('Remove', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Navigator.pop(ctx);
-                onRemove();
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -388,73 +357,61 @@ class _ProfileControlTile extends StatelessWidget {
               ),
             ),
 
-            // Top right button (edit button) - всі функції тут
+            // Top right button (edit button)
             Positioned(
               top: 8,
               right: 8,
               child: FloatingActionButton(
                 mini: true,
                 heroTag: 'edit_btn_$profileId',
-                onPressed: () => _showEditActionsSheet(context),
+                onPressed: () async => _showEditActionsSheet(context),
                 backgroundColor: colorScheme.secondaryContainer,
                 foregroundColor: colorScheme.onSecondaryContainer,
                 child: const Icon(Icons.more_vert_outlined, size: 20),
               ),
             ),
 
-            if (!hasSight)
-              const Positioned(
-                top: 16,
-                left: 56,
-                child: Text(
-                  "Select sight first",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-
-            // Top left button
+            // Sight: кнопка + хінт (ліворуч зверху)
             Positioned(
               top: 8,
               left: 8,
-              child: FloatingActionButton(
-                mini: true,
-                heroTag: 'sight_btn_$profileId',
-                onPressed: () => context.push(Routes.sightSelect),
-                backgroundColor: hasSight
+              child: _ButtonWithHint(
+                hasValue: hasSight,
+                onPressed: () =>
+                    context.push(Routes.sightSelect, extra: profileId),
+                buttonIcon: Icons.my_location_outlined,
+                buttonColor: hasSight
                     ? colorScheme.secondaryContainer
                     : colorScheme.tertiaryContainer,
-                foregroundColor: hasSight
+                buttonForegroundColor: hasSight
                     ? colorScheme.onSecondaryContainer
                     : colorScheme.onTertiaryContainer,
-                child: const Icon(Icons.my_location_outlined, size: 20),
+                hintText: "Select sight",
+                hintIcon: Icons.arrow_back,
+                hintColor: colorScheme.tertiary,
+                hintPosition: _HintPosition.right,
               ),
             ),
 
-            if (!hasAmmo)
-              const Positioned(
-                bottom: 16,
-                right: 56,
-                child: Text(
-                  "Select ammo first",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-
-            // Bottom right button
+            // Ammo: кнопка + хінт (праворуч знизу)
             Positioned(
               bottom: 8,
               right: 8,
-              child: FloatingActionButton(
-                mini: true,
-                heroTag: 'cartridge_btn_$profileId',
-                onPressed: () => context.push(Routes.ammoSelect),
-                backgroundColor: hasAmmo
+              child: _ButtonWithHint(
+                hasValue: hasAmmo,
+                onPressed: () =>
+                    context.push(Routes.ammoSelect, extra: profileId),
+                buttonIcon: Icons.rocket_launch_outlined,
+                buttonColor: hasAmmo
                     ? colorScheme.primaryContainer
                     : colorScheme.tertiaryContainer,
-                foregroundColor: hasAmmo
+                buttonForegroundColor: hasAmmo
                     ? colorScheme.onPrimaryContainer
                     : colorScheme.onTertiaryContainer,
-                child: const Icon(Icons.rocket_launch_outlined, size: 20),
+                hintText: "Select ammo",
+                hintIcon: Icons.arrow_forward,
+                hintColor: colorScheme.tertiary,
+                hintPosition: _HintPosition.left,
               ),
             ),
           ],
@@ -463,3 +420,67 @@ class _ProfileControlTile extends StatelessWidget {
     );
   }
 }
+
+// ── Віджет: кнопка + текстовий хінт поряд (не на кнопці!) ─────────────────────
+class _ButtonWithHint extends StatelessWidget {
+  const _ButtonWithHint({
+    required this.hasValue,
+    required this.onPressed,
+    required this.buttonIcon,
+    required this.buttonColor,
+    required this.buttonForegroundColor,
+    required this.hintText,
+    required this.hintIcon,
+    required this.hintColor,
+    required this.hintPosition,
+  });
+
+  final bool hasValue;
+  final VoidCallback onPressed;
+  final IconData buttonIcon;
+  final Color buttonColor;
+  final Color buttonForegroundColor;
+  final String hintText;
+  final IconData hintIcon;
+  final Color hintColor;
+  final _HintPosition hintPosition;
+
+  @override
+  Widget build(BuildContext context) {
+    final button = FloatingActionButton(
+      mini: true,
+      onPressed: onPressed,
+      backgroundColor: buttonColor,
+      foregroundColor: buttonForegroundColor,
+      child: Icon(buttonIcon, size: 20),
+    );
+
+    // Якщо значення є - показуємо тільки кнопку
+    if (hasValue) return button;
+
+    // Якщо значення немає - показуємо кнопку + хінт поряд
+    final hint = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (hintPosition == _HintPosition.left) ...[
+          Text(hintText, style: TextStyle(fontSize: 12, color: hintColor)),
+          const SizedBox(width: 4),
+          Icon(hintIcon, size: 16, color: hintColor),
+        ] else ...[
+          Icon(hintIcon, size: 16, color: hintColor),
+          const SizedBox(width: 4),
+          Text(hintText, style: TextStyle(fontSize: 12, color: hintColor)),
+        ],
+      ],
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: hintPosition == _HintPosition.left
+          ? [hint, const SizedBox(width: 8), button]
+          : [button, const SizedBox(width: 8), hint],
+    );
+  }
+}
+
+enum _HintPosition { left, right }

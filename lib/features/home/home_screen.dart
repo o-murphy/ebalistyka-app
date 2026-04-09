@@ -52,7 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     // Trigger overlay animation when VM transitions from Loading → Ready.
     ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
-      final wasLoading = prev?.value is HomeUiLoading;
+      final wasLoading = prev?.isLoading == true;
       final isReady = next.value is HomeUiReady;
       if (wasLoading && isReady) _calcDoneCtrl.forward(from: 0);
     });

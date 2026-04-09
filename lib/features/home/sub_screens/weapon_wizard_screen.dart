@@ -43,6 +43,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   late double? _barrelLengthRaw;
 
   String? _nameError;
+  bool _nameTouched = false;
 
   @override
   void initState() {
@@ -51,7 +52,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
     _nameCtrl = TextEditingController(text: r?.name ?? '');
     _caliberRaw = r != null
         ? r.caliber.in_(FC.bulletDiameter.rawUnit)
-        : FC.bulletDiameter.minRaw;
+        : Distance.inch(0.338).in_(FC.bulletDiameter.rawUnit);
     final twistAbs = r?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
     _twistRaw = twistAbs > 0 ? twistAbs : FC.twist.minRaw;
     _rightHand = r != null ? r.isRightHandTwist : true;
@@ -96,6 +97,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   }
 
   void _onSave() {
+    _nameTouched = true;
     _validateName();
     if (!_isValid) return;
     context.pop(_buildWeapon());
@@ -137,9 +139,9 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                       errorText: _nameError,
                     ),
                     textCapitalization: TextCapitalization.words,
-                    onChanged: (_) => setState(() {
-                      _nameError = null;
-                    }),
+                    onChanged: (_) {
+                      if (_nameTouched) _validateName();
+                    },
                     onEditingComplete: _validateName,
                   ),
                 ),
@@ -207,7 +209,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
             ),
           ),
           // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _isValid ? _onSave : null),
+          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
         ],
       ),
     );

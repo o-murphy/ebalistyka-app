@@ -26,7 +26,8 @@ class TrajectoryTablesUiLoading extends TrajectoryTablesUiState {
 }
 
 class TrajectoryTablesUiEmpty extends TrajectoryTablesUiState {
-  const TrajectoryTablesUiEmpty();
+  final String message;
+  const TrajectoryTablesUiEmpty([this.message = 'No data']);
 }
 
 class TrajectoryTablesUiReady extends TrajectoryTablesUiState {
@@ -60,7 +61,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final formatter = ref.read(unitFormatterProvider);
 
     if (ctx == null) {
-      state = const AsyncData(TrajectoryTablesUiEmpty());
+      state = const AsyncData(
+        TrajectoryTablesUiEmpty('No active profile selected'),
+      );
       return;
     }
 
@@ -68,7 +71,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     final conditions = ctx.conditions;
 
     if (profile.ammo.target == null) {
-      state = const AsyncData(TrajectoryTablesUiEmpty());
+      state = const AsyncData(
+        TrajectoryTablesUiEmpty('Select ammo for the active profile'),
+      );
       return;
     }
 

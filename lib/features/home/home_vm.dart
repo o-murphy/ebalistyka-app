@@ -31,10 +31,6 @@ sealed class HomeUiState {
   const HomeUiState();
 }
 
-class HomeUiLoading extends HomeUiState {
-  const HomeUiLoading();
-}
-
 class HomeUiReady extends HomeUiState {
   // Top block
   final String rifleName;
@@ -92,6 +88,11 @@ class HomeUiReady extends HomeUiState {
   });
 }
 
+class HomeUiNoData extends HomeUiState {
+  final String message;
+  const HomeUiNoData(this.message);
+}
+
 class HomeUiError extends HomeUiState {
   final String message;
   const HomeUiError(this.message);
@@ -123,7 +124,8 @@ class HomeChartPointInfo {
 
 class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
-  Future<HomeUiState> build() async => const HomeUiLoading();
+  Future<HomeUiState> build() async =>
+      const HomeUiNoData('Select a profile to start');
 
   Future<void> recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
@@ -131,13 +133,21 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final units = ref.read(unitSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
-    if (ctx == null || settings == null) return;
+    if (ctx == null || settings == null) {
+      state = const AsyncData(HomeUiNoData('No active profile selected'));
+      return;
+    }
     final profile = ctx.profile;
     final conditions = ctx.conditions;
-    if (profile.ammo.target == null) return;
+    if (profile.ammo.target == null) {
+      state = const AsyncData(
+        HomeUiNoData('Select ammo for the active profile'),
+      );
+      return;
+    }
 
     if (state.value is! HomeUiReady) {
-      state = const AsyncData(HomeUiLoading());
+      state = const AsyncLoading<HomeUiState>();
     }
 
     try {

@@ -104,7 +104,8 @@ final appRouter = GoRouter(
                     // ── Ammo select ─────────────────────────────────────────
                     GoRoute(
                       path: 'ammo-select',
-                      builder: (_, _) => const MyAmmoScreen(),
+                      builder: (_, state) =>
+                          MyAmmoScreen(profileId: state.extra as String?),
                       routes: [
                         GoRoute(
                           path: 'create',
@@ -125,7 +126,9 @@ final appRouter = GoRouter(
                     // ── Sight select ────────────────────────────────────────
                     GoRoute(
                       path: 'sight-select',
-                      builder: (_, _) => const MySightsCollectionScreen(),
+                      builder: (_, state) => MySightsCollectionScreen(
+                        profileId: state.extra as String?,
+                      ),
                       routes: [
                         GoRoute(
                           path: 'create',

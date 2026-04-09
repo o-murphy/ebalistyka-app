@@ -7,6 +7,7 @@ import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 
 // ─── Page 1 — Reticle & Adjustments ──────────────────────────────────────────
 
@@ -18,7 +19,13 @@ class HomeReticlePage extends ConsumerWidget {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    if (vmState is! HomeUiReady) {
+    if (vmState is HomeUiNoData) {
+      return EmptyStatePlaceholder(message: vmState.message);
+    }
+    if (vmState is HomeUiError) {
+      return Center(child: Text('Error: ${vmState.message}'));
+    }
+    if (vmAsync.isLoading || vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());
     }
 

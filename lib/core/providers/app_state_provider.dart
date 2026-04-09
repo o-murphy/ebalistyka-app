@@ -303,6 +303,41 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
   // ── Profile CRUD ──────────────────────────────────────────────────────────────
 
+  Future<void> setProfileAmmo(String profileId, int ammoId) async {
+    final id = int.tryParse(profileId);
+    if (id == null) return;
+    final profile = _store.box<Profile>().get(id);
+    if (profile == null) return;
+    profile.ammo.targetId = ammoId;
+    await saveProfile(profile);
+  }
+
+  Future<void> setProfileSight(String profileId, int sightId) async {
+    final id = int.tryParse(profileId);
+    if (id == null) return;
+    final profile = _store.box<Profile>().get(id);
+    if (profile == null) return;
+    profile.sight.targetId = sightId;
+    await saveProfile(profile);
+  }
+
+  Future<int> createProfile(String name, Weapon weapon) async {
+    int profileId = 0;
+    final owner = _owner;
+    _store.runInTransaction(TxMode.write, () {
+      weapon.owner.target = owner;
+      _store.box<Weapon>().put(weapon);
+
+      final profile = Profile()
+        ..name = name
+        ..weapon.target = weapon
+        ..owner.target = owner;
+      profileId = _store.box<Profile>().put(profile);
+    });
+    // Weapon + Profile streams trigger reload.
+    return profileId;
+  }
+
   Future<void> saveProfile(Profile profile) async {
     profile.owner.target = _owner;
     _store.box<Profile>().put(profile);
@@ -312,7 +347,23 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   Future<void> deleteProfile(int id) async {
     final wasActive = state.value?.activeProfile?.id == id;
     _store.runInTransaction(TxMode.write, () {
+      final profile = _store.box<Profile>().get(id);
+      final weaponId = profile?.weapon.targetId ?? 0;
+
       _store.box<Profile>().remove(id);
+
+      // Delete the weapon if no other profile references it.
+      if (weaponId != 0) {
+        final stillLinked = _store
+            .box<Profile>()
+            .query(Profile_.weapon.equals(weaponId))
+            .build()
+            .count();
+        if (stillLinked == 0) {
+          _store.box<Weapon>().remove(weaponId);
+        }
+      }
+
       // If deleted profile was active — reset Owner so _load() picks profiles.first.
       if (wasActive) {
         final owner = _owner;

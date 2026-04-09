@@ -7,6 +7,7 @@ class CollectionItemTile extends StatelessWidget {
     this.body,
     required this.onSelect,
     this.onEdit,
+    this.isSelected = false,
     super.key,
   });
 
@@ -14,6 +15,7 @@ class CollectionItemTile extends StatelessWidget {
   final Widget? body;
   final VoidCallback onSelect;
   final VoidCallback? onEdit;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,12 @@ class CollectionItemTile extends StatelessWidget {
     return SizedBox(
       height: 200,
       child: Card(
+        shape: isSelected
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: colorScheme.primaryContainer, width: 3),
+              )
+            : null,
         child: Stack(
           children: [
             // Main content

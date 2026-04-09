@@ -1,93 +1,87 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart' hide Velocity;
+import 'package:go_router/go_router.dart';
 
 class MySightsCollectionScreen extends ConsumerWidget {
-  const MySightsCollectionScreen({super.key});
+  const MySightsCollectionScreen({this.profileId, super.key});
 
-  // Функція для показу bottom sheet
-  Future<void> _showAddSightSheet(BuildContext context) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  /// ID of the profile that opened this screen.
+  /// When provided, its sight selection is highlighted and sorted first.
+  /// Falls back to the active profile when null.
+  final String? profileId;
+
+  Future<void> _showAddSightSheet(BuildContext context) => showActionSheet(
+    context,
+    title: 'Add Sight',
+    entries: [
+      ActionSheetItem(
+        icon: Icons.add_circle_outline,
+        title: 'Create new',
+        onTap: () async => debugPrint('Create new sight'),
+        // TODO: context.push(Routes.sightCreate)
       ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Add Sight',
-                style: Theme.of(ctx).textTheme.titleMedium,
-              ),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Create new'),
-              onTap: () {
-                Navigator.pop(ctx);
-                debugPrint("Create new sight");
-                // TODO: додати навігацію на екран створення
-                // context.push(Routes.sightCreate);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder_open_outlined),
-              title: const Text('Select from collection'),
-              onTap: () {
-                Navigator.pop(ctx);
-                debugPrint("Select sight from collection");
-                // TODO: додати логіку вибору з колекції
-              },
-            ),
-            // ListTile(
-            //   leading: const Icon(Icons.file_open_outlined),
-            //   title: const Text('Import from file'),
-            //   onTap: () {
-            //     Navigator.pop(ctx);
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       const SnackBar(content: Text('Import not yet available')),
-            //     );
-            //   },
-            // ),
-            const SizedBox(height: 8),
-          ],
-        ),
+      ActionSheetItem(
+        icon: Icons.folder_open_outlined,
+        title: 'Select from collection',
+        onTap: () async => debugPrint('Select sight from collection'),
+        // TODO: context.push(Routes.sightCollection)
       ),
-    );
-  }
+    ],
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
     final sights = ref.watch(sightsProvider);
+    final appState = ref.watch(appStateProvider).value;
+    final profile = profileId != null
+        ? appState?.profiles
+              .where((p) => p.id.toString() == profileId)
+              .firstOrNull
+        : appState?.activeProfile;
+    final selectedId = profile?.sight.targetId;
+
+    final sorted = [
+      ...sights.where((s) => s.id == selectedId),
+      ...sights.where((s) => s.id != selectedId),
+    ];
 
     return BaseScreen(
       title: "My Sights",
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
-        onPressed: () => _showAddSightSheet(context), // викликає bottom sheet
+        onPressed: () => _showAddSightSheet(context),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 6,
         child: const Icon(Icons.add_outlined),
       ),
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (_) => BaseCollectionBody(
-          tiles: sights
+          tiles: sorted
               .map(
                 (item) => CollectionItemTile(
                   key: ValueKey(item.id),
                   body: Center(child: Text(item.name)),
                   item: SightCollectionItem(ref: item),
-                  onSelect: () => debugPrint("item id: ${item.id} selected"),
+                  isSelected: item.id == selectedId,
+                  onSelect: () async {
+                    final pid = profileId ?? profile?.id.toString();
+                    if (pid == null) return;
+                    await ref
+                        .read(appStateProvider.notifier)
+                        .setProfileSight(pid, item.id);
+                    if (context.mounted) context.pop();
+                  },
                   onEdit: () => debugPrint(
                     "routes to item wizard screen id: ${item.id} selected",
                   ),

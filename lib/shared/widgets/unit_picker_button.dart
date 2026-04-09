@@ -59,19 +59,13 @@ class UnitPickerButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
             ),
             const Divider(height: 1),
             ...options.map(
               (unit) => ListTile(
-                title: Text('${unit.label} (${unit.symbol})'),
+                title: Text("${unit.label} (${unit.symbol})"),
                 trailing: current == unit
                     ? const Icon(Icons.check_outlined)
                     : null,

@@ -5,6 +5,8 @@ import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_ca
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +21,7 @@ class ProfilesScreen extends ConsumerStatefulWidget {
 class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
+  String? _currentProfileId;
 
   @override
   void dispose() {
@@ -26,7 +29,36 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     super.dispose();
   }
 
-  void _onPageChanged(int page) => setState(() => _currentPage = page);
+  void _onPageChanged(int page) {
+    final state = ref.read(profilesVmProvider).value;
+    setState(() {
+      _currentPage = page;
+      if (state is ProfilesReady && page < state.profiles.length) {
+        _currentProfileId = state.profiles[page].id;
+      }
+    });
+  }
+
+  void _navigateTo(int page, String profileId, {bool animate = false}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        _currentPage = page;
+        _currentProfileId = profileId;
+      });
+      if (_pageController.hasClients) {
+        if (animate) {
+          _pageController.animateToPage(
+            page,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        } else {
+          _pageController.jumpToPage(page);
+        }
+      }
+    });
+  }
 
   String _titleFor(ProfilesUiState state) {
     if (state is! ProfilesReady || state.profiles.isEmpty) {
@@ -44,56 +76,53 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
   // ── Add (bottom sheet) ────────────────────────────────────────────────────
 
-  Future<void> _showAddSheet() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  Future<String?> _askProfileName({String? initial}) => showTextInputDialog(
+    context,
+    title: 'New Profile',
+    initialValue: initial,
+    labelText: 'Profile name',
+    confirmLabel: 'Next',
+  );
+
+  Future<void> _showAddSheet() => showActionSheet(
+    context,
+    title: 'Add Profile',
+    entries: [
+      ActionSheetItem(
+        icon: Icons.add_circle_outline,
+        title: 'Create new',
+        onTap: () async {
+          final name = await _askProfileName();
+          if (name == null || !mounted) return;
+          final weapon = await context.push<Weapon?>(
+            Routes.profileAddWeaponCreate,
+          );
+          if (weapon != null && mounted) {
+            await ref
+                .read(profilesVmProvider.notifier)
+                .createProfile(name, weapon);
+          }
+        },
       ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'Add Profile',
-                style: Theme.of(ctx).textTheme.titleMedium,
-              ),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Create new'),
-              onTap: () {
-                Navigator.pop(ctx);
-                context.push(Routes.profileAddWeaponCreate);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder_open_outlined),
-              title: const Text('From collection'),
-              onTap: () {
-                Navigator.pop(ctx);
-                context.push(Routes.profileAddWeaponCollection);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.file_open_outlined),
-              title: const Text('Import from file'),
-              onTap: () {
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Import not yet available')),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+      ActionSheetItem(
+        icon: Icons.folder_open_outlined,
+        title: 'From collection',
+        onTap: () async {
+          final name = await _askProfileName();
+          if (name != null && mounted) {
+            context.push(Routes.profileAddWeaponCollection, extra: name);
+          }
+        },
+      ),
+      ActionSheetItem(
+        icon: Icons.file_open_outlined,
+        title: 'Import from file',
+        onTap: () async => ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Import not yet available')),
         ),
       ),
-    );
-  }
+    ],
+  );
 
   // ── FAB actions (current profile) ─────────────────────────────────────────
 
@@ -107,7 +136,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Remove profile'),
-        content: Text('Remove "${profile.name}"?'),
+        content: Text('Remove "${profile.name}" and its weapon?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -122,14 +151,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     );
     if (confirmed == true) {
       await ref.read(profilesVmProvider.notifier).removeProfile(profile.id);
-      if (_currentPage > 0) {
-        setState(() => _currentPage = _currentPage - 1);
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
+      // _syncPage handles page adjustment when the VM emits the updated list.
     }
   }
 
@@ -160,6 +182,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     }
   }
 
+  Future<void> _onRename(ProfileCardData profile, String name) async {
+    await ref.read(profilesVmProvider.notifier).renameProfile(profile.id, name);
+  }
+
   Future<void> _onSelect(ProfileCardData profile) async {
     await ref.read(profilesVmProvider.notifier).selectProfile(profile.id);
     if (mounted) context.pop();
@@ -167,9 +193,39 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<ProfilesUiState>>(profilesVmProvider, (prev, next) {
+      final prevData = prev?.value;
+      final nextData = next.value;
+      if (nextData is! ProfilesReady || nextData.profiles.isEmpty) return;
+
+      if (prevData == null) {
+        // Initial load — seed _currentProfileId without jumping.
+        _currentProfileId ??= nextData
+            .profiles[_currentPage.clamp(0, nextData.profiles.length - 1)]
+            .id;
+        return;
+      }
+
+      if (prevData is! ProfilesReady) return;
+
+      if (nextData.profiles.length > prevData.profiles.length) {
+        // Profile added → jump to last page.
+        final last = nextData.profiles.length - 1;
+        _navigateTo(last, nextData.profiles[last].id, animate: true);
+      } else if (nextData.profiles.length < prevData.profiles.length) {
+        // Profile deleted → nearest valid page (only if current was removed).
+        final exists = nextData.profiles.any((p) => p.id == _currentProfileId);
+        if (!exists) {
+          final page = _currentPage.clamp(0, nextData.profiles.length - 1);
+          _navigateTo(page, nextData.profiles[page].id);
+        }
+      }
+      // Same count → ammo/weapon/sight update — do not change page.
+    });
     final vmState = ref.watch(profilesVmProvider);
 
     return vmState.when(
+      skipLoadingOnRefresh: true,
       loading: () => BaseScreen(
         title: 'Select Profile',
         body: const Center(child: CircularProgressIndicator()),
@@ -185,6 +241,9 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           floatingActionButton: FloatingActionButton(
             heroTag: "generalFab",
             onPressed: _showAddSheet,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            elevation: 6,
             child: const Icon(Icons.add_outlined),
           ),
           body: state is ProfilesReady && state.profiles.isNotEmpty
@@ -199,6 +258,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                   onDuplicate: () => _onDuplicate(profile),
                   onExport: () => _onExport(profile),
                   onRemove: () => _onRemove(profile),
+                  onRename: _onRename,
                 )
               : const Center(child: Text('No profiles. Tap + to add one.')),
         );
@@ -221,6 +281,7 @@ class _ProfilePageView extends StatelessWidget {
     required this.onDuplicate,
     required this.onExport,
     required this.onRemove,
+    required this.onRename,
   });
 
   final List<ProfileCardData> profiles;
@@ -233,6 +294,7 @@ class _ProfilePageView extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
   final VoidCallback onRemove;
+  final void Function(ProfileCardData, String) onRename;
 
   @override
   Widget build(BuildContext context) {
@@ -254,6 +316,7 @@ class _ProfilePageView extends StatelessWidget {
                       onDuplicate: onDuplicate,
                       onExport: onExport,
                       onRemove: onRemove,
+                      onRename: (name) => onRename(p, name),
                     ),
                   ),
                 )

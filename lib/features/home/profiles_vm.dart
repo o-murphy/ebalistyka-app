@@ -16,9 +16,10 @@ class ProfileCardData {
     required this.id,
     required this.name,
     required this.weaponName,
-    required this.caliber,
+    required this.weaponCaliber,
     required this.twist,
     required this.rightHanded,
+    required this.ammoCaliber,
     required this.cartridgeName,
     required this.projectileName,
     required this.dragModel,
@@ -32,9 +33,10 @@ class ProfileCardData {
   final String id;
   final String name;
   final String weaponName;
-  final String caliber;
+  final String weaponCaliber;
   final String twist;
   final bool rightHanded;
+  final String ammoCaliber;
   final String cartridgeName;
   final String projectileName;
   final String dragModel;
@@ -102,11 +104,12 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       id: profile.id.toString(),
       name: profile.name,
       weaponName: weapon?.name ?? '—',
-      caliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
+      weaponCaliber: weapon != null ? formatter.diameter(weapon.caliber) : '—',
       twist: weapon != null && weapon.twistInch.abs() > 0
           ? formatter.twist(weapon.twist)
           : '—',
       rightHanded: weapon?.isRightHandTwist ?? true,
+      ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
       cartridgeName: ammo?.name ?? "—",
       projectileName: ammo?.projectileName ?? '—',
       dragModel: ammo?.dragModelFormattedInfo ?? '—',
@@ -114,7 +117,7 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       weight: ammo != null ? formatter.weight(ammo.weight) : '—',
       sightName: sight?.name ?? 'Not selected',
       hasAmmo: ammo != null,
-      hasSight: ammo != null,
+      hasSight: sight != null,
     );
   }
 
@@ -150,6 +153,25 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
     final intId = int.tryParse(id);
     if (intId == null) return;
     await ref.read(appStateProvider.notifier).deleteProfile(intId);
+  }
+
+  Future<String> createProfile(String name, Weapon weapon) async {
+    final id = await ref
+        .read(appStateProvider.notifier)
+        .createProfile(name, weapon);
+    return id.toString();
+  }
+
+  Future<void> renameProfile(String id, String name) async {
+    final profile = ref
+        .read(appStateProvider)
+        .value
+        ?.profiles
+        .where((p) => p.id.toString() == id)
+        .firstOrNull;
+    if (profile == null) return;
+    profile.name = name;
+    await ref.read(appStateProvider.notifier).saveProfile(profile);
   }
 }
 
