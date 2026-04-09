@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -250,7 +251,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     for (final row in rows) {
       final rangeVal = colDefs.first.$4(row);
       final rangeStr = rangeVal != null
-          ? rangeVal.toStringAsFixed(colDefs.first.$5)
+          ? rangeVal.toFixedSafe(colDefs.first.$5)
           : '—';
 
       if (isZeroTable) {
@@ -289,7 +290,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       for (var pi = 0; pi < rows.length; pi++) {
         final row = rows[pi];
         final val = col.$4(row);
-        final valStr = val != null ? val.toStringAsFixed(col.$5) : '—';
+        final valStr = val != null ? val.toFixedSafe(col.$5) : '—';
         final isZero = (row.flag & bclibc.TrajFlag.zero.value) != 0;
         final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
         cells.add(

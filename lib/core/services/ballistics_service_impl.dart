@@ -84,7 +84,7 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     tableStepM,
     cachedZeroElevRad,
   ) = args;
-  final internalStepM = stepM < 1.0 ? stepM : 1.0;
+  final internalStepM = stepM < 0.1524 ? stepM : 0.1524; // max 1/2 ft for dense interpolation
   try {
     final calc = bclibc.Calculator();
     double? freshZeroElevRad;

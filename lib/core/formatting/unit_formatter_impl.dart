@@ -1,4 +1,5 @@
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -10,9 +11,8 @@ class UnitFormatterImpl implements UnitFormatter {
   UnitFormatterImpl(this._u);
 
   String _fmt(Dimension dim, FieldConstraints fc, Unit unit) {
-    final value = dim.in_(unit);
     final accuracy = fc.accuracyFor(unit);
-    return '${value.toStringAsFixed(accuracy)} ${unit.symbol}';
+    return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.symbol}';
   }
 
   // --- Formatted strings ---
@@ -68,10 +68,10 @@ class UnitFormatterImpl implements UnitFormatter {
   String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
 
   @override
-  String mach(double m) => '${m.toStringAsFixed(2)} M';
+  String mach(double m) => '${m.toFixedSafe(2)} M';
 
   @override
-  String time(double seconds) => '${seconds.toStringAsFixed(3)} s';
+  String time(double seconds) => '${seconds.toFixedSafe(3)} s';
 
   @override
   String powderSensitivity(Ratio dim) =>

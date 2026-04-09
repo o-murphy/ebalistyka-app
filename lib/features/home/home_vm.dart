@@ -6,6 +6,7 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 import 'package:ebalistyka/core/domain/ballistics_service.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
@@ -148,6 +149,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           settings.homeChartDistanceStep,
           settings.homeTableDistanceStep,
         ),
+        tableStepM: settings.homeTableDistanceStep,
       );
 
       final result = await ref
@@ -248,7 +250,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
     final lookAngleDisplay =
-        '${lookDeg.toStringAsFixed(FC.lookAngle.accuracy)}°';
+        '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
 
     final targetDistanceDisplay = formatter.distance(conditions.distance);
 
@@ -268,6 +270,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       hit,
       targetM,
       result.zeroElevationRad,
+      result.tableHolds,
       settings,
       units,
       formatter,
@@ -322,7 +325,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       final bcWeapon = weapon.toWeapon(sightHeight);
       final currentShot = profile.toCurrentShot(conditions, bcWeapon);
       final sg = currentShot.calculateStabilityCoefficient();
-      sgStr = 'Sg ${sg.toStringAsFixed(2)}';
+      sgStr = 'Sg ${sg.toFixedSafe(2)}';
     }
 
     return '${ammo.projectileName ?? ammo.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
@@ -377,6 +380,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     bclibc.HitResult hit,
     double targetM,
     double zeroElevRad,
+    List<double> tableHolds,
     GeneralSettings settings,
     UnitSettings units,
     UnitFormatter fmt,
@@ -403,14 +407,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final distHeaders = dists.map<String>((m) {
       if (m < 0) return '—';
       final disp = Distance.meter(m).in_(distUnit);
-      return disp.toStringAsFixed(distAcc);
+      return disp.toFixedSafe(distAcc);
     }).toList();
 
     const targetCol = 2;
     final milAcc = FC.adjustment.accuracyFor(Unit.mil);
     final moaAcc = FC.adjustment.accuracyFor(Unit.moa);
 
-    final rowDefs =
+    // Rows derived from trajectory points (single fired trajectory).
+    final trajRowDefs =
         <(String, String, double? Function(bclibc.TrajectoryData), int)>[
           (
             'Height',
@@ -418,32 +423,14 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
             (p) => p.height.in_(dropUnit),
             FC.drop.accuracyFor(dropUnit),
           ),
+          ('Elev', 'MIL', (p) => p.dropAngle.in_(Unit.mil), milAcc),
+          ('Elev', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
           (
-            'Slant Ht',
+            'Windage',
             dropUnit.symbol,
-            (p) => p.slantHeight.in_(dropUnit),
+            (p) => p.windage.in_(dropUnit),
             FC.drop.accuracyFor(dropUnit),
           ),
-          ('Angle', 'MIL', (p) => p.angle.in_(Unit.mil), milAcc),
-          ('Angle', 'MOA', (p) => p.angle.in_(Unit.moa), moaAcc),
-          (
-            'Drop',
-            'MIL',
-            (p) =>
-                p.angle.in_(Unit.mil) -
-                Angular.radian(zeroElevRad).in_(Unit.mil),
-            milAcc,
-          ),
-          (
-            'Drop',
-            'MOA',
-            (p) =>
-                p.angle.in_(Unit.moa) -
-                Angular.radian(zeroElevRad).in_(Unit.moa),
-            moaAcc,
-          ),
-          ('Windage', 'MIL', (p) => p.windageAngle.in_(Unit.mil), milAcc),
-          ('Windage', 'MOA', (p) => p.windageAngle.in_(Unit.moa), moaAcc),
           (
             'Velocity',
             velUnit.symbol,
@@ -459,19 +446,47 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           ('Time', 's', (p) => p.time, 3),
         ];
 
-    final rows = rowDefs.map((rd) {
+    // Drop (hold) rows — barrelElevationForTarget(d) - zeroElevRad for each
+    // column, matching the hold value shown on Page 1 (reticle).
+    FormattedRow buildDropRow(String unitLabel, Unit u, int acc) {
+      final cells = <FormattedCell>[];
+      for (var ci = 0; ci < dists.length; ci++) {
+        final hold = tableHolds.length > ci ? tableHolds[ci] : double.nan;
+        final valStr = (hold.isNaN || dists[ci] < 0)
+            ? '—'
+            : Angular.radian(hold).in_(u).toFixedSafe(acc);
+        cells.add(FormattedCell(value: valStr, isTargetColumn: ci == targetCol));
+      }
+      return FormattedRow(label: 'Drop', unitSymbol: unitLabel, cells: cells);
+    }
+
+    FormattedRow buildTrajRow(
+      (String, String, double? Function(bclibc.TrajectoryData), int) rd,
+    ) {
       final cells = <FormattedCell>[];
       for (var ci = 0; ci < dists.length; ci++) {
         final p = points[ci];
         final valStr = p == null
             ? '—'
-            : (rd.$3(p) ?? double.nan).toStringAsFixed(rd.$4);
-        cells.add(
-          FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
-        );
+            : (rd.$3(p) ?? double.nan).toFixedSafe(rd.$4);
+        cells.add(FormattedCell(value: valStr, isTargetColumn: ci == targetCol));
       }
       return FormattedRow(label: rd.$1, unitSymbol: rd.$2, cells: cells);
-    }).toList();
+    }
+
+    // Row order: Height, Elev MIL, Elev MOA, Drop MIL, Drop MOA,
+    //            Windage (distance), Velocity, Energy, Time
+    final rows = [
+      buildTrajRow(trajRowDefs[0]), // Height
+      buildTrajRow(trajRowDefs[1]), // Elev MIL
+      buildTrajRow(trajRowDefs[2]), // Elev MOA
+      buildDropRow('MIL', Unit.mil, milAcc),
+      buildDropRow('MOA', Unit.moa, moaAcc),
+      buildTrajRow(trajRowDefs[3]), // Windage (distance)
+      buildTrajRow(trajRowDefs[4]), // Velocity
+      buildTrajRow(trajRowDefs[5]), // Energy
+      buildTrajRow(trajRowDefs[6]), // Time
+    ];
 
     return FormattedTableData(
       distanceHeaders: distHeaders,
@@ -535,9 +550,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       energy: fmt.energy(Energy(point.energyJ, Unit.joule)),
       time: fmt.time(point.time),
       height: fmt.drop(Distance(point.heightCm / 100.0, Unit.meter)),
-      drop: '${point.dropAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
+      drop: '${point.dropAngleMil.toFixedSafe(2)} ${fmt.adjustmentSymbol}',
       windage:
-          '${point.windageAngleMil.toStringAsFixed(2)} ${fmt.adjustmentSymbol}',
+          '${point.windageAngleMil.toFixedSafe(2)} ${fmt.adjustmentSymbol}',
       mach: fmt.mach(point.mach),
     );
   }
