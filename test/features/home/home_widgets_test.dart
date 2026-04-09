@@ -1,7 +1,10 @@
+// ignore_for_file: unused_element
 // Widget tests for HomeChartPage, HomeTablePage, HomeReticlePage (Phase 4).
 //
 // Uses homeVmProvider overrides — no FFI, no real ballistics.
 //   flutter test test/home_widgets_test.dart
+
+import 'dart:async';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +20,7 @@ import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
 import 'package:ebalistyka/features/home/widgets/trajectory_chart.dart';
 
-// ── Fake ViewModel ────────────────────────────────────────────────────────────
+// ── Fake ViewModels ───────────────────────────────────────────────────────────
 
 class _FakeHomeVM extends HomeViewModel {
   final HomeUiState _initialState;
@@ -30,7 +33,19 @@ class _FakeHomeVM extends HomeViewModel {
   Future<void> recalculate() async {}
 
   @override
-  void selectChartPoint(int index) {} // no-op; tested separately in home_vm_test
+  void selectChartPoint(int index) {}
+}
+
+// VM whose build() future never completes → vmAsync.isLoading stays true.
+class _NeverReadyHomeVM extends HomeViewModel {
+  @override
+  Future<HomeUiState> build() => Completer<HomeUiState>().future;
+
+  @override
+  Future<void> recalculate() async {}
+
+  @override
+  void selectChartPoint(int index) {}
 }
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -165,27 +180,31 @@ Widget _scoped(HomeUiState state, Widget child) => ProviderScope(
   child: MaterialApp(home: Scaffold(body: child)),
 );
 
+Widget _scopedLoading(Widget child) => ProviderScope(
+  overrides: [homeVmProvider.overrideWith(() => _NeverReadyHomeVM())],
+  child: MaterialApp(home: Scaffold(body: child)),
+);
+
 // ── HomeChartPage ─────────────────────────────────────────────────────────────
 
 void main() {
   group('HomeChartPage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeChartPage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeChartPage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(TrajectoryChart), findsNothing);
     });
 
-    testWidgets('shows spinner for HomeUiError', (tester) async {
+    testWidgets('shows error message for HomeUiError', (tester) async {
       await tester.pumpWidget(
         _scoped(const HomeUiError('oops'), const HomeChartPage()),
       );
       await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Error: oops'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('shows No data when chart has no points', (tester) async {
@@ -263,10 +282,8 @@ void main() {
   // ── HomeTablePage ──────────────────────────────────────────────────────────
 
   group('HomeTablePage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeTablePage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeTablePage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -332,10 +349,8 @@ void main() {
   // ── HomeReticlePage ────────────────────────────────────────────────────────
 
   group('HomeReticlePage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeReticlePage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeReticlePage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

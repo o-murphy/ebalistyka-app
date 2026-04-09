@@ -98,8 +98,8 @@ class _ProfileCardState extends State<ProfileCard> {
                             child: _ProfileControlTile(
                               profileId: data.id,
                               profileName: data.name,
-                              hasAmmo: data.hasAmmo,
-                              hasSight: data.hasSight,
+                              hasAmmo: data.ammoId != null,
+                              hasSight: data.sightId != null,
                               onDuplicate: onDuplicate,
                               onExport: onExport,
                               onEditWeapon: onEditWeapon,
@@ -109,8 +109,8 @@ class _ProfileCardState extends State<ProfileCard> {
                           ),
                           // Використання функцій для побудови секцій
                           _buildWeaponSection(context),
-                          if (data.hasAmmo) _buildAmmoSection(context),
-                          if (data.hasAmmo) _buildSightSection(context),
+                          if (data.ammoId != null) _buildAmmoSection(context),
+                          if (data.sightId != null) _buildSightSection(context),
                         ],
                       ),
                     ),
@@ -120,7 +120,7 @@ class _ProfileCardState extends State<ProfileCard> {
             ),
           ),
           // ── Bottom action ───────────────────────────────────────────────
-          if (data.hasAmmo && data.hasSight)
+          if (data.ammoId != null && data.sightId != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               child: Align(
@@ -202,7 +202,7 @@ class _ProfileCardState extends State<ProfileCard> {
         const Divider(height: 1),
         ListSectionTile(
           "Ammo",
-          onTap: () => context.go(Routes.profileEditAmmo),
+          onTap: () => context.push(Routes.profileEditAmmo, extra: data.ammoId),
           trailing: Icon(
             Icons.edit_outlined,
             size: 16,
@@ -254,9 +254,8 @@ class _ProfileCardState extends State<ProfileCard> {
         const Divider(height: 1),
         ListSectionTile(
           "Sight",
-          onTap: () => context.go(
-            Routes.profileEditAmmo,
-          ), // Можливо має бути Routes.profileEditSight?
+          onTap: () =>
+              context.push(Routes.profileEditSight, extra: data.sightId),
           trailing: Icon(
             Icons.edit_outlined,
             size: 16,
@@ -376,6 +375,7 @@ class _ProfileControlTile extends StatelessWidget {
               top: 8,
               left: 8,
               child: _ButtonWithHint(
+                heroTag: 'sight_btn_$profileId',
                 hasValue: hasSight,
                 onPressed: () =>
                     context.push(Routes.sightSelect, extra: profileId),
@@ -398,6 +398,7 @@ class _ProfileControlTile extends StatelessWidget {
               bottom: 8,
               right: 8,
               child: _ButtonWithHint(
+                heroTag: 'ammo_btn_$profileId',
                 hasValue: hasAmmo,
                 onPressed: () =>
                     context.push(Routes.ammoSelect, extra: profileId),
@@ -424,6 +425,7 @@ class _ProfileControlTile extends StatelessWidget {
 // ── Віджет: кнопка + текстовий хінт поряд (не на кнопці!) ─────────────────────
 class _ButtonWithHint extends StatelessWidget {
   const _ButtonWithHint({
+    required this.heroTag,
     required this.hasValue,
     required this.onPressed,
     required this.buttonIcon,
@@ -435,6 +437,7 @@ class _ButtonWithHint extends StatelessWidget {
     required this.hintPosition,
   });
 
+  final Object heroTag;
   final bool hasValue;
   final VoidCallback onPressed;
   final IconData buttonIcon;
@@ -448,6 +451,7 @@ class _ButtonWithHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = FloatingActionButton(
+      heroTag: heroTag,
       mini: true,
       onPressed: onPressed,
       backgroundColor: buttonColor,

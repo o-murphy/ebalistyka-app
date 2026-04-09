@@ -35,7 +35,8 @@ class CreateAmmoWizardScreen extends StatelessWidget {
 }
 
 class AmmoEditScreen extends StatelessWidget {
-  const AmmoEditScreen({super.key});
+  const AmmoEditScreen({this.ammoId, super.key});
+  final int? ammoId;
   @override
   Widget build(BuildContext context) => const StubScreen(title: 'Edit Ammo');
 }
@@ -56,7 +57,8 @@ class SelectSightCollectionScreen extends StatelessWidget {
 }
 
 class SightEditScreen extends StatelessWidget {
-  const SightEditScreen({super.key});
+  const SightEditScreen({this.sightId, super.key});
+  final int? sightId;
   @override
   Widget build(BuildContext context) => const StubScreen(title: 'Edit Sight');
 }

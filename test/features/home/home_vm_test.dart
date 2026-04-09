@@ -455,9 +455,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // build() повертає HomeUiLoading — чекаємо поки Future resolve
+      // build() повертає HomeUiNoData поки не викликано recalculate
       final state = await container.read(homeVmProvider.future);
-      expect(state, isA<HomeUiLoading>());
+      expect(state, isA<HomeUiNoData>());
     });
   });
 }

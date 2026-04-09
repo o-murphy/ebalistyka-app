@@ -27,7 +27,8 @@ class _TrackingHomeVM extends HomeViewModel {
   int recalcCount = 0;
 
   @override
-  Future<HomeUiState> build() async => const HomeUiLoading();
+  Future<HomeUiState> build() async =>
+      const HomeUiNoData('Select a profile to start');
 
   @override
   Future<void> recalculate() async {

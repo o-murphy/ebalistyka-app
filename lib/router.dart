@@ -149,11 +149,13 @@ final appRouter = GoRouter(
                     ),
                     GoRoute(
                       path: 'ammo-edit',
-                      builder: (_, _) => const AmmoEditScreen(),
+                      builder: (_, state) =>
+                          AmmoEditScreen(ammoId: state.extra as int?),
                     ),
                     GoRoute(
                       path: 'sight-edit',
-                      builder: (_, _) => const SightEditScreen(),
+                      builder: (_, state) =>
+                          SightEditScreen(sightId: state.extra as int?),
                     ),
                   ],
                 ),

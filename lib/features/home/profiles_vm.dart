@@ -19,15 +19,15 @@ class ProfileCardData {
     required this.weaponCaliber,
     required this.twist,
     required this.rightHanded,
+    this.ammoId,
     required this.ammoCaliber,
     required this.cartridgeName,
     required this.projectileName,
     required this.dragModel,
     required this.muzzleVelocity,
     required this.weight,
+    this.sightId,
     required this.sightName,
-    required this.hasAmmo,
-    required this.hasSight,
   });
 
   final String id;
@@ -36,15 +36,15 @@ class ProfileCardData {
   final String weaponCaliber;
   final String twist;
   final bool rightHanded;
+  final int? ammoId;
   final String ammoCaliber;
   final String cartridgeName;
   final String projectileName;
   final String dragModel;
   final String muzzleVelocity;
   final String weight;
+  final int? sightId;
   final String sightName;
-  final bool hasAmmo;
-  final bool hasSight;
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -109,15 +109,15 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
           ? formatter.twist(weapon.twist)
           : '—',
       rightHanded: weapon?.isRightHandTwist ?? true,
+      ammoId: ammo?.id,
       ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
-      cartridgeName: ammo?.name ?? "—",
+      cartridgeName: ammo?.name ?? '—',
       projectileName: ammo?.projectileName ?? '—',
       dragModel: ammo?.dragModelFormattedInfo ?? '—',
       muzzleVelocity: ammo != null ? formatter.velocity(ammo.mv) : '—',
       weight: ammo != null ? formatter.weight(ammo.weight) : '—',
+      sightId: sight?.id,
       sightName: sight?.name ?? 'Not selected',
-      hasAmmo: ammo != null,
-      hasSight: sight != null,
     );
   }
 

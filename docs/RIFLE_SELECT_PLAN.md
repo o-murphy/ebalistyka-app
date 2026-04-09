@@ -225,16 +225,42 @@ ProfileCard
                   → stream auto-triggers ProfilesViewModel rebuild
 ```
 
-### Flow 5: Duplicate Profile
+✅ Реалізовано.
+
+### Flow 5: Edit Ammo properties
 
 ```
-FAB (or ProfileCard PopupMenu) → "Duplicate"
+ProfileCard
+  └─ "Ammo" section tap (ListSectionTile)  ← visible only if ammo selected
+      └─ AmmoEditScreen(ammoId: int)        ← /home/profiles/ammo-edit
+          └─ Save → appStateProvider.saveAmmo
+```
+
+🔧 Роутинг реалізований (ammoId передається), AmmoEditScreen — stub.
+
+### Flow 6: Edit Sight properties
+
+```
+ProfileCard
+  └─ "Sight" section tap (ListSectionTile)  ← visible only if sight selected
+      └─ SightEditScreen(sightId: int)       ← /home/profiles/sight-edit
+          └─ Save → appStateProvider.saveSight
+```
+
+🔧 Роутинг реалізований (sightId передається), SightEditScreen — stub.
+
+### Flow 7: Duplicate Profile
+
+```
+ProfileCard PopupMenu → "Duplicate"
   └─ Введення нової назви
       └─ Копія Profile з новим id
          weapon → копіюється (новий Weapon entity з тими самими полями)
          ammo   → та сама ToOne reference
          sight  → та сама ToOne reference
 ```
+
+❌ Не реалізовано (TODO).
 
 ---
 
@@ -269,31 +295,32 @@ FAB (or ProfileCard PopupMenu) → "Duplicate"
 ```
 ┌──────────────────────────────────────┐
 │  [_ProfileControlTile]               │  ← sight FAB (top-left) + ammo FAB (bottom-right)
-│  sight btn ↖          ammo btn ↘    │    іконки відображають loaded/unloaded стан
+│  sight btn ↖          ammo btn ↘    │    кнопки завжди є; hint "Select X" якщо не вибрано
 ├──────────────────────────────────────┤
 │  ── Weapon ──────────  [edit ›]      │
 │  Caliber     .338"                   │
 │  Twist       1:10"  right            │
 ├──────────────────────────────────────┤
-│  ── Ammo ───────────  [edit ›]       │
-│  .338LM UKROP 250GR SMK              │
+│  ── Ammo ───────────  [edit ›]       │  ← секція видима тільки якщо ammoId != null
+│  .338LM UKROP 250GR SMK              │    [edit ›] → AmmoEditScreen(ammoId)
 │  G7 · BC 0.314 · 888 m/s            │
 ├──────────────────────────────────────┤
-│  ── Sight ──────────  [edit ›]       │
-│  Generic Long-Range Scope            │
+│  ── Sight ──────────  [edit ›]       │  ← секція видима тільки якщо sightId != null
+│  Generic Long-Range Scope            │    [edit ›] → SightEditScreen(sightId)
 ├──────────────────────────────────────┤
-│         [ Select / Go to calc ]      │
+│  [ Select / Go to calc ]             │  ← кнопка якщо ammoId != null && sightId != null
+│  або banner "Select ammo and sight"  │  ← banner інакше
 └──────────────────────────────────────┘
 ```
 
-Per-card actions (Duplicate / Export / Remove) — у `PopupMenuButton` в заголовку.
+Per-card actions (Duplicate / Export / Rename / Remove) — у bottom action sheet через ⋮ кнопку в `_ProfileControlTile`.
 
 ---
 
 ## ProfilesScreen UI
 
 - **FAB** (одна кнопка `+`) → bottom sheet з Add flow
-- **Per-card actions** → `PopupMenuButton` (⋮) на картці: Duplicate, Export, Remove
+- **Per-card actions** → bottom action sheet через ⋮ кнопку (`_ProfileControlTile`): Duplicate, Export, Rename, Remove
 - **PageView** з `PageDotsIndicator`
 - Активний профіль — перша сторінка (`_sortProfiles`)
 
@@ -324,9 +351,9 @@ ProfilesScreen  (/home/profiles)
 
 ## IncompleteBanner / Validation
 
-1. **Wizard validation** — підсвітка обов'язкових і некоректних полів прямо у wizard screens.
-2. **ProfileCard indicator** — якщо ammo або sight не вибрані → індикатор в заголовку картки.
-3. **Home / Conditions / Tables banner** — `IncompleteBanner` якщо `!profile.isReadyForCalculation`.
+1. **Wizard validation** — підсвітка обов'язкових полів у wizard screens. `touched` флаг: помилка тільки після першої спроби Save, потім — реактивна. ✅ Реалізовано для WeaponWizardScreen і `showTextInputDialog`.
+2. **ProfileCard bottom** — `ColoredBox(errorContainer)` з текстом якщо `ammoId == null || sightId == null`, інакше FilledButton. ✅ Реалізовано.
+3. **Home / Tables** — `HomeUiNoData(message)` / `TrajectoryTablesUiEmpty(message)` замість спінера. ✅ Реалізовано через `EmptyStatePlaceholder`.
 
 ---
 
@@ -356,8 +383,11 @@ ProfilesScreen  (/home/profiles)
 | `lib/core/a7p/a7p_parser.dart` | ✅ | proto → OB entities |
 | `lib/core/collection/collection_parser.dart` | ✅ | JSON → OB entities |
 | `lib/features/home/profiles_vm.dart` | ✅ | watches appStateProvider |
-| `lib/features/home/sub_screens/profiles_screen.dart` | 🔧 | |
-| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | 🔧 | _ProfileControlTile interactive buttons |
+| `lib/features/home/sub_screens/my_profiles_screen.dart` | ✅ | ProfilesScreen з PageView, paging logic, FAB, actions |
+| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | _ProfileControlTile з ammo/sight FABs + hints |
+| `lib/features/home/sub_screens/my_ammo_screen.dart` | ✅ | Вибір ammo для профілю |
+| `lib/features/home/sub_screens/my_sights_screen.dart` | ✅ | Вибір sight для профілю |
+| `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | |
 | `lib/router.dart` | ✅ | Routes константи |
 | `assets/json/collection.json` | ✅ | Вбудована колекція |
@@ -366,12 +396,11 @@ ProfilesScreen  (/home/profiles)
 
 ## TODO
 
-- [ ] `_ProfileControlTile` — interactive ammo/sight buttons (loaded/unloaded state)
-- [ ] FAB logic — TBD (expandable або simple + → bottom sheet)
-- [ ] `ProfileAddScreen` — реалізувати (зараз stub)
-- [ ] `MyAmmoScreen` — реалізувати
-- [ ] `MySightsScreen` — реалізувати
+- [ ] `AmmoEditScreen` — реалізувати (зараз stub, приймає `ammoId: int?`)
+- [ ] `SightEditScreen` — реалізувати (зараз stub, приймає `sightId: int?`)
+- [ ] `AmmoWizardScreen` / `CreateAmmoWizardScreen` — реалізувати
+- [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
+- [ ] `SelectWeaponCollectionScreen` — реалізувати
+- [ ] `SelectSightCollectionScreen` / `CreateSightWizardScreen` — реалізувати
 - [ ] Duplicate profile — реалізувати (weapon копіюється, ammo/sight — ті самі refs)
 - [ ] Export / Import profile — формат TBD
-- [ ] Wizard validation — підсвітка обов'язкових полів
-- [ ] `IncompleteBanner` на Home / Conditions / Tables
