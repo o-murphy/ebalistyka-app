@@ -25,6 +25,8 @@ class ProfileCardData {
     required this.muzzleVelocity,
     required this.weight,
     required this.sightName,
+    required this.hasAmmo,
+    required this.hasSight,
   });
 
   final String id;
@@ -39,6 +41,8 @@ class ProfileCardData {
   final String muzzleVelocity;
   final String weight;
   final String sightName;
+  final bool hasAmmo;
+  final bool hasSight;
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -109,6 +113,8 @@ class ProfilesViewModel extends AsyncNotifier<ProfilesUiState> {
       muzzleVelocity: ammo != null ? formatter.velocity(ammo.mv) : '—',
       weight: ammo != null ? formatter.weight(ammo.weight) : '—',
       sightName: sight?.name ?? 'Not selected',
+      hasAmmo: ammo != null,
+      hasSight: ammo != null,
     );
   }
 

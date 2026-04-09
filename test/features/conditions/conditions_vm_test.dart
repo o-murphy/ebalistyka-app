@@ -302,7 +302,8 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           shotContextProvider.overrideWith(
-            () => _FakeShotContextNotifier(_makeProfile(), ShootingConditions()),
+            () =>
+                _FakeShotContextNotifier(_makeProfile(), ShootingConditions()),
           ),
           unitSettingsProvider.overrideWith((ref) => UnitSettings()),
           shotConditionsProvider.overrideWith(

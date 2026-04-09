@@ -20,7 +20,7 @@ const _convertors = [
     label: 'Temperature',
     icon: Icons.device_thermostat_outlined,
   ),
-  (type: 'angular', label: 'Angles', icon: Icons.square_foot),
+  (type: 'angular', label: 'Angles', icon: Icons.square_foot_outlined),
   (type: 'torque', label: 'Torque', icon: Icons.settings_outlined),
 ];
 

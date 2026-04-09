@@ -32,7 +32,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(_languageName(settings.languageCode)),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right_outlined),
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
@@ -58,7 +58,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.straighten_outlined),
             title: const Text('Units of Measurement'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right_outlined),
             dense: true,
             onTap: () => context.push(Routes.settingsUnits),
           ),
@@ -70,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.tune_outlined),
             title: const Text('Adjustment Display'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right_outlined),
             dense: true,
             onTap: () => context.push(Routes.settingsAdjustment),
           ),
@@ -134,21 +134,21 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.code_outlined),
             title: const Text('GitHub'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
             dense: true,
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('Privacy Policy'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
             dense: true,
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: const Text('Terms of Use'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
             dense: true,
             onTap: () {},
           ),
@@ -158,7 +158,7 @@ class SettingsScreen extends ConsumerWidget {
           // ── About ──────────────────────────────────────────────────────
           ListSectionTile('About'),
           ListTile(
-            leading: const Icon(Icons.info_outline),
+            leading: const Icon(Icons.info_outlined),
             title: const Text('Version'),
             trailing: Text('1.0.0', style: tt.bodySmall),
             dense: true,
@@ -166,7 +166,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: const Text('Changelog'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
             dense: true,
             onTap: () {},
           ),

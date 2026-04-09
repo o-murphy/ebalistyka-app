@@ -26,6 +26,64 @@ class ProfileCard extends StatelessWidget {
   final VoidCallback onExport;
   final VoidCallback onRemove;
 
+  void _showEditActionsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Profile Actions',
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.copy_outlined),
+              title: const Text('Duplicate'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onDuplicate();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.file_upload_outlined),
+              title: const Text('Export'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onExport();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit Weapon'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onEditWeapon();
+              },
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('Remove', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(ctx);
+                onRemove();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -42,18 +100,30 @@ class ProfileCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _ProfileTitleRow(
-              title: data.name,
-              isActive: isActive,
-              onDuplicate: onDuplicate,
-              onExport: onExport,
-              onRemove: onRemove,
+            // Простий рядок з назвою без PopupMenuButton
+            Row(
+              children: [
+                Expanded(
+                  child: Text(data.name, style: theme.textTheme.titleLarge),
+                ),
+                if (isActive)
+                  Icon(Icons.check_circle_outline, color: colorScheme.primary),
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
               child: ListView(
                 children: [
-                  _ProfileControlTile(profileId: data.id),
+                  _ProfileControlTile(
+                    profileId: data.id,
+                    profileName: data.name,
+                    hasAmmo: data.hasAmmo,
+                    hasSight: data.hasSight,
+                    onDuplicate: onDuplicate,
+                    onExport: onExport,
+                    onEditWeapon: onEditWeapon,
+                    onRemove: onRemove,
+                  ),
                   ListSectionTile(
                     "Weapon",
                     onTap: onEditWeapon,
@@ -159,81 +229,143 @@ class ProfileCard extends StatelessWidget {
   }
 }
 
-enum _ProfileMenuAction { duplicate, export, remove }
-
-class _ProfileTitleRow extends StatelessWidget {
-  const _ProfileTitleRow({
-    required this.title,
-    required this.isActive,
+class _ProfileControlTile extends StatelessWidget {
+  const _ProfileControlTile({
+    required this.profileId,
+    required this.profileName,
+    required this.hasAmmo,
+    required this.hasSight,
     required this.onDuplicate,
     required this.onExport,
+    required this.onEditWeapon,
     required this.onRemove,
   });
 
-  final String title;
-  final bool isActive;
+  final String profileId;
+  final String profileName;
+  final bool hasAmmo;
+  final bool hasSight;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
+  final VoidCallback onEditWeapon;
   final VoidCallback onRemove;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Row(
-      children: [
-        Expanded(child: Text(title, style: theme.textTheme.titleLarge)),
-        if (isActive) Icon(Icons.check_circle, color: colorScheme.primary),
-        PopupMenuButton<_ProfileMenuAction>(
-          icon: const Icon(Icons.more_vert),
-          onSelected: (action) {
-            switch (action) {
-              case _ProfileMenuAction.duplicate:
-                onDuplicate();
-              case _ProfileMenuAction.export:
-                onExport();
-              case _ProfileMenuAction.remove:
-                onRemove();
-            }
-          },
-          itemBuilder: (_) => const [
-            PopupMenuItem(
-              value: _ProfileMenuAction.duplicate,
-              child: ListTile(
-                leading: Icon(Icons.copy_outlined),
-                title: Text('Duplicate'),
-                dense: true,
-              ),
-            ),
-            PopupMenuItem(
-              value: _ProfileMenuAction.export,
-              child: ListTile(
-                leading: Icon(Icons.file_upload_outlined),
-                title: Text('Export'),
-                dense: true,
-              ),
-            ),
-            PopupMenuDivider(),
-            PopupMenuItem(
-              value: _ProfileMenuAction.remove,
-              child: ListTile(
-                leading: Icon(Icons.delete_outline),
-                title: Text('Remove'),
-                dense: true,
-              ),
-            ),
-          ],
+  void _showEditProfileNameDialog(BuildContext context) {
+    final controller = TextEditingController(text: profileName);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Profile Name'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Profile name',
+            border: OutlineInputBorder(),
+          ),
         ),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              // TODO: зберегти нове ім'я
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
   }
-}
 
-class _ProfileControlTile extends StatelessWidget {
-  const _ProfileControlTile({required this.profileId});
-
-  final String profileId;
+  void _showEditActionsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Edit Profile',
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+            ),
+            const Divider(height: 1),
+            // ListTile(
+            //   leading: const Icon(Icons.my_location_outlined),
+            //   title: const Text('Select Sight'),
+            //   trailing: !hasSight
+            //       ? const Icon(
+            //           Icons.warning_amber_outlined,
+            //           color: Colors.orange,
+            //         )
+            //       : null,
+            //   onTap: () {
+            //     Navigator.pop(ctx);
+            //     context.push(Routes.sightSelect);
+            //   },
+            // ),
+            // ListTile(
+            //   leading: const Icon(Icons.rocket_launch_outlined),
+            //   title: const Text('Select Ammo'),
+            //   trailing: !hasAmmo
+            //       ? const Icon(
+            //           Icons.warning_amber_outlined,
+            //           color: Colors.orange,
+            //         )
+            //       : null,
+            //   onTap: () {
+            //     Navigator.pop(ctx);
+            //     context.push(Routes.ammoSelect);
+            //   },
+            // ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.copy_outlined),
+              title: const Text('Duplicate'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onDuplicate();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.file_upload_outlined),
+              title: const Text('Export'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onExport();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit profile name'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showEditProfileNameDialog;
+              },
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('Remove', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(ctx);
+                onRemove();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,12 +381,36 @@ class _ProfileControlTile extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.control_point, size: 48),
+                  Icon(Icons.control_point_outlined, size: 48),
                   SizedBox(height: 8),
                   Text('Profile Controls Area'),
                 ],
               ),
             ),
+
+            // Top right button (edit button) - всі функції тут
+            Positioned(
+              top: 8,
+              right: 8,
+              child: FloatingActionButton(
+                mini: true,
+                heroTag: 'edit_btn_$profileId',
+                onPressed: () => _showEditActionsSheet(context),
+                backgroundColor: colorScheme.secondaryContainer,
+                foregroundColor: colorScheme.onSecondaryContainer,
+                child: const Icon(Icons.more_vert_outlined, size: 20),
+              ),
+            ),
+
+            if (!hasSight)
+              const Positioned(
+                top: 16,
+                left: 56,
+                child: Text(
+                  "Select sight first",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
 
             // Top left button
             Positioned(
@@ -264,11 +420,25 @@ class _ProfileControlTile extends StatelessWidget {
                 mini: true,
                 heroTag: 'sight_btn_$profileId',
                 onPressed: () => context.push(Routes.sightSelect),
-                backgroundColor: colorScheme.secondaryContainer,
-                foregroundColor: colorScheme.onSecondaryContainer,
+                backgroundColor: hasSight
+                    ? colorScheme.secondaryContainer
+                    : colorScheme.tertiaryContainer,
+                foregroundColor: hasSight
+                    ? colorScheme.onSecondaryContainer
+                    : colorScheme.onTertiaryContainer,
                 child: const Icon(Icons.my_location_outlined, size: 20),
               ),
             ),
+
+            if (!hasAmmo)
+              const Positioned(
+                bottom: 16,
+                right: 56,
+                child: Text(
+                  "Select ammo first",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
 
             // Bottom right button
             Positioned(
@@ -278,8 +448,12 @@ class _ProfileControlTile extends StatelessWidget {
                 mini: true,
                 heroTag: 'cartridge_btn_$profileId',
                 onPressed: () => context.push(Routes.ammoSelect),
-                backgroundColor: colorScheme.primaryContainer,
-                foregroundColor: colorScheme.onPrimaryContainer,
+                backgroundColor: hasAmmo
+                    ? colorScheme.primaryContainer
+                    : colorScheme.tertiaryContainer,
+                foregroundColor: hasAmmo
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onTertiaryContainer,
                 child: const Icon(Icons.rocket_launch_outlined, size: 20),
               ),
             ),

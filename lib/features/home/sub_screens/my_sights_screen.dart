@@ -9,13 +9,60 @@ import 'package:flutter/material.dart' hide Velocity;
 class MySightsCollectionScreen extends ConsumerWidget {
   const MySightsCollectionScreen({super.key});
 
-  Widget _buildButton(String text) => SizedBox(
-    width: double.infinity,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: FilledButton(onPressed: () => debugPrint(text), child: Text(text)),
-    ),
-  );
+  // Функція для показу bottom sheet
+  Future<void> _showAddSightSheet(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Add Sight',
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text('Create new'),
+              onTap: () {
+                Navigator.pop(ctx);
+                debugPrint("Create new sight");
+                // TODO: додати навігацію на екран створення
+                // context.push(Routes.sightCreate);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.folder_open_outlined),
+              title: const Text('Select from collection'),
+              onTap: () {
+                Navigator.pop(ctx);
+                debugPrint("Select sight from collection");
+                // TODO: додати логіку вибору з колекції
+              },
+            ),
+            // ListTile(
+            //   leading: const Icon(Icons.file_open_outlined),
+            //   title: const Text('Import from file'),
+            //   onTap: () {
+            //     Navigator.pop(ctx);
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       const SnackBar(content: Text('Import not yet available')),
+            //     );
+            //   },
+            // ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,6 +72,11 @@ class MySightsCollectionScreen extends ConsumerWidget {
     return BaseScreen(
       title: "My Sights",
       isSubscreen: true,
+      floatingActionButton: FloatingActionButton(
+        heroTag: "generalFab",
+        onPressed: () => _showAddSightSheet(context), // викликає bottom sheet
+        child: const Icon(Icons.add_outlined),
+      ),
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
@@ -42,14 +94,6 @@ class MySightsCollectionScreen extends ConsumerWidget {
                 ),
               )
               .toList(),
-          bottom: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildButton("Select sight from collection"),
-              const SizedBox(height: 8),
-              _buildButton("Create sight"),
-            ],
-          ),
         ),
       ),
     );

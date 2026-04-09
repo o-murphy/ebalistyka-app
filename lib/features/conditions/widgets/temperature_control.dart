@@ -66,7 +66,7 @@ class TempControl extends StatelessWidget {
               content: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(Icons.remove_outlined),
                     onPressed: () => setState(() => step(-1)),
                   ),
                   Expanded(
@@ -102,7 +102,7 @@ class TempControl extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add_outlined),
                     onPressed: () => setState(() => step(1)),
                   ),
                 ],
@@ -167,7 +167,7 @@ class TempControl extends StatelessWidget {
         ),
         const SizedBox(width: 32),
         IconButton.filledTonal(
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add_outlined),
           onPressed: () =>
               onChanged((rawValue + _fc.stepRaw).clamp(_fc.minRaw, _fc.maxRaw)),
           style: IconButton.styleFrom(minimumSize: const Size(44, 44)),

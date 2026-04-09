@@ -34,7 +34,7 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: showBack
           ? IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back_outlined),
               onPressed: () =>
                   isSubscreen ? context.pop() : context.go(Routes.home),
               tooltip: 'Back',

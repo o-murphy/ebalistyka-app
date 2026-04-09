@@ -84,7 +84,9 @@ _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
     tableStepM,
     cachedZeroElevRad,
   ) = args;
-  final internalStepM = stepM < 0.1524 ? stepM : 0.1524; // max 1/2 ft for dense interpolation
+  final internalStepM = stepM < 0.1524
+      ? stepM
+      : 0.1524; // max 1/2 ft for dense interpolation
   try {
     final calc = bclibc.Calculator();
     double? freshZeroElevRad;
@@ -270,10 +272,12 @@ class BallisticsServiceImpl implements BallisticsService {
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
     final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
 
-    final (hit, freshZero, holdRad, tableHolds) = await compute<
-      _HomeCalcArgs,
-      _HomeCalcResult
-    >(_runHomeCalculation, (
+    final (
+      hit,
+      freshZero,
+      holdRad,
+      tableHolds,
+    ) = await compute<_HomeCalcArgs, _HomeCalcResult>(_runHomeCalculation, (
       zeroShot,
       currentShot,
       zeroDistance,

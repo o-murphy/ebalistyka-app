@@ -17,14 +17,11 @@ class ProfilesScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
-  final _fabAnimValue = ValueNotifier<double>(0.0);
-  VoidCallback _closeFab = () {};
   final _pageController = PageController();
   int _currentPage = 0;
 
   @override
   void dispose() {
-    _fabAnimValue.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -185,40 +182,23 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         final profile = _currentProfile(state);
         return BaseScreen(
           title: _titleFor(state),
-          floatingActionButton: _ExpandableFab(
-            animationNotifier: _fabAnimValue,
-            onRegisterClose: (fn) => _closeFab = fn,
-            onAdd: _showAddSheet,
-            onDuplicate: () => _onDuplicate(profile),
-            onRemove: () => _onRemove(profile),
-            onExport: () => _onExport(profile),
+          floatingActionButton: FloatingActionButton(
+            heroTag: "generalFab",
+            onPressed: _showAddSheet,
+            child: const Icon(Icons.add_outlined),
           ),
           body: state is ProfilesReady && state.profiles.isNotEmpty
-              ? Stack(
-                  children: [
-                    _ProfilePageView(
-                      profiles: state.profiles,
-                      activeProfileId: state.activeProfileId,
-                      pageController: _pageController,
-                      currentPage: _currentPage,
-                      onPageChanged: _onPageChanged,
-                      onSelect: _onSelect,
-                      onEditRifle: _onEditRifle,
-                    ),
-                    ValueListenableBuilder<double>(
-                      valueListenable: _fabAnimValue,
-                      builder: (context, value, child) {
-                        if (value == 0.0) return const SizedBox.shrink();
-                        return GestureDetector(
-                          onTap: () => _closeFab(),
-                          child: ColoredBox(
-                            color: Colors.black.withValues(alpha: value * 0.4),
-                            child: const SizedBox.expand(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+              ? _ProfilePageView(
+                  profiles: state.profiles,
+                  activeProfileId: state.activeProfileId,
+                  pageController: _pageController,
+                  currentPage: _currentPage,
+                  onPageChanged: _onPageChanged,
+                  onSelect: _onSelect,
+                  onEditRifle: _onEditRifle,
+                  onDuplicate: () => _onDuplicate(profile),
+                  onExport: () => _onExport(profile),
+                  onRemove: () => _onRemove(profile),
                 )
               : const Center(child: Text('No profiles. Tap + to add one.')),
         );
@@ -238,6 +218,9 @@ class _ProfilePageView extends StatelessWidget {
     required this.onPageChanged,
     required this.onSelect,
     required this.onEditRifle,
+    required this.onDuplicate,
+    required this.onExport,
+    required this.onRemove,
   });
 
   final List<ProfileCardData> profiles;
@@ -247,6 +230,9 @@ class _ProfilePageView extends StatelessWidget {
   final void Function(int) onPageChanged;
   final void Function(ProfileCardData) onSelect;
   final void Function(ProfileCardData) onEditRifle;
+  final VoidCallback onDuplicate;
+  final VoidCallback onExport;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -265,9 +251,9 @@ class _ProfilePageView extends StatelessWidget {
                       isActive: p.id == activeProfileId,
                       onSelect: () => onSelect(p),
                       onEditWeapon: () => onEditRifle(p),
-                      onDuplicate: () {},
-                      onExport: () {},
-                      onRemove: () {},
+                      onDuplicate: onDuplicate,
+                      onExport: onExport,
+                      onRemove: onRemove,
                     ),
                   ),
                 )
@@ -287,183 +273,6 @@ class _ProfilePageView extends StatelessWidget {
           },
         ),
         const SizedBox(height: 8),
-      ],
-    );
-  }
-}
-
-// ── Expandable FAB ────────────────────────────────────────────────────────────
-
-class _ExpandableFab extends StatefulWidget {
-  const _ExpandableFab({
-    required this.animationNotifier,
-    required this.onRegisterClose,
-    required this.onAdd,
-    required this.onDuplicate,
-    required this.onRemove,
-    required this.onExport,
-  });
-
-  final ValueNotifier<double> animationNotifier;
-  final void Function(VoidCallback) onRegisterClose;
-  final VoidCallback onAdd;
-  final VoidCallback onDuplicate;
-  final VoidCallback onRemove;
-  final VoidCallback onExport;
-
-  @override
-  State<_ExpandableFab> createState() => _ExpandableFabState();
-}
-
-class _ExpandableFabState extends State<_ExpandableFab>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _expandAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-    _expandAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.fastOutSlowIn,
-      reverseCurve: Curves.easeOutQuad,
-    );
-    _expandAnimation.addListener(_onAnimationTick);
-    widget.onRegisterClose(close);
-  }
-
-  @override
-  void didUpdateWidget(_ExpandableFab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    widget.onRegisterClose(close);
-  }
-
-  void _onAnimationTick() {
-    widget.animationNotifier.value = _expandAnimation.value;
-  }
-
-  @override
-  void dispose() {
-    _expandAnimation.removeListener(_onAnimationTick);
-    widget.animationNotifier.value = 0.0;
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    if (_controller.isDismissed) {
-      _controller.forward();
-    } else {
-      _controller.reverse();
-    }
-  }
-
-  void _collapse() => _controller.reverse();
-
-  void close() => _controller.reverse();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        FadeTransition(
-          opacity: _expandAnimation,
-          child: AnimatedBuilder(
-            animation: _expandAnimation,
-            builder: (context, child) => Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _ActionButton(
-                  icon: Icons.delete_outline,
-                  label: 'Remove',
-                  color: Theme.of(context).colorScheme.errorContainer,
-                  onPressed: () {
-                    _collapse();
-                    widget.onRemove();
-                  },
-                ),
-                const SizedBox(height: 12),
-                _ActionButton(
-                  icon: Icons.file_upload_outlined,
-                  label: 'Export',
-                  onPressed: () {
-                    _collapse();
-                    widget.onExport();
-                  },
-                ),
-                const SizedBox(height: 12),
-                _ActionButton(
-                  icon: Icons.copy_outlined,
-                  label: 'Duplicate',
-                  onPressed: () {
-                    _collapse();
-                    widget.onDuplicate();
-                  },
-                ),
-                const SizedBox(height: 12),
-                _ActionButton(
-                  icon: Icons.add_outlined,
-                  label: 'Add',
-                  onPressed: () {
-                    _collapse();
-                    widget.onAdd();
-                  },
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-        ),
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) => FloatingActionButton(
-            heroTag: null,
-            onPressed: _toggle,
-            child: Transform.rotate(
-              angle: _expandAnimation.value * 3.14159 / 2,
-              child: const Icon(Icons.edit_outlined),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(label, style: theme.textTheme.labelLarge),
-        const SizedBox(width: 8),
-        FloatingActionButton.small(
-          heroTag: null,
-          onPressed: onPressed,
-          backgroundColor: color,
-          child: Icon(icon),
-        ),
       ],
     );
   }

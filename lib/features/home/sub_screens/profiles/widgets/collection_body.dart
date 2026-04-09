@@ -2,10 +2,9 @@ import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection
 import 'package:flutter/material.dart';
 
 class BaseCollectionBody extends StatelessWidget {
-  const BaseCollectionBody({super.key, this.tiles = const [], this.bottom});
+  const BaseCollectionBody({super.key, this.tiles = const []});
 
   final List<CollectionItemTile> tiles;
-  final Widget? bottom;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +38,6 @@ class BaseCollectionBody extends StatelessWidget {
               itemBuilder: (context, index) => tiles[index],
             ),
           ),
-          if (bottom != null)
-            Padding(padding: const EdgeInsets.only(top: 8), child: bottom),
         ],
       ),
     );

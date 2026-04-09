@@ -250,9 +250,9 @@ class WindPainter extends CustomPainter {
 
     final iconTp = TextPainter(
       text: TextSpan(
-        text: String.fromCharCode(Icons.fingerprint.codePoint),
+        text: String.fromCharCode(Icons.fingerprint_outlined.codePoint),
         style: TextStyle(
-          fontFamily: Icons.fingerprint.fontFamily,
+          fontFamily: Icons.fingerprint_outlined.fontFamily,
           fontSize: markerR * 1.2,
           color: markerIconColor,
         ),

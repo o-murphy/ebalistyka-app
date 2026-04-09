@@ -39,7 +39,7 @@ class QuickActionsPanel extends ConsumerWidget {
           ),
         ),
         IconValueButton(
-          icon: Icons.square_foot,
+          icon: Icons.square_foot_outlined,
           value: state.lookAngleDisplay,
           label: 'Look angle',
           heroTag: 'qa-angle',

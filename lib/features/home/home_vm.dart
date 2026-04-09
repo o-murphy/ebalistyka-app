@@ -249,8 +249,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
-    final lookAngleDisplay =
-        '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
+    final lookAngleDisplay = '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
 
     final targetDistanceDisplay = formatter.distance(conditions.distance);
 
@@ -260,12 +259,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       formatter,
     );
 
-    final adjustment = _buildAdjustment(
-      hit,
-      targetM,
-      result.holdRad,
-      settings,
-    );
+    final adjustment = _buildAdjustment(hit, targetM, result.holdRad, settings);
     final tableData = _buildHomeTable(
       hit,
       targetM,
@@ -455,7 +449,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         final valStr = (hold.isNaN || dists[ci] < 0)
             ? '—'
             : Angular.radian(hold).in_(u).toFixedSafe(acc);
-        cells.add(FormattedCell(value: valStr, isTargetColumn: ci == targetCol));
+        cells.add(
+          FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
+        );
       }
       return FormattedRow(label: 'Drop', unitSymbol: unitLabel, cells: cells);
     }
@@ -469,7 +465,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         final valStr = p == null
             ? '—'
             : (rd.$3(p) ?? double.nan).toFixedSafe(rd.$4);
-        cells.add(FormattedCell(value: valStr, isTargetColumn: ci == targetCol));
+        cells.add(
+          FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
+        );
       }
       return FormattedRow(label: rd.$1, unitSymbol: rd.$2, cells: cells);
     }

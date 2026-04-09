@@ -40,7 +40,7 @@ class UnitPickerButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Icon(Icons.arrow_drop_down, size: 20),
+              const Icon(Icons.arrow_drop_down_outlined, size: 20),
             ],
           ),
         ),
@@ -72,7 +72,9 @@ class UnitPickerButton extends StatelessWidget {
             ...options.map(
               (unit) => ListTile(
                 title: Text('${unit.label} (${unit.symbol})'),
-                trailing: current == unit ? const Icon(Icons.check) : null,
+                trailing: current == unit
+                    ? const Icon(Icons.check_outlined)
+                    : null,
                 onTap: () {
                   onChanged(unit);
                   Navigator.pop(ctx);

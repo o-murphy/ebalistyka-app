@@ -138,7 +138,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                        const Icon(Icons.more_horiz_rounded),
+                                        const Icon(Icons.more_horiz_outlined),
                                       ],
                                     ),
                                   ),

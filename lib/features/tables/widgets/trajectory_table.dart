@@ -328,7 +328,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: const [
-                Icon(Icons.warning, color: Colors.red),
+                Icon(Icons.warning_outlined, color: Colors.red),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(

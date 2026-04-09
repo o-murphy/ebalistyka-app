@@ -89,7 +89,7 @@ Future<void> _showUnitEditDialogInternal(
             content: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.remove),
+                  icon: const Icon(Icons.remove_outlined),
                   onPressed: () => setState(() => step(-1)),
                 ),
                 Expanded(
@@ -107,7 +107,7 @@ Future<void> _showUnitEditDialogInternal(
                       hintText: allowNull ? '—' : null,
                       suffixIcon: allowNull && controller.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear),
+                              icon: const Icon(Icons.clear_outlined),
                               onPressed: clearField,
                               iconSize: 12,
                             )
@@ -117,7 +117,7 @@ Future<void> _showUnitEditDialogInternal(
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add_outlined),
                   onPressed: () => setState(() => step(1)),
                 ),
               ],

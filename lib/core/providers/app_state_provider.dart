@@ -118,7 +118,10 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .find();
 
     // ── Seed on first run ──────────────────────────────────────────────────────
-    if (weapons.isEmpty && cartridges.isEmpty && sights.isEmpty && profiles.isEmpty) {
+    if (weapons.isEmpty &&
+        cartridges.isEmpty &&
+        sights.isEmpty &&
+        profiles.isEmpty) {
       debugPrint('AppStateNotifier: seeding initial data...');
       _seed(owner);
       weapons = _store

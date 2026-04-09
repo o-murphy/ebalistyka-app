@@ -34,7 +34,7 @@ class PageDotsIndicator extends StatelessWidget {
         // Left arrow
         IconButton(
           onPressed: canGoPrev ? _previousPage : null,
-          icon: Icon(Icons.chevron_left, size: 24),
+          icon: Icon(Icons.chevron_left_outlined, size: 24),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
         ),
@@ -57,7 +57,7 @@ class PageDotsIndicator extends StatelessWidget {
         // Right arrow
         IconButton(
           onPressed: canGoNext ? _nextPage : null,
-          icon: Icon(Icons.chevron_right, size: 24),
+          icon: Icon(Icons.chevron_right_outlined, size: 24),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
         ),

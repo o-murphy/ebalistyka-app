@@ -80,7 +80,7 @@ class ShotDetailsScreen extends ConsumerWidget {
           value: state.shotDistance,
         ),
         InfoListTile(
-          icon: Icons.height,
+          icon: Icons.height_outlined,
           label: 'Height at target',
           value: state.heightAtTarget,
         ),

@@ -58,16 +58,16 @@ class _ChartInfoGrid extends StatelessWidget {
     }
 
     final leftItems = [
-      (Icons.straighten, info!.distance),
-      (Icons.speed, info!.velocity),
-      (Icons.bolt, info!.energy),
+      (Icons.straighten_outlined, info!.distance),
+      (Icons.speed_outlined, info!.velocity),
+      (Icons.bolt_outlined, info!.energy),
       (Icons.timer_outlined, info!.time),
     ];
     final rightItems = [
-      (Icons.height, info!.height),
-      (Icons.arrow_downward, info!.drop),
-      (Icons.arrow_right_alt, info!.windage),
-      (Icons.air, info!.mach),
+      (Icons.height_outlined, info!.height),
+      (Icons.arrow_downward_outlined, info!.drop),
+      (Icons.arrow_right_alt_outlined, info!.windage),
+      (Icons.air_outlined, info!.mach),
     ];
 
     final valueStyle = TextStyle(

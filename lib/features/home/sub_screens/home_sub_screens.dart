@@ -1,5 +1,5 @@
 export 'shot_details_screen.dart';
-export 'profiles_screen.dart';
+export 'my_profiles_screen.dart';
 export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
 
@@ -31,15 +31,13 @@ class AmmoCollectionScreen extends StatelessWidget {
 class CreateAmmoWizardScreen extends StatelessWidget {
   const CreateAmmoWizardScreen({super.key});
   @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Create Ammo');
+  Widget build(BuildContext context) => const StubScreen(title: 'Create Ammo');
 }
 
 class AmmoEditScreen extends StatelessWidget {
   const AmmoEditScreen({super.key});
   @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Edit Ammo');
+  Widget build(BuildContext context) => const StubScreen(title: 'Edit Ammo');
 }
 
 // ── Sight ─────────────────────────────────────────────────────────────────────

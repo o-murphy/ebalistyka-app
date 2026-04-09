@@ -31,7 +31,7 @@ class CollectionItemTile extends StatelessWidget {
                   const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.control_point, size: 48),
+                      Icon(Icons.control_point_outlined, size: 48),
                       SizedBox(height: 8),
                       Text('Body area'),
                     ],
