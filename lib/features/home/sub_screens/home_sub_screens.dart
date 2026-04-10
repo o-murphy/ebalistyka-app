@@ -2,6 +2,7 @@ export 'shot_details_screen.dart';
 export 'my_profiles_screen.dart';
 export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
+export 'sight_wizard_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -9,8 +10,8 @@ import 'package:flutter/material.dart';
 
 // ── Weapon ────────────────────────────────────────────────────────────────────
 
-class SelectWeaponCollectionScreen extends StatelessWidget {
-  const SelectWeaponCollectionScreen({super.key});
+class WeaponCollectionScreen extends StatelessWidget {
+  const WeaponCollectionScreen({super.key});
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Weapon Collection');
@@ -46,14 +47,4 @@ class SightCollectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Sight Collection');
-}
-
-/// Reusable sight form: null = create new, non-null = edit existing.
-/// Returns Sight? via context.pop(sight).
-class SightWizardScreen extends StatelessWidget {
-  const SightWizardScreen({this.initial, super.key});
-  final Sight? initial;
-  @override
-  Widget build(BuildContext context) =>
-      StubScreen(title: initial == null ? 'Create Sight' : 'Edit Sight');
 }

@@ -182,6 +182,15 @@ abstract final class FC {
     accuracy: 2,
   );
 
+  /// Optical magnification (dimensionless scalar, displayed as "x").
+  static const magnification = FieldConstraints(
+    rawUnit: Unit.scalar,
+    minRaw: 0.5,
+    maxRaw: 100.0,
+    stepRaw: 0.5,
+    accuracy: 1,
+  );
+
   static const ballisticCoefficient = FieldConstraints(
     rawUnit: Unit.scalar, // sentinel — dimensionless, no conversion
     minRaw: 0.001,

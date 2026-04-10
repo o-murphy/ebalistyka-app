@@ -63,8 +63,8 @@ class Sight {
   double horizontalClick = 0.1;
   String verticalClickUnit = "mil";
   String horizontalClickUnit = "mil";
-  double minMagnification = 0.0;
-  double maxMagnification = 0.0;
+  double minMagnification = 1.0;
+  double maxMagnification = 1.0;
 
   String? reticleImage;
 

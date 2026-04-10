@@ -99,7 +99,7 @@ final appRouter = GoRouter(
                     ),
                     GoRoute(
                       path: 'weapon-collection',
-                      builder: (_, _) => const SelectWeaponCollectionScreen(),
+                      builder: (_, _) => const WeaponCollectionScreen(),
                     ),
                     // ── Ammo select ─────────────────────────────────────────
                     GoRoute(

@@ -20,22 +20,28 @@ class MySightsCollectionScreen extends ConsumerWidget {
   /// Falls back to the active profile when null.
   final String? profileId;
 
-  Future<void> _showAddSightSheet(BuildContext context) => showActionSheet(
-    context,
-    title: 'Add Sight',
-    entries: [
-      ActionSheetItem(
-        icon: Icons.add_circle_outline,
-        title: 'Create new',
-        onTap: () async => context.push(Routes.sightCreate),
-      ),
-      ActionSheetItem(
-        icon: Icons.folder_open_outlined,
-        title: 'Select from collection',
-        onTap: () async => context.push(Routes.sightCollection),
-      ),
-    ],
-  );
+  Future<void> _showAddSightSheet(BuildContext context, WidgetRef ref) =>
+      showActionSheet(
+        context,
+        title: 'Add Sight',
+        entries: [
+          ActionSheetItem(
+            icon: Icons.add_circle_outline,
+            title: 'Create new',
+            onTap: () async {
+              final result = await context.push<Sight?>(Routes.sightCreate);
+              if (result != null && context.mounted) {
+                await ref.read(appStateProvider.notifier).saveSight(result);
+              }
+            },
+          ),
+          ActionSheetItem(
+            icon: Icons.folder_open_outlined,
+            title: 'Select from collection',
+            onTap: () async => context.push(Routes.sightCollection),
+          ),
+        ],
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,7 +65,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
-        onPressed: () => _showAddSightSheet(context),
+        onPressed: () => _showAddSightSheet(context, ref),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,

@@ -266,6 +266,36 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
           subtitle: const Text("Sight name"),
           dense: true,
         ),
+        InfoListTile(
+          label: "Sight height",
+          value: data.sightHeight,
+          icon: Icons.height_outlined,
+        ),
+        // InfoListTile(
+        //   label: "Reticle",
+        //   value: data.reticleName,
+        //   // icon: Icons.trending_up_outlined,
+        // ),
+        InfoListTile(
+          label: "Focal plane",
+          value: data.focalPlane,
+          icon: Icons.first_page_outlined,
+        ),
+        InfoListTile(
+          label: "Magnification",
+          value: data.magnification,
+          icon: Icons.zoom_in_outlined,
+        ),
+        InfoListTile(
+          label: "Vertical click",
+          value: data.verticalClick,
+          icon: Icons.swap_vert_outlined,
+        ),
+        InfoListTile(
+          label: "Horizontal click",
+          value: data.horizontalClick,
+          icon: Icons.swap_horiz_outlined,
+        ),
       ],
     );
   }

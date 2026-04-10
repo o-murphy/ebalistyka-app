@@ -91,7 +91,7 @@ appStateProvider
     │
     ├──► profileCardProvider(id)  Provider.autoDispose.family<ProfileCardData?, String>
     │         Дані одного профілю: джойнить weapon/ammo/sight по targetId.
-    │         ProfileCardData має власний == по всіх 15 полях.
+    │         ProfileCardData має власний == по всіх 20 полях (incl. sightHeight/focalPlane/magnification/verticalClick/horizontalClick).
     │         → ProfileCard.ref.watch — ребілдиться тільки якщо цей профіль змінився.
     │
     └──► profilesActionsProvider  Notifier<void>
@@ -103,6 +103,9 @@ appStateProvider
 `ref.listen` на `profilesPagingProvider` спрацьовує тільки якщо `ProfilesPagingState.==` повертає `false`.
 Зміна ammo/sight/weapon content → `appStateProvider` оновлюється → `profileCardProvider` оновлюється →
 але `profilesPagingProvider` повертає той самий `ProfilesPagingState` → пейджинг не змінюється.
+
+⚠️ **Важливо:** якщо поле відображається в `ProfileCard` але відсутнє в `ProfileCardData.==`,
+Riverpod побачить "рівні" об'єкти і НЕ ребілдить картку. Усі рядкові поля з `_buildCardData` мають бути в `==`.
 
 ---
 
@@ -273,7 +276,7 @@ ProfileCard
               └─ context.pop(Sight) → appStateProvider.saveSight
 ```
 
-🔧 Роутинг і callbacks реалізовані, SightWizardScreen — stub.
+✅ Роутинг і callbacks реалізовані, SightWizardScreen — повністю реалізований.
 
 ### Flow 7: Duplicate Profile
 
@@ -342,7 +345,9 @@ ProfileCard PopupMenu → "Duplicate"
 │  G7 · BC 0.314 · 888 m/s            │
 ├──────────────────────────────────────┤
 │  ── Sight ──────────  [edit ›]       │  ← секція видима тільки якщо sightId != null
-│  Generic Long-Range Scope            │    [edit ›] → SightEditScreen(sightId)
+│  Generic Long-Range Scope            │    [edit ›] → SightWizardScreen(sightId)
+│  Height · FFP · 4-16x               │
+│  V-click: 0.1 MIL  H-click: 0.1 MIL │
 ├──────────────────────────────────────┤
 │  [ Select / Go to calc ]             │  ← кнопка якщо ammoId != null && sightId != null
 │  або banner "Select ammo and sight"  │  ← banner інакше
@@ -431,7 +436,7 @@ ProfilesScreen  (/home/profiles)
 | `lib/core/extensions/settings_extensions.dart` | ✅ | enum getters (ThemeMode, Unit) |
 | `lib/core/a7p/a7p_parser.dart` | ✅ | proto → OB entities |
 | `lib/core/collection/collection_parser.dart` | ✅ | JSON → OB entities |
-| `lib/features/home/profiles_vm.dart` | ✅ | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>) |
+| `lib/features/home/profiles_vm.dart` | ✅ | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>); `ProfileCardData.==` covers all 20 display fields — sight content fields (sightHeight, focalPlane, magnification, verticalClick, horizontalClick) must all be in `==` or card tiles won't rebuild on edit |
 | `lib/features/home/sub_screens/my_profiles_screen.dart` | ✅ | ProfilesScreen: PageView, paging listener, FAB, per-profile callbacks |
 | `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | ConsumerStatefulWidget; watchає profileCardProvider(id); _ProfileControlTile з ammo/sight FABs + hints |
 | `lib/features/home/sub_screens/my_ammo_screen.dart` | ✅ | Вибір ammo для профілю |
@@ -439,6 +444,7 @@ ProfilesScreen  (/home/profiles)
 | `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
 | `lib/shared/widgets/confirm_dialog.dart` | ✅ | reusable confirm: isDestructive (error) / tertiary colors |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | |
+| `lib/features/home/sub_screens/sight_wizard_screen.dart` | ✅ | Sight form: Name/Optics/Mounting/Clicks/Magnification |
 | `lib/router.dart` | ✅ | Routes константи |
 | `assets/json/collection.json` | ✅ | Вбудована колекція |
 
@@ -447,9 +453,9 @@ ProfilesScreen  (/home/profiles)
 ## TODO
 
 - [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop)
-- [ ] `SightWizardScreen` — реалізувати (stub; `initial: Sight?`, повертає `Sight?` через pop)
+- [x] `SightWizardScreen` — реалізовано: Name, Optics (FFP/SFP/LWIR), Mounting (height/offset), Clicks (UnitInputWithPicker + FC.adjustment), Magnification range
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
-- [ ] `SelectWeaponCollectionScreen` — реалізувати
+- [ ] `WeaponCollectionScreen` — реалізувати
 - [ ] `SightCollectionScreen` — реалізувати
 - [x] Duplicate profile — реалізовано: weapon копіюється (новий entity), ammo/sight — ті самі refs
 - [x] Duplicate ammo — реалізовано: повне копіювання полів включно з Float64List таблицями

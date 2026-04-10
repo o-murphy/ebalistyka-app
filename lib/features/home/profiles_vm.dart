@@ -1,3 +1,6 @@
+import 'package:bclibc_ffi/unit.dart' show Angular;
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,6 +81,11 @@ class ProfileCardData {
     required this.weight,
     this.sightId,
     required this.sightName,
+    required this.sightHeight,
+    required this.focalPlane,
+    required this.magnification,
+    required this.verticalClick,
+    required this.horizontalClick,
   });
 
   final String id;
@@ -95,6 +103,11 @@ class ProfileCardData {
   final String weight;
   final int? sightId;
   final String sightName;
+  final String sightHeight;
+  final String focalPlane;
+  final String magnification;
+  final String verticalClick;
+  final String horizontalClick;
 
   @override
   bool operator ==(Object other) {
@@ -113,32 +126,54 @@ class ProfileCardData {
         muzzleVelocity == other.muzzleVelocity &&
         weight == other.weight &&
         sightId == other.sightId &&
-        sightName == other.sightName;
+        sightName == other.sightName &&
+        sightHeight == other.sightHeight &&
+        focalPlane == other.focalPlane &&
+        magnification == other.magnification &&
+        verticalClick == other.verticalClick &&
+        horizontalClick == other.horizontalClick;
   }
 
   @override
-  int get hashCode => Object.hash(
-    id, name, weaponName, weaponCaliber, twist, rightHanded,
-    ammoId, ammoCaliber, cartridgeName, projectileName,
-    dragModel, muzzleVelocity, weight, sightId, sightName,
-  );
+  int get hashCode => Object.hashAll([
+    id,
+    name,
+    weaponName,
+    weaponCaliber,
+    twist,
+    rightHanded,
+    ammoId,
+    ammoCaliber,
+    cartridgeName,
+    projectileName,
+    dragModel,
+    muzzleVelocity,
+    weight,
+    sightId,
+    sightName,
+    sightHeight,
+    focalPlane,
+    magnification,
+    verticalClick,
+    horizontalClick,
+  ]);
 }
 
-final profileCardProvider =
-    Provider.autoDispose.family<ProfileCardData?, String>((ref, profileId) {
-  final appState = ref.watch(appStateProvider).value;
-  if (appState == null) return null;
+final profileCardProvider = Provider.autoDispose
+    .family<ProfileCardData?, String>((ref, profileId) {
+      final appState = ref.watch(appStateProvider).value;
+      if (appState == null) return null;
 
-  final profile = appState.profiles
-      .where((p) => p.id.toString() == profileId)
-      .firstOrNull;
-  if (profile == null) return null;
+      final profile = appState.profiles
+          .where((p) => p.id.toString() == profileId)
+          .firstOrNull;
+      if (profile == null) return null;
 
-  final formatter = ref.read(unitFormatterProvider);
-  final units = ref.read(unitSettingsProvider);
+      final formatter = ref.read(unitFormatterProvider);
+      final units = ref.read(unitSettingsProvider);
 
-  return _buildCardData(profile, appState, formatter, units);
-});
+      return _buildCardData(profile, appState, formatter, units);
+    });
 
 ProfileCardData _buildCardData(
   Profile profile,
@@ -174,6 +209,21 @@ ProfileCardData _buildCardData(
     weight: ammo != null ? formatter.weight(ammo.weight) : '—',
     sightId: sight?.id,
     sightName: sight?.name ?? 'Not selected',
+    sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
+    focalPlane: sight?.focalPlane.name.toUpperCase() ?? '—',
+    magnification: sight != null
+        ? "${sight.minMagnification.toFixedSafe(0)} - ${sight.maxMagnification.toFixedSafe(0)}"
+        : '—',
+    verticalClick: sight != null
+        ? formatter.adjustment(
+            Angular(sight.verticalClick, sight.verticalClickUnitValue),
+          )
+        : '—',
+    horizontalClick: sight != null
+        ? formatter.adjustment(
+            Angular(sight.horizontalClick, sight.horizontalClickUnitValue),
+          )
+        : '—',
   );
 }
 
@@ -229,5 +279,6 @@ class ProfilesActions extends Notifier<void> {
   }
 }
 
-final profilesActionsProvider =
-    NotifierProvider<ProfilesActions, void>(ProfilesActions.new);
+final profilesActionsProvider = NotifierProvider<ProfilesActions, void>(
+  ProfilesActions.new,
+);
