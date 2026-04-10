@@ -57,13 +57,14 @@ class MyAmmoScreen extends ConsumerWidget {
         .where((w) => w.id == profile?.weapon.targetId)
         .firstOrNull;
 
-    final sorted = [
-      ...cartridges.where((a) => a.id == selectedId),
-      ...cartridges.where((a) => a.id != selectedId),
-    ];
     final filtered = weapon != null
-        ? sorted.where((a) => a.caliber.raw == weapon.caliber.raw).toList()
-        : sorted;
+        ? cartridges.where((a) => a.caliber.raw == weapon.caliber.raw)
+        : cartridges;
+
+    final sorted = [
+      ...filtered.where((a) => a.id == selectedId),
+      ...filtered.where((a) => a.id != selectedId),
+    ];
 
     return BaseScreen(
       title: "My Ammo",
@@ -80,7 +81,7 @@ class MyAmmoScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (_) => BaseCollectionBody(
-          tiles: filtered
+          tiles: sorted
               .map(
                 (item) => CollectionItemTile(
                   key: ValueKey(item.id),
