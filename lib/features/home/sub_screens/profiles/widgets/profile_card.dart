@@ -6,12 +6,13 @@ import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileCard extends StatefulWidget {
+class ProfileCard extends ConsumerStatefulWidget {
   const ProfileCard({
-    required this.data,
-    required this.isActive,
+    required this.profileId,
+    required this.activeProfileId,
     required this.onSelect,
     required this.onEditWeapon,
     required this.onDuplicate,
@@ -21,8 +22,8 @@ class ProfileCard extends StatefulWidget {
     super.key,
   });
 
-  final ProfileCardData data;
-  final bool isActive;
+  final String profileId;
+  final String? activeProfileId;
   final VoidCallback onSelect;
   final VoidCallback onEditWeapon;
   final VoidCallback onDuplicate;
@@ -31,10 +32,10 @@ class ProfileCard extends StatefulWidget {
   final ValueChanged<String> onRename;
 
   @override
-  State<ProfileCard> createState() => _ProfileCardState();
+  ConsumerState<ProfileCard> createState() => _ProfileCardState();
 }
 
-class _ProfileCardState extends State<ProfileCard> {
+class _ProfileCardState extends ConsumerState<ProfileCard> {
   final _scrollController = ScrollController();
 
   @override
@@ -43,17 +44,13 @@ class _ProfileCardState extends State<ProfileCard> {
     super.dispose();
   }
 
-  ProfileCardData get data => widget.data;
-  bool get isActive => widget.isActive;
-  VoidCallback get onSelect => widget.onSelect;
-  VoidCallback get onEditWeapon => widget.onEditWeapon;
-  VoidCallback get onDuplicate => widget.onDuplicate;
-  VoidCallback get onExport => widget.onExport;
-  VoidCallback get onRemove => widget.onRemove;
-  ValueChanged<String> get onRename => widget.onRename;
-
   @override
   Widget build(BuildContext context) {
+    // Only rebuilds when THIS profile's data changes.
+    final data = ref.watch(profileCardProvider(widget.profileId));
+    if (data == null) return const SizedBox.shrink();
+
+    final isActive = widget.profileId == widget.activeProfileId;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -100,17 +97,18 @@ class _ProfileCardState extends State<ProfileCard> {
                               profileName: data.name,
                               hasAmmo: data.ammoId != null,
                               hasSight: data.sightId != null,
-                              onDuplicate: onDuplicate,
-                              onExport: onExport,
-                              onEditWeapon: onEditWeapon,
-                              onRemove: onRemove,
-                              onRename: onRename,
+                              onDuplicate: widget.onDuplicate,
+                              onExport: widget.onExport,
+                              onEditWeapon: widget.onEditWeapon,
+                              onRemove: widget.onRemove,
+                              onRename: widget.onRename,
                             ),
                           ),
-                          // Використання функцій для побудови секцій
-                          _buildWeaponSection(context),
-                          if (data.ammoId != null) _buildAmmoSection(context),
-                          if (data.sightId != null) _buildSightSection(context),
+                          _buildWeaponSection(context, data),
+                          if (data.ammoId != null)
+                            _buildAmmoSection(context, data),
+                          if (data.sightId != null)
+                            _buildSightSection(context, data),
                         ],
                       ),
                     ),
@@ -126,7 +124,7 @@ class _ProfileCardState extends State<ProfileCard> {
               child: Align(
                 alignment: Alignment.center,
                 child: FilledButton(
-                  onPressed: onSelect,
+                  onPressed: widget.onSelect,
                   child: Text(!isActive ? 'Select' : 'Go to calculations'),
                 ),
               ),
@@ -154,8 +152,7 @@ class _ProfileCardState extends State<ProfileCard> {
     );
   }
 
-  // Функція для створення секції Weapon
-  Widget _buildWeaponSection(BuildContext context) {
+  Widget _buildWeaponSection(BuildContext context, ProfileCardData data) {
     final colorScheme = Theme.of(context).colorScheme;
     final twistDirIcon = data.rightHanded
         ? Icons.rotate_right_outlined
@@ -165,7 +162,7 @@ class _ProfileCardState extends State<ProfileCard> {
       children: [
         ListSectionTile(
           "Weapon",
-          onTap: onEditWeapon,
+          onTap: widget.onEditWeapon,
           trailing: Icon(
             Icons.edit_outlined,
             size: 16,
@@ -193,8 +190,7 @@ class _ProfileCardState extends State<ProfileCard> {
     );
   }
 
-  // Функція для створення секції Ammo
-  Widget _buildAmmoSection(BuildContext context) {
+  Widget _buildAmmoSection(BuildContext context, ProfileCardData data) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
@@ -245,8 +241,7 @@ class _ProfileCardState extends State<ProfileCard> {
     );
   }
 
-  // Функція для створення секції Sight (додано!)
-  Widget _buildSightSection(BuildContext context) {
+  Widget _buildSightSection(BuildContext context, ProfileCardData data) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
@@ -273,7 +268,8 @@ class _ProfileCardState extends State<ProfileCard> {
   }
 }
 
-// ── Profile Control Tile (покращений з об'єднаними парами) ─────────────────────
+// ── Profile Control Tile ──────────────────────────────────────────────────────
+
 class _ProfileControlTile extends StatelessWidget {
   const _ProfileControlTile({
     required this.profileId,
@@ -370,7 +366,7 @@ class _ProfileControlTile extends StatelessWidget {
               ),
             ),
 
-            // Sight: кнопка + хінт (ліворуч зверху)
+            // Sight button (top left)
             Positioned(
               top: 8,
               left: 8,
@@ -393,7 +389,7 @@ class _ProfileControlTile extends StatelessWidget {
               ),
             ),
 
-            // Ammo: кнопка + хінт (праворуч знизу)
+            // Ammo button (bottom right)
             Positioned(
               bottom: 8,
               right: 8,
@@ -422,7 +418,8 @@ class _ProfileControlTile extends StatelessWidget {
   }
 }
 
-// ── Віджет: кнопка + текстовий хінт поряд (не на кнопці!) ─────────────────────
+// ── Button with hint ──────────────────────────────────────────────────────────
+
 class _ButtonWithHint extends StatelessWidget {
   const _ButtonWithHint({
     required this.heroTag,
@@ -459,10 +456,8 @@ class _ButtonWithHint extends StatelessWidget {
       child: Icon(buttonIcon, size: 20),
     );
 
-    // Якщо значення є - показуємо тільки кнопку
     if (hasValue) return button;
 
-    // Якщо значення немає - показуємо кнопку + хінт поряд
     final hint = Row(
       mainAxisSize: MainAxisSize.min,
       children: [

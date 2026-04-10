@@ -29,12 +29,11 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     super.dispose();
   }
 
-  void _onPageChanged(int page) {
-    final state = ref.read(profilesVmProvider).value;
+  void _onPageChanged(int page, List<String> orderedIds) {
     setState(() {
       _currentPage = page;
-      if (state is ProfilesReady && page < state.profiles.length) {
-        _currentProfileId = state.profiles[page].id;
+      if (page < orderedIds.length) {
+        _currentProfileId = orderedIds[page];
       }
     });
   }
@@ -58,20 +57,6 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         }
       }
     });
-  }
-
-  String _titleFor(ProfilesUiState state) {
-    if (state is! ProfilesReady || state.profiles.isEmpty) {
-      return 'Select Profile';
-    }
-    final idx = _currentPage.clamp(0, state.profiles.length - 1);
-    return state.profiles[idx].name;
-  }
-
-  ProfileCardData? _currentProfile(ProfilesUiState state) {
-    if (state is! ProfilesReady || state.profiles.isEmpty) return null;
-    final idx = _currentPage.clamp(0, state.profiles.length - 1);
-    return state.profiles[idx];
   }
 
   // ── Add (bottom sheet) ────────────────────────────────────────────────────
@@ -99,7 +84,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           );
           if (weapon != null && mounted) {
             await ref
-                .read(profilesVmProvider.notifier)
+                .read(profilesActionsProvider.notifier)
                 .createProfile(name, weapon);
           }
         },
@@ -124,19 +109,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     ],
   );
 
-  // ── FAB actions (current profile) ─────────────────────────────────────────
+  // ── Actions (by profile ID) ───────────────────────────────────────────────
 
-  Future<void> _onDuplicate(ProfileCardData? profile) async {
-    // TODO: make profile copy with name input dialog
+  Future<void> _onDuplicate(String profileId) async {
+    // TODO: implement profile copy with name input dialog
   }
 
-  Future<void> _onRemove(ProfileCardData? profile) async {
-    if (profile == null) return;
+  Future<void> _onRemove(String profileId) async {
+    final name = ref.read(profileCardProvider(profileId))?.name;
+    if (name == null) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Remove profile'),
-        content: Text('Remove "${profile.name}" and its weapon?'),
+        content: Text('Remove "$name" and its weapon?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -150,22 +136,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       ),
     );
     if (confirmed == true) {
-      await ref.read(profilesVmProvider.notifier).removeProfile(profile.id);
-      // _syncPage handles page adjustment when the VM emits the updated list.
+      await ref.read(profilesActionsProvider.notifier).removeProfile(profileId);
     }
   }
 
-  Future<void> _onExport(ProfileCardData? profile) async {
-    if (profile == null) return;
+  Future<void> _onExport(String profileId) async {
     // TODO: serialize profile and share (Phase 5+)
   }
 
-  Future<void> _onEditRifle(ProfileCardData data) async {
+  Future<void> _onEditRifle(String profileId) async {
     final appState = ref.read(appStateProvider).value;
     if (appState == null) return;
 
     final profile = appState.profiles
-        .where((p) => p.id.toString() == data.id)
+        .where((p) => p.id.toString() == profileId)
         .firstOrNull;
     if (profile == null) return;
 
@@ -182,87 +166,99 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     }
   }
 
-  Future<void> _onRename(ProfileCardData profile, String name) async {
-    await ref.read(profilesVmProvider.notifier).renameProfile(profile.id, name);
+  Future<void> _onRename(String profileId, String name) async {
+    await ref
+        .read(profilesActionsProvider.notifier)
+        .renameProfile(profileId, name);
   }
 
-  Future<void> _onSelect(ProfileCardData profile) async {
-    await ref.read(profilesVmProvider.notifier).selectProfile(profile.id);
+  Future<void> _onSelect(String profileId) async {
+    await ref.read(profilesActionsProvider.notifier).selectProfile(profileId);
     if (mounted) context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<ProfilesUiState>>(profilesVmProvider, (prev, next) {
-      final prevData = prev?.value;
-      final nextData = next.value;
-      if (nextData is! ProfilesReady || nextData.profiles.isEmpty) return;
+    // ── Paging listener ───────────────────────────────────────────────────────
+    // Fires ONLY when profiles are added/removed or the active profile changes.
+    // Content-only changes (ammo, sight, weapon edits) do NOT fire this because
+    // profilesPagingProvider uses proper == on its output.
+    ref.listen<ProfilesPagingState>(profilesPagingProvider, (prev, next) {
+      if (next.orderedIds.isEmpty) return;
 
-      if (prevData == null) {
-        // Initial load — seed _currentProfileId without jumping.
-        _currentProfileId ??= nextData
-            .profiles[_currentPage.clamp(0, nextData.profiles.length - 1)]
-            .id;
+      if (prev == null) {
+        // Initial — seed current profile ID without jumping.
+        _currentProfileId ??=
+            next.orderedIds[_currentPage.clamp(0, next.orderedIds.length - 1)];
         return;
       }
 
-      if (prevData is! ProfilesReady) return;
-
-      if (nextData.profiles.length > prevData.profiles.length) {
+      if (next.orderedIds.length > prev.orderedIds.length) {
         // Profile added → jump to last page.
-        final last = nextData.profiles.length - 1;
-        _navigateTo(last, nextData.profiles[last].id, animate: true);
-      } else if (nextData.profiles.length < prevData.profiles.length) {
-        // Profile deleted → nearest valid page (only if current was removed).
-        final exists = nextData.profiles.any((p) => p.id == _currentProfileId);
+        final last = next.orderedIds.length - 1;
+        _navigateTo(last, next.orderedIds[last], animate: true);
+      } else if (next.orderedIds.length < prev.orderedIds.length) {
+        // Profile deleted → stay on nearest valid page, only if current gone.
+        final exists = next.orderedIds.contains(_currentProfileId);
         if (!exists) {
-          final page = _currentPage.clamp(0, nextData.profiles.length - 1);
-          _navigateTo(page, nextData.profiles[page].id);
+          final page = _currentPage.clamp(0, next.orderedIds.length - 1);
+          _navigateTo(page, next.orderedIds[page]);
         }
+      } else if (next.activeId != prev.activeId) {
+        // Active profile changed → sort changed → jump to page 0.
+        _navigateTo(0, next.orderedIds.first);
       }
-      // Same count → ammo/weapon/sight update — do not change page.
+      // Same structure → content-only change → no paging update.
     });
-    final vmState = ref.watch(profilesVmProvider);
 
-    return vmState.when(
-      skipLoadingOnRefresh: true,
-      loading: () => BaseScreen(
+    // ── Paging state ──────────────────────────────────────────────────────────
+    final paging = ref.watch(profilesPagingProvider);
+
+    if (paging.orderedIds.isEmpty) {
+      return BaseScreen(
         title: 'Select Profile',
-        body: const Center(child: CircularProgressIndicator()),
+        floatingActionButton: FloatingActionButton(
+          heroTag: 'generalFab',
+          onPressed: _showAddSheet,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          elevation: 6,
+          child: const Icon(Icons.add_outlined),
+        ),
+        body: const Center(child: Text('No profiles. Tap + to add one.')),
+      );
+    }
+
+    final currentId = _currentProfileId ??
+        paging.orderedIds[_currentPage.clamp(0, paging.orderedIds.length - 1)];
+
+    // Watch only the current card's name for the title — not the whole list.
+    final title =
+        ref.watch(profileCardProvider(currentId))?.name ?? 'Select Profile';
+
+    return BaseScreen(
+      title: title,
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'generalFab',
+        onPressed: _showAddSheet,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 6,
+        child: const Icon(Icons.add_outlined),
       ),
-      error: (err, _) => BaseScreen(
-        title: 'Select Profile',
-        body: Center(child: Text('Error: $err')),
+      body: _ProfilePageView(
+        orderedIds: paging.orderedIds,
+        activeProfileId: paging.activeId,
+        pageController: _pageController,
+        currentPage: _currentPage,
+        onPageChanged: (page) => _onPageChanged(page, paging.orderedIds),
+        onSelect: _onSelect,
+        onEditRifle: _onEditRifle,
+        onDuplicate: _onDuplicate,
+        onExport: _onExport,
+        onRemove: _onRemove,
+        onRename: _onRename,
       ),
-      data: (state) {
-        final profile = _currentProfile(state);
-        return BaseScreen(
-          title: _titleFor(state),
-          floatingActionButton: FloatingActionButton(
-            heroTag: "generalFab",
-            onPressed: _showAddSheet,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            elevation: 6,
-            child: const Icon(Icons.add_outlined),
-          ),
-          body: state is ProfilesReady && state.profiles.isNotEmpty
-              ? _ProfilePageView(
-                  profiles: state.profiles,
-                  activeProfileId: state.activeProfileId,
-                  pageController: _pageController,
-                  currentPage: _currentPage,
-                  onPageChanged: _onPageChanged,
-                  onSelect: _onSelect,
-                  onEditRifle: _onEditRifle,
-                  onDuplicate: () => _onDuplicate(profile),
-                  onExport: () => _onExport(profile),
-                  onRemove: () => _onRemove(profile),
-                  onRename: _onRename,
-                )
-              : const Center(child: Text('No profiles. Tap + to add one.')),
-        );
-      },
     );
   }
 }
@@ -271,7 +267,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
 class _ProfilePageView extends StatelessWidget {
   const _ProfilePageView({
-    required this.profiles,
+    required this.orderedIds,
     required this.activeProfileId,
     required this.pageController,
     required this.currentPage,
@@ -284,17 +280,17 @@ class _ProfilePageView extends StatelessWidget {
     required this.onRename,
   });
 
-  final List<ProfileCardData> profiles;
+  final List<String> orderedIds;
   final String? activeProfileId;
   final PageController pageController;
   final int currentPage;
   final void Function(int) onPageChanged;
-  final void Function(ProfileCardData) onSelect;
-  final void Function(ProfileCardData) onEditRifle;
-  final VoidCallback onDuplicate;
-  final VoidCallback onExport;
-  final VoidCallback onRemove;
-  final void Function(ProfileCardData, String) onRename;
+  final void Function(String) onSelect;
+  final void Function(String) onEditRifle;
+  final void Function(String) onDuplicate;
+  final void Function(String) onExport;
+  final void Function(String) onRemove;
+  final void Function(String, String) onRename;
 
   @override
   Widget build(BuildContext context) {
@@ -304,19 +300,20 @@ class _ProfilePageView extends StatelessWidget {
           child: PageView(
             controller: pageController,
             onPageChanged: onPageChanged,
-            children: profiles
+            children: orderedIds
                 .map(
-                  (p) => Padding(
+                  (id) => Padding(
+                    key: ValueKey(id),
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: ProfileCard(
-                      data: p,
-                      isActive: p.id == activeProfileId,
-                      onSelect: () => onSelect(p),
-                      onEditWeapon: () => onEditRifle(p),
-                      onDuplicate: onDuplicate,
-                      onExport: onExport,
-                      onRemove: onRemove,
-                      onRename: (name) => onRename(p, name),
+                      profileId: id,
+                      activeProfileId: activeProfileId,
+                      onSelect: () => onSelect(id),
+                      onEditWeapon: () => onEditRifle(id),
+                      onDuplicate: () => onDuplicate(id),
+                      onExport: () => onExport(id),
+                      onRemove: () => onRemove(id),
+                      onRename: (name) => onRename(id, name),
                     ),
                   ),
                 )
@@ -326,7 +323,7 @@ class _ProfilePageView extends StatelessWidget {
         const SizedBox(height: 12),
         PageDotsIndicator(
           current: currentPage,
-          count: profiles.length,
+          count: orderedIds.length,
           onPageChanged: (page) {
             pageController.animateToPage(
               page,
