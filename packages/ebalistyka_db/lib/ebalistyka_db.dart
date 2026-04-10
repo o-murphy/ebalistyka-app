@@ -6,9 +6,9 @@ export 'objectbox.g.dart';
 
 /// Opens (or creates) the ObjectBox store at [directory].
 ///
-/// Defaults to `~/.eBallistyka` when [directory] is not provided.
-Future<Store> initObjectBox({String? directory}) async {
-  final dir = directory ?? '${Platform.environment['HOME']}/.eBallistyka';
-  await Directory(dir).create(recursive: true);
-  return openStore(directory: dir);
+/// The caller is responsible for resolving an appropriate path
+/// (e.g. via `getApplicationSupportDirectory()` from path_provider).
+Future<Store> initObjectBox({required String directory}) async {
+  await Directory(directory).create(recursive: true);
+  return openStore(directory: directory);
 }

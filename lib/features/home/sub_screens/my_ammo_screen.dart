@@ -105,7 +105,9 @@ class MyAmmoScreen extends ConsumerWidget {
                       extra: item,
                     );
                     if (result != null && context.mounted) {
-                      await ref.read(appStateProvider.notifier).saveAmmo(result);
+                      await ref
+                          .read(appStateProvider.notifier)
+                          .saveAmmo(result);
                     }
                   },
                   onDuplicate: () async {

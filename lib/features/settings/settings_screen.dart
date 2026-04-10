@@ -3,6 +3,7 @@ import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -10,6 +11,11 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+final _packageInfoProvider = FutureProvider<PackageInfo>(
+  (_) => PackageInfo.fromPlatform(),
+);
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -136,7 +142,8 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('GitHub'),
             trailing: const Icon(Icons.open_in_new_outlined, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () =>
+                _launchUrl("https://github.com/o-murphy/test_flutter_app"),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
@@ -160,7 +167,18 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.info_outlined),
             title: const Text('Version'),
-            trailing: Text('1.0.0', style: tt.bodySmall),
+            trailing: Text(
+              ref
+                  .watch(_packageInfoProvider)
+                  .when(
+                    data: (i) => i.buildNumber.isNotEmpty
+                        ? '${i.version}+${i.buildNumber}'
+                        : i.version,
+                    loading: () => '…',
+                    error: (_, _) => '?',
+                  ),
+              style: tt.bodySmall,
+            ),
             dense: true,
           ),
           ListTile(
@@ -248,5 +266,15 @@ class _ThemeSelector extends StatelessWidget {
         visualDensity: VisualDensity.compact,
       ),
     );
+  }
+}
+
+Future<void> _launchUrl(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication, // Відкриває в зовнішньому браузері
+  )) {
+    throw Exception('Could not launch $url');
   }
 }

@@ -25,7 +25,10 @@ class CollectionItemTile extends StatelessWidget {
   final bool isSelected;
 
   bool get _hasActions =>
-      onEdit != null || onRemove != null || onDuplicate != null || onExport != null;
+      onEdit != null ||
+      onRemove != null ||
+      onDuplicate != null ||
+      onExport != null;
 
   Future<void> _showActionsSheet(BuildContext context) => showActionSheet(
     context,

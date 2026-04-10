@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'core/providers/db_provider.dart';
@@ -49,7 +50,8 @@ void main() async {
     });
   }
 
-  final store = await initObjectBox();
+  final appSupport = await getApplicationSupportDirectory();
+  final store = await initObjectBox(directory: appSupport.path);
 
   runApp(
     ProviderScope(

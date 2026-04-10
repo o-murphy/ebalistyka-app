@@ -15,6 +15,11 @@ on:
         description: 'Build type'
         required: true
         type: string  # release | debug
+      build_name:
+        description: 'Version name (e.g. 0.1.0-alpha)'
+        required: false
+        type: string
+        default: '0.1.0-alpha'
       retention_days:
         description: 'Artifact retention in days'
         required: false
@@ -48,6 +53,11 @@ on:
         default: 'release'
         type: choice
         options: [release, debug]
+      build_name:
+        description: 'Version name (e.g. 0.1.0-alpha)'
+        required: false
+        default: '0.1.0-alpha'
+        type: string
 
 env:
   FLUTTER_VERSION: '3.41.6'
@@ -81,6 +91,7 @@ jobs:
           sudo apt-get install -y \
             clang cmake ninja-build pkg-config \
             libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libclang-dev \
             fuse libfuse2
 
       - name: Set build metadata
@@ -89,15 +100,19 @@ jobs:
         run: |
           ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
           FLUTTER_ARCH=${{ inputs.arch == 'amd64' && 'x64' || 'arm64' }}
-          echo "arch_suffix=$ARCH_SUFFIX" >> $GITHUB_OUTPUT
+          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
           echo "flutter_arch=$FLUTTER_ARCH" >> $GITHUB_OUTPUT
 
           BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
           echo "bclibc_hash=$BCLIBC_HASH" >> $GITHUB_OUTPUT
-          
-          # Хеш для пакету bclibc_ffi (якщо є свої зміни)
-          BCLIBC_FFI_HASH=$(git -C packages/bclibc_ffi rev-parse HEAD 2>/dev/null || echo "unknown")
+
+          BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
           echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
+
+          BUILD_NAME="${{ inputs.build_name }}"
+          BUILD_NUMBER="${{ github.run_number }}"
+          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
 
           if [ "${{ inputs.platform }}" = "linux" ]; then
             echo "bundle_dir=build/linux/${FLUTTER_ARCH}/${{ inputs.build_type }}/bundle" >> $GITHUB_OUTPUT
@@ -106,7 +121,7 @@ jobs:
             echo "bundle_dir=build/windows/x64/runner/${BUILD_SUBDIR}" >> $GITHUB_OUTPUT
           fi
 
-          echo "artifact_name=ebalistyka-${{ inputs.platform }}-${ARCH_SUFFIX}-${{ inputs.build_type }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-${{ inputs.platform }}-${ARCH_SUFFIX}-${{ inputs.build_type }}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Cache pub packages (Linux)
         if: inputs.platform == 'linux'
@@ -124,7 +139,6 @@ jobs:
           key: pub-windows-${{ inputs.arch }}-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-${{ inputs.arch }}-
 
-      # Кеш для bclibc (основна бібліотека)
       - name: Cache bclibc build
         uses: actions/cache@v4
         with:
@@ -148,83 +162,38 @@ jobs:
 
       - name: Build Linux bundle
         if: inputs.platform == 'linux'
-        run: flutter build linux --${{ inputs.build_type }}
+        run: flutter build linux --${{ inputs.build_type }} --build-name=${{ inputs.build_name }} --build-number=${{ github.run_number }}
 
       - name: Build Windows bundle
         if: inputs.platform == 'windows'
-        run: flutter build windows --${{ inputs.build_type }}
+        run: flutter build windows --${{ inputs.build_type }} --build-name=${{ inputs.build_name }} --build-number=${{ github.run_number }}
 
-      - name: Package Linux AppImage
+      - name: Verify bundle
+        shell: bash
+        run: |
+          bash scripts/verify-bundle.sh \
+            "${{ steps.meta.outputs.bundle_dir }}" \
+            "${{ inputs.platform }}"
+
+      - name: Package Linux artifacts
         if: inputs.platform == 'linux'
         shell: bash
         run: |
-          BUNDLE_DIR="${{ steps.meta.outputs.bundle_dir }}"
-          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
-
-          if [ ! -d "$BUNDLE_DIR" ]; then
-            echo "Bundle not found at: $BUNDLE_DIR"
-            find build/linux -name "ebalistyka" 2>/dev/null || true
-            exit 1
-          fi
-
-          wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH_SUFFIX}.AppImage" \
-            -O /usr/local/bin/appimagetool
-          chmod +x /usr/local/bin/appimagetool
-
-          APPDIR="AppDir"
-          mkdir -p "$APPDIR/usr/share/ebalistyka"
-          mkdir -p "$APPDIR/usr/share/applications"
-          mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
-
-          cp -r "$BUNDLE_DIR/"* "$APPDIR/usr/share/ebalistyka/"
-
-          printf '[Desktop Entry]\nName=eBalistyka\nExec=ebalistyka\nIcon=ebalistyka\nType=Application\nCategories=Utility;\n' \
-            > "$APPDIR/usr/share/applications/ebalistyka.desktop"
-
-          if [ -f "assets/icon.png" ]; then
-            cp "assets/icon.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
-          else
-            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82' \
-              > "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
-          fi
-
-          ln -sf usr/share/applications/ebalistyka.desktop "$APPDIR/ebalistyka.desktop"
-          ln -sf usr/share/icons/hicolor/256x256/apps/ebalistyka.png "$APPDIR/ebalistyka.png"
-
-          printf '#!/bin/sh\nHERE="$(dirname "$(readlink -f "$0")")"\nAPP_DIR="$HERE/usr/share/ebalistyka"\nexport LD_LIBRARY_PATH="$APP_DIR/lib:$LD_LIBRARY_PATH"\nexec "$APP_DIR/ebalistyka" "$@"\n' \
-            > "$APPDIR/AppRun"
-          chmod +x "$APPDIR/AppRun"
-
-          APPIMAGE_NAME="ebalistyka-${ARCH_SUFFIX}.AppImage"
-          ARCH="${ARCH_SUFFIX}" appimagetool "$APPDIR" "$APPIMAGE_NAME"
-
-          mkdir -p artifacts
-          mv "$APPIMAGE_NAME" artifacts/
+          bash scripts/package-linux.sh \
+            "${{ steps.meta.outputs.bundle_dir }}" \
+            "${{ steps.meta.outputs.arch_suffix }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
 
       - name: Package Windows artifacts
         if: inputs.platform == 'windows'
         shell: pwsh
         run: |
-          $bundleDir = "${{ steps.meta.outputs.bundle_dir }}"
-
-          if (-not (Test-Path $bundleDir)) {
-            Write-Host "Bundle not found at: $bundleDir"
-            Get-ChildItem -Path build -Recurse -Filter "ebalistyka.exe" | ForEach-Object { Write-Host $_.FullName }
-            exit 1
-          }
-
-          New-Item -ItemType Directory -Force -Path artifacts
-
-          Copy-Item "$bundleDir\ebalistyka.exe" "artifacts\"
-          Get-ChildItem -Path $bundleDir -Filter "*.dll" | Copy-Item -Destination "artifacts\"
-
-          if (Test-Path "$bundleDir\data") {
-            Copy-Item -Path "$bundleDir\data" -Destination "artifacts\data" -Recurse
-          }
-
-          if ("${{ inputs.build_type }}" -eq "debug" -and (Test-Path "$bundleDir\ebalistyka.pdb")) {
-            Copy-Item "$bundleDir\ebalistyka.pdb" "artifacts\"
-          }
+          .\scripts\package-windows.ps1 `
+            -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
+            -BuildName "${{ steps.meta.outputs.build_name }}" `
+            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
+            -BuildType "${{ inputs.build_type }}"
 
       - name: Upload artifact
         id: upload

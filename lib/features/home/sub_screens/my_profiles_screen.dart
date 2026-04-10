@@ -270,7 +270,8 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       );
     }
 
-    final currentId = _currentProfileId ??
+    final currentId =
+        _currentProfileId ??
         paging.orderedIds[_currentPage.clamp(0, paging.orderedIds.length - 1)];
 
     // Watch only the current card's name for the title — not the whole list.

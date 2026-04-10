@@ -1,12 +1,23 @@
-.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean
+.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean run run-clean unit
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
   NPROC   := $(NUMBER_OF_PROCESSORS)
   RM_DIR  := cmake -E remove_directory
+  # getApplicationSupportDirectory() on Windows → %APPDATA%\<company>\<app>\data
+  # Flutter uses the BINARY_NAME from CMakeLists.txt ("ebalistyka")
+  DB_DIR  := $(APPDATA)\ebalistyka\ebalistyka
 else
   NPROC   := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
   RM_DIR  := rm -rf
+  UNAME_S := $(shell uname -s)
+  ifeq ($(UNAME_S),Darwin)
+    # getApplicationSupportDirectory() on macOS → ~/Library/Application Support/<bundle_id>
+    DB_DIR := $(HOME)/Library/Application Support/com.ballistics.ebalistyka
+  else
+    # getApplicationSupportDirectory() on Linux → $XDG_DATA_HOME/<bundle_id>
+    DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.ballistics.ebalistyka
+  endif
 endif
 
 # Build the native shared library via CMake (still builds from external/bclibc)
@@ -46,7 +57,12 @@ run:
 	flutter run
 
 run-clean:
-	rm -rf ~/.eBallistyka && flutter run
+ifeq ($(OS),Windows_NT)
+	-if exist "$(DB_DIR)" rmdir /s /q "$(DB_DIR)"
+else
+	-$(RM_DIR) "$(DB_DIR)"
+endif
+	flutter run
 
 # Run only unit tests (no native dependency)
 unit:

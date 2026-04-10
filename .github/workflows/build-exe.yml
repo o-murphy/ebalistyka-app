@@ -21,7 +21,8 @@ jobs:
       platform: windows
       arch: amd64
       build_type: release
-      retention_days: 7
+      build_name: '0.1.0-alpha'
+      retention_days: 30
 
   pr-summary:
     name: PR Build Summary

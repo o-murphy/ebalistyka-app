@@ -96,7 +96,9 @@ class MySightsCollectionScreen extends ConsumerWidget {
                       extra: item,
                     );
                     if (result != null && context.mounted) {
-                      await ref.read(appStateProvider.notifier).saveSight(result);
+                      await ref
+                          .read(appStateProvider.notifier)
+                          .saveSight(result);
                     }
                   },
                   onDuplicate: () async {
