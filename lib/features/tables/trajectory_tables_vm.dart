@@ -50,9 +50,16 @@ class TrajectoryTablesUiError extends TrajectoryTablesUiState {
 // ── ViewModel ────────────────────────────────────────────────────────────────
 
 class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
+  BallisticsResult? _lastResult;
+  Profile? _lastProfile;
+
   @override
-  Future<TrajectoryTablesUiState> build() async =>
-      const TrajectoryTablesUiLoading();
+  Future<TrajectoryTablesUiState> build() async {
+    ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {
+      _rebuild();
+    });
+    return const TrajectoryTablesUiLoading();
+  }
 
   Future<void> recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
@@ -94,6 +101,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
           .read(ballisticsServiceProvider)
           .calculateTable(profile, conditions, opts);
 
+      _lastResult = result;
+      _lastProfile = profile;
+
       final uiState = _buildReadyState(
         profile: profile,
         conditions: conditions,
@@ -107,6 +117,30 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     } catch (e) {
       state = AsyncData(TrajectoryTablesUiError(e.toString()));
     }
+  }
+
+  void _rebuild() {
+    final result = _lastResult;
+    final profile = _lastProfile;
+    if (result == null || profile == null) return;
+
+    final ctx = ref.read(shotContextProvider).value;
+    if (ctx == null) return;
+
+    final tablesSettings = ref.read(tablesSettingsProvider);
+    final units = ref.read(unitSettingsProvider);
+    final formatter = ref.read(unitFormatterProvider);
+
+    final uiState = _buildReadyState(
+      profile: profile,
+      conditions: ctx.conditions,
+      tablesSettings: tablesSettings,
+      units: units,
+      formatter: formatter,
+      result: result,
+    );
+
+    state = AsyncData(uiState);
   }
 
   // ── Private builders ───────────────────────────────────────────────────────
