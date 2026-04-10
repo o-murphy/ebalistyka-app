@@ -176,13 +176,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         ..owner.target = owner;
       _store.box<Sight>().put(sight);
 
-      final weapon = Weapon()
-        ..name = '.338 Lapua Magnum'
-        ..caliber = Distance.inch(0.338)
-        ..twist = Distance.inch(10.0)
-        ..owner.target = owner;
-      _store.box<Weapon>().put(weapon);
-
       final ammos = [
         Ammo()
           ..name = '.338LM UKROP 250GR SMK'
@@ -224,6 +217,13 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       _store.box<Ammo>().putMany(ammos);
 
       for (var i = 0; i < ammos.length; i++) {
+        final weapon = Weapon()
+          ..name = '.338 Lapua Magnum'
+          ..caliber = Distance.inch(0.338)
+          ..twist = Distance.inch(10.0)
+          ..owner.target = owner;
+        _store.box<Weapon>().put(weapon);
+
         final profile = Profile()
           ..name = ammos[i].name
           ..sortOrder = i
@@ -336,6 +336,40 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     });
     // Weapon + Profile streams trigger reload.
     return profileId;
+  }
+
+  Future<int> duplicateProfile(int id, String newName) async {
+    int newProfileId = 0;
+    final owner = _owner;
+    _store.runInTransaction(TxMode.write, () {
+      final original = _store.box<Profile>().get(id);
+      if (original == null) return;
+
+      final originalWeapon = _store.box<Weapon>().get(original.weapon.targetId);
+      if (originalWeapon == null) return;
+
+      final weaponCopy = Weapon()
+        ..name = originalWeapon.name
+        ..caliberInch = originalWeapon.caliberInch
+        ..caliberName = originalWeapon.caliberName
+        ..twistInch = originalWeapon.twistInch
+        ..barrelLengthInch = originalWeapon.barrelLengthInch
+        ..zeroElevationRad = originalWeapon.zeroElevationRad
+        ..vendor = originalWeapon.vendor
+        ..image = originalWeapon.image
+        ..owner.target = owner;
+      _store.box<Weapon>().put(weaponCopy);
+
+      final profile = Profile()
+        ..name = newName
+        ..weapon.target = weaponCopy
+        ..ammo.targetId = original.ammo.targetId
+        ..sight.targetId = original.sight.targetId
+        ..owner.target = owner;
+      newProfileId = _store.box<Profile>().put(profile);
+    });
+    // Weapon + Profile streams trigger reload.
+    return newProfileId;
   }
 
   Future<void> saveProfile(Profile profile) async {

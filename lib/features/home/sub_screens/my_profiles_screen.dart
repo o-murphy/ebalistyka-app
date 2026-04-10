@@ -112,7 +112,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   // ── Actions (by profile ID) ───────────────────────────────────────────────
 
   Future<void> _onDuplicate(String profileId) async {
-    // TODO: implement profile copy with name input dialog
+    final originalName = ref.read(profileCardProvider(profileId))?.name;
+    if (originalName == null || !mounted) return;
+    final name = await _askProfileName(initial: 'Copy of $originalName');
+    if (name == null || !mounted) return;
+    await ref
+        .read(profilesActionsProvider.notifier)
+        .duplicateProfile(profileId, name);
   }
 
   Future<void> _onRemove(String profileId) async {

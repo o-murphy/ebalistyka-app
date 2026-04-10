@@ -207,6 +207,15 @@ class ProfilesActions extends Notifier<void> {
     return id.toString();
   }
 
+  Future<String> duplicateProfile(String id, String newName) async {
+    final intId = int.tryParse(id);
+    if (intId == null) return '';
+    final newId = await ref
+        .read(appStateProvider.notifier)
+        .duplicateProfile(intId, newName);
+    return newId.toString();
+  }
+
   Future<void> renameProfile(String id, String name) async {
     final profile = ref
         .read(appStateProvider)

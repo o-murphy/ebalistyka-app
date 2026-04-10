@@ -76,10 +76,33 @@ ShotConditionsNotifier   — watch ShootingConditions box
 
 `save*` методи — тільки DB write. Stream сам оновлює стан.
 
-### ProfilesViewModel
+### Profiles Provider Architecture
 
-Watchає `appStateProvider` реактивно. `_buildCardData` джойнить weapon/ammo/sight
-по `targetId` з `appState.weapons/cartridges/sights` (не lazy ToOne).
+Три окремих провайдери з чіткими відповідальностями:
+
+```
+appStateProvider
+    │
+    ├──► profilesPagingProvider   Provider<ProfilesPagingState>
+    │         Тільки структурні дані: orderedIds + activeId.
+    │         Активний профіль іде першим у списку.
+    │         Рівність через ==: не нотіфікує якщо структура не змінилась.
+    │         → ProfilesScreen.ref.listen (пейджинг: add/delete/active change)
+    │
+    ├──► profileCardProvider(id)  Provider.autoDispose.family<ProfileCardData?, String>
+    │         Дані одного профілю: джойнить weapon/ammo/sight по targetId.
+    │         ProfileCardData має власний == по всіх 15 полях.
+    │         → ProfileCard.ref.watch — ребілдиться тільки якщо цей профіль змінився.
+    │
+    └──► profilesActionsProvider  Notifier<void>
+              Тільки actions: selectProfile, removeProfile, createProfile, renameProfile.
+              Не тримає стан — делегує до appStateProvider.notifier.
+```
+
+**Ключова властивість:** синхронний `Provider<T>` не має intermediate states (AsyncLoading/AsyncRefreshing).
+`ref.listen` на `profilesPagingProvider` спрацьовує тільки якщо `ProfilesPagingState.==` повертає `false`.
+Зміна ammo/sight/weapon content → `appStateProvider` оновлюється → `profileCardProvider` оновлюється →
+але `profilesPagingProvider` повертає той самий `ProfilesPagingState` → пейджинг не змінюється.
 
 ---
 
@@ -225,7 +248,8 @@ ProfileCard
                   → stream auto-triggers ProfilesViewModel rebuild
 ```
 
-✅ Реалізовано.
+✅ Реалізовано. `appStateProvider.saveWeapon` → OB stream → `appStateProvider` reload →
+`profileCardProvider(id)` оновлюється (content) → `profilesPagingProvider` не змінюється (paging).
 
 ### Flow 5: Edit Ammo properties
 
@@ -322,7 +346,19 @@ Per-card actions (Duplicate / Export / Rename / Remove) — у bottom action she
 - **FAB** (одна кнопка `+`) → bottom sheet з Add flow
 - **Per-card actions** → bottom action sheet через ⋮ кнопку (`_ProfileControlTile`): Duplicate, Export, Rename, Remove
 - **PageView** з `PageDotsIndicator`
-- Активний профіль — перша сторінка (`_sortProfiles`)
+- Активний профіль — перша сторінка (сортується у `profilesPagingProvider`)
+
+**Paging rules** (`ref.listen<ProfilesPagingState>`):
+
+| Подія | Дія |
+|---|---|
+| Профіль доданий (`length` збільшився) | navigate to last page (animated) |
+| Профіль видалений (`length` зменшився) | stay on current page якщо він ще існує; інакше `clamp` до найближчого |
+| Активний профіль змінився (`activeId` інший) | navigate to page 0 |
+| Зміна content (ammo/sight/weapon edit) | нічого — `profilesPagingProvider` не нотіфікує |
+
+`ProfileCard` — `ConsumerStatefulWidget`, watchає `profileCardProvider(profileId)` незалежно.
+Кожна картка ребілдиться тільки якщо її власні дані змінились.
 
 ---
 
@@ -382,9 +418,9 @@ ProfilesScreen  (/home/profiles)
 | `lib/core/extensions/settings_extensions.dart` | ✅ | enum getters (ThemeMode, Unit) |
 | `lib/core/a7p/a7p_parser.dart` | ✅ | proto → OB entities |
 | `lib/core/collection/collection_parser.dart` | ✅ | JSON → OB entities |
-| `lib/features/home/profiles_vm.dart` | ✅ | watches appStateProvider |
-| `lib/features/home/sub_screens/my_profiles_screen.dart` | ✅ | ProfilesScreen з PageView, paging logic, FAB, actions |
-| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | _ProfileControlTile з ammo/sight FABs + hints |
+| `lib/features/home/profiles_vm.dart` | ✅ | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>) |
+| `lib/features/home/sub_screens/my_profiles_screen.dart` | ✅ | ProfilesScreen: PageView, paging listener, FAB, per-profile callbacks |
+| `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | ConsumerStatefulWidget; watchає profileCardProvider(id); _ProfileControlTile з ammo/sight FABs + hints |
 | `lib/features/home/sub_screens/my_ammo_screen.dart` | ✅ | Вибір ammo для профілю |
 | `lib/features/home/sub_screens/my_sights_screen.dart` | ✅ | Вибір sight для профілю |
 | `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
@@ -402,5 +438,5 @@ ProfilesScreen  (/home/profiles)
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
 - [ ] `SelectWeaponCollectionScreen` — реалізувати
 - [ ] `SelectSightCollectionScreen` / `CreateSightWizardScreen` — реалізувати
-- [ ] Duplicate profile — реалізувати (weapon копіюється, ammo/sight — ті самі refs)
+- [x] Duplicate profile — реалізовано: weapon копіюється (новий entity), ammo/sight — ті самі refs
 - [ ] Export / Import profile — формат TBD
