@@ -88,6 +88,13 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   String windDirection(Angular dim) => _fmt(dim, FC.windDirection, Unit.degree);
 
+  @override
+  String magnificationRange(double min, double max) =>
+      "${min.toFixedSafe(0)}-${max.toFixedSafe(0)}x";
+
+  @override
+  String click(double value, Unit unit) => adjustment(Angular(value, unit));
+
   // --- Symbols ---
 
   @override

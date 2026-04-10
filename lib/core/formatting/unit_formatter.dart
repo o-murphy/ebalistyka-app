@@ -29,6 +29,10 @@ abstract interface class UnitFormatter {
   String windSpeed(Velocity dim);
   String windDirection(Angular dim);
 
+  String magnificationRange(double min, double max);
+
+  String click(double value, Unit unit);
+
   // --- Current unit symbols ---
   String get velocitySymbol;
   String get distanceSymbol;

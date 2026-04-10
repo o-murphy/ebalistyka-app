@@ -212,17 +212,16 @@ ProfileCardData _buildCardData(
     sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
     focalPlane: sight?.focalPlane.name.toUpperCase() ?? '—',
     magnification: sight != null
-        ? "${sight.minMagnification.toFixedSafe(0)} - ${sight.maxMagnification.toFixedSafe(0)}"
+        ? formatter.magnificationRange(
+            sight.minMagnification,
+            sight.maxMagnification,
+          )
         : '—',
     verticalClick: sight != null
-        ? formatter.adjustment(
-            Angular(sight.verticalClick, sight.verticalClickUnitValue),
-          )
+        ? formatter.click(sight.verticalClick, sight.verticalClickUnitValue)
         : '—',
     horizontalClick: sight != null
-        ? formatter.adjustment(
-            Angular(sight.horizontalClick, sight.horizontalClickUnitValue),
-          )
+        ? formatter.click(sight.horizontalClick, sight.horizontalClickUnitValue)
         : '—',
   );
 }

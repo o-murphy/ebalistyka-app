@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_sight_tile_body.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
@@ -79,7 +80,8 @@ class MySightsCollectionScreen extends ConsumerWidget {
               .map(
                 (item) => CollectionItemTile(
                   key: ValueKey(item.id),
-                  body: Center(child: Text(item.name)),
+                  // body: Center(child: Text(item.name)),
+                  body: CollectionSightTileBody(sight: item),
                   item: SightCollectionItem(ref: item),
                   isSelected: item.id == selectedId,
                   onSelect: () async {
