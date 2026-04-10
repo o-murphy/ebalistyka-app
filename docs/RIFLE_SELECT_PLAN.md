@@ -255,23 +255,25 @@ ProfileCard
 
 ```
 ProfileCard
-  └─ "Ammo" section tap (ListSectionTile)  ← visible only if ammo selected
-      └─ AmmoEditScreen(ammoId: int)        ← /home/profiles/ammo-edit
-          └─ Save → appStateProvider.saveAmmo
+  └─ "Ammo" section tap → onEditAmmo callback → _ProfilesScreenState._onEditAmmo
+      └─ reads Ammo entity from appState
+          └─ AmmoWizardScreen(initial: ammo)  ← /home/profiles/ammo-edit
+              └─ context.pop(Ammo) → appStateProvider.saveAmmo
 ```
 
-🔧 Роутинг реалізований (ammoId передається), AmmoEditScreen — stub.
+🔧 Роутинг і callbacks реалізовані, AmmoWizardScreen — stub.
 
 ### Flow 6: Edit Sight properties
 
 ```
 ProfileCard
-  └─ "Sight" section tap (ListSectionTile)  ← visible only if sight selected
-      └─ SightEditScreen(sightId: int)       ← /home/profiles/sight-edit
-          └─ Save → appStateProvider.saveSight
+  └─ "Sight" section tap → onEditSight callback → _ProfilesScreenState._onEditSight
+      └─ reads Sight entity from appState
+          └─ SightWizardScreen(initial: sight)  ← /home/profiles/sight-edit
+              └─ context.pop(Sight) → appStateProvider.saveSight
 ```
 
-🔧 Роутинг реалізований (sightId передається), SightEditScreen — stub.
+🔧 Роутинг і callbacks реалізовані, SightWizardScreen — stub.
 
 ### Flow 7: Duplicate Profile
 
@@ -304,13 +306,23 @@ ProfileCard PopupMenu → "Duplicate"
 
 ### AmmoWizardScreen
 
-Приймає `Ammo?` + тип (cartridge / bullet). MV — **завжди required**.
+Приймає `Ammo? initial` (null = новий). Повертає `Ammo?` через `context.pop(ammo)`.
+
+Використовується в трьох контекстах:
+- `ammo-select/create` — створення нового (initial = null)
+- `ammo-select/cartridge-collection` або `bullet-collection` → AmmoWizardScreen (pre-filled, тип readonly)
+- `ammo-edit` — редагування існуючого (initial = Ammo з appState)
 
 Секції: Ballistics · Muzzle Velocity · Zero Conditions
 
 ### SightWizardScreen
 
-Приймає `Sight?`. Повертає `Sight`.
+Приймає `Sight? initial` (null = новий). Повертає `Sight?` через `context.pop(sight)`.
+
+Використовується в трьох контекстах:
+- `sight-select/create` — створення нового (initial = null)
+- `sight-select/collection` → SightWizardScreen (pre-filled)
+- `sight-edit` — редагування існуючого (initial = Sight з appState)
 
 ---
 
@@ -390,6 +402,7 @@ ProfilesScreen  (/home/profiles)
 1. **Wizard validation** — підсвітка обов'язкових полів у wizard screens. `touched` флаг: помилка тільки після першої спроби Save, потім — реактивна. ✅ Реалізовано для WeaponWizardScreen і `showTextInputDialog`.
 2. **ProfileCard bottom** — `ColoredBox(errorContainer)` з текстом якщо `ammoId == null || sightId == null`, інакше FilledButton. ✅ Реалізовано.
 3. **Home / Tables** — `HomeUiNoData(message)` / `TrajectoryTablesUiEmpty(message)` замість спінера. ✅ Реалізовано через `EmptyStatePlaceholder`.
+4. **Confirm dialog** — `showConfirmDialog` (`lib/shared/widgets/confirm_dialog.dart`). `isDestructive: true` → error colors, `false` → tertiary colors. ✅ Використовується у Remove profile / ammo / sight.
 
 ---
 
@@ -424,6 +437,7 @@ ProfilesScreen  (/home/profiles)
 | `lib/features/home/sub_screens/my_ammo_screen.dart` | ✅ | Вибір ammo для профілю |
 | `lib/features/home/sub_screens/my_sights_screen.dart` | ✅ | Вибір sight для профілю |
 | `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
+| `lib/shared/widgets/confirm_dialog.dart` | ✅ | reusable confirm: isDestructive (error) / tertiary colors |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | |
 | `lib/router.dart` | ✅ | Routes константи |
 | `assets/json/collection.json` | ✅ | Вбудована колекція |
@@ -432,11 +446,13 @@ ProfilesScreen  (/home/profiles)
 
 ## TODO
 
-- [ ] `AmmoEditScreen` — реалізувати (зараз stub, приймає `ammoId: int?`)
-- [ ] `SightEditScreen` — реалізувати (зараз stub, приймає `sightId: int?`)
-- [ ] `AmmoWizardScreen` / `CreateAmmoWizardScreen` — реалізувати
+- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop)
+- [ ] `SightWizardScreen` — реалізувати (stub; `initial: Sight?`, повертає `Sight?` через pop)
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
 - [ ] `SelectWeaponCollectionScreen` — реалізувати
-- [ ] `SelectSightCollectionScreen` / `CreateSightWizardScreen` — реалізувати
+- [ ] `SightCollectionScreen` — реалізувати
 - [x] Duplicate profile — реалізовано: weapon копіюється (новий entity), ammo/sight — ті самі refs
-- [ ] Export / Import profile — формат TBD
+- [x] Duplicate ammo — реалізовано: повне копіювання полів включно з Float64List таблицями
+- [x] Duplicate sight — реалізовано: повне копіювання полів
+- [x] Remove ammo / sight — реалізовано з confirm dialog
+- [ ] Export / Import profile / ammo / sight — формат TBD (наразі SnackBar "not yet available")

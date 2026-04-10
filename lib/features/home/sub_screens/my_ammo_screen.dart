@@ -1,8 +1,11 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
@@ -96,9 +99,45 @@ class MyAmmoScreen extends ConsumerWidget {
                         .setProfileAmmo(pid, item.id);
                     if (context.mounted) context.pop();
                   },
-                  onEdit: () => debugPrint(
-                    "routes to item wizard screen id: ${item.id} selected",
+                  onEdit: () async {
+                    final result = await context.push<Ammo?>(
+                      Routes.profileEditAmmo,
+                      extra: item,
+                    );
+                    if (result != null && context.mounted) {
+                      await ref.read(appStateProvider.notifier).saveAmmo(result);
+                    }
+                  },
+                  onDuplicate: () async {
+                    final name = await showTextInputDialog(
+                      context,
+                      title: 'Duplicate Ammo',
+                      initialValue: 'Copy of ${item.name}',
+                      labelText: 'Ammo name',
+                      confirmLabel: 'Create',
+                    );
+                    if (name == null || !context.mounted) return;
+                    await ref
+                        .read(appStateProvider.notifier)
+                        .duplicateAmmo(item.id, name);
+                  },
+                  onExport: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Export not yet available')),
                   ),
+                  onRemove: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Remove ammo',
+                      content: 'Remove "${item.name}"?',
+                      confirmLabel: 'Remove',
+                      isDestructive: true,
+                    );
+                    if (confirmed && context.mounted) {
+                      await ref
+                          .read(appStateProvider.notifier)
+                          .deleteAmmo(item.id);
+                    }
+                  },
                 ),
               )
               .toList(),

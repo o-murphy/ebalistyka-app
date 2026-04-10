@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
@@ -253,6 +254,69 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     // Ammo stream triggers reload.
   }
 
+  Future<int> duplicateAmmo(int id, String newName) async {
+    final original = _store.box<Ammo>().get(id);
+    if (original == null) return 0;
+    final copy = Ammo()
+      ..name = newName
+      ..caliberInch = original.caliberInch
+      ..weightGrain = original.weightGrain
+      ..lengthInch = original.lengthInch
+      ..dragTypeValue = original.dragTypeValue
+      ..bcG1 = original.bcG1
+      ..bcG7 = original.bcG7
+      ..useMultiBcG1 = original.useMultiBcG1
+      ..useMultiBcG7 = original.useMultiBcG7
+      ..muzzleVelocityMps = original.muzzleVelocityMps
+      ..muzzleVelocityTemperatureC = original.muzzleVelocityTemperatureC
+      ..powderTemperatureC = original.powderTemperatureC
+      ..powderSensitivityFrac = original.powderSensitivityFrac
+      ..usePowderSensitivity = original.usePowderSensitivity
+      ..usePowderTempForMv = original.usePowderTempForMv
+      ..powderSensitivityTC = original.powderSensitivityTC != null
+          ? Float64List.fromList(original.powderSensitivityTC!)
+          : null
+      ..powderSensitivityVMps = original.powderSensitivityVMps != null
+          ? Float64List.fromList(original.powderSensitivityVMps!)
+          : null
+      ..multiBcTableG1VMps = original.multiBcTableG1VMps != null
+          ? Float64List.fromList(original.multiBcTableG1VMps!)
+          : null
+      ..multiBcTableG1Bc = original.multiBcTableG1Bc != null
+          ? Float64List.fromList(original.multiBcTableG1Bc!)
+          : null
+      ..multiBcTableG7VMps = original.multiBcTableG7VMps != null
+          ? Float64List.fromList(original.multiBcTableG7VMps!)
+          : null
+      ..multiBcTableG7Bc = original.multiBcTableG7Bc != null
+          ? Float64List.fromList(original.multiBcTableG7Bc!)
+          : null
+      ..cusomDragTableMach = original.cusomDragTableMach != null
+          ? Float64List.fromList(original.cusomDragTableMach!)
+          : null
+      ..cusomDragTableCd = original.cusomDragTableCd != null
+          ? Float64List.fromList(original.cusomDragTableCd!)
+          : null
+      ..zeroDistanceMeter = original.zeroDistanceMeter
+      ..zeroLookAngleRad = original.zeroLookAngleRad
+      ..zeroAltitudeMeter = original.zeroAltitudeMeter
+      ..zeroTemperatureC = original.zeroTemperatureC
+      ..zeroPressurehPa = original.zeroPressurehPa
+      ..zeroHumidityFrac = original.zeroHumidityFrac
+      ..zeroPowderTemperatureC = original.zeroPowderTemperatureC
+      ..zeroUseDiffPowderTemperature = original.zeroUseDiffPowderTemperature
+      ..zeroUseCoriolis = original.zeroUseCoriolis
+      ..zeroLatitudeDeg = original.zeroLatitudeDeg
+      ..zeroAzimuthDeg = original.zeroAzimuthDeg
+      ..zeroOffsetXRad = original.zeroOffsetXRad
+      ..zeroOffsetYRad = original.zeroOffsetYRad
+      ..projectileName = original.projectileName
+      ..vendor = original.vendor
+      ..owner.target = _owner;
+    return _store.box<Ammo>().put(copy);
+    // Ammo stream triggers reload.
+  }
+
   Future<void> deleteAmmo(int id) async {
     _store.runInTransaction(TxMode.write, () {
       final linked = _store
@@ -278,6 +342,28 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   }
 
   // ── Sight CRUD ────────────────────────────────────────────────────────────────
+
+  Future<int> duplicateSight(int id, String newName) async {
+    final original = _store.box<Sight>().get(id);
+    if (original == null) return 0;
+    final copy = Sight()
+      ..name = newName
+      ..focalPlaneValue = original.focalPlaneValue
+      ..sightHeightInch = original.sightHeightInch
+      ..sightHorizontalOffsetInch = original.sightHorizontalOffsetInch
+      ..verticalClick = original.verticalClick
+      ..horizontalClick = original.horizontalClick
+      ..verticalClickUnit = original.verticalClickUnit
+      ..horizontalClickUnit = original.horizontalClickUnit
+      ..minMagnification = original.minMagnification
+      ..maxMagnification = original.maxMagnification
+      ..reticleImage = original.reticleImage
+      ..vendor = original.vendor
+      ..notes = original.notes
+      ..owner.target = _owner;
+    return _store.box<Sight>().put(copy);
+    // Sight stream triggers reload.
+  }
 
   Future<void> saveSight(Sight sight) async {
     sight.owner.target = _owner;

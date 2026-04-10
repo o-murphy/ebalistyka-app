@@ -1,5 +1,9 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
@@ -23,14 +27,12 @@ class MySightsCollectionScreen extends ConsumerWidget {
       ActionSheetItem(
         icon: Icons.add_circle_outline,
         title: 'Create new',
-        onTap: () async => debugPrint('Create new sight'),
-        // TODO: context.push(Routes.sightCreate)
+        onTap: () async => context.push(Routes.sightCreate),
       ),
       ActionSheetItem(
         icon: Icons.folder_open_outlined,
         title: 'Select from collection',
-        onTap: () async => debugPrint('Select sight from collection'),
-        // TODO: context.push(Routes.sightCollection)
+        onTap: () async => context.push(Routes.sightCollection),
       ),
     ],
   );
@@ -82,9 +84,45 @@ class MySightsCollectionScreen extends ConsumerWidget {
                         .setProfileSight(pid, item.id);
                     if (context.mounted) context.pop();
                   },
-                  onEdit: () => debugPrint(
-                    "routes to item wizard screen id: ${item.id} selected",
+                  onEdit: () async {
+                    final result = await context.push<Sight?>(
+                      Routes.profileEditSight,
+                      extra: item,
+                    );
+                    if (result != null && context.mounted) {
+                      await ref.read(appStateProvider.notifier).saveSight(result);
+                    }
+                  },
+                  onDuplicate: () async {
+                    final name = await showTextInputDialog(
+                      context,
+                      title: 'Duplicate Sight',
+                      initialValue: 'Copy of ${item.name}',
+                      labelText: 'Sight name',
+                      confirmLabel: 'Create',
+                    );
+                    if (name == null || !context.mounted) return;
+                    await ref
+                        .read(appStateProvider.notifier)
+                        .duplicateSight(item.id, name);
+                  },
+                  onExport: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Export not yet available')),
                   ),
+                  onRemove: () async {
+                    final confirmed = await showConfirmDialog(
+                      context,
+                      title: 'Remove sight',
+                      content: 'Remove "${item.name}"?',
+                      confirmLabel: 'Remove',
+                      isDestructive: true,
+                    );
+                    if (confirmed && context.mounted) {
+                      await ref
+                          .read(appStateProvider.notifier)
+                          .deleteSight(item.id);
+                    }
+                  },
                 ),
               )
               .toList(),

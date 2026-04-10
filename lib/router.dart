@@ -109,7 +109,7 @@ final appRouter = GoRouter(
                       routes: [
                         GoRoute(
                           path: 'create',
-                          builder: (_, _) => const CreateAmmoWizardScreen(),
+                          builder: (_, _) => const AmmoWizardScreen(),
                         ),
                         GoRoute(
                           path: 'cartridge-collection',
@@ -132,12 +132,11 @@ final appRouter = GoRouter(
                       routes: [
                         GoRoute(
                           path: 'create',
-                          builder: (_, _) => const CreateSightWizardScreen(),
+                          builder: (_, _) => const SightWizardScreen(),
                         ),
                         GoRoute(
                           path: 'collection',
-                          builder: (_, _) =>
-                              const SelectSightCollectionScreen(),
+                          builder: (_, _) => const SightCollectionScreen(),
                         ),
                       ],
                     ),
@@ -150,12 +149,12 @@ final appRouter = GoRouter(
                     GoRoute(
                       path: 'ammo-edit',
                       builder: (_, state) =>
-                          AmmoEditScreen(ammoId: state.extra as int?),
+                          AmmoWizardScreen(initial: state.extra as Ammo?),
                     ),
                     GoRoute(
                       path: 'sight-edit',
                       builder: (_, state) =>
-                          SightEditScreen(sightId: state.extra as int?),
+                          SightWizardScreen(initial: state.extra as Sight?),
                     ),
                   ],
                 ),

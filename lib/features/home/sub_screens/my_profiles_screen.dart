@@ -6,6 +6,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
+import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,24 +125,14 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   Future<void> _onRemove(String profileId) async {
     final name = ref.read(profileCardProvider(profileId))?.name;
     if (name == null) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove profile'),
-        content: Text('Remove "$name" and its weapon?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Remove profile',
+      content: 'Remove "$name" and its weapon?',
+      confirmLabel: 'Remove',
+      isDestructive: true,
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await ref.read(profilesActionsProvider.notifier).removeProfile(profileId);
     }
   }
@@ -169,6 +160,50 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     );
     if (result != null && mounted) {
       await ref.read(appStateProvider.notifier).saveWeapon(result);
+    }
+  }
+
+  Future<void> _onEditAmmo(String profileId) async {
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == profileId)
+        .firstOrNull;
+    if (profile == null) return;
+
+    final ammo = appState.cartridges
+        .where((a) => a.id == profile.ammo.targetId)
+        .firstOrNull;
+
+    final result = await context.push<Ammo?>(
+      Routes.profileEditAmmo,
+      extra: ammo,
+    );
+    if (result != null && mounted) {
+      await ref.read(appStateProvider.notifier).saveAmmo(result);
+    }
+  }
+
+  Future<void> _onEditSight(String profileId) async {
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == profileId)
+        .firstOrNull;
+    if (profile == null) return;
+
+    final sight = appState.sights
+        .where((s) => s.id == profile.sight.targetId)
+        .firstOrNull;
+
+    final result = await context.push<Sight?>(
+      Routes.profileEditSight,
+      extra: sight,
+    );
+    if (result != null && mounted) {
+      await ref.read(appStateProvider.notifier).saveSight(result);
     }
   }
 
@@ -260,6 +295,8 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         onPageChanged: (page) => _onPageChanged(page, paging.orderedIds),
         onSelect: _onSelect,
         onEditRifle: _onEditRifle,
+        onEditAmmo: _onEditAmmo,
+        onEditSight: _onEditSight,
         onDuplicate: _onDuplicate,
         onExport: _onExport,
         onRemove: _onRemove,
@@ -280,6 +317,8 @@ class _ProfilePageView extends StatelessWidget {
     required this.onPageChanged,
     required this.onSelect,
     required this.onEditRifle,
+    required this.onEditAmmo,
+    required this.onEditSight,
     required this.onDuplicate,
     required this.onExport,
     required this.onRemove,
@@ -293,6 +332,8 @@ class _ProfilePageView extends StatelessWidget {
   final void Function(int) onPageChanged;
   final void Function(String) onSelect;
   final void Function(String) onEditRifle;
+  final void Function(String) onEditAmmo;
+  final void Function(String) onEditSight;
   final void Function(String) onDuplicate;
   final void Function(String) onExport;
   final void Function(String) onRemove;
@@ -316,6 +357,8 @@ class _ProfilePageView extends StatelessWidget {
                       activeProfileId: activeProfileId,
                       onSelect: () => onSelect(id),
                       onEditWeapon: () => onEditRifle(id),
+                      onEditAmmo: () => onEditAmmo(id),
+                      onEditSight: () => onEditSight(id),
                       onDuplicate: () => onDuplicate(id),
                       onExport: () => onExport(id),
                       onRemove: () => onRemove(id),

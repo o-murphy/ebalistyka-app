@@ -15,6 +15,8 @@ class ProfileCard extends ConsumerStatefulWidget {
     required this.activeProfileId,
     required this.onSelect,
     required this.onEditWeapon,
+    required this.onEditAmmo,
+    required this.onEditSight,
     required this.onDuplicate,
     required this.onExport,
     required this.onRemove,
@@ -26,6 +28,8 @@ class ProfileCard extends ConsumerStatefulWidget {
   final String? activeProfileId;
   final VoidCallback onSelect;
   final VoidCallback onEditWeapon;
+  final VoidCallback onEditAmmo;
+  final VoidCallback onEditSight;
   final VoidCallback onDuplicate;
   final VoidCallback onExport;
   final VoidCallback onRemove;
@@ -198,7 +202,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         const Divider(height: 1),
         ListSectionTile(
           "Ammo",
-          onTap: () => context.push(Routes.profileEditAmmo, extra: data.ammoId),
+          onTap: widget.onEditAmmo,
           trailing: Icon(
             Icons.edit_outlined,
             size: 16,
@@ -249,8 +253,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         const Divider(height: 1),
         ListSectionTile(
           "Sight",
-          onTap: () =>
-              context.push(Routes.profileEditSight, extra: data.sightId),
+          onTap: widget.onEditSight,
           trailing: Icon(
             Icons.edit_outlined,
             size: 16,

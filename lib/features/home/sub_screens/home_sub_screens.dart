@@ -4,6 +4,7 @@ export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 
 // ── Weapon ────────────────────────────────────────────────────────────────────
@@ -28,37 +29,31 @@ class AmmoCollectionScreen extends StatelessWidget {
   );
 }
 
-class CreateAmmoWizardScreen extends StatelessWidget {
-  const CreateAmmoWizardScreen({super.key});
+/// Reusable ammo form: null = create new, non-null = edit existing.
+/// Returns Ammo? via context.pop(ammo).
+class AmmoWizardScreen extends StatelessWidget {
+  const AmmoWizardScreen({this.initial, super.key});
+  final Ammo? initial;
   @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Create Ammo');
-}
-
-class AmmoEditScreen extends StatelessWidget {
-  const AmmoEditScreen({this.ammoId, super.key});
-  final int? ammoId;
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Edit Ammo');
+  Widget build(BuildContext context) =>
+      StubScreen(title: initial == null ? 'Create Ammo' : 'Edit Ammo');
 }
 
 // ── Sight ─────────────────────────────────────────────────────────────────────
 
-class CreateSightWizardScreen extends StatelessWidget {
-  const CreateSightWizardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Create Sight');
-}
-
-class SelectSightCollectionScreen extends StatelessWidget {
-  const SelectSightCollectionScreen({super.key});
+class SightCollectionScreen extends StatelessWidget {
+  const SightCollectionScreen({super.key});
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Sight Collection');
 }
 
-class SightEditScreen extends StatelessWidget {
-  const SightEditScreen({this.sightId, super.key});
-  final int? sightId;
+/// Reusable sight form: null = create new, non-null = edit existing.
+/// Returns Sight? via context.pop(sight).
+class SightWizardScreen extends StatelessWidget {
+  const SightWizardScreen({this.initial, super.key});
+  final Sight? initial;
   @override
-  Widget build(BuildContext context) => const StubScreen(title: 'Edit Sight');
+  Widget build(BuildContext context) =>
+      StubScreen(title: initial == null ? 'Create Sight' : 'Edit Sight');
 }
