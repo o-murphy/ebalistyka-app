@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ class CollectionSightTileBody extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
             child: const Center(
-              child: Icon(Icons.image_outlined, size: 50, color: Colors.grey),
+              child: Icon(IconDef.image, size: 50, color: Colors.grey),
             ),
           ),
           // Content
@@ -57,7 +58,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                     const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.my_location_outlined, size: 14),
+                        Icon(IconDef.sight, size: 14),
                         SizedBox(width: 6),
                         Text("<reticle>", style: TextStyle(fontSize: 12)),
                       ],
@@ -69,7 +70,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.swap_vert_outlined, size: 14),
+                            const Icon(IconDef.verticalClick, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               verticalClick,
@@ -81,7 +82,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.height_outlined, size: 14),
+                            const Icon(IconDef.height, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               formatter.sightHeight(sight.sightHeight),
@@ -98,7 +99,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.swap_horiz_outlined, size: 14),
+                            const Icon(IconDef.horizontalClick, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               horizontalClick,
@@ -110,7 +111,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.zoom_in_outlined, size: 14),
+                            const Icon(IconDef.magnificationMax, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               formatter.magnificationRange(

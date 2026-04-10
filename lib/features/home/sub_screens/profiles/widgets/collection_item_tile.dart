@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/models/collection_item.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:flutter/material.dart';
 
@@ -36,26 +37,26 @@ class CollectionItemTile extends StatelessWidget {
     entries: [
       if (onEdit != null)
         ActionSheetItem(
-          icon: Icons.edit_outlined,
+          icon: IconDef.edit,
           title: 'Edit',
           onTap: () async => onEdit!(),
         ),
       if (onDuplicate != null)
         ActionSheetItem(
-          icon: Icons.copy_outlined,
+          icon: IconDef.copy,
           title: 'Duplicate',
           onTap: () async => onDuplicate!(),
         ),
       if (onExport != null)
         ActionSheetItem(
-          icon: Icons.file_upload_outlined,
+          icon: IconDef.export,
           title: 'Export',
           onTap: () async => onExport!(),
         ),
       if (onRemove != null) ...[
         const ActionSheetDivider(),
         ActionSheetItem(
-          icon: Icons.delete_outline,
+          icon: IconDef.remove,
           title: 'Remove',
           isDestructive: true,
           onTap: () async => onRemove!(),
@@ -86,7 +87,7 @@ class CollectionItemTile extends StatelessWidget {
                   const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.control_point_outlined, size: 48),
+                      Icon(IconDef.image, size: 48, color: Colors.grey),
                       SizedBox(height: 8),
                       Text('Body area'),
                     ],
@@ -105,7 +106,7 @@ class CollectionItemTile extends StatelessWidget {
                   onPressed: () => _showActionsSheet(context),
                   backgroundColor: colorScheme.secondaryContainer,
                   foregroundColor: colorScheme.onSecondaryContainer,
-                  child: const Icon(Icons.more_vert_outlined, size: 20),
+                  child: const Icon(IconDef.more, size: 20),
                 ),
               ),
 
@@ -120,7 +121,7 @@ class CollectionItemTile extends StatelessWidget {
                 onPressed: onSelect,
                 backgroundColor: colorScheme.primaryContainer,
                 foregroundColor: colorScheme.onPrimaryContainer,
-                child: const Icon(Icons.check_outlined, size: 20),
+                child: const Icon(IconDef.apply, size: 20),
               ),
             ),
           ],

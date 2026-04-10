@@ -1,4 +1,5 @@
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
 /// Віджет для вибору одиниці виміру з BottomSheet
@@ -40,7 +41,7 @@ class UnitPickerButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Icon(Icons.arrow_drop_down_outlined, size: 20),
+              const Icon(IconDef.dropDown, size: 20),
             ],
           ),
         ),
@@ -66,9 +67,7 @@ class UnitPickerButton extends StatelessWidget {
             ...options.map(
               (unit) => ListTile(
                 title: Text("${unit.label} (${unit.symbol})"),
-                trailing: current == unit
-                    ? const Icon(Icons.check_outlined)
-                    : null,
+                trailing: current == unit ? const Icon(IconDef.apply) : null,
                 onTap: () {
                   onChanged(unit);
                   Navigator.pop(ctx);

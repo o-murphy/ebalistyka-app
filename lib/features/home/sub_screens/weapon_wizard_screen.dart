@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -115,9 +116,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
         ? 'New Rifle'
         : _nameCtrl.text.trim();
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
-    final twistDirIcon = _rightHand
-        ? Icons.rotate_right_outlined
-        : Icons.rotate_left_outlined;
+    final twistDirIcon = _rightHand ? IconDef.twistR : IconDef.twistL;
 
     return BaseScreen(
       title: title,
@@ -153,7 +152,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                     rawValue: _caliberRaw,
                     constraints: FC.bulletDiameter,
                     displayUnit: units.diameterUnit,
-                    icon: Icons.circle_outlined,
+                    icon: IconDef.caliber,
                     onChanged: (v) => setState(() => _caliberRaw = v),
                   )
                 else
@@ -162,7 +161,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                     value: widget.initial != null
                         ? fmt.diameter(widget.initial!.caliber)
                         : '—',
-                    icon: Icons.circle_outlined,
+                    icon: IconDef.caliber,
                   ),
                 // ── Hardware ─────────────────────────────────────────────────
                 const ListSectionTile('Hardware'),
@@ -186,7 +185,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                 // ── Extra fields section ────────────────────────────────────
                 Divider(height: 1),
                 SwitchListTile(
-                  secondary: const Icon(Icons.more_horiz_outlined),
+                  secondary: const Icon(IconDef.moreHoriz),
                   title: const Text('Additional parameters'),
                   subtitle: const Text('Barrel length, etc.'),
                   value: _showExtraFields,
@@ -200,7 +199,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                     rawValue: _barrelLengthRaw,
                     constraints: FC.barrelLength,
                     displayUnit: units.barrelLengthUnit,
-                    icon: Icons.straighten_outlined,
+                    icon: IconDef.length,
                     onChanged: (v) => setState(() => _barrelLengthRaw = v),
                   ),
                   // Тут можна додати інші додаткові поля в майбутньому
@@ -231,7 +230,7 @@ class _RiflePlaceholder extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.photo_camera_outlined,
+                  IconDef.image,
                   size: 40,
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),

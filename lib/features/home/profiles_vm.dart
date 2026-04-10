@@ -102,7 +102,7 @@ class ProfileCardData {
   final int? sightId;
   final String sightName;
   final String sightHeight;
-  final String focalPlane;
+  final FocalPlane focalPlane;
   final String magnification;
   final String verticalClick;
   final String horizontalClick;
@@ -210,7 +210,7 @@ ProfileCardData _buildCardData(
     sightId: sight?.id,
     sightName: sight?.name ?? 'Not selected',
     sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
-    focalPlane: sight?.focalPlane.name.toUpperCase() ?? '—',
+    focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
     magnification: sight != null
         ? formatter.magnificationRange(
             sight.minMagnification,

@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
 import 'package:flutter/material.dart';
@@ -25,42 +26,42 @@ class UnitsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           UnitPickerListTile(
-            icon: Icons.speed_outlined,
+            icon: IconDef.velocity,
             label: 'Velocity',
             current: units.velocityUnit,
             options: const [Unit.mps, Unit.fps, Unit.kmh, Unit.mph],
             onChanged: (u) => set('velocity', u),
           ),
           UnitPickerListTile(
-            icon: Icons.straighten_outlined,
+            icon: IconDef.range,
             label: 'Distance',
             current: units.distanceUnit,
             options: const [Unit.meter, Unit.yard, Unit.foot],
             onChanged: (u) => set('distance', u),
           ),
           UnitPickerListTile(
-            icon: Icons.vertical_align_center_outlined,
+            icon: IconDef.height,
             label: 'Sight Height',
             current: units.sightHeightUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('sightHeight', u),
           ),
           UnitPickerListTile(
-            icon: Icons.compress_outlined,
+            icon: IconDef.pressure,
             label: 'Pressure',
             current: units.pressureUnit,
             options: const [Unit.hPa, Unit.mmHg, Unit.inHg, Unit.psi],
             onChanged: (u) => set('pressure', u),
           ),
           UnitPickerListTile(
-            icon: Icons.device_thermostat_outlined,
+            icon: IconDef.temperature,
             label: 'Temperature',
             current: units.temperatureUnit,
             options: const [Unit.celsius, Unit.fahrenheit],
             onChanged: (u) => set('temperature', u),
           ),
           UnitPickerListTile(
-            icon: Icons.height_outlined,
+            icon: IconDef.height,
             label: 'Drop / Windage',
             current: units.dropUnit,
             options: const [
@@ -73,7 +74,7 @@ class UnitsScreen extends ConsumerWidget {
             onChanged: (u) => set('drop', u),
           ),
           UnitPickerListTile(
-            icon: Icons.rotate_90_degrees_cw_outlined,
+            icon: IconDef.dropWindageAngle,
             label: 'Drop / Windage angle',
             current: units.adjustmentUnit,
             options: const [
@@ -86,29 +87,29 @@ class UnitsScreen extends ConsumerWidget {
             onChanged: (u) => set('adjustment', u),
           ),
           UnitPickerListTile(
-            icon: Icons.bolt_outlined,
+            icon: IconDef.energy,
             label: 'Energy',
             current: units.energyUnit,
             options: const [Unit.joule, Unit.footPound],
             onChanged: (u) => set('energy', u),
           ),
           UnitPickerListTile(
-            icon: Icons.balance_outlined,
-            label: 'Bullet weight',
+            icon: IconDef.weigth,
+            label: 'Projectile weight',
             current: units.weightUnit,
             options: const [Unit.grain, Unit.gram],
             onChanged: (u) => set('weight', u),
           ),
           UnitPickerListTile(
-            icon: Icons.linear_scale_outlined,
-            label: 'Bullet length',
+            icon: IconDef.length,
+            label: 'Projectile length',
             current: units.lengthUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('length', u),
           ),
           UnitPickerListTile(
-            icon: Icons.circle_outlined,
-            label: 'Bullet diameter',
+            icon: IconDef.caliber,
+            label: 'Projectile diameter',
             current: units.diameterUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('diameter', u),

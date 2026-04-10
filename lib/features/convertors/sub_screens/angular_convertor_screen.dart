@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/convertors/angular_convertor_vm.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -36,7 +37,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             onUnitChanged: notifier.changeDistanceUnit,
             options: const [Unit.meter, Unit.yard],
             label: 'Distance Input',
-            icon: Icons.straighten_outlined,
+            icon: IconDef.distanceConvertor,
           ),
           const SizedBox(height: 8),
           ValueInputWithUnitPicker(
@@ -54,7 +55,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
               Unit.degree,
             ],
             label: 'Angle Input',
-            icon: Icons.timeline_outlined,
+            icon: IconDef.angleConvertor,
           ),
           const SizedBox(height: 8),
           // Тільки вибір одиниці, без поля вводу
@@ -68,7 +69,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
               Unit.foot,
             ],
             title: 'Output Unit',
-            icon: Icons.height_outlined,
+            icon: IconDef.heightConvertor,
           ),
           const Divider(height: 24),
 

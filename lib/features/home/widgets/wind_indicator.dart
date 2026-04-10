@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
 class WindIndicator extends StatefulWidget {
@@ -247,12 +248,12 @@ class WindPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     );
-
+    final fingerPrintIcon = IconDef.fingerPrint;
     final iconTp = TextPainter(
       text: TextSpan(
-        text: String.fromCharCode(Icons.fingerprint_outlined.codePoint),
+        text: String.fromCharCode(fingerPrintIcon.codePoint),
         style: TextStyle(
-          fontFamily: Icons.fingerprint_outlined.fontFamily,
+          fontFamily: fingerPrintIcon.fontFamily,
           fontSize: markerR * 1.2,
           color: markerIconColor,
         ),

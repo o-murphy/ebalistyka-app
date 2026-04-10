@@ -1,6 +1,7 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_sight_tile_body.dart';
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
@@ -27,7 +28,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
         title: 'Add Sight',
         entries: [
           ActionSheetItem(
-            icon: Icons.add_circle_outline,
+            icon: IconDef.addCircle,
             title: 'Create new',
             onTap: () async {
               final result = await context.push<Sight?>(Routes.sightCreate);
@@ -37,7 +38,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
             },
           ),
           ActionSheetItem(
-            icon: Icons.folder_open_outlined,
+            icon: IconDef.openCollection,
             title: 'Select from collection',
             onTap: () async => context.push(Routes.sightCollection),
           ),
@@ -70,12 +71,12 @@ class MySightsCollectionScreen extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
-        child: const Icon(Icons.add_outlined),
+        child: const Icon(IconDef.add),
       ),
       actions: [
         IconButton(
           onPressed: () => debugPrint("Filter button (will call bottom toast)"),
-          icon: Icon(Icons.filter_alt_outlined),
+          icon: Icon(IconDef.filter),
         ),
       ],
       body: appStateAsync.when(

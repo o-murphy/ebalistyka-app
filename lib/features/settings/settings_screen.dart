@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(_languageName(settings.languageCode)),
-            trailing: const Icon(Icons.chevron_right_outlined),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
@@ -64,7 +65,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.straighten_outlined),
             title: const Text('Units of Measurement'),
-            trailing: const Icon(Icons.chevron_right_outlined),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsUnits),
           ),
@@ -76,12 +77,12 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.tune_outlined),
             title: const Text('Adjustment Display'),
-            trailing: const Icon(Icons.chevron_right_outlined),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsAdjustment),
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.speed_outlined),
+            secondary: const Icon(IconDef.velocity),
             title: const Text('Show subsonic transition'),
             subtitle: const Text('Displays on trajectory chart'),
             value: settings.homeShowSubsonicTransition,
@@ -117,7 +118,7 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    icon: const Icon(Icons.upload_outlined),
+                    icon: const Icon(IconDef.export),
                     label: const Text('Export profiles'),
                     onPressed: () {},
                   ),
@@ -125,7 +126,7 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton.icon(
-                    icon: const Icon(Icons.download_outlined),
+                    icon: const Icon(IconDef.import),
                     label: const Text('Import profiles'),
                     onPressed: () {},
                   ),
@@ -140,7 +141,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.code_outlined),
             title: const Text('GitHub'),
-            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () =>
                 _launchUrl("https://github.com/o-murphy/test_flutter_app"),
@@ -148,14 +149,14 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('Privacy Policy'),
-            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: const Text('Terms of Use'),
-            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
@@ -184,7 +185,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: const Text('Changelog'),
-            trailing: const Icon(Icons.open_in_new_outlined, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),

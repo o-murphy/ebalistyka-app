@@ -3,6 +3,7 @@ import 'package:bclibc_ffi/unit.dart' show Angular, Distance, Unit;
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -178,7 +179,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   rawValue: _sightHeightRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
-                  icon: Icons.height_outlined,
+                  icon: IconDef.height,
                   onChanged: (v) => setState(() => _sightHeightRaw = v),
                 ),
                 UnitValueFieldTile(
@@ -186,7 +187,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   rawValue: _horizontalOffsetRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
-                  icon: Icons.arrow_right_alt_outlined,
+                  icon: IconDef.horizontalOffset,
                   onChanged: (v) => setState(() => _horizontalOffsetRaw = v),
                 ),
                 // ── Reticle ────────────────────────────────────────────────
@@ -199,17 +200,17 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                       ButtonSegment(
                         value: FocalPlane.ffp,
                         label: Text('FFP'),
-                        icon: Icon(Icons.first_page_outlined),
+                        icon: Icon(IconDef.ffp),
                       ),
                       ButtonSegment(
                         value: FocalPlane.sfp,
                         label: Text('SFP'),
-                        icon: Icon(Icons.last_page_outlined),
+                        icon: Icon(IconDef.sfp),
                       ),
                       ButtonSegment(
                         value: FocalPlane.lwir,
                         label: Text('LWIR'),
-                        icon: Icon(Icons.thermostat_outlined),
+                        icon: Icon(IconDef.lwir),
                       ),
                     ],
                     selected: {_focalPlane},
@@ -223,7 +224,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
                   symbol: 'x',
-                  icon: Icons.zoom_out_outlined,
+                  icon: IconDef.magnificationMin,
                   onChanged: (v) => setState(() => _minMagRaw = v),
                 ),
                 UnitValueFieldTile(
@@ -232,7 +233,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
                   symbol: 'x',
-                  icon: Icons.zoom_in_outlined,
+                  icon: IconDef.magnificationMax,
                   onChanged: (v) => setState(() => _maxMagRaw = v),
                 ),
                 // ── Clicks ────────────────────────────────────────────────
@@ -300,7 +301,7 @@ class _SightPlaceholder extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.my_location_outlined,
+                  IconDef.sight,
                   size: 40,
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),

@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -65,7 +66,7 @@ class TableConfigScreen extends ConsumerWidget {
           ),
 
           _ConstrainedDistanceTile(
-            icon: Icons.straighten_outlined,
+            icon: IconDef.range,
             label: 'Distance step',
             rawValueM: cfg.distanceStepMeter,
             constraints: FC.distanceStep,
@@ -86,7 +87,7 @@ class TableConfigScreen extends ConsumerWidget {
             dense: true,
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.speed_outlined),
+            secondary: const Icon(IconDef.velocity),
             title: const Text('Show subsonic transition'),
             value: cfg.showSubsonicTransition,
             onChanged: (v) => save((s) => s.showSubsonicTransition = v),

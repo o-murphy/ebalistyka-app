@@ -9,6 +9,7 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
             child: const Center(
-              child: Icon(Icons.image_outlined, size: 50, color: Colors.grey),
+              child: Icon(IconDef.image, size: 50, color: Colors.grey),
             ),
           ),
           // Content
@@ -78,7 +79,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.speed_outlined, size: 14),
+                            const Icon(IconDef.velocity, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               ammo.mv != null
@@ -96,7 +97,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.circle_outlined, size: 14),
+                            const Icon(IconDef.caliber, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               formatter.diameter(ammo.caliber),
@@ -108,7 +109,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.balance_outlined, size: 14),
+                            const Icon(IconDef.weigth, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               formatter.weight(ammo.weight),
@@ -120,7 +121,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.straighten_outlined, size: 14),
+                            const Icon(IconDef.length, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               formatter.length(ammo.length),

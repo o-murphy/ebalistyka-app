@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,7 @@ class QuickActionsPanel extends ConsumerWidget {
       height: 104,
       items: [
         IconValueButton(
-          icon: Icons.air_outlined,
+          icon: IconDef.windSpeed,
           value: state.windSpeedDisplay,
           label: 'Wind speed',
           heroTag: 'qa-wind',
@@ -39,7 +40,7 @@ class QuickActionsPanel extends ConsumerWidget {
           ),
         ),
         IconValueButton(
-          icon: Icons.square_foot_outlined,
+          icon: IconDef.angle,
           value: state.lookAngleDisplay,
           label: 'Look angle',
           heroTag: 'qa-angle',
@@ -53,7 +54,7 @@ class QuickActionsPanel extends ConsumerWidget {
           ),
         ),
         IconValueButton(
-          icon: Icons.flag_outlined,
+          icon: IconDef.range,
           value: state.targetDistanceDisplay,
           label: 'Target range',
           heroTag: 'qa-range',

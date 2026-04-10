@@ -1,6 +1,8 @@
 // ── Profile Card ──────────────────────────────────────────────────────────────
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
@@ -76,15 +78,12 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          data.name,
-                          style: theme.textTheme.titleLarge,
-                        ),
-                      ),
-                    ],
+                  Center(
+                    child: Text(
+                      data.name,
+                      style: theme.textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
@@ -158,20 +157,14 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
 
   Widget _buildWeaponSection(BuildContext context, ProfileCardData data) {
     final colorScheme = Theme.of(context).colorScheme;
-    final twistDirIcon = data.rightHanded
-        ? Icons.rotate_right_outlined
-        : Icons.rotate_left_outlined;
+    final twistDirIcon = data.rightHanded ? IconDef.twistR : IconDef.twistL;
 
     return Column(
       children: [
         ListSectionTile(
           "Weapon",
           onTap: widget.onEditWeapon,
-          trailing: Icon(
-            Icons.edit_outlined,
-            size: 16,
-            color: colorScheme.primary,
-          ),
+          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
           leading: const Icon(Icons.military_tech_outlined),
@@ -182,7 +175,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         InfoListTile(
           label: "Caliber",
           value: data.weaponCaliber,
-          icon: Icons.circle_outlined,
+          icon: IconDef.caliber,
         ),
         InfoListTile(label: "Twist", value: data.twist, icon: twistDirIcon),
         InfoListTile(
@@ -203,20 +196,16 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         ListSectionTile(
           "Ammo",
           onTap: widget.onEditAmmo,
-          trailing: Icon(
-            Icons.edit_outlined,
-            size: 16,
-            color: colorScheme.primary,
-          ),
+          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
-          leading: const Icon(Icons.grain_outlined),
+          leading: const Icon(IconDef.grain),
           title: Text(data.cartridgeName),
           subtitle: const Text("Cartridge name"),
           dense: true,
         ),
         ListTile(
-          leading: const Icon(Icons.grain_outlined),
+          leading: const Icon(IconDef.grain),
           title: Text(data.projectileName),
           subtitle: const Text("Projectile name"),
           dense: true,
@@ -224,29 +213,30 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         InfoListTile(
           label: "Drag model",
           value: data.dragModel,
-          icon: Icons.trending_up_outlined,
+          icon: IconDef.dragModel,
         ),
         InfoListTile(
           label: "Muzzle velocity",
           value: data.muzzleVelocity,
-          icon: Icons.speed_outlined,
+          icon: IconDef.velocity,
         ),
         InfoListTile(
           label: "Caliber",
           value: data.ammoCaliber,
-          icon: Icons.circle_outlined,
+          icon: IconDef.caliber,
         ),
-        InfoListTile(
-          label: "Weight",
-          value: data.weight,
-          icon: Icons.balance_outlined,
-        ),
+        InfoListTile(label: "Weight", value: data.weight, icon: IconDef.weigth),
       ],
     );
   }
 
   Widget _buildSightSection(BuildContext context, ProfileCardData data) {
     final colorScheme = Theme.of(context).colorScheme;
+    final fpIcon = switch (data.focalPlane) {
+      FocalPlane.ffp => IconDef.ffp,
+      FocalPlane.sfp => IconDef.sfp,
+      FocalPlane.lwir => IconDef.lwir,
+    };
 
     return Column(
       children: [
@@ -254,14 +244,10 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         ListSectionTile(
           "Sight",
           onTap: widget.onEditSight,
-          trailing: Icon(
-            Icons.edit_outlined,
-            size: 16,
-            color: colorScheme.primary,
-          ),
+          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
-          leading: const Icon(Icons.my_location_outlined),
+          leading: const Icon(IconDef.sight),
           title: Text(data.sightName),
           subtitle: const Text("Sight name"),
           dense: true,
@@ -269,32 +255,28 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
         InfoListTile(
           label: "Sight height",
           value: data.sightHeight,
-          icon: Icons.height_outlined,
+          icon: IconDef.height,
         ),
-        // InfoListTile(
-        //   label: "Reticle",
-        //   value: data.reticleName,
-        //   // icon: Icons.trending_up_outlined,
-        // ),
+        InfoListTile(label: "Reticle", value: "<reticle>", icon: IconDef.sight),
         InfoListTile(
           label: "Focal plane",
-          value: data.focalPlane,
-          icon: Icons.first_page_outlined,
+          value: data.focalPlane.name.toUpperCase(),
+          icon: fpIcon,
         ),
         InfoListTile(
           label: "Magnification",
           value: data.magnification,
-          icon: Icons.zoom_in_outlined,
+          icon: IconDef.magnificationMax,
         ),
         InfoListTile(
           label: "Vertical click",
           value: data.verticalClick,
-          icon: Icons.swap_vert_outlined,
+          icon: IconDef.verticalClick,
         ),
         InfoListTile(
           label: "Horizontal click",
           value: data.horizontalClick,
-          icon: Icons.swap_horiz_outlined,
+          icon: IconDef.horizontalClick,
         ),
       ],
     );
@@ -331,17 +313,17 @@ class _ProfileControlTile extends StatelessWidget {
     title: 'Edit Profile',
     entries: [
       ActionSheetItem(
-        icon: Icons.copy_outlined,
+        icon: IconDef.copy,
         title: 'Duplicate',
         onTap: () async => onDuplicate(),
       ),
       ActionSheetItem(
-        icon: Icons.file_upload_outlined,
+        icon: IconDef.export,
         title: 'Export',
         onTap: () async => onExport(),
       ),
       ActionSheetItem(
-        icon: Icons.edit_outlined,
+        icon: IconDef.edit,
         title: 'Edit profile name',
         onTap: () async {
           final name = await showTextInputDialog(
@@ -356,7 +338,7 @@ class _ProfileControlTile extends StatelessWidget {
       ),
       const ActionSheetDivider(),
       ActionSheetItem(
-        icon: Icons.delete_outline,
+        icon: IconDef.remove,
         title: 'Remove',
         isDestructive: true,
         onTap: () async => onRemove(),
@@ -378,7 +360,7 @@ class _ProfileControlTile extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.control_point_outlined, size: 48),
+                  Icon(IconDef.image, size: 48, color: Colors.grey),
                   SizedBox(height: 8),
                   Text('Profile Controls Area'),
                 ],
@@ -395,7 +377,7 @@ class _ProfileControlTile extends StatelessWidget {
                 onPressed: () async => _showEditActionsSheet(context),
                 backgroundColor: colorScheme.secondaryContainer,
                 foregroundColor: colorScheme.onSecondaryContainer,
-                child: const Icon(Icons.more_vert_outlined, size: 20),
+                child: const Icon(IconDef.more, size: 20),
               ),
             ),
 
@@ -408,7 +390,7 @@ class _ProfileControlTile extends StatelessWidget {
                 hasValue: hasSight,
                 onPressed: () =>
                     context.push(Routes.sightSelect, extra: profileId),
-                buttonIcon: Icons.my_location_outlined,
+                buttonIcon: IconDef.sight,
                 buttonColor: hasSight
                     ? colorScheme.secondaryContainer
                     : colorScheme.tertiaryContainer,
@@ -431,7 +413,7 @@ class _ProfileControlTile extends StatelessWidget {
                 hasValue: hasAmmo,
                 onPressed: () =>
                     context.push(Routes.ammoSelect, extra: profileId),
-                buttonIcon: Icons.rocket_launch_outlined,
+                buttonIcon: IconDef.ammo,
                 buttonColor: hasAmmo
                     ? colorScheme.primaryContainer
                     : colorScheme.tertiaryContainer,

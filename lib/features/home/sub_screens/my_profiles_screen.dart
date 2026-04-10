@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_card.dart';
@@ -75,7 +76,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     title: 'Add Profile',
     entries: [
       ActionSheetItem(
-        icon: Icons.add_circle_outline,
+        icon: IconDef.addCircle,
         title: 'Create new',
         onTap: () async {
           final name = await _askProfileName();
@@ -91,7 +92,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         },
       ),
       ActionSheetItem(
-        icon: Icons.folder_open_outlined,
+        icon: IconDef.openCollection,
         title: 'From collection',
         onTap: () async {
           final name = await _askProfileName();
@@ -101,7 +102,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         },
       ),
       ActionSheetItem(
-        icon: Icons.file_open_outlined,
+        icon: IconDef.import,
         title: 'Import from file',
         onTap: () async => ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Import not yet available')),
@@ -264,29 +265,21 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           elevation: 6,
-          child: const Icon(Icons.add_outlined),
+          child: const Icon(IconDef.add),
         ),
         body: const Center(child: Text('No profiles. Tap + to add one.')),
       );
     }
 
-    final currentId =
-        _currentProfileId ??
-        paging.orderedIds[_currentPage.clamp(0, paging.orderedIds.length - 1)];
-
-    // Watch only the current card's name for the title — not the whole list.
-    final title =
-        ref.watch(profileCardProvider(currentId))?.name ?? 'Select Profile';
-
     return BaseScreen(
-      title: title,
+      title: "My Profiles",
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: _showAddSheet,
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
-        child: const Icon(Icons.add_outlined),
+        child: const Icon(IconDef.add),
       ),
       body: _ProfilePageView(
         orderedIds: paging.orderedIds,

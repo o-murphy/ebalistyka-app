@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
@@ -34,53 +35,53 @@ class ShotDetailsScreen extends ConsumerWidget {
       children: [
         const ListSectionTile('Velocity'),
         InfoListTile(
-          icon: Icons.speed_outlined,
+          icon: IconDef.velocity,
           label: 'Current muzzle velocity',
           value: state.currentMv,
         ),
         InfoListTile(
-          icon: Icons.speed_outlined,
+          icon: IconDef.velocity,
           label: 'Zero muzzle velocity',
           value: state.zeroMv,
         ),
         InfoListTile(
-          icon: Icons.graphic_eq_outlined,
+          icon: IconDef.machSpeed,
           label: 'Speed of sound',
           value: state.speedOfSound,
         ),
         InfoListTile(
-          icon: Icons.arrow_forward_outlined,
+          icon: IconDef.velocity,
           label: 'Velocity at target',
           value: state.velocityAtTarget,
         ),
         const Divider(height: 1),
         const ListSectionTile('Energy'),
         InfoListTile(
-          icon: Icons.bolt_outlined,
+          icon: IconDef.energy,
           label: 'Energy at muzzle velocity',
           value: state.energyAtMuzzle,
         ),
         InfoListTile(
-          icon: Icons.bolt_outlined,
+          icon: IconDef.energy,
           label: 'Energy at target',
           value: state.energyAtTarget,
         ),
         const Divider(height: 1),
         const ListSectionTile('Stability'),
         InfoListTile(
-          icon: Icons.rotate_right_outlined,
+          icon: IconDef.gyrostability,
           label: 'Gyroscopic stability factor',
           value: state.gyroscopicStability,
         ),
         const Divider(height: 1),
         const ListSectionTile('Trajectory'),
         InfoListTile(
-          icon: Icons.flag_outlined,
+          icon: IconDef.range,
           label: 'Shot distance',
           value: state.shotDistance,
         ),
         InfoListTile(
-          icon: Icons.height_outlined,
+          icon: IconDef.height,
           label: 'Height at target',
           value: state.heightAtTarget,
         ),
@@ -90,12 +91,12 @@ class ShotDetailsScreen extends ConsumerWidget {
           value: state.maxHeightDistance,
         ),
         InfoListTile(
-          icon: Icons.arrow_right_alt_outlined,
+          icon: IconDef.windage,
           label: 'Windage',
           value: state.windage,
         ),
         InfoListTile(
-          icon: Icons.timer_outlined,
+          icon: IconDef.time,
           label: 'Time to target',
           value: state.timeToTarget,
         ),

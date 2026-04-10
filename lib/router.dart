@@ -1,4 +1,5 @@
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
@@ -291,21 +292,18 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         selectedIndex: widget.shell.currentIndex,
         onDestinationSelected: _onTabSelected,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
+          NavigationDestination(icon: Icon(IconDef.home), label: 'Home'),
           NavigationDestination(
-            icon: Icon(Icons.thunderstorm_outlined),
+            icon: Icon(IconDef.tables),
             label: 'Conditions',
           ),
+          NavigationDestination(icon: Icon(IconDef.tables), label: 'Tables'),
           NavigationDestination(
-            icon: Icon(Icons.table_view_outlined),
-            label: 'Tables',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.calculate_outlined),
+            icon: Icon(IconDef.convertors),
             label: 'Convertors',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
+            icon: Icon(IconDef.settings),
             label: 'Settings',
           ),
         ],

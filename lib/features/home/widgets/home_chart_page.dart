@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,15 +65,15 @@ class _ChartInfoGrid extends StatelessWidget {
     }
 
     final leftItems = [
-      (Icons.straighten_outlined, info!.distance),
-      (Icons.speed_outlined, info!.velocity),
-      (Icons.bolt_outlined, info!.energy),
-      (Icons.timer_outlined, info!.time),
+      (IconDef.range, info!.distance),
+      (IconDef.velocity, info!.velocity),
+      (IconDef.energy, info!.energy),
+      (IconDef.time, info!.time),
     ];
     final rightItems = [
-      (Icons.height_outlined, info!.height),
+      (IconDef.height, info!.height),
       (Icons.arrow_downward_outlined, info!.drop),
-      (Icons.arrow_right_alt_outlined, info!.windage),
+      (IconDef.windage, info!.windage),
       (Icons.air_outlined, info!.mach),
     ];
 

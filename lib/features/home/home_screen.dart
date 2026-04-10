@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +139,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                        const Icon(Icons.more_horiz_outlined),
+                                        const Icon(IconDef.moreHoriz),
                                       ],
                                     ),
                                   ),
@@ -147,9 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 IconButton.filledTonal(
                                   onPressed: () =>
                                       context.push(Routes.ammoSelect),
-                                  icon: const Icon(
-                                    Icons.rocket_launch_outlined,
-                                  ),
+                                  icon: const Icon(IconDef.ammo),
                                 ),
                               ],
                             ),
@@ -171,11 +170,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.info_outline,
                                         bottomIcon: Icons.note_add_outlined,
                                         infoRows: [
-                                          (
-                                            Icons.device_thermostat_outlined,
-                                            tempStr,
-                                          ),
-                                          (Icons.terrain_outlined, altStr),
+                                          (IconDef.temperature, tempStr),
+                                          (IconDef.altitude, altStr),
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
@@ -217,10 +213,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       flex: 1,
                                       child: SideControlBlock(
                                         topIcon: Icons.question_mark_outlined,
-                                        bottomIcon: Icons.more_horiz_outlined,
+                                        bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
-                                          (Icons.water_drop_outlined, humidStr),
-                                          (Icons.speed_outlined, pressStr),
+                                          (IconDef.humidity, humidStr),
+                                          (IconDef.velocity, pressStr),
                                         ],
                                         onTopPressed: () {},
                                         onBottomPressed: () {},

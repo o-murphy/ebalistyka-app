@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -9,19 +10,19 @@ const _convertors = [
   (
     type: 'target-distance',
     label: 'Target Distance',
-    icon: Icons.my_location_outlined,
+    icon: IconDef.distanceConvertor,
   ),
-  (type: 'velocity', label: 'Velocity', icon: Icons.speed_outlined),
-  (type: 'length', label: 'Length', icon: Icons.straighten_outlined),
-  (type: 'weight', label: 'Weight', icon: Icons.scale_outlined),
-  (type: 'pressure', label: 'Pressure', icon: Icons.compress_outlined),
+  (type: 'velocity', label: 'Velocity', icon: IconDef.velocityConvertor),
+  (type: 'length', label: 'Length', icon: IconDef.lengthConvertor),
+  (type: 'weight', label: 'Weight', icon: IconDef.weigthConvertor),
+  (type: 'pressure', label: 'Pressure', icon: IconDef.pressureConvertor),
   (
     type: 'temperature',
     label: 'Temperature',
-    icon: Icons.device_thermostat_outlined,
+    icon: IconDef.temperatureConvertor,
   ),
-  (type: 'angular', label: 'Angles', icon: Icons.square_foot_outlined),
-  (type: 'torque', label: 'Torque', icon: Icons.settings_outlined),
+  (type: 'angular', label: 'Angles', icon: IconDef.angleConvertor),
+  (type: 'torque', label: 'Torque', icon: IconDef.torqueConvertor),
 ];
 
 // ─── Screen ───────────────────────────────────────────────────────────────────

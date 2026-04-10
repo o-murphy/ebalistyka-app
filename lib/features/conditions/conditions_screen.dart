@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -45,7 +46,7 @@ class ConditionsScreen extends ConsumerWidget {
             child: IconValueButtonRow(
               items: [
                 IconValueButton(
-                  icon: Icons.terrain_outlined,
+                  icon: IconDef.altitude,
                   label: 'Altitude',
                   heroTag: 'cond-alt',
                   value:
@@ -60,7 +61,7 @@ class ConditionsScreen extends ConsumerWidget {
                   ),
                 ),
                 IconValueButton(
-                  icon: Icons.water_drop_outlined,
+                  icon: IconDef.humidity,
                   label: 'Humidity',
                   heroTag: 'cond-hum',
                   value:
@@ -76,7 +77,7 @@ class ConditionsScreen extends ConsumerWidget {
                   ),
                 ),
                 IconValueButton(
-                  icon: Icons.speed_outlined,
+                  icon: IconDef.velocity,
                   label: 'Pressure',
                   heroTag: 'cond-press',
                   value:
@@ -98,7 +99,7 @@ class ConditionsScreen extends ConsumerWidget {
           // ── Switches ──────────────────────────────────────────────────
           SwitchListTile(
             title: const Text('Powder temperature sensitivity'),
-            secondary: const Icon(Icons.local_fire_department_outlined),
+            secondary: const Icon(IconDef.powderTemperature),
             value: state.powderSensOn,
             onChanged: (v) => notifier.setPowderSensitivity(v),
             dense: true,
@@ -111,7 +112,7 @@ class ConditionsScreen extends ConsumerWidget {
                     ? "Uses powder temperature"
                     : "Uses atmospheric temperature",
               ),
-              secondary: const Icon(Icons.thermostat_outlined),
+              secondary: const Icon(IconDef.temperature),
               value: state.useDiffPowderTemp,
               onChanged: (v) => notifier.setDiffPowderTemp(v),
               dense: true,
@@ -119,7 +120,7 @@ class ConditionsScreen extends ConsumerWidget {
             if (state.powderTemperature != null)
               UnitValueFieldTile(
                 label: 'Powder temperature',
-                icon: Icons.local_fire_department_outlined,
+                icon: IconDef.powderTemperature,
                 rawValue: state.powderTemperature!.rawValue,
                 constraints: FC.temperature,
                 displayUnit: state.powderTemperature!.displayUnit,
@@ -131,19 +132,19 @@ class ConditionsScreen extends ConsumerWidget {
                     ? 'Muzzle velocity at powder temperature'
                     : 'Muzzle velocity at atmospheric temperature',
                 value: state.mvAtPowderTemp!,
-                icon: Icons.speed_outlined,
+                icon: IconDef.velocity,
               ),
             if (state.powderSensitivity != null)
               InfoListTile(
                 label: 'Powder sensitivity',
                 value: state.powderSensitivity!,
-                icon: Icons.show_chart_outlined,
+                icon: IconDef.powderSensitivity,
               ),
           ],
           const Divider(height: 1),
           SwitchListTile(
             title: const Text('Coriolis effect'),
-            secondary: const Icon(Icons.rotate_right_outlined),
+            secondary: const Icon(IconDef.coriolis),
             value: state.coriolisOn,
             onChanged: (v) => notifier.setCoriolis(v),
             dense: true,
@@ -151,7 +152,7 @@ class ConditionsScreen extends ConsumerWidget {
           if (state.coriolisOn) ...[
             UnitValueFieldTile(
               label: 'Latitude',
-              icon: Icons.public_outlined,
+              icon: IconDef.latitude,
               rawValue: state.latitude.rawValue,
               constraints: FC.latitude,
               displayUnit: state.latitude.displayUnit,
@@ -160,7 +161,7 @@ class ConditionsScreen extends ConsumerWidget {
             ),
             UnitValueFieldTile(
               label: 'Azimuth',
-              icon: Icons.explore_outlined,
+              icon: IconDef.azimuth,
               rawValue: state.azimuth.rawValue,
               constraints: FC.azimuth,
               displayUnit: state.azimuth.displayUnit,

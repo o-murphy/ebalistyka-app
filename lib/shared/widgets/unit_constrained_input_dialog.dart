@@ -1,4 +1,5 @@
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -89,7 +90,7 @@ Future<void> _showUnitEditDialogInternal(
             content: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.remove_outlined),
+                  icon: const Icon(IconDef.remove),
                   onPressed: () => setState(() => step(-1)),
                 ),
                 Expanded(
@@ -107,7 +108,7 @@ Future<void> _showUnitEditDialogInternal(
                       hintText: allowNull ? '—' : null,
                       suffixIcon: allowNull && controller.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear_outlined),
+                              icon: const Icon(IconDef.clear),
                               onPressed: clearField,
                               iconSize: 12,
                             )
@@ -117,7 +118,7 @@ Future<void> _showUnitEditDialogInternal(
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add_outlined),
+                  icon: const Icon(IconDef.add),
                   onPressed: () => setState(() => step(1)),
                 ),
               ],

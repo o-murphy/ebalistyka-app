@@ -1,4 +1,5 @@
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -51,7 +52,7 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
         children: [
           Text(_getDisplayText(), style: _getDisplayTextStyle(theme)),
           const SizedBox(width: 8),
-          Icon(Icons.edit_outlined, size: 16, color: theme.colorScheme.primary),
+          Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
         ],
       ),
       onTap: () => _showDialog(context),

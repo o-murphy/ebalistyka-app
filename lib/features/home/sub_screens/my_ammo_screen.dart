@@ -2,6 +2,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
@@ -28,17 +29,17 @@ class MyAmmoScreen extends ConsumerWidget {
     title: 'Add Ammo',
     entries: [
       ActionSheetItem(
-        icon: Icons.add_circle_outline,
+        icon: IconDef.addCircle,
         title: 'Create new',
         onTap: () async => context.push(Routes.ammoCreate),
       ),
       ActionSheetItem(
-        icon: Icons.folder_open_outlined,
+        icon: IconDef.openCollection,
         title: 'Select cartridge from collection',
         onTap: () async => context.push(Routes.cartridgeCollection),
       ),
       ActionSheetItem(
-        icon: Icons.circle_outlined,
+        icon: IconDef.openCollection,
         title: 'Select bullet from collection',
         onTap: () async => context.push(Routes.bulletCollection),
       ),
@@ -79,12 +80,12 @@ class MyAmmoScreen extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
-        child: const Icon(Icons.add_outlined),
+        child: const Icon(IconDef.add),
       ),
       actions: [
         IconButton(
           onPressed: () => debugPrint("Filter button (will call bottom toast)"),
-          icon: Icon(Icons.filter_alt_outlined),
+          icon: Icon(IconDef.filter),
         ),
       ],
       body: appStateAsync.when(
