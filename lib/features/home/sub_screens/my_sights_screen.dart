@@ -72,6 +72,12 @@ class MySightsCollectionScreen extends ConsumerWidget {
         elevation: 6,
         child: const Icon(Icons.add_outlined),
       ),
+      actions: [
+        IconButton(
+          onPressed: () => debugPrint("Filter button (will call bottom toast)"),
+          icon: Icon(Icons.filter_alt_outlined),
+        ),
+      ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
@@ -80,7 +86,6 @@ class MySightsCollectionScreen extends ConsumerWidget {
               .map(
                 (item) => CollectionItemTile(
                   key: ValueKey(item.id),
-                  // body: Center(child: Text(item.name)),
                   body: CollectionSightTileBody(sight: item),
                   item: SightCollectionItem(ref: item),
                   isSelected: item.id == selectedId,

@@ -26,7 +26,8 @@ extension AmmoExtension on Ammo {
   Weight get weight => Weight.grain(weightGrain);
   set weight(Weight v) => weightGrain = v.in_(Unit.grain);
 
-  Velocity get mv => Velocity.mps(muzzleVelocityMps ?? 0.0);
+  Velocity? get mv =>
+      muzzleVelocityMps != null ? Velocity.mps(muzzleVelocityMps!) : null;
   set mv(Velocity v) => muzzleVelocityMps = v.in_(Unit.mps);
 
   Temperature get mvTemperature =>

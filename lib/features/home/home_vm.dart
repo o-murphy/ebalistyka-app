@@ -318,7 +318,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;
 
-    final mvStr = fmt.velocity(ammo.mv);
+    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : '—';
     final dragStr = ammo.dragModelFormattedInfo;
 
     String? sgStr;

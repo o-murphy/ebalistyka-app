@@ -128,8 +128,9 @@ final detailsTableMvProvider = Provider<DetailsTableData?>((ref) {
   final formatter = ref.watch(unitFormatterProvider);
 
   if (ctx == null) return null;
-  if (ctx.profile.weapon.target == null || ctx.profile.ammo.target == null)
+  if (ctx.profile.weapon.target == null || ctx.profile.ammo.target == null) {
     return null;
+  }
 
   return _buildDetails(ctx.profile, ctx.conditions, units, formatter);
 });

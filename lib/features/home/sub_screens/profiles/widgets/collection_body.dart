@@ -26,11 +26,6 @@ class _BaseCollectionBodyState extends State<BaseCollectionBody> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: ListTile(
-            trailing: IconButton(
-              onPressed: () =>
-                  debugPrint("Filter button (will call bottom toast)"),
-              icon: Icon(Icons.filter_alt_outlined),
-            ),
             title: TextField(
               decoration: InputDecoration(labelText: 'Search'),
               textCapitalization: TextCapitalization.words,

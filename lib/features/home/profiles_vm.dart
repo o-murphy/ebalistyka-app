@@ -1,5 +1,3 @@
-import 'package:bclibc_ffi/unit.dart' show Angular;
-import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -205,7 +203,9 @@ ProfileCardData _buildCardData(
     cartridgeName: ammo?.name ?? '—',
     projectileName: ammo?.projectileName ?? '—',
     dragModel: ammo?.dragModelFormattedInfo ?? '—',
-    muzzleVelocity: ammo != null ? formatter.velocity(ammo.mv) : '—',
+    muzzleVelocity: (ammo != null && ammo.mv != null)
+        ? formatter.velocity(ammo.mv!)
+        : '—',
     weight: ammo != null ? formatter.weight(ammo.weight) : '—',
     sightId: sight?.id,
     sightName: sight?.name ?? 'Not selected',
