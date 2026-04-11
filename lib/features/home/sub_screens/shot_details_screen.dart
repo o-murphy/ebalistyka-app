@@ -1,10 +1,11 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 
 class ShotDetailsScreen extends ConsumerWidget {
   const ShotDetailsScreen({super.key});
@@ -33,69 +34,69 @@ class ShotDetailsScreen extends ConsumerWidget {
     return ListView(
       children: [
         const ListSectionTile('Velocity'),
-        InfoTile(
-          icon: Icons.speed_outlined,
+        InfoListTile(
+          icon: IconDef.velocity,
           label: 'Current muzzle velocity',
           value: state.currentMv,
         ),
-        InfoTile(
-          icon: Icons.speed_outlined,
+        InfoListTile(
+          icon: IconDef.velocity,
           label: 'Zero muzzle velocity',
           value: state.zeroMv,
         ),
-        InfoTile(
-          icon: Icons.graphic_eq_outlined,
+        InfoListTile(
+          icon: IconDef.machSpeed,
           label: 'Speed of sound',
           value: state.speedOfSound,
         ),
-        InfoTile(
-          icon: Icons.arrow_forward_outlined,
+        InfoListTile(
+          icon: IconDef.velocity,
           label: 'Velocity at target',
           value: state.velocityAtTarget,
         ),
         const Divider(height: 1),
         const ListSectionTile('Energy'),
-        InfoTile(
-          icon: Icons.bolt_outlined,
-          label: 'Energy at muzzle',
+        InfoListTile(
+          icon: IconDef.energy,
+          label: 'Energy at muzzle velocity',
           value: state.energyAtMuzzle,
         ),
-        InfoTile(
-          icon: Icons.bolt_outlined,
+        InfoListTile(
+          icon: IconDef.energy,
           label: 'Energy at target',
           value: state.energyAtTarget,
         ),
         const Divider(height: 1),
         const ListSectionTile('Stability'),
-        InfoTile(
-          icon: Icons.rotate_right_outlined,
+        InfoListTile(
+          icon: IconDef.gyrostability,
           label: 'Gyroscopic stability factor',
           value: state.gyroscopicStability,
         ),
         const Divider(height: 1),
         const ListSectionTile('Trajectory'),
-        InfoTile(
-          icon: Icons.flag_outlined,
+        InfoListTile(
+          icon: IconDef.range,
           label: 'Shot distance',
           value: state.shotDistance,
         ),
-        InfoTile(
-          icon: Icons.height,
+        InfoListTile(
+          icon: IconDef.height,
           label: 'Height at target',
           value: state.heightAtTarget,
         ),
-        InfoTile(
+        InfoListTile(
           icon: Icons.architecture_outlined,
           label: 'Max height distance',
           value: state.maxHeightDistance,
         ),
-        InfoTile(
-          icon: Icons.arrow_right_alt_outlined,
+        InfoListTile(
+          icon: IconDef.windage,
           label: 'Windage',
           value: state.windage,
         ),
-        InfoTile(
-          icon: Icons.timer_outlined,
+        InfoListTile(
+          icon: IconDef.time,
           label: 'Time to target',
           value: state.timeToTarget,
         ),

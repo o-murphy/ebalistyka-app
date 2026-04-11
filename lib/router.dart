@@ -1,4 +1,7 @@
-import 'package:eballistica/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,26 +33,17 @@ abstract final class Routes {
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
 
-  // Profile add → rifle selection
-  static const profileAdd = '/home/profiles/profile-add';
-  static const profileAddRifleCreate =
-      '/home/profiles/profile-add/rifle-create';
-  static const profileAddRifleCollection =
-      '/home/profiles/profile-add/rifle-collection';
+  // Profile add — weapon selection
+  static const profileAddWeaponCreate = '/home/profiles/weapon-create';
+  static const profileAddWeaponCollection = '/home/profiles/weapon-collection';
 
-  // Cartridge select (from profile card)
-  static const cartridgeSelect = '/home/profiles/cartridge-select';
-  static const cartridgeCreate = '/home/profiles/cartridge-select/create';
+  // Ammo select (from profile card)
+  static const ammoSelect = '/home/profiles/ammo-select';
+  static const ammoCreate = '/home/profiles/ammo-select/create';
   static const cartridgeCollection =
-      '/home/profiles/cartridge-select/collection';
-
-  // Projectile select (future — nested under cartridge)
-  static const projectileSelect =
-      '/home/profiles/cartridge-select/projectile-select';
-  static const projectileCreate =
-      '/home/profiles/cartridge-select/projectile-select/create';
-  static const projectileCollection =
-      '/home/profiles/cartridge-select/projectile-select/collection';
+      '/home/profiles/ammo-select/cartridge-collection';
+  static const bulletCollection =
+      '/home/profiles/ammo-select/bullet-collection';
 
   // Sight select (from profile card)
   static const sightSelect = '/home/profiles/sight-select';
@@ -57,8 +51,8 @@ abstract final class Routes {
   static const sightCollection = '/home/profiles/sight-select/collection';
 
   // Profile inline edits (from profile card)
-  static const profileEditRifle = '/home/profiles/rifle-edit';
-  static const profileEditCartridge = '/home/profiles/cartridge-edit';
+  static const profileEditWeapon = '/home/profiles/weapon-edit';
+  static const profileEditAmmo = '/home/profiles/ammo-edit';
   static const profileEditSight = '/home/profiles/sight-edit';
 
   // Tables stack
@@ -101,82 +95,67 @@ final appRouter = GoRouter(
                   routes: [
                     // ── Profile add ─────────────────────────────────────────
                     GoRoute(
-                      path: 'profile-add',
-                      builder: (_, _) => const ProfileAddScreen(),
-                      routes: [
-                        GoRoute(
-                          path: 'rifle-create',
-                          builder: (_, _) => const CreateRifleWizardScreen(),
-                        ),
-                        GoRoute(
-                          path: 'rifle-collection',
-                          builder: (_, _) =>
-                              const SelectRifleCollectionScreen(),
-                        ),
-                      ],
+                      path: 'weapon-create',
+                      builder: (_, _) => const WeaponWizardScreen(),
                     ),
-                    // ── Cartridge select ────────────────────────────────────
                     GoRoute(
-                      path: 'cartridge-select',
-                      builder: (_, _) => const CartridgeSelectScreen(),
+                      path: 'weapon-collection',
+                      builder: (_, _) => const WeaponCollectionScreen(),
+                    ),
+                    // ── Ammo select ─────────────────────────────────────────
+                    GoRoute(
+                      path: 'ammo-select',
+                      builder: (_, state) =>
+                          MyAmmoScreen(profileId: state.extra as String?),
                       routes: [
                         GoRoute(
                           path: 'create',
-                          builder: (_, _) =>
-                              const CreateCartridgeWizardScreen(),
+                          builder: (_, _) => const AmmoWizardScreen(),
                         ),
                         GoRoute(
-                          path: 'collection',
+                          path: 'cartridge-collection',
                           builder: (_, _) =>
-                              const SelectCartridgeCollectionScreen(),
+                              const AmmoCollectionScreen(filterBullet: false),
                         ),
-                        // future: projectile nested under cartridge
                         GoRoute(
-                          path: 'projectile-select',
-                          builder: (_, _) => const ProjectileSelectScreen(),
-                          routes: [
-                            GoRoute(
-                              path: 'create',
-                              builder: (_, _) =>
-                                  const CreateProjectileWizardScreen(),
-                            ),
-                            GoRoute(
-                              path: 'collection',
-                              builder: (_, _) =>
-                                  const SelectProjectileCollectionScreen(),
-                            ),
-                          ],
+                          path: 'bullet-collection',
+                          builder: (_, _) =>
+                              const AmmoCollectionScreen(filterBullet: true),
                         ),
                       ],
                     ),
                     // ── Sight select ────────────────────────────────────────
                     GoRoute(
                       path: 'sight-select',
-                      builder: (_, _) => const SightSelectScreen(),
+                      builder: (_, state) => MySightsCollectionScreen(
+                        profileId: state.extra as String?,
+                      ),
                       routes: [
                         GoRoute(
                           path: 'create',
-                          builder: (_, _) => const CreateSightWizardScreen(),
+                          builder: (_, _) => const SightWizardScreen(),
                         ),
                         GoRoute(
                           path: 'collection',
-                          builder: (_, _) =>
-                              const SelectSightCollectionScreen(),
+                          builder: (_, _) => const SightCollectionScreen(),
                         ),
                       ],
                     ),
                     // ── Profile inline edits ────────────────────────────────
                     GoRoute(
-                      path: 'rifle-edit',
-                      builder: (_, _) => const RifleEditScreen(),
+                      path: 'weapon-edit',
+                      builder: (_, state) =>
+                          WeaponWizardScreen(initial: state.extra as Weapon?),
                     ),
                     GoRoute(
-                      path: 'cartridge-edit',
-                      builder: (_, _) => const CartridgeEditScreen(),
+                      path: 'ammo-edit',
+                      builder: (_, state) =>
+                          AmmoWizardScreen(initial: state.extra as Ammo?),
                     ),
                     GoRoute(
                       path: 'sight-edit',
-                      builder: (_, _) => const SightEditScreen(),
+                      builder: (_, state) =>
+                          SightWizardScreen(initial: state.extra as Sight?),
                     ),
                   ],
                 ),
@@ -243,8 +222,8 @@ final appRouter = GoRouter(
                   builder: (_, _) => const TemperatureConvertorScreen(),
                 ),
                 GoRoute(
-                  path: 'mil-moa',
-                  builder: (_, _) => const MilMoaConvertorScreen(),
+                  path: 'angular',
+                  builder: (_, _) => const AnglesConvertorScreen(),
                 ),
                 GoRoute(
                   path: 'torque',
@@ -313,21 +292,18 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         selectedIndex: widget.shell.currentIndex,
         onDestinationSelected: _onTabSelected,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
+          NavigationDestination(icon: Icon(IconDef.home), label: 'Home'),
           NavigationDestination(
-            icon: Icon(Icons.thunderstorm_outlined),
+            icon: Icon(IconDef.tables),
             label: 'Conditions',
           ),
+          NavigationDestination(icon: Icon(IconDef.tables), label: 'Tables'),
           NavigationDestination(
-            icon: Icon(Icons.table_view_outlined),
-            label: 'Tables',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.calculate_outlined),
+            icon: Icon(IconDef.convertors),
             label: 'Convertors',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
+            icon: Icon(IconDef.settings),
             label: 'Settings',
           ),
         ],

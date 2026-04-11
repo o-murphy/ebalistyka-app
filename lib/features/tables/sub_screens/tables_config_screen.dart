@@ -1,42 +1,41 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
-import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 // ─── Table Configuration Screen ───────────────────────────────────────────────
 
 class TableConfigScreen extends ConsumerWidget {
   const TableConfigScreen({super.key});
 
-  static void _toggleColumnVisibility(
-    String colId,
-    bool visible,
-    TableConfig cfg,
-    void Function(TableConfig) save,
-  ) {
-    final hidden = Set<String>.from(cfg.hiddenCols);
-    if (visible) {
-      hidden.remove(colId);
-    } else {
-      hidden.add(colId);
-    }
-    save(cfg.copyWith(hiddenCols: hidden));
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider).value ?? const AppSettings();
-    final cfg = settings.tableConfig;
-    final notifier = ref.read(settingsProvider.notifier);
-    final distanceUnit = settings.units.distance;
+    final cfg = ref.watch(tablesSettingsProvider);
+    final notifier = ref.read(tablesSettingsNotifierProvider.notifier);
+    final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
 
-    void save(TableConfig updated) => notifier.updateTableConfig(updated);
+    void save(void Function(TablesSettings) mutate) {
+      mutate(cfg);
+      notifier.save(cfg);
+    }
+
+    void toggleCol(String colId, bool visible) {
+      final hidden = List<String>.from(cfg.hiddenCols);
+      if (visible) {
+        hidden.remove(colId);
+      } else {
+        if (!hidden.contains(colId)) hidden.add(colId);
+      }
+      save((s) => s.hiddenCols = hidden);
+    }
 
     return BaseScreen(
       title: 'Table Configuration',
@@ -49,30 +48,30 @@ class TableConfigScreen extends ConsumerWidget {
           _ConstrainedDistanceTile(
             icon: Icons.first_page_outlined,
             label: 'Start distance',
-            rawValueM: cfg.startM,
+            rawValueM: cfg.distanceStartMeter,
             constraints: FC.tableRange,
             displayUnit: distanceUnit,
-            maxRawM: cfg.endM, // no more than end
-            onChanged: (v) => save(cfg.copyWith(startM: v)),
+            maxRawM: cfg.distanceEndMeter,
+            onChanged: (v) => save((s) => s.distanceStartMeter = v),
           ),
 
           _ConstrainedDistanceTile(
             icon: Icons.last_page_outlined,
             label: 'End distance',
-            rawValueM: cfg.endM,
+            rawValueM: cfg.distanceEndMeter,
             constraints: FC.tableRange,
             displayUnit: distanceUnit,
-            minRawM: cfg.startM, // not less than start
-            onChanged: (v) => save(cfg.copyWith(endM: v)),
+            minRawM: cfg.distanceStartMeter,
+            onChanged: (v) => save((s) => s.distanceEndMeter = v),
           ),
 
           _ConstrainedDistanceTile(
-            icon: Icons.straighten_outlined,
+            icon: IconDef.range,
             label: 'Distance step',
-            rawValueM: cfg.stepM,
+            rawValueM: cfg.distanceStepMeter,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
-            onChanged: (v) => save(cfg.copyWith(stepM: v)),
+            onChanged: (v) => save((s) => s.distanceStepMeter = v),
           ),
 
           const Divider(height: 1),
@@ -84,14 +83,14 @@ class TableConfigScreen extends ConsumerWidget {
             secondary: const Icon(Icons.swap_vert_outlined),
             title: const Text('Show zero crossings table'),
             value: cfg.showZeros,
-            onChanged: (v) => save(cfg.copyWith(showZeros: v)),
+            onChanged: (v) => save((s) => s.showZeros = v),
             dense: true,
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.speed_outlined),
+            secondary: const Icon(IconDef.velocity),
             title: const Text('Show subsonic transition'),
             value: cfg.showSubsonicTransition,
-            onChanged: (v) => save(cfg.copyWith(showSubsonicTransition: v)),
+            onChanged: (v) => save((s) => s.showSubsonicTransition = v),
             dense: true,
           ),
 
@@ -103,7 +102,7 @@ class TableConfigScreen extends ConsumerWidget {
               SwitchListTile(
                 title: Text(col.label),
                 value: !cfg.hiddenCols.contains(col.id),
-                onChanged: (v) => _toggleColumnVisibility(col.id, v, cfg, save),
+                onChanged: (v) => toggleCol(col.id, v),
                 dense: true,
               ),
 
@@ -112,32 +111,32 @@ class TableConfigScreen extends ConsumerWidget {
 
           SwitchListTile(
             title: const Text('MRAD'),
-            value: cfg.tableShowMrad,
-            onChanged: (v) => save(cfg.copyWith(tableShowMrad: v)),
+            value: cfg.showMrad,
+            onChanged: (v) => save((s) => s.showMrad = v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('MOA'),
-            value: cfg.tableShowMoa,
-            onChanged: (v) => save(cfg.copyWith(tableShowMoa: v)),
+            value: cfg.showMoa,
+            onChanged: (v) => save((s) => s.showMoa = v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('MIL'),
-            value: cfg.tableShowMil,
-            onChanged: (v) => save(cfg.copyWith(tableShowMil: v)),
+            value: cfg.showMil,
+            onChanged: (v) => save((s) => s.showMil = v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('cm/100m'),
-            value: cfg.tableShowCmPer100m,
-            onChanged: (v) => save(cfg.copyWith(tableShowCmPer100m: v)),
+            value: cfg.showCmPer100m,
+            onChanged: (v) => save((s) => s.showCmPer100m = v),
             dense: true,
           ),
           SwitchListTile(
             title: const Text('in/100yd'),
-            value: cfg.tableShowInPer100yd,
-            onChanged: (v) => save(cfg.copyWith(tableShowInPer100yd: v)),
+            value: cfg.showInPer100yd,
+            onChanged: (v) => save((s) => s.showInPer100yd = v),
             dense: true,
           ),
 
@@ -146,8 +145,6 @@ class TableConfigScreen extends ConsumerWidget {
       ),
     );
   }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
 }
 
 /// Distance tile with cross-field constraints (min/max in metres).
@@ -200,7 +197,7 @@ class _ConstrainedDistanceTile extends StatelessWidget {
   }
 }
 
-// ── Column catalogue (mirrors trajectory_table.dart) ─────────────────────────
+// ── Column catalogue ─────────────────────────────────────────────────────────
 
 class _ColEntry {
   final String id;

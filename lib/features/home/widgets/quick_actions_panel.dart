@@ -1,12 +1,15 @@
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/shared/widgets/icon_value_button.dart';
-import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
+
+import 'package:bclibc_ffi/unit.dart';
 
 class QuickActionsPanel extends ConsumerWidget {
   const QuickActionsPanel({super.key});
@@ -23,7 +26,7 @@ class QuickActionsPanel extends ConsumerWidget {
       height: 104,
       items: [
         IconValueButton(
-          icon: Icons.air_outlined,
+          icon: IconDef.windSpeed,
           value: state.windSpeedDisplay,
           label: 'Wind speed',
           heroTag: 'qa-wind',
@@ -31,13 +34,13 @@ class QuickActionsPanel extends ConsumerWidget {
             context,
             label: 'Wind speed',
             rawValue: state.windSpeedMps,
-            constraints: FC.windVelocity,
-            displayUnit: units.velocity,
+            constraints: FC.windSpeed,
+            displayUnit: units.velocityUnit,
             onChanged: notifier.updateWindSpeed,
           ),
         ),
         IconValueButton(
-          icon: Icons.square_foot,
+          icon: IconDef.angle,
           value: state.lookAngleDisplay,
           label: 'Look angle',
           heroTag: 'qa-angle',
@@ -51,7 +54,7 @@ class QuickActionsPanel extends ConsumerWidget {
           ),
         ),
         IconValueButton(
-          icon: Icons.flag_outlined,
+          icon: IconDef.range,
           value: state.targetDistanceDisplay,
           label: 'Target range',
           heroTag: 'qa-range',
@@ -60,7 +63,7 @@ class QuickActionsPanel extends ConsumerWidget {
             label: 'Target range',
             rawValue: state.targetDistanceM,
             constraints: FC.targetDistance,
-            displayUnit: units.distance,
+            displayUnit: units.distanceUnit,
             onChanged: notifier.updateTargetDistance,
           ),
         ),

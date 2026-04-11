@@ -1,21 +1,22 @@
 import 'dart:math' as math;
 
-import 'package:eballistica/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:eballistica/router.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/widgets/home_chart_page.dart';
-import 'package:eballistica/features/home/widgets/home_reticle_page.dart';
-import 'package:eballistica/features/home/widgets/home_table_page.dart';
-import 'package:eballistica/features/home/widgets/quick_actions_panel.dart';
-import 'package:eballistica/features/home/widgets/side_control_block.dart';
-import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
-import 'package:eballistica/features/home/widgets/wind_indicator.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
+import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
+import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
+import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget build(BuildContext context) {
     // Trigger overlay animation when VM transitions from Loading → Ready.
     ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
-      final wasLoading = prev?.value is HomeUiLoading;
+      final wasLoading = prev?.isLoading == true;
       final isReady = next.value is HomeUiReady;
       if (wasLoading && isReady) _calcDoneCtrl.forward(from: 0);
     });
@@ -138,7 +139,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                        const Icon(Icons.more_horiz_rounded),
+                                        const Icon(IconDef.moreHoriz),
                                       ],
                                     ),
                                   ),
@@ -146,10 +147,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 const SizedBox(width: 8),
                                 IconButton.filledTonal(
                                   onPressed: () =>
-                                      context.push(Routes.projectileSelect),
-                                  icon: const Icon(
-                                    Icons.rocket_launch_outlined,
-                                  ),
+                                      context.push(Routes.ammoSelect),
+                                  icon: const Icon(IconDef.ammo),
                                 ),
                               ],
                             ),
@@ -171,11 +170,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.info_outline,
                                         bottomIcon: Icons.note_add_outlined,
                                         infoRows: [
-                                          (
-                                            Icons.device_thermostat_outlined,
-                                            tempStr,
-                                          ),
-                                          (Icons.terrain_outlined, altStr),
+                                          (IconDef.temperature, tempStr),
+                                          (IconDef.altitude, altStr),
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
@@ -217,10 +213,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       flex: 1,
                                       child: SideControlBlock(
                                         topIcon: Icons.question_mark_outlined,
-                                        bottomIcon: Icons.more_horiz_outlined,
+                                        bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
-                                          (Icons.water_drop_outlined, humidStr),
-                                          (Icons.speed_outlined, pressStr),
+                                          (IconDef.humidity, humidStr),
+                                          (IconDef.velocity, pressStr),
                                         ],
                                         onTopPressed: () {},
                                         onBottomPressed: () {},

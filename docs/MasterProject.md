@@ -1,9 +1,9 @@
-# eBallistica — Master Project Document
+# eBalistyka — Master Project Document
 
 **Version:** 2.0
 **Status:** Working Document
 **Stack:** Flutter · Dart · Riverpod · FFI (bclibc C++)
-**Package:** `eballistica` · Bundle ID: `com.ballistics.eballistica`
+**Package:** `ebalistyka` · Bundle ID: `com.ballistics.ebalistyka`
 
 ---
 
@@ -257,7 +257,7 @@ Layout per field: `[−]  value  unit  [+]` — the +/− buttons are adjacent t
 | Aerodynamic jump                              | Always ON, control disabled (engine limitation)                 |
 | Pressure depends on altitude                  | Always ON, control disabled (engine limitation)                 |
 
-Powder temperature field appears in the **switch section** (not atmospheric fields), below the sub-switch, only when `useDifferentPowderTemperature` is ON.
+Powder temperature field appears in the **switch section** (not atmospheric fields), below the sub-switch, only when `useDiffPowderTemperature` is ON.
 
 ---
 
@@ -634,7 +634,7 @@ class AppSettings {
   final bool       showSubsonicTransition;
   final bool       enableCoriolis;
   final bool       enablePowderSensitivity;         // UI toggle — show/use powder sens
-  final bool       useDifferentPowderTemperature;   // Use separate powder temp vs atmo temp
+  final bool       useDiffPowderTemperature;   // Use separate powder temp vs atmo temp
   final bool       enableDerivation;
   final bool       enableAerodynamicJump;
   final bool       pressureDependsOnAltitude;
@@ -682,7 +682,6 @@ class ShotProfile {
   final double?    latitudeDeg;
   final double?    azimuthDeg;
 
-  Shot toShot();
 }
 ```
 
@@ -750,7 +749,7 @@ On tab activation (from router):
 
 Export archive:
 ```
-eballistica_backup.zip
+ebalistyka_backup.zip
 ├── settings.json
 ├── profile.json
 ├── rifles.json
@@ -779,7 +778,7 @@ eballistica_backup.zip
 
 | Area | File(s) | Notes |
 | ---- | ------- | ----- |
-| **App name / Bundle ID** | platform configs | `eBallistica` · `com.ballistics.eballistica` — all platforms updated |
+| **App name / Bundle ID** | platform configs | `eBalistyka` · `com.ballistics.ebalistyka` — all platforms updated |
 | **bclibc submodule** | `external/bclibc` | Replaces former `native/` and `py-ballisticcalc` dirs; pinned at v1.0.0 |
 | **Solver (FFI)** | `src/solver/` | Full unit system, conditions, munition, drag tables, shot, trajectory, calculator, FFI to bclibc |
 | **Domain models** | `src/models/` | Rifle, Sight, Projectile, Cartridge, ShotProfile, AppSettings, UnitSettings, TableConfig, seed data |
@@ -1068,7 +1067,7 @@ Phase 8.8   ✅  ShotProfile zero fields; hardcoded 100 m removed
 Phase 5.5   ✅  QuickActionsPanel MVP
 Phase 6     ✅  Home Screen bottom block; files extracted
 Refactor    ✅  home_screen, settings screens split into widget files
-Rename      ✅  eBallistica / com.ballistics.eballistica
+Rename      ✅  eBalistyka / com.ballistics.ebalistyka
 Zero cache  ✅  _buildZeroKey + Phase 1 skip when zero inputs unchanged
 
 ─── Architecture Refactoring (REFACTORING_PLAN.md) ───

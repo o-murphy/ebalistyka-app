@@ -1,0 +1,16 @@
+name: ebalistyka_db
+description: "Data layer for ballistics calculations using ObjectBox."
+version: 0.0.1
+homepage:
+publish_to: 'none'
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  objectbox: ^5.3.1
+
+dev_dependencies:
+  build_runner: ^2.13.1
+  objectbox_generator: any
+  test: ^1.31.0

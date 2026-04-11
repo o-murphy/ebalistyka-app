@@ -569,4 +569,4 @@ Bindings regenerated — ffigen ^20 now generates proper Dart `enum` types (with
 - `src/` merges into `core/` — all domain code lives under one roof
 - `router.dart` stays at `lib/` root — it references all feature screens
 - `main.dart` stays at `lib/` root
-- After Phase 1, all imports use `package:eballistica/core/...` and `package:eballistica/features/...` prefixes — no more `src/`
+- After Phase 1, all imports use `package:ebalistyka/core/...` and `package:ebalistyka/features/...` prefixes — no more `src/`

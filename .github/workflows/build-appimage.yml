@@ -4,12 +4,13 @@ on:
   pull_request:
     branches: [main, develop]
     paths:
-      - 'lib/**'
-      - 'linux/**'
-      - 'external/**'
-      - 'pubspec.yaml'
-      - '.github/workflows/build-appimage.yml'
-      - '.github/workflows/build.yml'
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - ".github/workflows/build-appimage.yml"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 jobs:
@@ -20,22 +21,34 @@ jobs:
       platform: linux
       arch: amd64
       build_type: release
-      retention_days: 7
+      build_name: '0.1.0-alpha'
+      retention_days: 30
 
   pr-summary:
     name: PR Build Summary
     runs-on: ubuntu-latest
     needs: [build]
-    if: always()
+    if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
       issues: write
 
     steps:
+      - name: Get PR number
+        id: pr
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Comment on PR
+        if: steps.pr.outputs.number != ''
         uses: actions/github-script@v7
         with:
           script: |
+            const prNumber = ${{ steps.pr.outputs.number }};
             const success = '${{ needs.build.result }}' === 'success';
             const artifactUrl = '${{ needs.build.outputs.artifact_url }}';
             const artifactName = '${{ needs.build.outputs.artifact_name }}';
@@ -46,34 +59,51 @@ jobs:
               body += `✅ **Build successful!**\n\n`;
               body += `📦 **[Download AppImage](${artifactUrl})**\n`;
               body += `\`${artifactName}\` — available for 7 days\n\n`;
-              body += `**PR**: #${{ github.event.pull_request.number }} · **Commit**: \`${{ github.sha }}\`\n\n`;
-              body += `\`\`\`bash\nchmod +x eballistica-x86_64.AppImage\n./eballistica-x86_64.AppImage\n\`\`\`\n`;
+              body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
+              body += `### Test Instructions:\n`;
+              body += `\`\`\`bash\n# Download and run\nchmod +x ebalistyka-x86_64.AppImage\n./ebalistyka-x86_64.AppImage\n\n# Check if bclibc_ffi is loaded correctly\nldd ebalistyka-x86_64.AppImage | grep bclibc\n\`\`\`\n`;
+              body += `\n**Note**: Make sure the bclibc_ffi package is properly linked.\n`;
             } else {
-              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
+              body += `❌ **Build failed!**\n\n`;
+              body += `[View logs](${runUrl})\n\n`;
+              body += `**Common issues:**\n`;
+              body += `- Check if bclibc_ffi CMakeLists.txt has correct paths\n`;
+              body += `- Verify external/bclibc submodule is initialized\n`;
+              body += `- Run \`git submodule update --init --recursive\`\n`;
             }
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const existing = comments.find(c =>
-              c.user.type === 'Bot' && c.body.includes('## Linux AppImage Build')
-            );
-
-            if (existing) {
-              await github.rest.issues.updateComment({
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
+                issue_number: prNumber,
               });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
+
+              const existing = comments.find(c =>
+                c.user.type === 'Bot' && c.body.includes('## Linux AppImage Build')
+              );
+
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body,
+                });
+              }
+            } catch (error) {
+              console.log('Error posting comment:', error.message);
             }
+
+      - name: Display build status
+        if: steps.pr.outputs.number == ''
+        run: |
+          echo "Build completed with status: ${{ needs.build.result }}"
+          echo "Skipping PR comment because this is not a pull request event"

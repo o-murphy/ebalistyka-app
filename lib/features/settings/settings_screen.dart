@@ -1,26 +1,34 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/router.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+final _packageInfoProvider = FutureProvider<PackageInfo>(
+  (_) => PackageInfo.fromPlatform(),
+);
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+    final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
 
     final notifier = ref.read(settingsProvider.notifier);
     final tt = Theme.of(context).textTheme;
 
-    final distanceUnit = ref.watch(unitSettingsProvider).distance;
+    final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
 
     return BaseScreen(
       title: 'Settings',
@@ -31,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(_languageName(settings.languageCode)),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
@@ -39,14 +47,13 @@ class SettingsScreen extends ConsumerWidget {
               notifier.setLanguage,
             ),
           ),
-          // const Divider(height: 1),
 
           // ── Appearance ─────────────────────────────────────────────────
           ListSectionTile('Appearance'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: _ThemeSelector(
-              current: settings.themeMode,
+              current: settings.flutterThemeMode,
               onChanged: notifier.setThemeMode,
             ),
           ),
@@ -58,33 +65,36 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.straighten_outlined),
             title: const Text('Units of Measurement'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsUnits),
           ),
+
+          const Divider(height: 1),
+
+          // ── Home screen props ─────────────────────────────────────────────────
+          ListSectionTile('Home screen'),
           ListTile(
             leading: const Icon(Icons.tune_outlined),
             title: const Text('Adjustment Display'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsAdjustment),
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.speed_outlined),
+            secondary: const Icon(IconDef.velocity),
             title: const Text('Show subsonic transition'),
-            value: settings.showSubsonicTransition,
-            onChanged: (v) => notifier.setSwitch('subsonicTransition', v),
+            subtitle: const Text('Displays on trajectory chart'),
+            value: settings.homeShowSubsonicTransition,
+            onChanged: (v) =>
+                notifier.setAdjustmentToggle('subsonicTransition', v),
             dense: true,
           ),
-          const Divider(height: 1),
-
-          // ── Home screen props ─────────────────────────────────────────────────
-          ListSectionTile('Main screen'),
 
           UnitValueFieldTile(
             icon: Icons.table_rows_outlined,
             label: 'Table distance step',
-            rawValue: settings.homeTableStep,
+            rawValue: settings.homeTableDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
             onChanged: (v) => notifier.setHomeTableStep(v),
@@ -92,7 +102,7 @@ class SettingsScreen extends ConsumerWidget {
           UnitValueFieldTile(
             icon: Icons.show_chart_outlined,
             label: 'Chart distance step',
-            rawValue: settings.chartDistanceStep,
+            rawValue: settings.homeChartDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
             onChanged: (v) => notifier.setChartDistanceStep(v),
@@ -108,7 +118,7 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    icon: const Icon(Icons.upload_outlined),
+                    icon: const Icon(IconDef.export),
                     label: const Text('Export profiles'),
                     onPressed: () {},
                   ),
@@ -116,7 +126,7 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton.icon(
-                    icon: const Icon(Icons.download_outlined),
+                    icon: const Icon(IconDef.import),
                     label: const Text('Import profiles'),
                     onPressed: () {},
                   ),
@@ -131,21 +141,22 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.code_outlined),
             title: const Text('GitHub'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () =>
+                _launchUrl("https://github.com/o-murphy/test_flutter_app"),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('Privacy Policy'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: const Text('Terms of Use'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
@@ -155,15 +166,26 @@ class SettingsScreen extends ConsumerWidget {
           // ── About ──────────────────────────────────────────────────────
           ListSectionTile('About'),
           ListTile(
-            leading: const Icon(Icons.info_outline),
+            leading: const Icon(Icons.info_outlined),
             title: const Text('Version'),
-            trailing: Text('1.0.0', style: tt.bodySmall),
+            trailing: Text(
+              ref
+                  .watch(_packageInfoProvider)
+                  .when(
+                    data: (i) => i.buildNumber.isNotEmpty
+                        ? '${i.version}+${i.buildNumber}'
+                        : i.version,
+                    loading: () => '…',
+                    error: (_, _) => '?',
+                  ),
+              style: tt.bodySmall,
+            ),
             dense: true,
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
             title: const Text('Changelog'),
-            trailing: const Icon(Icons.open_in_new, size: 16),
+            trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
@@ -245,5 +267,15 @@ class _ThemeSelector extends StatelessWidget {
         visualDensity: VisualDensity.compact,
       ),
     );
+  }
+}
+
+Future<void> _launchUrl(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication, // Відкриває в зовнішньому браузері
+  )) {
+    throw Exception('Could not launch $url');
   }
 }

@@ -2,76 +2,86 @@
 //
 // Requires the native FFI library to be built:
 //   make native
-//   dart test test/services/ballistics_service_test.dart
+//   flutter test test/core/services/ballistics_service_test.dart
 
 import 'package:test/test.dart';
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/services/ballistics_service_impl.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/projectile.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 // ── Test fixtures ────────────────────────────────────────────────────────────
 
-/// Realistic .308 Win profile for testing.
-ShotProfile _makeProfile({
-  double mvMps = 800.0,
-  double zeroDistM = 100.0,
-  double targetDistM = 300.0,
-  AtmoData? conditions,
-  AtmoData? zeroConditions,
-  List<WindData> winds = const [],
-}) {
-  final projectile = Projectile(
-    name: 'Test 175gr',
-    dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
-    coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-  );
-  final cartridge = Cartridge(
-    name: 'Test .308',
-    projectile: projectile,
-    mv: Velocity(mvMps, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(0.0, Unit.fraction),
-  );
-  final rifle = Rifle(
-    name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
-  );
-  final sight = Sight(
-    name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
-  );
-  return ShotProfile(
-    name: 'Test Shot',
-    rifle: rifle,
-    sight: sight,
-    cartridge: cartridge,
-    conditions:
-        conditions ??
-        AtmoData(
-          altitude: Distance(0, Unit.meter),
-          temperature: Temperature(15.0, Unit.celsius),
-          pressure: Pressure(1013.25, Unit.hPa),
-          humidity: 0.0,
-          powderTemp: Temperature(15.0, Unit.celsius),
-        ),
-    winds: winds,
-    lookAngle: Angular(0, Unit.degree),
-    zeroDistance: Distance(zeroDistM, Unit.meter),
-    zeroConditions: zeroConditions,
-    targetDistance: Distance(targetDistM, Unit.meter),
-  );
+/// Builds an in-memory Ammo entity — no OB store required.
+Ammo _makeAmmo({
+  double muzzleVelocityMps = 800.0,
+  double zeroDistanceMeter = 100.0,
+  double powderSensitivityFrac = 0.0,
+  bool usePowderSensitivity = false,
+  bool zeroUseDiffPowderTemperature = false,
+  double zeroPowderTemperatureC = 15.0,
+}) => Ammo()
+  ..name = 'Test .308 175gr'
+  ..dragTypeValue = 'g7'
+  ..weightGrain = 175.0
+  ..caliberInch = 0.308
+  ..lengthInch = 1.220
+  ..bcG7 = 0.475
+  ..muzzleVelocityMps = muzzleVelocityMps
+  ..powderTemperatureC = 15.0
+  ..powderSensitivityFrac = powderSensitivityFrac
+  ..usePowderSensitivity = usePowderSensitivity
+  ..zeroDistanceMeter = zeroDistanceMeter
+  ..zeroTemperatureC = 15.0
+  ..zeroPressurehPa = 1013.25
+  ..zeroAltitudeMeter = 0.0
+  ..zeroHumidityFrac = 0.0
+  ..zeroPowderTemperatureC = zeroPowderTemperatureC
+  ..zeroUseDiffPowderTemperature = zeroUseDiffPowderTemperature;
+
+/// Builds an in-memory Weapon entity.
+Weapon _makeWeapon() => Weapon()
+  ..name = 'Test Rifle'
+  ..caliberInch = 0.308
+  ..twistInch = 11.0;
+
+/// Builds an in-memory Sight entity.
+Sight _makeSight() => Sight()
+  ..name = 'Test Scope'
+  ..sightHeightInch = 1.496; // 38 mm ≈ 1.496 in
+
+/// Assembles a Profile with in-memory ToOne relations.
+Profile _makeProfile({Ammo? ammo, Weapon? weapon, Sight? sight}) {
+  final p = Profile()..name = 'Test Profile';
+  p.ammo.target = ammo ?? _makeAmmo();
+  p.weapon.target = weapon ?? _makeWeapon();
+  p.sight.target = sight ?? _makeSight();
+  return p;
 }
+
+/// Builds a ShootingConditions entity with sensible defaults.
+ShootingConditions _makeConditions({
+  double targetM = 300.0,
+  double tempC = 15.0,
+  double altM = 0.0,
+  double pressHPa = 1013.25,
+  double humidity = 0.0,
+  double powderTempC = 15.0,
+  double windSpeedMps = 0.0,
+  double windDirectionDeg = 0.0,
+}) => ShootingConditions()
+  ..distanceMeter = targetM
+  ..temperatureC = tempC
+  ..altitudeMeter = altM
+  ..pressurehPa = pressHPa
+  ..humidityFrac = humidity
+  ..powderTemperatureC = powderTempC
+  ..windSpeedMps = windSpeedMps
+  ..windDirectionDeg = windDirectionDeg
+  ..lookAngleRad = 0.0
+  ..usePowderSensitivity = false
+  ..useDiffPowderTemp = false
+  ..useCoriolis = false;
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -84,9 +94,9 @@ void main() {
 
   group('BallisticsService — calculateTable', () {
     test('returns non-empty trajectory for standard profile', () async {
-      final profile = _makeProfile();
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
@@ -95,9 +105,9 @@ void main() {
     });
 
     test('trajectory starts near zero distance', () async {
-      final profile = _makeProfile();
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
@@ -106,9 +116,9 @@ void main() {
     });
 
     test('trajectory extends to ~2000m', () async {
-      final profile = _makeProfile();
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
@@ -118,13 +128,16 @@ void main() {
 
     test('step size affects number of trajectory points', () async {
       final profile = _makeProfile();
+      final cond = _makeConditions();
 
       final fine = await service.calculateTable(
         profile,
+        cond,
         const TableCalcOptions(stepM: 1.0),
       );
       final coarse = await service.calculateTable(
         profile,
+        cond,
         const TableCalcOptions(stepM: 100.0),
       );
 
@@ -134,23 +147,21 @@ void main() {
       );
     });
 
-    test('cached zero elevation skips re-zeroing', () async {
+    test('repeated call with same profile reuses cached zero', () async {
       final profile = _makeProfile();
+      final cond = _makeConditions();
 
-      // First call — computes zero elevation
       final first = await service.calculateTable(
         profile,
+        cond,
         const TableCalcOptions(stepM: 100),
       );
-
-      // Second call — uses cached zero elevation
       final second = await service.calculateTable(
         profile,
+        cond,
         const TableCalcOptions(stepM: 100),
-        cachedZeroElevRad: first.zeroElevationRad,
       );
 
-      // Results should be equivalent
       expect(
         second.hitResult.trajectory.length,
         equals(first.hitResult.trajectory.length),
@@ -159,9 +170,9 @@ void main() {
     });
 
     test('velocity decreases along trajectory', () async {
-      final profile = _makeProfile();
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
@@ -176,25 +187,23 @@ void main() {
     });
 
     test('zero elevation is reasonable for 100m zero', () async {
-      final profile = _makeProfile(zeroDistM: 100.0);
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
-      // Zero elevation should be a small positive angle (bullet rises to zero)
-      final zeroElev = result.zeroElevationRad;
-      expect(zeroElev, greaterThan(0.0));
-      expect(zeroElev, lessThan(0.01)); // less than ~0.57 degrees
+      expect(result.zeroElevationRad, greaterThan(0.0));
+      expect(result.zeroElevationRad, lessThan(0.01));
     });
   });
 
   group('BallisticsService — calculateForTarget', () {
     test('returns non-empty trajectory', () async {
-      final profile = _makeProfile(targetDistM: 300.0);
       final result = await service.calculateForTarget(
-        profile,
-        const TargetCalcOptions(targetDistM: 300.0, chartStepM: 10.0),
+        _makeProfile(),
+        _makeConditions(targetM: 300.0),
+        const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
       );
 
       expect(result.hitResult.trajectory, isNotEmpty);
@@ -202,10 +211,10 @@ void main() {
     });
 
     test('trajectory extends to target distance', () async {
-      final profile = _makeProfile(targetDistM: 500.0);
       final result = await service.calculateForTarget(
-        profile,
-        const TargetCalcOptions(targetDistM: 500.0, chartStepM: 10.0),
+        _makeProfile(),
+        _makeConditions(targetM: 500.0),
+        const TargetCalcOptions(targetDistM: 500.0, stepM: 10.0),
       );
 
       final lastPoint = result.hitResult.trajectory.last;
@@ -213,32 +222,23 @@ void main() {
     });
 
     test('target shot has hold applied (relative angle set)', () async {
-      final profile = _makeProfile(targetDistM: 300.0);
       final result = await service.calculateForTarget(
-        profile,
-        const TargetCalcOptions(targetDistM: 300.0, chartStepM: 10.0),
+        _makeProfile(),
+        _makeConditions(targetM: 300.0),
+        const TargetCalcOptions(targetDistM: 300.0, stepM: 10.0),
       );
 
-      // The shot should have a relative angle set (hold for target)
-      final shot = result.hitResult.shot;
-      final holdRad = shot.relativeAngle.in_(Unit.radian);
-      // For 300m target with 100m zero, hold should be negative (bullet drops)
+      final holdRad = result.hitResult.shot.relativeAngle.in_(Unit.radian);
       expect(holdRad, isNot(0.0));
     });
 
-    test('cached zero elevation gives same results', () async {
-      final profile = _makeProfile(targetDistM: 300.0);
-      final opts = const TargetCalcOptions(
-        targetDistM: 300.0,
-        chartStepM: 10.0,
-      );
+    test('repeated call with same profile reuses cached zero', () async {
+      final profile = _makeProfile();
+      final cond = _makeConditions(targetM: 300.0);
+      const opts = TargetCalcOptions(targetDistM: 300.0, stepM: 10.0);
 
-      final first = await service.calculateForTarget(profile, opts);
-      final second = await service.calculateForTarget(
-        profile,
-        opts,
-        cachedZeroElevRad: first.zeroElevationRad,
-      );
+      final first = await service.calculateForTarget(profile, cond, opts);
+      final second = await service.calculateForTarget(profile, cond, opts);
 
       expect(
         second.hitResult.trajectory.length,
@@ -248,15 +248,15 @@ void main() {
     });
 
     test('different target distances produce different results', () async {
-      final profile = _makeProfile();
-
       final short = await service.calculateForTarget(
-        profile,
-        const TargetCalcOptions(targetDistM: 200.0, chartStepM: 10.0),
+        _makeProfile(),
+        _makeConditions(targetM: 200.0),
+        const TargetCalcOptions(targetDistM: 200.0, stepM: 10.0),
       );
       final long = await service.calculateForTarget(
-        profile,
-        const TargetCalcOptions(targetDistM: 800.0, chartStepM: 10.0),
+        _makeProfile(),
+        _makeConditions(targetM: 800.0),
+        const TargetCalcOptions(targetDistM: 800.0, stepM: 10.0),
       );
 
       expect(
@@ -268,49 +268,30 @@ void main() {
 
   group('BallisticsService — wind effects', () {
     test('wind produces non-zero windage', () async {
-      final profile = _makeProfile(
-        winds: [
-          WindData(
-            velocity: Velocity(5.0, Unit.mps),
-            directionFrom: Angular(90.0, Unit.degree),
-            untilDistance: Distance(2000.0, Unit.meter),
-          ),
-        ],
-      );
-
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(windSpeedMps: 5.0, windDirectionDeg: 90.0),
         const TableCalcOptions(stepM: 100),
       );
 
-      // At long range, windage should be non-zero
       final lastPoint = result.hitResult.trajectory.last;
       expect(lastPoint.windage.in_(Unit.centimeter).abs(), greaterThan(0.1));
     });
 
     test('no wind gives much less windage than with wind', () async {
-      final noWindProfile = _makeProfile(winds: const []);
-      final windProfile = _makeProfile(
-        winds: [
-          WindData(
-            velocity: Velocity(10.0, Unit.mps),
-            directionFrom: Angular(90.0, Unit.degree),
-            untilDistance: Distance(2000.0, Unit.meter),
-          ),
-        ],
-      );
+      final profile = _makeProfile();
 
       final noWindResult = await service.calculateTable(
-        noWindProfile,
+        profile,
+        _makeConditions(windSpeedMps: 0.0),
         const TableCalcOptions(stepM: 100),
       );
       final windResult = await service.calculateTable(
-        windProfile,
+        profile,
+        _makeConditions(windSpeedMps: 10.0, windDirectionDeg: 90.0),
         const TableCalcOptions(stepM: 100),
       );
 
-      // At long range, wind should cause significantly more windage
-      // than spin drift alone
       final noWindLast = noWindResult.hitResult.trajectory.last;
       final windLast = windResult.hitResult.trajectory.last;
       expect(
@@ -322,50 +303,16 @@ void main() {
   });
 
   group('BallisticsService — error handling', () {
-    test('throws CalculationException for invalid profile', () async {
-      // BC must be positive, zero MV will cause issues in zeroing
-      final projectile = Projectile(
-        name: 'Bad',
-        dragType: DragModelType.g7,
-        weight: Weight(1, Unit.grain),
-        coefRows: [CoeficientRow(bcCd: 0.001, mv: 0.0)],
-      );
-      final cartridge = Cartridge(
-        name: 'Bad',
-        projectile: projectile,
-        mv: Velocity(10.0, Unit.mps), // extremely low velocity
-        powderTemp: Temperature(15.0, Unit.celsius),
-        powderSensitivity: Ratio(0.0, Unit.fraction),
-      );
-      final rifle = Rifle(
-        name: 'Bad',
-        sightHeight: Distance(38.0, Unit.millimeter),
-        twist: Distance(0.0, Unit.inch),
-      );
-      final sight = Sight(
-        name: 'Bad',
-        sightHeight: Distance(38.0, Unit.millimeter),
-        zeroElevation: Angular(0, Unit.radian),
-      );
-      final badProfile = ShotProfile(
-        name: 'Bad Shot',
-        rifle: rifle,
-        sight: sight,
-        cartridge: cartridge,
-        conditions: AtmoData(
-          altitude: Distance(0, Unit.meter),
-          temperature: Temperature(15.0, Unit.celsius),
-          pressure: Pressure(1013.25, Unit.hPa),
-          humidity: 0.0,
-          powderTemp: Temperature(15.0, Unit.celsius),
-        ),
-        lookAngle: Angular(0, Unit.degree),
-        zeroDistance: Distance(3000.0, Unit.meter), // impossible zero
+    test('throws CalculationException for impossible zero distance', () async {
+      final badAmmo = _makeAmmo(
+        muzzleVelocityMps: 10.0, // extremely low
+        zeroDistanceMeter: 3000.0, // impossible zero
       );
 
       expect(
         () => service.calculateTable(
-          badProfile,
+          _makeProfile(ammo: badAmmo),
+          _makeConditions(),
           const TableCalcOptions(stepM: 100),
         ),
         throwsA(isA<CalculationException>()),
@@ -374,56 +321,41 @@ void main() {
   });
 
   group('BallisticsService — powder sensitivity', () {
-    test('powder sensitivity changes trajectory', () async {
-      final profile = _makeProfile().copyWith(
-        cartridge: Cartridge(
-          name: 'Temp Sens',
-          projectile: Projectile(
-            name: 'Test',
-            dragType: DragModelType.g7,
-            weight: Weight(175, Unit.grain),
-            diameter: Distance(7.62, Unit.millimeter),
-            coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-          ),
-          mv: Velocity(800, Unit.mps),
-          powderTemp: Temperature(15, Unit.celsius),
-          powderSensitivity: Ratio(
-            1.0,
-            Unit.fraction,
-          ), // 1.0 m/s per °C (stored as %)
-          usePowderSensitivity: true,
-        ),
-        conditions: AtmoData(
-          temperature: Temperature(35, Unit.celsius), // 20°C above reference
-          altitude: Distance(0, Unit.meter),
-          pressure: Pressure(1013.25, Unit.hPa),
-          humidity: 0.0,
-          powderTemp: Temperature(35, Unit.celsius),
-        ),
+    test('powder sensitivity changes zero elevation', () async {
+      final withSens = _makeAmmo(
+        powderSensitivityFrac: 0.02,
+        usePowderSensitivity: true,
+        zeroUseDiffPowderTemperature: true,
+        zeroPowderTemperatureC: 35.0, // hot powder at zero
+      );
+      final withoutSens = _makeAmmo(
+        powderSensitivityFrac: 0.02,
+        usePowderSensitivity: false,
+        zeroPowderTemperatureC: 15.0,
       );
 
-      final withSens = await service.calculateTable(
-        profile.copyWith(usePowderSensitivity: true),
+      final hotCond = _makeConditions(tempC: 35.0, powderTempC: 35.0);
+
+      final r1 = await service.calculateTable(
+        _makeProfile(ammo: withSens),
+        hotCond,
         const TableCalcOptions(stepM: 100),
       );
-      final withoutSens = await service.calculateTable(
-        profile.copyWith(usePowderSensitivity: false),
+      final r2 = await service.calculateTable(
+        _makeProfile(ammo: withoutSens),
+        hotCond,
         const TableCalcOptions(stepM: 100),
       );
 
-      // With +20°C and powder sensitivity, MV is higher → different zero elev
-      expect(
-        withSens.zeroElevationRad,
-        isNot(closeTo(withoutSens.zeroElevationRad, 1e-9)),
-      );
+      expect(r1.zeroElevationRad, isNot(closeTo(r2.zeroElevationRad, 1e-6)));
     });
   });
 
   group('BallisticsResult data class', () {
     test('stores hitResult and zeroElevationRad', () async {
-      final profile = _makeProfile();
       final result = await service.calculateTable(
-        profile,
+        _makeProfile(),
+        _makeConditions(),
         const TableCalcOptions(stepM: 100),
       );
 
@@ -444,7 +376,7 @@ void main() {
     test('TargetCalcOptions required targetDistM', () {
       const opts = TargetCalcOptions(targetDistM: 500.0);
       expect(opts.targetDistM, 500.0);
-      expect(opts.chartStepM, 10.0);
+      expect(opts.stepM, 10.0);
     });
   });
 }

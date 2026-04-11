@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 /// Constraints for a physical quantity role — used by [UnitValueField]
 /// and for display formatting in tables, charts, and widgets.
@@ -66,17 +66,17 @@ abstract final class FC {
     accuracy: 0,
   );
 
-  /// Humidity in percent (0–100). No unit conversion.
+  /// Humidity in percent (0–100). rawUnit == displayUnit so toDisplay is identity.
   static const humidity = FieldConstraints(
-    rawUnit: Unit.fraction, // sentinel — no conversion used for humidity
+    rawUnit: Unit.percent,
     minRaw: 0.0,
-    maxRaw: 1.0,
-    stepRaw: 0.01,
-    accuracy: 2,
+    maxRaw: 100.0,
+    stepRaw: 1.0,
+    accuracy: 0,
   );
 
   // Ballistic inputs
-  static const windVelocity = FieldConstraints(
+  static const windSpeed = FieldConstraints(
     rawUnit: Unit.mps,
     minRaw: 0.0,
     maxRaw: 30.0,
@@ -88,6 +88,22 @@ abstract final class FC {
     rawUnit: Unit.degree,
     minRaw: -90.0,
     maxRaw: 90.0,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
+  static const latitude = FieldConstraints(
+    rawUnit: Unit.degree,
+    minRaw: -90.0,
+    maxRaw: 90.0,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
+  static const azimuth = FieldConstraints(
+    rawUnit: Unit.degree,
+    minRaw: 0.0,
+    maxRaw: 360.0,
     stepRaw: 1.0,
     accuracy: 1,
   );
@@ -119,7 +135,7 @@ abstract final class FC {
 
   static const twist = FieldConstraints(
     rawUnit: Unit.inch,
-    minRaw: 1.0,
+    minRaw: 0.0,
     maxRaw: 30.0,
     stepRaw: 0.25,
     accuracy: 2,
@@ -166,6 +182,15 @@ abstract final class FC {
     accuracy: 2,
   );
 
+  /// Optical magnification (dimensionless scalar, displayed as "x").
+  static const magnification = FieldConstraints(
+    rawUnit: Unit.scalar,
+    minRaw: 0.5,
+    maxRaw: 100.0,
+    stepRaw: 0.5,
+    accuracy: 1,
+  );
+
   static const ballisticCoefficient = FieldConstraints(
     rawUnit: Unit.scalar, // sentinel — dimensionless, no conversion
     minRaw: 0.001,
@@ -182,13 +207,21 @@ abstract final class FC {
     accuracy: 3,
   );
 
+  static const barrelLength = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 1.0,
+    maxRaw: 36.0,
+    stepRaw: 0.5,
+    accuracy: 1,
+  );
+
   // Display-only — trajectory output
 
   /// Bullet height / windage offset (linear). Raw stored in feet.
   static const drop = FieldConstraints(
-    rawUnit: Unit.foot,
-    minRaw: -500.0,
-    maxRaw: 500.0,
+    rawUnit: Unit.inch,
+    minRaw: -1500.0,
+    maxRaw: 1500.0,
     stepRaw: 0.1,
     accuracy: 1, // suitable for cm (default unit)
   );
@@ -234,5 +267,53 @@ abstract final class FC {
     maxRaw: 1000.0,
     stepRaw: 1.0,
     accuracy: 0,
+  );
+
+  static const convertorLength = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 3,
+  );
+
+  static const convertorWeight = FieldConstraints(
+    rawUnit: Unit.grain,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 1,
+  );
+
+  static const convertorPressure = FieldConstraints(
+    rawUnit: Unit.hPa,
+    minRaw: 300.0,
+    maxRaw: 1500.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+
+  static const torque = FieldConstraints(
+    rawUnit: Unit.newtonMeter,
+    minRaw: 300.0,
+    maxRaw: 1500.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+
+  static const convertorDistance = FieldConstraints(
+    rawUnit: Unit.meter,
+    minRaw: 0.0,
+    maxRaw: 5000.0,
+    stepRaw: 1.0,
+    accuracy: 0,
+  );
+  static const convertorTorque = torque;
+  static const convertorAngular = FieldConstraints(
+    rawUnit: Unit.mil,
+    minRaw: -90.0,
+    maxRaw: 90.0,
+    stepRaw: 1.0,
+    accuracy: 1,
   );
 }

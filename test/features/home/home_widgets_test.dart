@@ -1,24 +1,26 @@
+// ignore_for_file: unused_element
 // Widget tests for HomeChartPage, HomeTablePage, HomeReticlePage (Phase 4).
 //
 // Uses homeVmProvider overrides — no FFI, no real ballistics.
 //   flutter test test/home_widgets_test.dart
 
+import 'dart:async';
+
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/core/models/app_settings.dart'
-    show AdjustmentFormat;
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/shared/models/adjustment_data.dart';
-import 'package:eballistica/shared/models/chart_point.dart';
-import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/home/widgets/home_chart_page.dart';
-import 'package:eballistica/features/home/widgets/home_reticle_page.dart';
-import 'package:eballistica/features/home/widgets/home_table_page.dart';
-import 'package:eballistica/features/home/widgets/trajectory_chart.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/shared/models/adjustment_data.dart';
+import 'package:ebalistyka/shared/models/chart_point.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
+import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
+import 'package:ebalistyka/features/home/widgets/trajectory_chart.dart';
 
-// ── Fake ViewModel ────────────────────────────────────────────────────────────
+// ── Fake ViewModels ───────────────────────────────────────────────────────────
 
 class _FakeHomeVM extends HomeViewModel {
   final HomeUiState _initialState;
@@ -31,7 +33,19 @@ class _FakeHomeVM extends HomeViewModel {
   Future<void> recalculate() async {}
 
   @override
-  void selectChartPoint(int index) {} // no-op; tested separately in home_vm_test
+  void selectChartPoint(int index) {}
+}
+
+// VM whose build() future never completes → vmAsync.isLoading stays true.
+class _NeverReadyHomeVM extends HomeViewModel {
+  @override
+  Future<HomeUiState> build() => Completer<HomeUiState>().future;
+
+  @override
+  Future<void> recalculate() async {}
+
+  @override
+  void selectChartPoint(int index) {}
 }
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -111,7 +125,7 @@ const _kDefaultTableData = FormattedTableData(
 
 HomeUiReady _makeReady({
   AdjustmentData? adjustment,
-  AdjustmentFormat fmt = AdjustmentFormat.arrows,
+  AdjustmentDisplayFormat fmt = AdjustmentDisplayFormat.arrows,
   String cartridgeInfoLine = 'Test 175gr · G7 · 800 m/s',
   List<ChartPoint> chartPoints = _kDefaultPoints,
   HomeChartPointInfo? selectedPointInfo = _kDefaultInfo,
@@ -166,27 +180,31 @@ Widget _scoped(HomeUiState state, Widget child) => ProviderScope(
   child: MaterialApp(home: Scaffold(body: child)),
 );
 
+Widget _scopedLoading(Widget child) => ProviderScope(
+  overrides: [homeVmProvider.overrideWith(() => _NeverReadyHomeVM())],
+  child: MaterialApp(home: Scaffold(body: child)),
+);
+
 // ── HomeChartPage ─────────────────────────────────────────────────────────────
 
 void main() {
   group('HomeChartPage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeChartPage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeChartPage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(TrajectoryChart), findsNothing);
     });
 
-    testWidgets('shows spinner for HomeUiError', (tester) async {
+    testWidgets('shows error message for HomeUiError', (tester) async {
       await tester.pumpWidget(
         _scoped(const HomeUiError('oops'), const HomeChartPage()),
       );
       await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Error: oops'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('shows No data when chart has no points', (tester) async {
@@ -264,10 +282,8 @@ void main() {
   // ── HomeTablePage ──────────────────────────────────────────────────────────
 
   group('HomeTablePage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeTablePage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeTablePage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -333,10 +349,8 @@ void main() {
   // ── HomeReticlePage ────────────────────────────────────────────────────────
 
   group('HomeReticlePage — non-ready states', () {
-    testWidgets('shows spinner when state is HomeUiLoading', (tester) async {
-      await tester.pumpWidget(
-        _scoped(const HomeUiLoading(), const HomeReticlePage()),
-      );
+    testWidgets('shows spinner while loading', (tester) async {
+      await tester.pumpWidget(_scopedLoading(const HomeReticlePage()));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -379,7 +393,7 @@ void main() {
   group('HomeReticlePage — AdjustmentFormat direction indicators', () {
     testWidgets('arrows format: positive elevation shows ↑', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.arrows,
+        fmt: AdjustmentDisplayFormat.arrows,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -408,7 +422,7 @@ void main() {
 
     testWidgets('arrows format: negative elevation shows ↓', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.arrows,
+        fmt: AdjustmentDisplayFormat.arrows,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -437,7 +451,7 @@ void main() {
 
     testWidgets('signs format: positive shows +', (tester) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.signs,
+        fmt: AdjustmentDisplayFormat.signs,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -468,7 +482,7 @@ void main() {
       tester,
     ) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.letters,
+        fmt: AdjustmentDisplayFormat.letters,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(
@@ -499,7 +513,7 @@ void main() {
       tester,
     ) async {
       final state = _makeReady(
-        fmt: AdjustmentFormat.letters,
+        fmt: AdjustmentDisplayFormat.letters,
         adjustment: const AdjustmentData(
           elevation: [
             AdjustmentValue(

@@ -40,7 +40,7 @@ class IconValueButton extends StatelessWidget {
                     Text(
                       value,
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -54,7 +54,7 @@ class IconValueButton extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: 12,
             color: cs.onSurface.withValues(alpha: 0.7),
           ),
         ),

@@ -1,9 +1,10 @@
 import 'dart:math';
 
+import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 // ─── Large temperature control (big ± buttons + tap-to-edit dialog) ───────────
 
@@ -66,7 +67,7 @@ class TempControl extends StatelessWidget {
               content: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(IconDef.remove),
                     onPressed: () => setState(() => step(-1)),
                   ),
                   Expanded(
@@ -102,7 +103,7 @@ class TempControl extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(IconDef.add),
                     onPressed: () => setState(() => step(1)),
                   ),
                 ],
@@ -139,7 +140,7 @@ class TempControl extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton.filledTonal(
-          icon: const Icon(Icons.remove),
+          icon: const Icon(IconDef.remove),
           onPressed: () =>
               onChanged((rawValue - _fc.stepRaw).clamp(_fc.minRaw, _fc.maxRaw)),
           style: IconButton.styleFrom(minimumSize: const Size(44, 44)),
@@ -149,7 +150,7 @@ class TempControl extends StatelessWidget {
           onTap: () => _showDialog(context),
           child: Column(
             children: [
-              Icon(Icons.device_thermostat_outlined, color: cs.primary),
+              Icon(IconDef.temperature, color: cs.primary),
               const SizedBox(height: 4),
               Text(
                 '${_display.toStringAsFixed(inputAcc)} $sym',
@@ -167,7 +168,7 @@ class TempControl extends StatelessWidget {
         ),
         const SizedBox(width: 32),
         IconButton.filledTonal(
-          icon: const Icon(Icons.add),
+          icon: const Icon(IconDef.add),
           onPressed: () =>
               onChanged((rawValue + _fc.stepRaw).clamp(_fc.minRaw, _fc.maxRaw)),
           style: IconButton.styleFrom(minimumSize: const Size(44, 44)),

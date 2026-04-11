@@ -1,0 +1,1001 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:481047032094263803",
+      "lastPropertyId": "61:6275749238367959778",
+      "name": "Ammo",
+      "properties": [
+        {
+          "id": "1:2901007259994632443",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4892552665044215911",
+          "name": "name",
+          "indexId": "1:944814867517340877",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "6:8466745873890719630",
+          "name": "dragTypeValue",
+          "type": 9
+        },
+        {
+          "id": "7:3597551566518548180",
+          "name": "bcG1",
+          "type": 8
+        },
+        {
+          "id": "8:7303427883357653560",
+          "name": "bcG7",
+          "type": 8
+        },
+        {
+          "id": "9:4419156203835689908",
+          "name": "useMultiBcG1",
+          "type": 1
+        },
+        {
+          "id": "10:6354716405896547240",
+          "name": "useMultiBcG7",
+          "type": 1
+        },
+        {
+          "id": "18:1770810788819588875",
+          "name": "multiBcTableG1Bc",
+          "type": 29
+        },
+        {
+          "id": "20:1495083720739637525",
+          "name": "multiBcTableG7Bc",
+          "type": 29
+        },
+        {
+          "id": "22:634242907511084069",
+          "name": "cusomDragTableCd",
+          "type": 29
+        },
+        {
+          "id": "29:8205752393931719157",
+          "name": "usePowderSensitivity",
+          "type": 1
+        },
+        {
+          "id": "30:1913627030764324238",
+          "name": "zeroUseDiffPowderTemperature",
+          "type": 1
+        },
+        {
+          "id": "31:1907733704559307991",
+          "name": "zeroUseCoriolis",
+          "type": 1
+        },
+        {
+          "id": "32:6747201973793974182",
+          "name": "zeroLatitudeDeg",
+          "type": 8
+        },
+        {
+          "id": "33:2977679308571644561",
+          "name": "zeroAzimuthDeg",
+          "type": 8
+        },
+        {
+          "id": "36:2792708475255283450",
+          "name": "projectileName",
+          "type": 9
+        },
+        {
+          "id": "37:5801824058910442871",
+          "name": "vendor",
+          "type": 9
+        },
+        {
+          "id": "38:7638575890122222855",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "39:2696625425089428654",
+          "name": "ownerId",
+          "indexId": "2:1414798269651944252",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "40:4026842547250053682",
+          "name": "caliberInch",
+          "type": 8
+        },
+        {
+          "id": "41:5467966681391980690",
+          "name": "weightGrain",
+          "type": 8
+        },
+        {
+          "id": "42:8268372626678279783",
+          "name": "lengthInch",
+          "type": 8
+        },
+        {
+          "id": "43:5188091358655499808",
+          "name": "muzzleVelocityMps",
+          "type": 8
+        },
+        {
+          "id": "44:265135372287862472",
+          "name": "muzzleVelocityTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "45:824601022869745530",
+          "name": "powderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "46:1096154456700048161",
+          "name": "powderSensitivityFrac",
+          "type": 8
+        },
+        {
+          "id": "47:562903801667941445",
+          "name": "powderSensitivityTC",
+          "type": 29
+        },
+        {
+          "id": "48:5389361122000287149",
+          "name": "powderSensitivityVMps",
+          "type": 29
+        },
+        {
+          "id": "49:7245050342213796052",
+          "name": "multiBcTableG1VMps",
+          "type": 29
+        },
+        {
+          "id": "50:3097257252347097034",
+          "name": "multiBcTableG7VMps",
+          "type": 29
+        },
+        {
+          "id": "51:3103745605439968828",
+          "name": "cusomDragTableMach",
+          "type": 29
+        },
+        {
+          "id": "52:8326665813892168618",
+          "name": "zeroDistanceMeter",
+          "type": 8
+        },
+        {
+          "id": "53:5469604972785765889",
+          "name": "zeroLookAngleRad",
+          "type": 8
+        },
+        {
+          "id": "54:6632001658917972013",
+          "name": "zeroTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "55:1711579614606815657",
+          "name": "zeroPressurehPa",
+          "type": 8
+        },
+        {
+          "id": "56:3355705688815311182",
+          "name": "zeroHumidityFrac",
+          "type": 8
+        },
+        {
+          "id": "57:8912827884731588281",
+          "name": "zeroPowderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "58:2449350094904024515",
+          "name": "zeroOffsetXRad",
+          "type": 8
+        },
+        {
+          "id": "59:3182962183369396844",
+          "name": "zeroOffsetYRad",
+          "type": 8
+        },
+        {
+          "id": "60:7509424573994252574",
+          "name": "zeroAltitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "61:6275749238367959778",
+          "name": "usePowderTempForMv",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:3319446897955563326",
+      "lastPropertyId": "35:570052440190756322",
+      "name": "ConvertorsState",
+      "properties": [
+        {
+          "id": "1:8210313356350926060",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6771566658215870639",
+          "name": "lengthValueInch",
+          "type": 8
+        },
+        {
+          "id": "4:1951570794484611444",
+          "name": "weightValueGrain",
+          "type": 8
+        },
+        {
+          "id": "6:6621825253328128572",
+          "name": "pressureValueMmHg",
+          "type": 8
+        },
+        {
+          "id": "10:3521516380372782062",
+          "name": "torqueValueNewtonMeter",
+          "type": 8
+        },
+        {
+          "id": "17:8290030605337265686",
+          "name": "ownerId",
+          "indexId": "3:5622245447060915548",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "20:460269895754369290",
+          "name": "temperatureValueF",
+          "type": 8
+        },
+        {
+          "id": "26:6553047008658544469",
+          "name": "lengthLastUnit",
+          "type": 9
+        },
+        {
+          "id": "27:7901532312767610182",
+          "name": "weightLastUnit",
+          "type": 9
+        },
+        {
+          "id": "28:7991094300202383164",
+          "name": "pressureLastUnit",
+          "type": 9
+        },
+        {
+          "id": "29:5277185551697300866",
+          "name": "temperatureLastUnit",
+          "type": 9
+        },
+        {
+          "id": "30:2434942852411901027",
+          "name": "torqueLastUnit",
+          "type": 9
+        },
+        {
+          "id": "31:1090629463503093675",
+          "name": "anglesConvDistanceValueMeter",
+          "type": 8
+        },
+        {
+          "id": "32:5800336955404355723",
+          "name": "anglesConvDistanceLastUnit",
+          "type": 9
+        },
+        {
+          "id": "33:7255061694118188101",
+          "name": "anglesConvAngularValueMil",
+          "type": 8
+        },
+        {
+          "id": "34:8607337428956066576",
+          "name": "anglesConvAngularLastUnit",
+          "type": 9
+        },
+        {
+          "id": "35:570052440190756322",
+          "name": "anglesConvOutputLastUnit",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8073167112424079668",
+      "lastPropertyId": "14:9052054885912932392",
+      "name": "GeneralSettings",
+      "properties": [
+        {
+          "id": "1:8791359397735324035",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7804057525880621514",
+          "name": "languageCode",
+          "type": 9
+        },
+        {
+          "id": "3:453581952653100111",
+          "name": "themeMode",
+          "type": 9
+        },
+        {
+          "id": "4:4438040467716406984",
+          "name": "adjustmentDisplayFormatValue",
+          "type": 9
+        },
+        {
+          "id": "5:1673671360262079089",
+          "name": "homeShowMil",
+          "type": 1
+        },
+        {
+          "id": "6:6513508670694402455",
+          "name": "homeShowMrad",
+          "type": 1
+        },
+        {
+          "id": "7:3843607747392870150",
+          "name": "homeShowMoa",
+          "type": 1
+        },
+        {
+          "id": "8:1496502728118112879",
+          "name": "homeShowCmPer100m",
+          "type": 1
+        },
+        {
+          "id": "9:8265756595400664844",
+          "name": "homeShowInPer100yd",
+          "type": 1
+        },
+        {
+          "id": "10:8149215468390085119",
+          "name": "homeChartDistanceStep",
+          "type": 8
+        },
+        {
+          "id": "11:7582766058255469157",
+          "name": "homeTableDistanceStep",
+          "type": 8
+        },
+        {
+          "id": "12:4643998212685076016",
+          "name": "homeShowSubsonicTransition",
+          "type": 1
+        },
+        {
+          "id": "14:9052054885912932392",
+          "name": "ownerId",
+          "indexId": "5:5387131100306356366",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:4146065780846629425",
+      "lastPropertyId": "4:863764995835669819",
+      "name": "Owner",
+      "properties": [
+        {
+          "id": "1:4764573206261776736",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5792398024273257746",
+          "name": "token",
+          "indexId": "6:4697863759429240582",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "4:863764995835669819",
+          "name": "activeProfileId",
+          "indexId": "22:5656087516355577029",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Profile"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:5490667085782347020",
+      "lastPropertyId": "7:3085806308739651023",
+      "name": "Profile",
+      "properties": [
+        {
+          "id": "1:2606131867070314293",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5269928524214625478",
+          "name": "name",
+          "indexId": "7:3984776485633185038",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "3:2799668789915472983",
+          "name": "weaponId",
+          "indexId": "8:8935048605143841354",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Weapon"
+        },
+        {
+          "id": "4:7674099467332995723",
+          "name": "sightId",
+          "indexId": "9:3198040514221949665",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Sight"
+        },
+        {
+          "id": "5:4934311954558672616",
+          "name": "ammoId",
+          "indexId": "10:8947069842433100647",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Ammo"
+        },
+        {
+          "id": "6:4262110574303383529",
+          "name": "ownerId",
+          "indexId": "11:8484758124775365437",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "7:3085806308739651023",
+          "name": "sortOrder",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:9008070843231077690",
+      "lastPropertyId": "18:245945662969613122",
+      "name": "Sight",
+      "properties": [
+        {
+          "id": "1:919847119481515594",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1266146636472715629",
+          "name": "name",
+          "indexId": "12:3349502908616485721",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "3:4730951943852551568",
+          "name": "focalPlaneValue",
+          "type": 9
+        },
+        {
+          "id": "5:4348750242276057672",
+          "name": "verticalClick",
+          "type": 8
+        },
+        {
+          "id": "6:7133568171093229424",
+          "name": "horizontalClick",
+          "type": 8
+        },
+        {
+          "id": "7:8556256170433879895",
+          "name": "verticalClickUnit",
+          "type": 9
+        },
+        {
+          "id": "8:8415923395606248925",
+          "name": "horizontalClickUnit",
+          "type": 9
+        },
+        {
+          "id": "10:4265494260285088797",
+          "name": "minMagnification",
+          "type": 8
+        },
+        {
+          "id": "11:5927275518010705589",
+          "name": "maxMagnification",
+          "type": 8
+        },
+        {
+          "id": "12:9118290778744932374",
+          "name": "reticleImage",
+          "type": 9
+        },
+        {
+          "id": "13:8741917341393131758",
+          "name": "vendor",
+          "type": 9
+        },
+        {
+          "id": "14:8564399592138595318",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "15:5148724877052041991",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "16:737672345032110523",
+          "name": "ownerId",
+          "indexId": "13:3513124015476916633",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "17:8684537408128170375",
+          "name": "sightHeightInch",
+          "type": 8
+        },
+        {
+          "id": "18:245945662969613122",
+          "name": "sightHorizontalOffsetInch",
+          "type": 8
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:1704755846093761912",
+      "lastPropertyId": "17:7303471664831654006",
+      "name": "TablesSettings",
+      "properties": [
+        {
+          "id": "1:3904112876819047042",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "5:5752190580816842465",
+          "name": "showZeros",
+          "type": 1
+        },
+        {
+          "id": "6:8086465214496480259",
+          "name": "showSubsonicTransition",
+          "type": 1
+        },
+        {
+          "id": "7:1547267455747564243",
+          "name": "hiddenCols",
+          "type": 30
+        },
+        {
+          "id": "9:7685983959523799065",
+          "name": "ownerId",
+          "indexId": "14:8530595160478793144",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "10:2736143774895099737",
+          "name": "distanceStartMeter",
+          "type": 8
+        },
+        {
+          "id": "11:4450207048408314633",
+          "name": "distanceEndMeter",
+          "type": 8
+        },
+        {
+          "id": "12:1234509859101714113",
+          "name": "distanceStepMeter",
+          "type": 8
+        },
+        {
+          "id": "13:1216482517150401574",
+          "name": "showMil",
+          "type": 1
+        },
+        {
+          "id": "14:3851571950255688198",
+          "name": "showMrad",
+          "type": 1
+        },
+        {
+          "id": "15:673798296604230945",
+          "name": "showMoa",
+          "type": 1
+        },
+        {
+          "id": "16:6194656477589113694",
+          "name": "showCmPer100m",
+          "type": 1
+        },
+        {
+          "id": "17:7303471664831654006",
+          "name": "showInPer100yd",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:7409307519479360238",
+      "lastPropertyId": "18:1589305927285534260",
+      "name": "UnitSettings",
+      "properties": [
+        {
+          "id": "1:2574261671122380397",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8190374573504699068",
+          "name": "angular",
+          "type": 9
+        },
+        {
+          "id": "3:721470034526528927",
+          "name": "distance",
+          "type": 9
+        },
+        {
+          "id": "4:1950823500597381018",
+          "name": "velocity",
+          "type": 9
+        },
+        {
+          "id": "5:3189248578133516861",
+          "name": "pressure",
+          "type": 9
+        },
+        {
+          "id": "6:4016752690686672589",
+          "name": "temperature",
+          "type": 9
+        },
+        {
+          "id": "7:2448712547617322053",
+          "name": "diameter",
+          "type": 9
+        },
+        {
+          "id": "8:1040531279054683834",
+          "name": "length",
+          "type": 9
+        },
+        {
+          "id": "9:8735993121549846756",
+          "name": "weight",
+          "type": 9
+        },
+        {
+          "id": "10:1432995802985942385",
+          "name": "adjustment",
+          "type": 9
+        },
+        {
+          "id": "11:7183764841033346823",
+          "name": "drop",
+          "type": 9
+        },
+        {
+          "id": "12:4574191807868244823",
+          "name": "energy",
+          "type": 9
+        },
+        {
+          "id": "13:957184778541887085",
+          "name": "sightHeight",
+          "type": 9
+        },
+        {
+          "id": "14:310378686667290309",
+          "name": "twist",
+          "type": 9
+        },
+        {
+          "id": "15:8967602202400780550",
+          "name": "barrelLength",
+          "type": 9
+        },
+        {
+          "id": "16:5854393186863005947",
+          "name": "time",
+          "type": 9
+        },
+        {
+          "id": "17:4797208469546747566",
+          "name": "torque",
+          "type": 9
+        },
+        {
+          "id": "18:1589305927285534260",
+          "name": "ownerId",
+          "indexId": "15:5972717579111743737",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:1731139601222753801",
+      "lastPropertyId": "14:1674882739474789598",
+      "name": "Weapon",
+      "properties": [
+        {
+          "id": "1:6774292354499432759",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3422866154256838854",
+          "name": "name",
+          "indexId": "16:8111909717702429569",
+          "type": 9,
+          "flags": 2048
+        },
+        {
+          "id": "6:6666126699331535385",
+          "name": "vendor",
+          "type": 9
+        },
+        {
+          "id": "7:4415277081708050689",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "8:2042548101712427756",
+          "name": "ownerId",
+          "indexId": "17:9049041270276597027",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "9:5469377151697569803",
+          "name": "caliberInch",
+          "type": 8
+        },
+        {
+          "id": "10:999991577173923373",
+          "name": "twistInch",
+          "type": 8
+        },
+        {
+          "id": "11:351630455784485828",
+          "name": "barrelLengthInch",
+          "type": 8
+        },
+        {
+          "id": "13:8522935972810445349",
+          "name": "zeroElevationRad",
+          "type": 8
+        },
+        {
+          "id": "14:1674882739474789598",
+          "name": "caliberName",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "11:7626615768518305721",
+      "lastPropertyId": "18:5709130923027295962",
+      "name": "ShootingConditions",
+      "properties": [
+        {
+          "id": "1:4346884862756985795",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8759961057820539593",
+          "name": "distanceMeter",
+          "type": 8
+        },
+        {
+          "id": "3:5763469888706085674",
+          "name": "lookAngleRad",
+          "type": 8
+        },
+        {
+          "id": "4:2226702895925973160",
+          "name": "temperatureC",
+          "type": 8
+        },
+        {
+          "id": "5:402290264083897875",
+          "name": "pressurehPa",
+          "type": 8
+        },
+        {
+          "id": "6:106875661664716788",
+          "name": "humidityFrac",
+          "type": 8
+        },
+        {
+          "id": "7:3300912871578291385",
+          "name": "powderTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "8:5246550044459366362",
+          "name": "usePowderSensitivity",
+          "type": 1
+        },
+        {
+          "id": "10:2330276065485139737",
+          "name": "useCoriolis",
+          "type": 1
+        },
+        {
+          "id": "11:4645739408618078198",
+          "name": "latitudeDeg",
+          "type": 8
+        },
+        {
+          "id": "12:2157753455296199467",
+          "name": "azimuthDeg",
+          "type": 8
+        },
+        {
+          "id": "13:236643955545130473",
+          "name": "windDirectionDeg",
+          "type": 8
+        },
+        {
+          "id": "14:3243679549726794891",
+          "name": "windSpeedMps",
+          "type": 8
+        },
+        {
+          "id": "16:7203768725508911679",
+          "name": "altitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "17:2112079042996933469",
+          "name": "useDiffPowderTemp",
+          "type": 1
+        },
+        {
+          "id": "18:5709130923027295962",
+          "name": "ownerId",
+          "indexId": "21:579530206861337038",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "11:7626615768518305721",
+  "lastIndexId": "22:5656087516355577029",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [
+    6584000130387526342
+  ],
+  "retiredIndexUids": [
+    7660367679200674607,
+    5886553554304794145,
+    8499428017894885351
+  ],
+  "retiredPropertyUids": [
+    56589591724136369,
+    7435866408476540470,
+    7749662423289089179,
+    2492064189372607551,
+    5514844413031348455,
+    1799365847783643769,
+    974272242678895264,
+    8929423509273604592,
+    3283350237107193853,
+    6833671569938414681,
+    5416477658534681004,
+    7530323202461384488,
+    2599773404316424628,
+    3473906109131868875,
+    6170586545303640674,
+    1331174537811421704,
+    5088462136301972979,
+    9201312319250354552,
+    4581674611466032688,
+    4437029025770366401,
+    8509556449611080162,
+    811841300633756386,
+    6400710630634493678,
+    1306657369725317903,
+    1338303344777086487,
+    623798383099068972,
+    8478334701850613082,
+    8256106710858315457,
+    1437704715851296309,
+    3906981019707090664,
+    7130419408238951888,
+    462378690113141369,
+    4571615005069247360,
+    8454924801350945338,
+    6368953314469303965,
+    6284527265072016857,
+    6255307954200195809,
+    3358995012307590845,
+    5426442208853934967,
+    5037629548932659231,
+    2371951231907280109,
+    4323419063753503766,
+    5700219949944244664,
+    3495671315189767458,
+    1735874292186788102,
+    1650001243265687394,
+    216318801184607733,
+    4000401922573370751,
+    4955365735129140676,
+    4972635236809095731,
+    8332173160992404525,
+    3538766144987324145,
+    916432832977451751,
+    706360045788517632,
+    7194175570403883704,
+    4471585411904370915,
+    4025591754516451395,
+    351391817273593368,
+    3384127170950481517,
+    8557219818830111210,
+    1104253833503703564,
+    8353998891114488076,
+    8371375436333097253,
+    8038748045572178862,
+    8458352093651103584,
+    8552267728328334166,
+    3711858234252380760
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

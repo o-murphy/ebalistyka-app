@@ -1,0 +1,83 @@
+import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:flutter/material.dart';
+
+/// Віджет для вибору одиниці виміру з BottomSheet
+class UnitPickerButton extends StatelessWidget {
+  const UnitPickerButton({
+    required this.current,
+    required this.onChanged,
+    required this.options,
+    this.label = 'Select Unit',
+    this.width = 60, // додаємо параметр ширини
+    super.key,
+  });
+
+  final Unit current;
+  final ValueChanged<Unit> onChanged;
+  final List<Unit> options;
+  final String label;
+  final double width; // фіксована ширина
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: InkWell(
+        onTap: () => _showPicker(context),
+        borderRadius: BorderRadius.circular(4),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: Text(
+                  current.symbol,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const Icon(IconDef.dropDown, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
+            ),
+            const Divider(height: 1),
+            ...options.map(
+              (unit) => ListTile(
+                title: Text("${unit.label} (${unit.symbol})"),
+                trailing: current == unit ? const Icon(IconDef.apply) : null,
+                onTap: () {
+                  onChanged(unit);
+                  Navigator.pop(ctx);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+}

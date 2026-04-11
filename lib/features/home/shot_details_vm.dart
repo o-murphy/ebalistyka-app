@@ -1,19 +1,18 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:async';
-import 'package:eballistica/core/solver/munition.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:riverpod/riverpod.dart';
 
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/providers/formatter_provider.dart';
-import 'package:eballistica/core/providers/service_providers.dart';
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/providers/service_providers.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 
 sealed class ShotDetailsUiState {
   const ShotDetailsUiState();
@@ -72,8 +71,6 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
   }
 
   Future<void> recalculate() async {
-    // We can show loading if state is not ready,
-    // but usually we want to just update data silently.
     try {
       final newState = await _calculate();
       if (!ref.mounted) return;
@@ -86,81 +83,66 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
   Future<ShotDetailsUiState> _calculate() async {
     try {
-      final profile = await ref.read(shotProfileProvider.future);
+      final ctx = await ref.read(shotContextProvider.future);
       final settings = await ref.read(settingsProvider.future);
       final formatter = ref.read(unitFormatterProvider);
 
+      if (ctx == null || ctx.profile.ammo.target == null) {
+        return const ShotDetailsError('No cartridge selected');
+      }
+
+      final profile = ctx.profile;
+      final conditions = ctx.conditions;
+
       final opts = TargetCalcOptions(
-        targetDistM: profile.targetDistance.in_(Unit.meter),
-        chartStepM: settings.chartDistanceStep,
+        targetDistM: conditions.distanceMeter,
+        stepM: settings.homeChartDistanceStep,
       );
 
       final result = await ref
           .read(ballisticsServiceProvider)
-          .calculateForTarget(profile, opts);
-      final hit = result.hitResult;
+          .calculateForTarget(profile, conditions, opts);
 
-      return _buildReadyState(profile, settings, formatter, hit);
+      return _buildReadyState(profile, conditions, formatter, result.hitResult);
     } catch (e) {
       return ShotDetailsError(e.toString());
     }
   }
 
   ShotDetailsReady _buildReadyState(
-    ShotProfile profile,
-    AppSettings settings,
+    Profile profile,
+    ShootingConditions conditions,
     UnitFormatter formatter,
-    HitResult hit,
+    bclibc.HitResult hit,
   ) {
-    final cartridge = profile.cartridge;
-    final targetDistM = profile.targetDistance.in_(Unit.meter);
+    final weapon = profile.weapon.target;
+    final sight = profile.sight.target;
+
+    final targetDistM = conditions.distanceMeter;
     final traj = hit.trajectory;
-    final atTarget = hit.getAtDistance(Distance(targetDistM, Unit.meter));
+    final atTarget = hit.getAtDistance(Distance.meter(targetDistM));
 
-    // MV Logic with powder sensitivity
-    final refMvMps = cartridge.mv.in_(Unit.mps);
-    final refPowderTempC = cartridge.powderTemp.in_(Unit.celsius);
+    final zeroVelocity = profile.getCalculatedZeroVelocity();
+    final curVelocity = profile.getCalculatedCurrentVelocity(conditions);
 
-    final currentPowderSensOn =
-        profile.usePowderSensitivity && cartridge.usePowderSensitivity;
-    final zeroPowderSensOn =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        cartridge.usePowderSensitivity;
-    final currentUseDiffTemp = currentPowderSensOn && profile.useDiffPowderTemp;
-    final zeroUseDiffTemp = zeroPowderSensOn && profile.zeroUseDiffPowderTemp;
-
-    double mvAtTempC(double tCurC) => velocityForPowderTemp(
-      refMvMps,
-      refPowderTempC,
-      tCurC,
-      cartridge.powderSensitivity.in_(Unit.fraction),
-    );
-
-    final conditions = profile.conditions;
-    final currentPowderTempC = currentUseDiffTemp
-        ? conditions.powderTemp.in_(Unit.celsius)
-        : conditions.temperature.in_(Unit.celsius);
-    final currentMvMps = currentPowderSensOn
-        ? mvAtTempC(currentPowderTempC)
-        : refMvMps;
-
-    final zeroAtmo = profile.zeroConditions ?? conditions;
-    final zeroPowderTempC = zeroUseDiffTemp
-        ? zeroAtmo.powderTemp.in_(Unit.celsius)
-        : zeroAtmo.temperature.in_(Unit.celsius);
-    final zeroMvMps = zeroPowderSensOn ? mvAtTempC(zeroPowderTempC) : refMvMps;
-
-    // Speed of sound estimation from first point
+    // Speed of sound estimation from first trajectory point
     final double? soundSpeedFps = (traj.isNotEmpty && traj[0].mach > 0)
         ? (traj[0].velocity.in_(Unit.fps)) / traj[0].mach
         : null;
 
     // Gyroscopic stability
-    final sg = profile.toShot().calculateStabilityCoefficient();
+    final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
+    final bcWeapon = weapon?.toWeapon(sightHeight);
+    String sgStr = '—';
+    if (bcWeapon != null) {
+      final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+      final sg = currentShot.calculateStabilityCoefficient();
+      sgStr = sg.toStringAsFixed(2);
+    }
 
     // Trajectory markers
     final firstPoint = traj.isNotEmpty ? traj[0] : null;
-    TrajectoryData? apexPoint;
+    bclibc.TrajectoryData? apexPoint;
     if (traj.length > 1) {
       apexPoint = traj.reduce(
         (a, b) => a.height.in_(Unit.meter) >= b.height.in_(Unit.meter) ? a : b,
@@ -168,18 +150,18 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     }
 
     return ShotDetailsReady(
-      currentMv: formatter.velocity(Velocity(currentMvMps, Unit.mps)),
-      zeroMv: formatter.velocity(Velocity(zeroMvMps, Unit.mps)),
+      currentMv: formatter.velocity(curVelocity),
+      zeroMv: formatter.velocity(zeroVelocity),
       speedOfSound: soundSpeedFps == null
           ? '—'
-          : formatter.velocity(Velocity(soundSpeedFps, Unit.fps)),
+          : formatter.velocity(Velocity.fps(soundSpeedFps)),
       velocityAtTarget: formatter.velocity(atTarget.velocity),
       energyAtMuzzle: firstPoint == null
           ? '—'
           : formatter.energy(firstPoint.energy),
       energyAtTarget: formatter.energy(atTarget.energy),
-      gyroscopicStability: sg.toStringAsFixed(2),
-      shotDistance: formatter.distance(profile.targetDistance),
+      gyroscopicStability: sgStr,
+      shotDistance: formatter.distance(conditions.distance),
       heightAtTarget: formatter.drop(atTarget.height),
       maxHeightDistance: apexPoint == null
           ? '—'

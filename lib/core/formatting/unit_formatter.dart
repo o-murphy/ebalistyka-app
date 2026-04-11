@@ -1,4 +1,4 @@
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 /// A single contract for formatting physical quantities into strings for UI.
 /// ViewModel і Widget never call .in_() directly.
@@ -12,24 +12,26 @@ abstract interface class UnitFormatter {
   String windage(Distance dim); // "3.2 cm"
   String adjustment(Angular dim); // "3.45 MIL"
   String energy(Energy dim); // "4200 J"
+
   String weight(Weight dim); // "250 gr"
+  String length(Distance dim); // "2.00 inch"
+  String diameter(Distance dim); // "0.338 inch"
+
   String sightHeight(Distance dim); // "8.5 mm"
   String twist(Distance dim); // "1:10 inch"
+  String barrelLength(Distance dim); // "24.0 inch"
   String humidity(Ratio dim); // "50 %"
   String mach(double mach); // "0.85 M"
   String time(double seconds); // "1.234 s"
   String powderSensitivity(Ratio dim); // "2.00 %"
+  String torque(Torque dim);
 
-  // --- Raw numbers (without units, for sliders/input fields) ---
-  double rawVelocity(Velocity dim);
-  double rawDistance(Distance dim);
-  double rawTemperature(Temperature dim);
-  double rawPressure(Pressure dim);
-  double rawDrop(Distance dim);
-  double rawAdjustment(Angular dim);
-  double rawEnergy(Energy dim);
-  double rawWeight(Weight dim);
-  double rawSightHeight(Distance dim);
+  String windSpeed(Velocity dim);
+  String windDirection(Angular dim);
+
+  String magnificationRange(double min, double max);
+
+  String click(double value, Unit unit);
 
   // --- Current unit symbols ---
   String get velocitySymbol;
@@ -41,6 +43,7 @@ abstract interface class UnitFormatter {
   String get energySymbol;
   String get weightSymbol;
   String get sightHeightSymbol;
+  String get barrelLengthSymbol;
 
   /// Converts user input value (in display unit) back to raw storage unit.
   double inputToRaw(double displayValue, InputField field);
@@ -63,5 +66,7 @@ enum InputField {
   bulletWeight,
   bulletLength,
   bulletDiameter,
+  barrelLength,
+  torque,
   bc,
 }

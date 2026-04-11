@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:eballistica/shared/models/chart_point.dart';
+import 'package:ebalistyka/shared/models/chart_point.dart';
 
 class TrajectoryChart extends StatelessWidget {
   final List<ChartPoint> points;

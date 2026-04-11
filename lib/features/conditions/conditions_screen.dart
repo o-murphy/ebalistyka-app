@@ -1,11 +1,15 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
-import 'package:eballistica/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eballistica/core/models/field_constraints.dart';
-import 'package:eballistica/features/conditions/conditions_vm.dart';
-import 'package:eballistica/features/conditions/widgets/temperature_control.dart';
-import 'package:eballistica/shared/widgets/unit_value_field_tile.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/features/conditions/conditions_vm.dart';
+import 'package:ebalistyka/features/conditions/widgets/temperature_control.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 
 class ConditionsScreen extends ConsumerWidget {
   const ConditionsScreen({super.key});
@@ -37,37 +41,65 @@ class ConditionsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
-          UnitValueFieldTile(
-            label: 'Altitude',
-            icon: Icons.terrain_outlined,
-            rawValue: state.altitude.rawValue,
-            constraints: FC.altitude,
-            displayUnit: state.altitude.displayUnit,
-            onChanged: (v) => notifier.updateAltitude(v),
-          ),
-          UnitValueFieldTile(
-            label: 'Humidity',
-            icon: Icons.water_drop_outlined,
-            rawValue: state.humidity.rawValue,
-            constraints: FC.humidity,
-            displayUnit: state.humidity.displayUnit,
-            symbol: '%',
-            onChanged: (v) => notifier.updateHumidity(v),
-          ),
-          UnitValueFieldTile(
-            label: 'Pressure',
-            icon: Icons.speed_outlined,
-            rawValue: state.pressure.rawValue,
-            constraints: FC.pressure,
-            displayUnit: state.pressure.displayUnit,
-            onChanged: (v) => notifier.updatePressure(v),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: IconValueButtonRow(
+              items: [
+                IconValueButton(
+                  icon: IconDef.altitude,
+                  label: 'Altitude',
+                  heroTag: 'cond-alt',
+                  value:
+                      '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Altitude',
+                    rawValue: state.altitude.rawValue,
+                    constraints: FC.altitude,
+                    displayUnit: state.altitude.displayUnit,
+                    onChanged: notifier.updateAltitude,
+                  ),
+                ),
+                IconValueButton(
+                  icon: IconDef.humidity,
+                  label: 'Humidity',
+                  heroTag: 'cond-hum',
+                  value:
+                      '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Humidity',
+                    rawValue: state.humidity.rawValue,
+                    constraints: FC.humidity,
+                    displayUnit: state.humidity.displayUnit,
+                    symbol: '%',
+                    onChanged: notifier.updateHumidity,
+                  ),
+                ),
+                IconValueButton(
+                  icon: IconDef.velocity,
+                  label: 'Pressure',
+                  heroTag: 'cond-press',
+                  value:
+                      '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
+                  onTap: () => showUnitEditDialog(
+                    context,
+                    label: 'Pressure',
+                    rawValue: state.pressure.rawValue,
+                    constraints: FC.pressure,
+                    displayUnit: state.pressure.displayUnit,
+                    onChanged: notifier.updatePressure,
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(height: 1),
 
           // ── Switches ──────────────────────────────────────────────────
           SwitchListTile(
             title: const Text('Powder temperature sensitivity'),
-            secondary: const Icon(Icons.local_fire_department_outlined),
+            secondary: const Icon(IconDef.powderTemperature),
             value: state.powderSensOn,
             onChanged: (v) => notifier.setPowderSensitivity(v),
             dense: true,
@@ -75,7 +107,12 @@ class ConditionsScreen extends ConsumerWidget {
           if (state.powderSensOn) ...[
             SwitchListTile(
               title: const Text('Use different powder temperature'),
-              secondary: const Icon(Icons.thermostat_outlined),
+              subtitle: Text(
+                state.useDiffPowderTemp
+                    ? "Uses powder temperature"
+                    : "Uses atmospheric temperature",
+              ),
+              secondary: const Icon(IconDef.temperature),
               value: state.useDiffPowderTemp,
               onChanged: (v) => notifier.setDiffPowderTemp(v),
               dense: true,
@@ -83,56 +120,55 @@ class ConditionsScreen extends ConsumerWidget {
             if (state.powderTemperature != null)
               UnitValueFieldTile(
                 label: 'Powder temperature',
-                icon: Icons.local_fire_department_outlined,
+                icon: IconDef.powderTemperature,
                 rawValue: state.powderTemperature!.rawValue,
                 constraints: FC.temperature,
                 displayUnit: state.powderTemperature!.displayUnit,
                 onChanged: (v) => notifier.updatePowderTemp(v),
               ),
             if (state.mvAtPowderTemp != null)
-              InfoTile(
-                label: 'Muzzle velocity at powder temp',
+              InfoListTile(
+                label: state.useDiffPowderTemp
+                    ? 'Muzzle velocity at powder temperature'
+                    : 'Muzzle velocity at atmospheric temperature',
                 value: state.mvAtPowderTemp!,
-                icon: Icons.speed_outlined,
+                icon: IconDef.velocity,
               ),
             if (state.powderSensitivity != null)
-              InfoTile(
+              InfoListTile(
                 label: 'Powder sensitivity',
                 value: state.powderSensitivity!,
-                icon: Icons.show_chart_outlined,
+                icon: IconDef.powderSensitivity,
               ),
           ],
           const Divider(height: 1),
           SwitchListTile(
             title: const Text('Coriolis effect'),
-            secondary: const Icon(Icons.rotate_right_outlined),
+            secondary: const Icon(IconDef.coriolis),
             value: state.coriolisOn,
             onChanged: (v) => notifier.setCoriolis(v),
             dense: true,
           ),
-          SwitchListTile(
-            title: const Text('Spin drift (derivation)'),
-            secondary: const Icon(Icons.rotate_left_outlined),
-            value: state.derivationOn,
-            onChanged: (v) => notifier.setDerivation(v),
-            dense: true,
-          ),
-          // Always OFF — engine limitation, control disabled
-          SwitchListTile(
-            title: const Text('Aerodynamic jump'),
-            secondary: const Icon(Icons.air_outlined),
-            value: false,
-            onChanged: null,
-            dense: true,
-          ),
-          // Always ON — engine limitation, control disabled
-          SwitchListTile(
-            title: const Text('Pressure depends on altitude'),
-            secondary: const Icon(Icons.compress_outlined),
-            value: true,
-            onChanged: null,
-            dense: true,
-          ),
+          if (state.coriolisOn) ...[
+            UnitValueFieldTile(
+              label: 'Latitude',
+              icon: IconDef.latitude,
+              rawValue: state.latitude.rawValue,
+              constraints: FC.latitude,
+              displayUnit: state.latitude.displayUnit,
+              symbol: '°',
+              onChanged: (v) => notifier.updateLatitude(v),
+            ),
+            UnitValueFieldTile(
+              label: 'Azimuth',
+              icon: IconDef.azimuth,
+              rawValue: state.azimuth.rawValue,
+              constraints: FC.azimuth,
+              displayUnit: state.azimuth.displayUnit,
+              symbol: '°',
+              onChanged: (v) => notifier.updateAzimuth(v),
+            ),
+          ],
           const SizedBox(height: 16),
         ],
       ),

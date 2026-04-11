@@ -1,4 +1,4 @@
-# eBallistica — Refactoring Plan
+# eBalistyka — Refactoring Plan
 
 **Мета:** Врятувати проект без переписування з нуля. Feature-first, покроково,
 кожна фаза — окремий коміт що не ламає поточне.
@@ -123,17 +123,6 @@ abstract interface class UnitFormatter {
   String mach(double mach);            // "0.85 M"
   String time(double seconds);         // "1.234 s"
   String muzzleVelocity(dynamic dim);  // спеціальна точність для MV
-
-  // --- Сирі числа (без одиниці, для слайдерів/полів вводу) ---
-  double rawVelocity(dynamic dim);
-  double rawDistance(dynamic dim);
-  double rawTemperature(dynamic dim);
-  double rawPressure(dynamic dim);
-  double rawDrop(dynamic dim);
-  double rawAdjustment(dynamic dim);
-  double rawEnergy(dynamic dim);
-  double rawWeight(dynamic dim);
-  double rawSightHeight(dynamic dim);
 
   // --- Символи поточних одиниць ---
   String get velocitySymbol;
@@ -953,7 +942,6 @@ class ConditionsUiState {
   final bool powderSensOn;
   final bool useDiffPowderTemp;
   final bool coriolisOn;
-  final bool derivationOn;
 
   // Readonly computed
   final String? mvAtPowderTemp;     // "888 m/s" або null
@@ -968,7 +956,6 @@ class ConditionsUiState {
     required this.powderSensOn,
     required this.useDiffPowderTemp,
     required this.coriolisOn,
-    required this.derivationOn,
     this.mvAtPowderTemp,
     this.powderSensitivity,
   });
@@ -1048,7 +1035,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final settings = ref.read(settingsProvider).value!;
     final newTempC = tempC ?? atmo.temperature.in_(Unit.celsius);
     final useDiffTemp = settings.enablePowderSensitivity &&
-        settings.useDifferentPowderTemperature;
+        settings.useDiffPowderTemperature;
 
     return solver.Atmo(
       temperature: Temperature(newTempC, Unit.celsius),
@@ -1248,7 +1235,7 @@ class RecalcCoordinator extends Notifier<void> {
   bool _needsRecalc(AppSettings? prev, AppSettings next) {
     if (prev == null) return true;
     return prev.enablePowderSensitivity != next.enablePowderSensitivity ||
-        prev.useDifferentPowderTemperature != next.useDifferentPowderTemperature ||
+        prev.useDiffPowderTemperature != next.useDiffPowderTemperature ||
         prev.chartDistanceStep != next.chartDistanceStep ||
         prev.tableConfig.stepM != next.tableConfig.stepM;
   }

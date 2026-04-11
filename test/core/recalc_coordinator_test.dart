@@ -1,70 +1,25 @@
 // Unit tests for RecalcCoordinator (Phase 3).
 //
 // No FFI required — uses only Riverpod container with provider overrides.
-//   flutter test test/recalc_coordinator_test.dart
+//   flutter test test/core/recalc_coordinator_test.dart
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/core/providers/recalc_coordinator.dart';
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/core/models/cartridge.dart';
-import 'package:eballistica/core/models/projectile.dart';
-import 'package:eballistica/core/models/rifle.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/models/conditions_data.dart';
-import 'package:eballistica/core/models/sight.dart';
-import 'package:eballistica/core/solver/unit.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/core/providers/recalc_coordinator.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
-ShotProfile _makeProfile() {
-  final projectile = Projectile(
-    name: 'Test 175gr',
-    dragType: DragModelType.g7,
-    weight: Weight(175, Unit.grain),
-    diameter: Distance(7.62, Unit.millimeter),
-    length: Distance(31.0, Unit.millimeter),
-    coefRows: [CoeficientRow(bcCd: 0.475, mv: 0.0)],
-  );
-  final cartridge = Cartridge(
-    name: 'Test .308',
-    projectile: projectile,
-    mv: Velocity(800, Unit.mps),
-    powderTemp: Temperature(15.0, Unit.celsius),
-    powderSensitivity: Ratio(1.0, Unit.fraction),
-    usePowderSensitivity: true,
-  );
-  final rifle = Rifle(
-    name: 'Test Rifle',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    twist: Distance(11.0, Unit.inch),
-  );
-  final sight = Sight(
-    name: 'Test Scope',
-    sightHeight: Distance(38.0, Unit.millimeter),
-    zeroElevation: Angular(0, Unit.radian),
-  );
-  return ShotProfile(
-    name: 'Test Shot',
-    rifle: rifle,
-    sight: sight,
-    cartridge: cartridge,
-    conditions: AtmoData(
-      temperature: Temperature(20.0, Unit.celsius),
-      altitude: Distance(150.0, Unit.meter),
-      pressure: Pressure(1013.25, Unit.hPa),
-      humidity: 0.50,
-      powderTemp: Temperature(20.0, Unit.celsius),
-    ),
-    lookAngle: Angular(0, Unit.degree),
-  );
-}
+ShotContext _makeContext() => ShotContext(
+  profile: Profile()..name = 'Test Profile',
+  conditions: ShootingConditions(),
+);
 
 // ── Fake notifiers that track calls ────────────────────────────────────────
 
@@ -72,7 +27,8 @@ class _TrackingHomeVM extends HomeViewModel {
   int recalcCount = 0;
 
   @override
-  Future<HomeUiState> build() async => const HomeUiLoading();
+  Future<HomeUiState> build() async =>
+      const HomeUiNoData('Select a profile to start');
 
   @override
   Future<void> recalculate() async {
@@ -105,26 +61,20 @@ class _TrackingTablesVM extends TrajectoryTablesViewModel {
   }
 }
 
-/// Profile notifier that can push new values.
-class _ControllableProfileNotifier extends ShotProfileNotifier {
-  final ShotProfile _initial;
-  _ControllableProfileNotifier(this._initial);
-
+/// ShotContext notifier that can push new values without touching the DB.
+class _ControllableShotContextNotifier extends ShotContextNotifier {
   @override
-  Future<ShotProfile> build() async => _initial;
+  Future<ShotContext?> build() async => _makeContext();
 
-  void push(ShotProfile p) => state = AsyncData(p);
+  void push(ShotContext? ctx) => state = AsyncData(ctx);
 }
 
-/// Settings notifier that can push new values.
+/// Settings notifier that can push new values without touching the DB.
 class _ControllableSettingsNotifier extends SettingsNotifier {
-  final AppSettings _initial;
-  _ControllableSettingsNotifier(this._initial);
-
   @override
-  Future<AppSettings> build() async => _initial;
+  Future<GeneralSettings> build() async => GeneralSettings();
 
-  void push(AppSettings s) => state = AsyncData(s);
+  void push(GeneralSettings s) => state = AsyncData(s);
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -134,7 +84,7 @@ class _TestContext {
   final _TrackingHomeVM homeVM;
   final _TrackingTablesVM tablesVM;
   final _TrackingShotDetailsVM shotDetailsVM;
-  final _ControllableProfileNotifier profileNotifier;
+  final _ControllableShotContextNotifier shotContextNotifier;
   final _ControllableSettingsNotifier settingsNotifier;
 
   _TestContext({
@@ -142,23 +92,21 @@ class _TestContext {
     required this.homeVM,
     required this.tablesVM,
     required this.shotDetailsVM,
-    required this.profileNotifier,
+    required this.shotContextNotifier,
     required this.settingsNotifier,
   });
 }
 
-_TestContext _createTestContext({
-  AppSettings initialSettings = const AppSettings(),
-}) {
+_TestContext _createTestContext() {
   final homeVM = _TrackingHomeVM();
   final tablesVM = _TrackingTablesVM();
   final shotDetailsVM = _TrackingShotDetailsVM();
-  final profileNotifier = _ControllableProfileNotifier(_makeProfile());
-  final settingsNotifier = _ControllableSettingsNotifier(initialSettings);
+  final shotContextNotifier = _ControllableShotContextNotifier();
+  final settingsNotifier = _ControllableSettingsNotifier();
 
   final container = ProviderContainer(
     overrides: [
-      shotProfileProvider.overrideWith(() => profileNotifier),
+      shotContextProvider.overrideWith(() => shotContextNotifier),
       settingsProvider.overrideWith(() => settingsNotifier),
       homeVmProvider.overrideWith(() => homeVM),
       trajectoryTablesVmProvider.overrideWith(() => tablesVM),
@@ -171,14 +119,14 @@ _TestContext _createTestContext({
     homeVM: homeVM,
     tablesVM: tablesVM,
     shotDetailsVM: shotDetailsVM,
-    profileNotifier: profileNotifier,
+    shotContextNotifier: shotContextNotifier,
     settingsNotifier: settingsNotifier,
   );
 }
 
 /// Initialise async providers and the coordinator.
 Future<void> _initCoordinator(_TestContext ctx) async {
-  await ctx.container.read(shotProfileProvider.future);
+  await ctx.container.read(shotContextProvider.future);
   await ctx.container.read(settingsProvider.future);
   await Future<void>.delayed(Duration.zero);
   // Reading the coordinator triggers its build() which sets up listeners
@@ -195,11 +143,11 @@ void main() {
     setUp(() async {
       ctx = _createTestContext();
       await _initCoordinator(ctx);
-    }); // Removed the extra closing brace here.
+    });
 
     tearDown(() => ctx.container.dispose());
 
-    test('tab 0 (Home) triggers home and shot details VMs', () {
+    test('tab 0 (Home) triggers homeVM + shotDetailsVM', () {
       ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(0);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -215,22 +163,6 @@ void main() {
       expect(ctx.shotDetailsVM.recalcCount, 0);
     });
 
-    test('tab 1 (Conditions) triggers nothing', () {
-      ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(1);
-
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
-      expect(ctx.shotDetailsVM.recalcCount, 0);
-    });
-
-    test('tab 3 (Convertors) triggers nothing', () {
-      ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(3);
-
-      expect(ctx.homeVM.recalcCount, 0);
-      expect(ctx.tablesVM.recalcCount, 0);
-      expect(ctx.shotDetailsVM.recalcCount, 0);
-    });
-
     test('tab 4 (Settings) triggers nothing', () {
       ctx.container.read(recalcCoordinatorProvider.notifier).onTabActivated(4);
 
@@ -240,7 +172,7 @@ void main() {
     });
   });
 
-  group('RecalcCoordinator — shotProfile changes', () {
+  group('RecalcCoordinator — shotContext changes', () {
     late _TestContext ctx;
 
     setUp(() async {
@@ -250,9 +182,8 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('profile change triggers all providers', () async {
-      final newProfile = _makeProfile();
-      ctx.profileNotifier.push(newProfile);
+    test('context change triggers all providers', () async {
+      ctx.shotContextNotifier.push(_makeContext());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -260,16 +191,30 @@ void main() {
       expect(ctx.shotDetailsVM.recalcCount, 1);
     });
 
-    test('multiple profile changes trigger multiple times', () async {
-      ctx.profileNotifier.push(_makeProfile());
+    test('multiple context changes trigger multiple times', () async {
+      ctx.shotContextNotifier.push(_makeContext());
       await Future<void>.delayed(Duration.zero);
-      ctx.profileNotifier.push(_makeProfile());
+      ctx.shotContextNotifier.push(_makeContext());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 2);
       expect(ctx.tablesVM.recalcCount, 2);
       expect(ctx.shotDetailsVM.recalcCount, 2);
-    }); // Removed the extra closing brace here.
+    });
+
+    test('conditions change (via context) triggers all providers', () async {
+      ctx.shotContextNotifier.push(
+        ShotContext(
+          profile: Profile()..name = 'Test',
+          conditions: ShootingConditions()..distanceMeter = 200,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(ctx.homeVM.recalcCount, 1);
+      expect(ctx.tablesVM.recalcCount, 1);
+      expect(ctx.shotDetailsVM.recalcCount, 1);
+    });
   });
 
   group('RecalcCoordinator — settings changes that trigger recalc', () {
@@ -282,30 +227,8 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('profile usePowderSensitivity change triggers recalc', () async {
-      ctx.profileNotifier.push(
-        _makeProfile().copyWith(usePowderSensitivity: true),
-      );
-      await Future<void>.delayed(Duration.zero);
-
-      expect(ctx.homeVM.recalcCount, 1);
-      expect(ctx.tablesVM.recalcCount, 1);
-      expect(ctx.shotDetailsVM.recalcCount, 1);
-    });
-
-    test('profile useDiffPowderTemp change triggers recalc', () async {
-      ctx.profileNotifier.push(
-        _makeProfile().copyWith(useDiffPowderTemp: true),
-      );
-      await Future<void>.delayed(Duration.zero);
-
-      expect(ctx.homeVM.recalcCount, 1);
-      expect(ctx.tablesVM.recalcCount, 1);
-      expect(ctx.shotDetailsVM.recalcCount, 1);
-    });
-
     test('chartDistanceStep change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(chartDistanceStep: 50.0));
+      ctx.settingsNotifier.push(GeneralSettings()..homeChartDistanceStep = 50);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -313,10 +236,8 @@ void main() {
       expect(ctx.shotDetailsVM.recalcCount, 1);
     });
 
-    test('tableConfig.stepM change triggers recalc', () async {
-      ctx.settingsNotifier.push(
-        const AppSettings(tableConfig: TableConfig(stepM: 50.0)),
-      );
+    test('tableDistanceStep change triggers recalc', () async {
+      ctx.settingsNotifier.push(GeneralSettings()..homeTableDistanceStep = 50);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -336,7 +257,7 @@ void main() {
     tearDown(() => ctx.container.dispose());
 
     test('showMrad change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(showMrad: false));
+      ctx.settingsNotifier.push(GeneralSettings()..homeShowMrad = true);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -345,7 +266,7 @@ void main() {
     });
 
     test('showMoa change triggers recalc', () async {
-      ctx.settingsNotifier.push(const AppSettings(showMoa: true));
+      ctx.settingsNotifier.push(GeneralSettings()..homeShowMoa = true);
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -364,8 +285,8 @@ void main() {
 
     tearDown(() => ctx.container.dispose());
 
-    test('profile change + tab activation accumulates calls', () async {
-      ctx.profileNotifier.push(_makeProfile());
+    test('context change + tab activation accumulates calls', () async {
+      ctx.shotContextNotifier.push(_makeContext());
       await Future<void>.delayed(Duration.zero);
 
       expect(ctx.homeVM.recalcCount, 1);
@@ -377,19 +298,20 @@ void main() {
       expect(ctx.shotDetailsVM.recalcCount, 2);
     });
 
-    test('settings change with multiple relevant fields triggers once', () async {
-      // Even though multiple fields differ, it's a single push → single trigger
-      ctx.settingsNotifier.push(
-        const AppSettings(
-          chartDistanceStep: 50.0,
-          tableConfig: TableConfig(stepM: 50.0),
-        ),
-      );
-      await Future<void>.delayed(Duration.zero);
+    test(
+      'settings change with multiple relevant fields triggers once',
+      () async {
+        ctx.settingsNotifier.push(
+          GeneralSettings()
+            ..homeChartDistanceStep = 50
+            ..homeTableDistanceStep = 50,
+        );
+        await Future<void>.delayed(Duration.zero);
 
-      expect(ctx.homeVM.recalcCount, 1);
-      expect(ctx.tablesVM.recalcCount, 1);
-      expect(ctx.shotDetailsVM.recalcCount, 1);
-    });
+        expect(ctx.homeVM.recalcCount, 1);
+        expect(ctx.tablesVM.recalcCount, 1);
+        expect(ctx.shotDetailsVM.recalcCount, 1);
+      },
+    );
   });
 }

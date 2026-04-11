@@ -4,7 +4,7 @@ project(test_app LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "eballistica")
+set(BINARY_NAME "ebalistyka")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -45,13 +45,13 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_definitions(${TARGET} PRIVATE "$<$<CONFIG:Debug>:_DEBUG>")
 endfunction()
 
-# ============================================================================
-# bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
-# ============================================================================
-add_subdirectory(
-    "${CMAKE_CURRENT_SOURCE_DIR}/../external/bclibc"
-    "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
-)
+# # ============================================================================
+# # bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
+# # ============================================================================
+# add_subdirectory(
+#     "${CMAKE_CURRENT_SOURCE_DIR}/../external/bclibc"
+#     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"
+# )
 
 # Flutter library and tool build rules.
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")

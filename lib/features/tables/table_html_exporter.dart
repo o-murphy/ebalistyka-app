@@ -4,9 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:eballistica/features/tables/details_table_mv.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
-import 'package:eballistica/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
 
 // ─── HTML Exporter ────────────────────────────────────────────────────────────
 
@@ -32,7 +32,7 @@ class TableHtmlExporter {
           ),
         ],
         subject: details != null
-            ? '${details.rifleName} — Trajectory'
+            ? '${details.weaponName} — Trajectory'
             : 'Trajectory',
       );
     } else {
@@ -51,7 +51,7 @@ class TableHtmlExporter {
     required TrajectoryTablesUiReady tables,
   }) {
     final title = details != null
-        ? '${_esc(details.rifleName)} — Trajectory'
+        ? '${_esc(details.weaponName)} — Trajectory'
         : 'Trajectory';
     final sb = StringBuffer()
       ..writeln('<!DOCTYPE html>')
@@ -96,12 +96,12 @@ class TableHtmlExporter {
   static String _buildDetails(DetailsTableData d) {
     final sb = StringBuffer()
       ..writeln('<section class="details">')
-      ..writeln('<h1>${_esc(d.rifleName)}</h1>');
+      ..writeln('<h1>${_esc(d.weaponName)}</h1>');
 
     // Rifle
     sb.writeln('<div class="card">');
-    sb.writeln('<h2>Rifle</h2><table class="info">');
-    sb.write(_row('Name', d.rifleName));
+    sb.writeln('<h2>Weapon</h2><table class="info">');
+    sb.write(_row('Name', d.weaponName));
     if (d.caliber != null) sb.write(_row('Caliber', d.caliber!));
     if (d.twist != null) sb.write(_row('Twist', d.twist!));
     if (d.zeroDist != null) sb.write(_row('Zero distance', d.zeroDist!));

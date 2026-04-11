@@ -1,0 +1,191 @@
+{
+    "units": {
+        "caliber": "inch (double)",
+        "rTwist": "inch (double)",
+        "barrelLength": "inch (double)",
+        "dType": "G1/G7/Custom",
+        "bc": "double",
+        "velocity": "mps (double)",
+        "temperature": "celsius (double)",
+        "pressure": "hPa (double)",
+        "humidity": "fraction (double)",
+        "powderSensitivity": "fraction (double) (delta_v/v per 15°C)",
+        "powderSensitivityTable": "[{t: celsius, v: mps}, ...]",
+        "multiBCtable": "[{bc: double, v: mps}, ...]",
+        "cusomDragTable": "[{cd: double, v: mach}, ...]",
+        "distance": "meter (double)",
+        "lookAngle": "degree (double)",
+        "zeroOffset": "{x: mrad, y: mrad}",
+        "bulletLength": "inch (double)",
+        "bulletWeight": "grain (double)",
+        "focalPlane": "ffp/sfp (string)",
+        "sightHeight": "inch (double)",
+        "sightHorizontalOffset": "inch (double)",
+        "magnification": "{min: double, max: double}",
+        "verticalClickUnit": "mil/mrad/moa/degree (string)",
+        "horizontalClickUnit": "mil/mrad/moa/degree (string)",
+        "image": "svg image / null",
+        "ammo.type": "cartridge | bullet  —  bullets may omit muzzleVelocity and powder data"
+    },
+    "calibers": [
+        {
+            "id": 0,
+            "diameter": 0.338,
+            "caliberName": ".338 Lapua Magnum"
+        },
+        {
+            "id": 1,
+            "diameter": 0.224,
+            "caliberName": ".223 Remington"
+        }
+    ],
+    "weapon": [
+        {
+            "id": 0,
+            "vendor": "Generic",
+            "name": "Generic .338 Lapua Magnum Rifle",
+            "caliberId": 0,
+            "rTwist": 10.0,
+            "image": null,
+            "extra": {
+                "barrelLength": 24.0
+            }
+        },
+        {
+            "id": 1,
+            "vendor": "Generic",
+            "name": "Generic .223 Remington Rifle",
+            "caliberId": 1,
+            "rTwist": 7.0,
+            "image": null,
+            "extra": {
+                "barrelLength": 22.0
+            }
+        },
+        {
+            "id": 2,
+            "vendor": "Savage",
+            "name": "Savage 110 Precision Magnum",
+            "caliberId": 0,
+            "rTwist": 9.3,
+            "image": null,
+            "extra": {
+                "barrelLength": 24.0
+            }
+        }
+    ],
+    "ammo": [
+        {
+            "id": 0,
+            "type": "cartridge",
+            "vendor": "Black Hills",
+            "name": "Black Hills 300gr. Sierra MatchKing",
+            "projectileName": "Sierra MatchKing 300gr",
+            "image": null,
+            "caliberId": 0,
+            "bulletWeight": 300.0,
+            "bulletLength": 1.7,
+            "dType": "G7",
+            "bcG1": 0.78,
+            "bcG7": 0.381,
+            "useMultiBcG1": false,
+            "useMultiBcG7": false,
+            "multiBCtableG1": [],
+            "multiBCtableG7": [],
+            "useCusomDragTable": false,
+            "cusomDragTable": [],
+            "muzzleVelocity": 800.1,
+            "muzzleVelocityTemperature": 15.0,
+            "usePowderSensitivity": false,
+            "usePowderTempForMv": false,
+            "powderTemperature": 15.0,
+            "powderSensitivity": 0.0,
+            "powderSensitivityTable": [],
+            "zeroConditions": {
+                "distance": 100.0,
+                "lookAngle": 0.0,
+                "atmo": {
+                    "altitude": 0.0,
+                    "temperature": 22.0,
+                    "pressure": 1000.0,
+                    "humidity": 0.47,
+                    "powderTemperature": 22.0
+                },
+                "useDiffPowderTemperature": false,
+                "useCoriolis": false,
+                "latitudeDeg": 0.0,
+                "azimuthDeg": 0.0
+            },
+            "zeroOffset": {
+                "x": 0.0,
+                "y": 0.0
+            }
+        },
+        {
+            "id": 1,
+            "type": "bullet",
+            "vendor": "Sierra",
+            "name": "Sierra MatchKing 300gr .338",
+            "projectileName": null,
+            "image": null,
+            "caliberId": 0,
+            "bulletWeight": 300.0,
+            "bulletLength": 1.7,
+            "dType": "G7",
+            "bcG1": 0.78,
+            "bcG7": 0.381,
+            "useMultiBcG1": false,
+            "useMultiBcG7": false,
+            "multiBCtableG1": [],
+            "multiBCtableG7": [],
+            "useCusomDragTable": false,
+            "cusomDragTable": [],
+            "muzzleVelocity": null,
+            "muzzleVelocityTemperature": 15.0,
+            "usePowderSensitivity": false,
+            "usePowderTempForMv": false,
+            "powderTemperature": 15.0,
+            "powderSensitivity": 0.0,
+            "powderSensitivityTable": [],
+            "zeroConditions": {
+                "distance": 100.0,
+                "lookAngle": 0.0,
+                "atmo": {
+                    "altitude": 0.0,
+                    "temperature": 15.0,
+                    "pressure": 1013.25,
+                    "humidity": 0.5,
+                    "powderTemperature": 15.0
+                },
+                "useDiffPowderTemperature": false,
+                "useCoriolis": false,
+                "latitudeDeg": 0.0,
+                "azimuthDeg": 0.0
+            },
+            "zeroOffset": {
+                "x": 0.0,
+                "y": 0.0
+            }
+        }
+    ],
+    "sights": [
+        {
+            "id": 0,
+            "vendor": "Generic",
+            "name": "Generic Long-Range Scope",
+            "focalPlane": "ffp",
+            "sightHeight": 2.0,
+            "sightHorizontalOffset": 0.0,
+            "magnification": {
+                "min": 5.0,
+                "max": 30.0
+            },
+            "reticleImage": null,
+            "verticalClick": 0.1,
+            "horizontalClick": 0.1,
+            "verticalClickUnit": "mil",
+            "horizontalClickUnit": "mil",
+            "image": null
+        }
+    ]
+}

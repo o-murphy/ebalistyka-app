@@ -1,9 +1,9 @@
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
-import 'package:eballistica/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 
-import 'package:eballistica/shared/models/formatted_row.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ─── Trajectory Table ─────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ class TrajectoryTable extends ConsumerWidget {
     }
 
     if (vmState is TrajectoryTablesUiEmpty) {
-      return const EmptyStatePlaceholder();
+      return EmptyStatePlaceholder(message: vmState.message);
     }
 
     if (vmState is TrajectoryTablesUiError) {
@@ -42,10 +42,12 @@ class TrajectoryTable extends ConsumerWidget {
 class TrajectoryTableContent extends StatefulWidget {
   final FormattedTableData mainTable;
   final FormattedTableData? zeroCrossings;
+  final bool zeroCrossingEnabled;
 
   const TrajectoryTableContent({
     required this.mainTable,
     this.zeroCrossings,
+    this.zeroCrossingEnabled = false,
     super.key,
   });
 
@@ -318,7 +320,28 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
       children: [
         if (widget.zeroCrossings != null &&
             widget.zeroCrossings!.distanceHeaders.isNotEmpty)
-          buildZeroTable(),
+          buildZeroTable()
+        else if (widget.zeroCrossingEnabled)
+          Container(
+            width: double.infinity,
+            color: Colors.redAccent.withValues(alpha: 0.2),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: const [
+                Icon(Icons.warning_outlined, color: Colors.red),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Zero crossings not found in the current trajectory range!',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         Expanded(child: buildMainTable()),
       ],
     );

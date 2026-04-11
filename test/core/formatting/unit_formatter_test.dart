@@ -1,43 +1,59 @@
 import 'package:test/test.dart';
-import 'package:eballistica/core/formatting/unit_formatter.dart';
-import 'package:eballistica/core/formatting/unit_formatter_impl.dart';
-import 'package:eballistica/core/models/unit_settings.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter.dart';
+import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:bclibc_ffi/unit.dart';
+
+/// Metric UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
+UnitSettings _metricSettings() =>
+    UnitSettings()..sightHeight = Unit.millimeter.name;
+
+/// Imperial UnitSettings
+UnitSettings _imperialSettings() => UnitSettings()
+  ..velocity = Unit.fps.name
+  ..distance = Unit.yard.name
+  ..temperature = Unit.fahrenheit.name
+  ..pressure = Unit.inHg.name
+  ..drop = Unit.inch.name
+  ..adjustment = Unit.moa.name
+  ..energy = Unit.footPound.name
+  ..weight = Unit.gram.name
+  ..sightHeight = Unit.inch.name
+  ..twist = Unit.inch.name;
 
 void main() {
   group('UnitFormatterImpl — metric defaults', () {
-    // Default UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     // ── Formatted strings ──────────────────────────────────────────────────
 
     test('velocity() formats m/s', () {
-      final v = Velocity(800.0, Unit.mps);
+      final v = Velocity.mps(800.0);
       final s = fmt.velocity(v);
       expect(s, contains('m/s'));
       expect(s, contains('800'));
     });
 
     test('distance() formats meters', () {
-      final d = Distance(300.0, Unit.meter);
+      final d = Distance.meter(300.0);
       final s = fmt.distance(d);
       expect(s, contains('m'));
       expect(s, contains('300'));
     });
 
     test('temperature() formats celsius', () {
-      final t = Temperature(15.0, Unit.celsius);
+      final t = Temperature.celsius(15.0);
       final s = fmt.temperature(t);
       expect(s, contains('°C'));
       expect(s, contains('15'));
     });
 
     test('temperature() converts from fahrenheit', () {
-      final t = Temperature(32.0, Unit.fahrenheit);
+      final t = Temperature.fahrenheit(32.0);
       final s = fmt.temperature(t);
       // 32°F = 0°C
       expect(s, contains('0'));
@@ -45,62 +61,62 @@ void main() {
     });
 
     test('pressure() formats hPa', () {
-      final p = Pressure(1013.25, Unit.hPa);
+      final p = Pressure.hPa(1013.25);
       final s = fmt.pressure(p);
       expect(s, contains('hPa'));
       expect(s, contains('1013'));
     });
 
     test('drop() formats centimeters', () {
-      final d = Distance(-0.5, Unit.foot);
+      final d = Distance.foot(-0.5);
       final s = fmt.drop(d);
       expect(s, contains('cm'));
     });
 
     test('windage() delegates to drop()', () {
-      final d = Distance(0.3, Unit.foot);
+      final d = Distance.foot(0.3);
       expect(fmt.windage(d), equals(fmt.drop(d)));
     });
 
     test('adjustment() formats MIL', () {
-      final a = Angular(1.5, Unit.mil);
+      final a = Angular.mil(1.5);
       final s = fmt.adjustment(a);
       expect(s, contains('MIL'));
       expect(s, contains('1.5'));
     });
 
     test('energy() formats joules', () {
-      final e = Energy(3000.0, Unit.joule);
+      final e = Energy.joule(3000.0);
       final s = fmt.energy(e);
       expect(s, contains('J'));
       expect(s, contains('3000'));
     });
 
     test('weight() formats grains', () {
-      final w = Weight(175.0, Unit.grain);
+      final w = Weight.grain(175.0);
       final s = fmt.weight(w);
       expect(s, contains('gr'));
       expect(s, contains('175'));
     });
 
     test('sightHeight() formats millimeters', () {
-      final d = Distance(38.0, Unit.millimeter);
+      final d = Distance.millimeter(38.0);
       final s = fmt.sightHeight(d);
       expect(s, contains('mm'));
       expect(s, contains('38'));
     });
 
     test('twist() formats with 1: prefix', () {
-      final d = Distance(10.0, Unit.inch);
+      final d = Distance.inch(10.0);
       final s = fmt.twist(d);
       expect(s, startsWith('1:'));
       expect(s, contains('in'));
     });
 
     test('humidity() formats percentage from fraction', () {
-      expect(fmt.humidity(Ratio(0.5, Unit.fraction)), '50 %');
-      expect(fmt.humidity(Ratio(1.0, Unit.fraction)), '100 %');
-      expect(fmt.humidity(Ratio(0.0, Unit.fraction)), '0 %');
+      expect(fmt.humidity(Ratio.fraction(0.5)), '50 %');
+      expect(fmt.humidity(Ratio.fraction(1.0)), '100 %');
+      expect(fmt.humidity(Ratio.fraction(0.0)), '0 %');
     });
 
     test('mach() formats with 2 decimals', () {
@@ -111,59 +127,6 @@ void main() {
     test('time() formats with 3 decimals', () {
       expect(fmt.time(1.234), '1.234 s');
       expect(fmt.time(0.0), '0.000 s');
-    });
-
-    // ── Raw numbers ────────────────────────────────────────────────────────
-
-    test('rawVelocity() returns value in display unit', () {
-      final v = Velocity(800.0, Unit.mps);
-      expect(fmt.rawVelocity(v), closeTo(800.0, 1e-6));
-    });
-
-    test('rawDistance() returns value in display unit', () {
-      final d = Distance(1.0, Unit.yard);
-      // 1 yard ≈ 0.9144 m
-      expect(fmt.rawDistance(d), closeTo(0.9144, 1e-3));
-    });
-
-    test('rawTemperature() returns celsius', () {
-      final t = Temperature(32.0, Unit.fahrenheit);
-      expect(fmt.rawTemperature(t), closeTo(0.0, 1e-6));
-    });
-
-    test('rawPressure() returns hPa', () {
-      final p = Pressure(29.92, Unit.inHg);
-      expect(fmt.rawPressure(p), closeTo(1013.25, 0.5));
-    });
-
-    test('rawDrop() returns centimeters', () {
-      final d = Distance(1.0, Unit.foot);
-      // 1 ft = 30.48 cm
-      expect(fmt.rawDrop(d), closeTo(30.48, 0.01));
-    });
-
-    test('rawAdjustment() returns MIL', () {
-      final a = Angular(3.438, Unit.moa);
-      // 1 MOA ≈ 0.2909 MIL
-      expect(fmt.rawAdjustment(a), closeTo(1.0, 0.02));
-    });
-
-    test('rawEnergy() returns joules', () {
-      final e = Energy(1000.0, Unit.footPound);
-      // 1 ft·lbf ≈ 1.3558 J
-      expect(fmt.rawEnergy(e), closeTo(1355.8, 1.0));
-    });
-
-    test('rawWeight() returns grains', () {
-      final w = Weight(10.0, Unit.gram);
-      // 1 gram ≈ 15.432 grains
-      expect(fmt.rawWeight(w), closeTo(154.32, 0.5));
-    });
-
-    test('rawSightHeight() returns millimeters', () {
-      final d = Distance(1.5, Unit.inch);
-      // 1 inch = 25.4 mm
-      expect(fmt.rawSightHeight(d), closeTo(38.1, 0.01));
     });
 
     // ── Symbols ────────────────────────────────────────────────────────────
@@ -187,69 +150,50 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(
-        const UnitSettings(
-          velocity: Unit.fps,
-          distance: Unit.yard,
-          temperature: Unit.fahrenheit,
-          pressure: Unit.inHg,
-          drop: Unit.inch,
-          adjustment: Unit.moa,
-          energy: Unit.footPound,
-          weight: Unit.gram,
-          sightHeight: Unit.inch,
-          twist: Unit.inch,
-        ),
-      );
+      fmt = UnitFormatterImpl(_imperialSettings());
     });
 
     test('velocity() formats fps', () {
-      final v = Velocity(800.0, Unit.mps);
+      final v = Velocity.mps(800.0);
       final s = fmt.velocity(v);
       expect(s, contains('ft/s'));
     });
 
     test('distance() formats yards', () {
-      final d = Distance(100.0, Unit.meter);
+      final d = Distance.meter(100.0);
       final s = fmt.distance(d);
       expect(s, contains('yd'));
     });
 
     test('temperature() formats fahrenheit', () {
-      final t = Temperature(0.0, Unit.celsius);
+      final t = Temperature.celsius(0.0);
       final s = fmt.temperature(t);
       expect(s, contains('°F'));
       expect(s, contains('32'));
     });
 
     test('pressure() formats inHg', () {
-      final p = Pressure(1013.25, Unit.hPa);
+      final p = Pressure.hPa(1013.25);
       final s = fmt.pressure(p);
       expect(s, contains('inHg'));
     });
 
     test('drop() formats inches', () {
-      final d = Distance(1.0, Unit.foot);
+      final d = Distance.foot(1.0);
       final s = fmt.drop(d);
       expect(s, contains('in'));
     });
 
     test('adjustment() formats MOA', () {
-      final a = Angular(1.0, Unit.mil);
+      final a = Angular.mil(1.0);
       final s = fmt.adjustment(a);
       expect(s, contains('MOA'));
     });
 
     test('energy() formats foot-pounds', () {
-      final e = Energy(1000.0, Unit.joule);
+      final e = Energy.joule(1000.0);
       final s = fmt.energy(e);
       expect(s, contains('ft·lb'));
-    });
-
-    test('rawVelocity() returns fps', () {
-      final v = Velocity(100.0, Unit.mps);
-      // 100 m/s ≈ 328.08 fps
-      expect(fmt.rawVelocity(v), closeTo(328.08, 0.5));
     });
 
     test('symbols reflect imperial settings', () {
@@ -268,7 +212,7 @@ void main() {
     late UnitFormatterImpl fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     test('velocity: round-trip mps → raw → mps', () {
@@ -331,7 +275,7 @@ void main() {
     test('sightHeight: mm round-trip', () {
       const display = 38.0;
       final raw = fmt.inputToRaw(display, InputField.sightHeight);
-      // raw is in millimeters (same as display unit for default settings)
+      // raw is in millimeters (same as display unit for metric settings)
       expect(raw, closeTo(38.0, 1e-6));
       expect(
         fmt.rawToInput(raw, InputField.sightHeight),
@@ -364,13 +308,12 @@ void main() {
 
     setUp(() {
       fmt = UnitFormatterImpl(
-        const UnitSettings(
-          velocity: Unit.fps,
-          distance: Unit.yard,
-          temperature: Unit.fahrenheit,
-          pressure: Unit.inHg,
-          sightHeight: Unit.inch,
-        ),
+        UnitSettings()
+          ..velocity = Unit.fps.name
+          ..distance = Unit.yard.name
+          ..temperature = Unit.fahrenheit.name
+          ..pressure = Unit.inHg.name
+          ..sightHeight = Unit.inch.name,
       );
     });
 
@@ -428,24 +371,26 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(const UnitSettings());
+      fmt = UnitFormatterImpl(_metricSettings());
     });
 
     test('zero values format correctly', () {
-      expect(fmt.velocity(Velocity(0, Unit.mps)), contains('0'));
-      expect(fmt.distance(Distance(0, Unit.meter)), contains('0'));
-      expect(fmt.energy(Energy(0, Unit.joule)), contains('0'));
+      expect(fmt.velocity(Velocity.mps(0)), contains('0'));
+      expect(fmt.distance(Distance.meter(0)), contains('0'));
+      expect(fmt.energy(Energy.joule(0)), contains('0'));
     });
 
     test('negative drop formats correctly', () {
-      final d = Distance(-2.0, Unit.foot);
+      final d = Distance.foot(-2.0);
       final s = fmt.drop(d);
       expect(s, contains('-'));
       expect(s, contains('cm'));
     });
 
-    test('const constructor works', () {
-      const formatter = UnitFormatterImpl(UnitSettings());
+    test('default constructor works', () {
+      final formatter = UnitFormatterImpl(
+        UnitSettings()..sightHeight = Unit.millimeter.name,
+      );
       expect(formatter.velocitySymbol, Unit.mps.symbol);
     });
   });

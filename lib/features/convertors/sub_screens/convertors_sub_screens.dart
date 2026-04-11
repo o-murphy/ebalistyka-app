@@ -1,4 +1,11 @@
-import 'package:eballistica/shared/widgets/_stub_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/length_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/weight_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/pressure_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/temperature_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/torque_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/angular_convertor_screen.dart';
+
+import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
 
 class DistanceConvertorScreen extends StatelessWidget {
@@ -13,46 +20,4 @@ class VelocityConvertorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Velocity Convertor');
-}
-
-class LengthConvertorScreen extends StatelessWidget {
-  const LengthConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Length Convertor');
-}
-
-class WeightConvertorScreen extends StatelessWidget {
-  const WeightConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Weight Convertor');
-}
-
-class PressureConvertorScreen extends StatelessWidget {
-  const PressureConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Pressure Convertor');
-}
-
-class TemperatureConvertorScreen extends StatelessWidget {
-  const TemperatureConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Temperature Convertor');
-}
-
-class MilMoaConvertorScreen extends StatelessWidget {
-  const MilMoaConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'MIL / MOA Convertor');
-}
-
-class TorqueConvertorScreen extends StatelessWidget {
-  const TorqueConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Torque Convertor');
 }

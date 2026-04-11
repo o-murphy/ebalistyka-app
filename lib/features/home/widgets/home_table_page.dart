@@ -1,8 +1,8 @@
-import 'package:eballistica/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
 
 // ─── Page 2 — Compact Adjustment Tables ──────────────────────────────────────
 
@@ -14,7 +14,13 @@ class HomeTablePage extends ConsumerWidget {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    if (vmState is! HomeUiReady) {
+    if (vmState is HomeUiNoData) {
+      return EmptyStatePlaceholder(message: vmState.message);
+    }
+    if (vmState is HomeUiError) {
+      return Center(child: Text('Error: ${vmState.message}'));
+    }
+    if (vmAsync.isLoading || vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());
     }
 

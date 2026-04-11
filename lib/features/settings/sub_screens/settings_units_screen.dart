@@ -1,9 +1,12 @@
-import 'package:eballistica/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:bclibc_ffi/unit.dart';
 
 // ─── Units Screen ─────────────────────────────────────────────────────────────
 
@@ -13,7 +16,7 @@ class UnitsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final units = ref.watch(unitSettingsProvider);
-    final notifier = ref.read(settingsProvider.notifier);
+    final notifier = ref.read(unitSettingsNotifierProvider.notifier);
 
     void set(String key, Unit unit) => notifier.setUnit(key, unit);
 
@@ -22,45 +25,45 @@ class UnitsScreen extends ConsumerWidget {
       isSubscreen: true,
       body: ListView(
         children: [
-          _SettingsUnitTile(
-            icon: Icons.speed_outlined,
+          UnitPickerListTile(
+            icon: IconDef.velocity,
             label: 'Velocity',
-            current: units.velocity,
+            current: units.velocityUnit,
             options: const [Unit.mps, Unit.fps, Unit.kmh, Unit.mph],
             onChanged: (u) => set('velocity', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.straighten_outlined,
+          UnitPickerListTile(
+            icon: IconDef.range,
             label: 'Distance',
-            current: units.distance,
+            current: units.distanceUnit,
             options: const [Unit.meter, Unit.yard, Unit.foot],
             onChanged: (u) => set('distance', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.vertical_align_center_outlined,
+          UnitPickerListTile(
+            icon: IconDef.height,
             label: 'Sight Height',
-            current: units.sightHeight,
+            current: units.sightHeightUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('sightHeight', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.compress_outlined,
+          UnitPickerListTile(
+            icon: IconDef.pressure,
             label: 'Pressure',
-            current: units.pressure,
+            current: units.pressureUnit,
             options: const [Unit.hPa, Unit.mmHg, Unit.inHg, Unit.psi],
             onChanged: (u) => set('pressure', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.device_thermostat_outlined,
+          UnitPickerListTile(
+            icon: IconDef.temperature,
             label: 'Temperature',
-            current: units.temperature,
+            current: units.temperatureUnit,
             options: const [Unit.celsius, Unit.fahrenheit],
             onChanged: (u) => set('temperature', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.height_outlined,
+          UnitPickerListTile(
+            icon: IconDef.height,
             label: 'Drop / Windage',
-            current: units.drop,
+            current: units.dropUnit,
             options: const [
               Unit.meter,
               Unit.centimeter,
@@ -70,10 +73,10 @@ class UnitsScreen extends ConsumerWidget {
             ],
             onChanged: (u) => set('drop', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.rotate_90_degrees_cw_outlined,
+          UnitPickerListTile(
+            icon: IconDef.dropWindageAngle,
             label: 'Drop / Windage angle',
-            current: units.adjustment,
+            current: units.adjustmentUnit,
             options: const [
               Unit.mil,
               Unit.moa,
@@ -83,98 +86,36 @@ class UnitsScreen extends ConsumerWidget {
             ],
             onChanged: (u) => set('adjustment', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.bolt_outlined,
+          UnitPickerListTile(
+            icon: IconDef.energy,
             label: 'Energy',
-            current: units.energy,
+            current: units.energyUnit,
             options: const [Unit.joule, Unit.footPound],
             onChanged: (u) => set('energy', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.balance_outlined,
-            label: 'Bullet weight',
-            current: units.weight,
+          UnitPickerListTile(
+            icon: IconDef.weigth,
+            label: 'Projectile weight',
+            current: units.weightUnit,
             options: const [Unit.grain, Unit.gram],
             onChanged: (u) => set('weight', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.linear_scale_outlined,
-            label: 'Bullet length',
-            current: units.length,
+          UnitPickerListTile(
+            icon: IconDef.length,
+            label: 'Projectile length',
+            current: units.lengthUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('length', u),
           ),
-          _SettingsUnitTile(
-            icon: Icons.circle_outlined,
-            label: 'Bullet diameter',
-            current: units.diameter,
+          UnitPickerListTile(
+            icon: IconDef.caliber,
+            label: 'Projectile diameter',
+            current: units.diameterUnit,
             options: const [Unit.millimeter, Unit.centimeter, Unit.inch],
             onChanged: (u) => set('diameter', u),
           ),
           const SizedBox(height: 16),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Shared widgets for settings sub-screens ─────────────────────────────────
-
-class _SettingsUnitTile extends StatelessWidget {
-  const _SettingsUnitTile({
-    required this.icon,
-    required this.label,
-    required this.current,
-    required this.options,
-    required this.onChanged,
-  });
-
-  final IconData icon;
-  final String label;
-  final Unit current;
-  final List<Unit> options;
-  final ValueChanged<Unit> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      trailing: Text(
-        current.symbol,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      dense: true,
-      onTap: () => _showPicker(context),
-    );
-  }
-
-  void _showPicker(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(label),
-        children: options
-            .map(
-              (u) => RadioGroup<Unit>(
-                groupValue: current,
-                onChanged: (v) {
-                  if (v != null) {
-                    onChanged(v);
-                    Navigator.pop(ctx);
-                  }
-                },
-                child: RadioListTile<Unit>(
-                  value: u,
-                  title: Text('${u.label}  (${u.symbol})'),
-                  dense: true,
-                ),
-              ),
-            )
-            .toList(),
       ),
     );
   }

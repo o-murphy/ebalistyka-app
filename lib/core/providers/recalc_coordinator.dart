@@ -1,26 +1,34 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:eballistica/core/providers/settings_provider.dart';
-import 'package:eballistica/core/providers/shot_profile_provider.dart';
-import 'package:eballistica/core/models/app_settings.dart';
-import 'package:eballistica/features/home/home_vm.dart';
-import 'package:eballistica/features/home/shot_details_vm.dart';
-import 'package:eballistica/features/tables/trajectory_tables_vm.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/providers/shot_context_provider.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/shot_details_vm.dart';
+import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
+import 'package:riverpod/riverpod.dart';
 
 /// Centralises all recalculation triggers.
 ///
-/// Listens to [shotProfileProvider] and [settingsProvider] and triggers
-/// the ViewModels for the active features.
+/// Listens to [shotContextProvider], [settingsProvider], and
+/// [unitSettingsNotifierProvider] and triggers the ViewModels for the active
+/// features.
 class RecalcCoordinator extends Notifier<void> {
   @override
   void build() {
-    ref.listen(shotProfileProvider, (_, next) {
+    ref.listen(shotContextProvider, (_, next) {
       if (next.hasValue) _triggerAll();
     });
 
-    ref.listen<AsyncValue<AppSettings>>(settingsProvider, (prev, next) {
+    ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
-      if (_needsRecalc(prev?.value, next.value!)) _triggerAll();
+      if (_generalNeedsRecalc(prev?.value, next.value!)) _triggerAll();
+    });
+
+    ref.listen<AsyncValue<UnitSettings>>(unitSettingsNotifierProvider, (
+      prev,
+      next,
+    ) {
+      if (!next.hasValue) return;
+      if (prev?.value != null) _triggerAll(); // any unit change → recalc
     });
   }
 
@@ -28,8 +36,6 @@ class RecalcCoordinator extends Notifier<void> {
   void onTabActivated(int tabIndex) {
     if (tabIndex == 0) {
       ref.read(homeVmProvider.notifier).recalculate();
-      // Shot details is a sub-screen of Home, so we should ensure
-      // it's fresh when Home branch is active.
       ref.read(shotDetailsVmProvider.notifier).recalculate();
     }
     if (tabIndex == 2) {
@@ -43,20 +49,16 @@ class RecalcCoordinator extends Notifier<void> {
     ref.read(shotDetailsVmProvider.notifier).recalculate();
   }
 
-  bool _needsRecalc(AppSettings? prev, AppSettings next) {
+  bool _generalNeedsRecalc(GeneralSettings? prev, GeneralSettings next) {
     if (prev == null) return true;
-    return prev.chartDistanceStep != next.chartDistanceStep ||
-        prev.homeTableStep != next.homeTableStep ||
-        prev.units != next.units ||
-        prev.showMrad != next.showMrad ||
-        prev.showMoa != next.showMoa ||
-        prev.showMil != next.showMil ||
-        prev.showCmPer100m != next.showCmPer100m ||
-        prev.showInPer100yd != next.showInPer100yd ||
-        // Any tableConfig change — identity check works because
-        // AppSettings.copyWith reuses the same reference when tableConfig
-        // is not passed.
-        !identical(prev.tableConfig, next.tableConfig);
+    return prev.homeChartDistanceStep != next.homeChartDistanceStep ||
+        prev.homeTableDistanceStep != next.homeTableDistanceStep ||
+        prev.homeShowMrad != next.homeShowMrad ||
+        prev.homeShowMoa != next.homeShowMoa ||
+        prev.homeShowMil != next.homeShowMil ||
+        prev.homeShowCmPer100m != next.homeShowCmPer100m ||
+        prev.homeShowInPer100yd != next.homeShowInPer100yd ||
+        prev.homeShowSubsonicTransition != next.homeShowSubsonicTransition;
   }
 }
 

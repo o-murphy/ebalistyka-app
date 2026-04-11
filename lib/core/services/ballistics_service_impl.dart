@@ -1,95 +1,57 @@
-import 'package:flutter/foundation.dart' show compute;
-
-import 'package:eballistica/core/domain/ballistics_service.dart';
-import 'package:eballistica/core/models/shot_profile.dart';
-import 'package:eballistica/core/solver/calculator.dart';
-import 'package:eballistica/core/solver/ffi/bclibc_bindings.g.dart';
-import 'package:eballistica/core/solver/munition.dart';
-import 'package:eballistica/core/solver/shot.dart';
-import 'package:eballistica/core/solver/trajectory_data.dart';
-import 'package:eballistica/core/solver/unit.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:flutter/foundation.dart' show compute, listEquals;
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart'
+    show DragType, AmmoExtension;
+import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── Isolate top-level functions ──────────────────────────────────────────────
 
-// (profile, stepM, cachedZeroElevationRad?)
-typedef _TableCalcArgs = (ShotProfile, double, double?);
+// (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevationRad?)
+typedef _TableCalcArgs = (bclibc.Shot, bclibc.Shot, Distance, double, double?);
 // (hitResult, freshZeroElevationRad?)
-typedef _TableCalcResult = (HitResult?, double?);
-
-/// Builds an [Ammo] from [baseAmmo] with powder sensitivity enabled or not.
-Ammo _makeAmmo(Ammo baseAmmo, bool usePowderSens) => usePowderSens
-    ? baseAmmo
-    : Ammo(
-        dm: baseAmmo.dm,
-        mv: baseAmmo.mv,
-        powderTemp: baseAmmo.powderTemp,
-        tempModifier: baseAmmo.tempModifier,
-        usePowderSensitivity: false,
-      );
+typedef _TableCalcResult = (bclibc.HitResult?, double?);
 
 _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
-  final (profile, stepM, cachedZeroElevRad) = args;
+  final (zeroShot, currentShot, zeroDistance, stepM, cachedZeroElevRad) = args;
   try {
-    final calc = Calculator();
-    final baseAmmo = profile.cartridge.toAmmo();
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
-
-    // Per-profile flags — zero and current may differ.
-    final currentUsePowderSens =
-        profile.usePowderSensitivity && baseAmmo.usePowderSensitivity;
-    final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        baseAmmo.usePowderSensitivity;
-
-    final currentAmmo = _makeAmmo(baseAmmo, currentUsePowderSens);
-    final zeroAmmo = _makeAmmo(baseAmmo, zeroUsePowderSens);
-
-    final weapon = profile.rifle.toWeapon();
+    final calc = bclibc.Calculator();
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+      currentShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      zeroShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      Shot zeroShot;
       try {
-        zeroShot = Shot(
-          weapon: weapon,
-          ammo: zeroAmmo,
-          lookAngle: profile.lookAngle,
-          atmo: zeroAtmo.toAtmo(),
-          winds: const [],
-        );
-        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+        calc.setWeaponZero(zeroShot, zeroDistance);
       } catch (_) {
-        zeroShot = Shot(
-          weapon: weapon,
-          ammo: zeroAmmo,
-          lookAngle: Angular(0.0, Unit.radian),
-          atmo: zeroAtmo.toAtmo(),
-          winds: const [],
+        final flatShot = bclibc.Shot(
+          weapon: zeroShot.weapon,
+          ammo: zeroShot.ammo,
+          lookAngle: Angular.radian(0.0),
+          atmo: zeroShot.atmo,
+          winds: zeroShot.winds,
         );
-        calc.setWeaponZero(zeroShot, profile.zeroDistance);
+        calc.setWeaponZero(flatShot, zeroDistance);
+        zeroShot.weapon.zeroElevation = flatShot.weapon.zeroElevation;
       }
-      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
+      freshZeroElevRad = zeroShot.weapon.zeroElevation.in_(Unit.radian);
+      currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
-    final shot = Shot(
-      weapon: weapon,
-      ammo: currentAmmo,
-      lookAngle: profile.lookAngle,
-      atmo: profile.conditions.toAtmo(),
-      winds: profile.winds.map((w) => w.toWind()).toList(),
-      latitudeDeg: profile.latitudeDeg,
-      azimuthDeg: profile.azimuthDeg,
-    );
-
     final result = calc.fire(
-      shot: shot,
-      trajectoryRange: Distance(2000.0, Unit.meter),
-      trajectoryStep: Distance(stepM, Unit.meter),
+      shot: currentShot,
+      trajectoryRange: Distance(FC.targetDistance.maxRaw, Unit.meter),
+      trajectoryStep: Distance.meter(stepM),
       filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
     return (result, freshZeroElevRad);
   } catch (e, st) {
@@ -97,73 +59,91 @@ _TableCalcResult _runTableCalculation(_TableCalcArgs args) {
   }
 }
 
-// (profile, targetDistM, chartStepM, cachedZeroElevationRad?)
-typedef _HomeCalcArgs = (ShotProfile, double, double, double?);
-// (hitResult, freshZeroElevationRad?)
-typedef _HomeCalcResult = (HitResult?, double?);
+// (zeroShot, currentShot, zeroDistance, targetDistM, trajectoryEndM, chartStepM, tableStepM, cachedZeroElevationRad?)
+typedef _HomeCalcArgs = (
+  bclibc.Shot,
+  bclibc.Shot,
+  Distance,
+  double,
+  double,
+  double,
+  double,
+  double?,
+);
+// (hitResult, freshZeroElevationRad?, holdRad, tableHolds)
+typedef _HomeCalcResult = (bclibc.HitResult?, double?, double, List<double>);
 
 _HomeCalcResult _runHomeCalculation(_HomeCalcArgs args) {
-  final (profile, targetDistM, chartStepM, cachedZeroElevRad) = args;
-  final internalStepM = chartStepM < 1.0 ? chartStepM : 1.0;
+  final (
+    zeroShot,
+    currentShot,
+    zeroDistance,
+    targetDistM,
+    trajectoryEndM,
+    stepM,
+    tableStepM,
+    cachedZeroElevRad,
+  ) = args;
+  final internalStepM = stepM < 0.1524
+      ? stepM
+      : 0.1524; // max 1/2 ft for dense interpolation
   try {
-    final calc = Calculator();
-    final baseAmmo = profile.cartridge.toAmmo();
-    final zeroAtmo = profile.zeroConditions ?? profile.conditions;
-
-    final currentUsePowderSens =
-        profile.usePowderSensitivity && baseAmmo.usePowderSensitivity;
-    final zeroUsePowderSens =
-        (profile.zeroUsePowderSensitivity ?? profile.usePowderSensitivity) &&
-        baseAmmo.usePowderSensitivity;
-
-    final currentAmmo = _makeAmmo(baseAmmo, currentUsePowderSens);
-    final zeroAmmo = _makeAmmo(baseAmmo, zeroUsePowderSens);
-
-    final weapon = profile.rifle.toWeapon();
+    final calc = bclibc.Calculator();
     double? freshZeroElevRad;
 
     if (cachedZeroElevRad != null) {
-      weapon.zeroElevation = Angular(cachedZeroElevRad, Unit.radian);
+      currentShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
+      zeroShot.weapon.zeroElevation = Angular.radian(cachedZeroElevRad);
     } else {
-      final zeroShot = Shot(
-        weapon: weapon,
-        ammo: zeroAmmo,
-        lookAngle: profile.lookAngle,
-        atmo: zeroAtmo.toAtmo(),
-        winds: const [],
-      );
-      calc.setWeaponZero(zeroShot, profile.zeroDistance);
-      freshZeroElevRad = weapon.zeroElevation.in_(Unit.radian);
+      try {
+        calc.setWeaponZero(zeroShot, zeroDistance);
+      } catch (_) {
+        final flatShot = bclibc.Shot(
+          weapon: zeroShot.weapon,
+          ammo: zeroShot.ammo,
+          lookAngle: Angular.radian(0.0),
+          atmo: zeroShot.atmo,
+          winds: zeroShot.winds,
+        );
+        calc.setWeaponZero(flatShot, zeroDistance);
+        zeroShot.weapon.zeroElevation = flatShot.weapon.zeroElevation;
+      }
+      freshZeroElevRad = zeroShot.weapon.zeroElevation.in_(Unit.radian);
+      currentShot.weapon.zeroElevation = zeroShot.weapon.zeroElevation;
     }
 
-    final newShot = Shot(
-      weapon: weapon,
-      ammo: currentAmmo,
-      lookAngle: profile.lookAngle,
-      atmo: profile.conditions.toAtmo(),
-      winds: profile.winds.map((w) => w.toWind()).toList(),
-      latitudeDeg: profile.latitudeDeg,
-      azimuthDeg: profile.azimuthDeg,
-    );
+    final zeroElevRad = currentShot.weapon.zeroElevation.in_(Unit.radian);
 
-    final targetElev = calc.barrelElevationForTarget(
-      newShot,
-      Distance(targetDistM, Unit.meter),
-    );
-    final holdRad =
-        targetElev.in_(Unit.radian) -
-        newShot.weapon.zeroElevation.in_(Unit.radian);
-    newShot.relativeAngle = Angular(holdRad, Unit.radian);
+    // Compute hold = barrelElevationForTarget(d) - zeroElevation for each
+    // table column. This gives exact drop corrections matching Page 1.
+    final tableDists = [
+      targetDistM - 2 * tableStepM,
+      targetDistM - tableStepM,
+      targetDistM,
+      targetDistM + tableStepM,
+      targetDistM + 2 * tableStepM,
+    ];
+    final tableHolds = tableDists.map((d) {
+      if (d <= 0) return double.nan;
+      return calc
+              .barrelElevationForTarget(currentShot, Distance.meter(d))
+              .in_(Unit.radian) -
+          zeroElevRad;
+    }).toList();
+
+    // Hold for the target (center column) — same as tableHolds[2].
+    final holdRad = tableHolds[2].isNaN ? 0.0 : tableHolds[2];
+    currentShot.relativeAngle = Angular.radian(holdRad);
 
     final result = calc.fire(
-      shot: newShot,
-      trajectoryRange: Distance(targetDistM, Unit.meter),
-      trajectoryStep: Distance(internalStepM, Unit.meter),
+      shot: currentShot,
+      trajectoryRange: Distance.meter(trajectoryEndM),
+      trajectoryStep: Distance.meter(internalStepM),
       filterFlags:
-          BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
-          BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_RANGE.value |
+          bclibc.BCTrajFlag.BC_TRAJ_FLAG_ZERO.value,
     );
-    return (result, freshZeroElevRad);
+    return (result, freshZeroElevRad, holdRad, tableHolds);
   } catch (e, st) {
     throw CalculationException('Home calculation failed', e, st);
   }
@@ -186,40 +166,135 @@ class CalculationException implements Exception {
 // ── Implementation ───────────────────────────────────────────────────────────
 
 class BallisticsServiceImpl implements BallisticsService {
+  List<double>? _lastZeroKey;
+  double? _cachedZeroElevRad;
+
+  List<double> _buildZeroKey(Profile profile, ShootingConditions conditions) {
+    final ammo = profile.ammo.target!;
+    final weapon = profile.weapon.target;
+    final sight = profile.sight.target;
+
+    final bcCount = switch (ammo.dragType) {
+      DragType.g7 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
+      DragType.g1 =>
+        ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
+      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
+    };
+    final firstBc = switch (ammo.dragType) {
+      DragType.g7 => ammo.bcG7,
+      DragType.g1 => ammo.bcG1,
+      DragType.custom => 0.0,
+    };
+
+    return [
+      sight?.sightHeightInch ?? 0.0,
+      weapon?.twistInch ?? 0.0,
+      ammo.muzzleVelocityMps ?? 0.0,
+      ammo.powderTemperatureC,
+      ammo.powderSensitivityFrac,
+      firstBc,
+      ammo.weightGrain,
+      ammo.caliberInch,
+      ammo.lengthInch,
+      bcCount.toDouble(),
+      ammo.zeroAltitudeMeter,
+      ammo.zeroPressurehPa,
+      ammo.zeroTemperatureC,
+      ammo.zeroHumidityFrac,
+      ammo.zeroPowderTemperatureC,
+      ammo.zeroDistanceMeter,
+      conditions.lookAngleRad,
+      ammo.usePowderSensitivity ? 1.0 : 0.0,
+      ammo.zeroUseDiffPowderTemperature ? 1.0 : 0.0,
+    ];
+  }
+
+  double? _resolveZeroCache(Profile profile, ShootingConditions conditions) {
+    final key = _buildZeroKey(profile, conditions);
+    if (_cachedZeroElevRad != null && listEquals(key, _lastZeroKey)) {
+      return _cachedZeroElevRad;
+    }
+    return null;
+  }
+
+  void _updateZeroCache(
+    Profile profile,
+    ShootingConditions conditions,
+    double zeroElevRad,
+  ) {
+    _lastZeroKey = _buildZeroKey(profile, conditions);
+    _cachedZeroElevRad = zeroElevRad;
+  }
+
+  /// Builds bclibc.Weapon from OB entities.
+  bclibc.Weapon _buildWeapon(Profile profile) {
+    final weapon = profile.weapon.target!;
+    final sight = profile.sight.target;
+    final sightHeight = sight?.sightHeight ?? Distance.inch(0);
+    return weapon.toWeapon(sightHeight);
+  }
+
   @override
   Future<BallisticsResult> calculateTable(
-    ShotProfile profile,
-    TableCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
+    Profile profile,
+    ShootingConditions conditions,
+    TableCalcOptions opts,
+  ) async {
+    final cached = _resolveZeroCache(profile, conditions);
+    final bcWeapon = _buildWeapon(profile);
+    final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+
     final (hit, freshZero) = await compute(_runTableCalculation, (
-      profile,
+      zeroShot,
+      currentShot,
+      zeroDistance,
       opts.stepM,
-      cachedZeroElevRad,
+      cached,
     ));
     if (hit == null) throw StateError('Table calculation returned null');
-    return BallisticsResult(
-      hitResult: hit,
-      zeroElevationRad: freshZero ?? cachedZeroElevRad ?? 0.0,
-    );
+    final zeroElevRad = freshZero ?? cached ?? 0.0;
+    if (freshZero != null) _updateZeroCache(profile, conditions, freshZero);
+    return BallisticsResult(hitResult: hit, zeroElevationRad: zeroElevRad);
   }
 
   @override
   Future<BallisticsResult> calculateForTarget(
-    ShotProfile profile,
-    TargetCalcOptions opts, {
-    double? cachedZeroElevRad,
-  }) async {
-    final (hit, freshZero) = await compute(_runHomeCalculation, (
-      profile,
+    Profile profile,
+    ShootingConditions conditions,
+    TargetCalcOptions opts,
+  ) async {
+    final cached = _resolveZeroCache(profile, conditions);
+    final bcWeapon = _buildWeapon(profile);
+    final zeroShot = profile.toZeroShot(bcWeapon, conditions.lookAngle);
+    final currentShot = profile.toCurrentShot(conditions, bcWeapon);
+    final zeroDistance = Distance.meter(profile.ammo.target!.zeroDistanceMeter);
+
+    final (
+      hit,
+      freshZero,
+      holdRad,
+      tableHolds,
+    ) = await compute<_HomeCalcArgs, _HomeCalcResult>(_runHomeCalculation, (
+      zeroShot,
+      currentShot,
+      zeroDistance,
       opts.targetDistM,
-      opts.chartStepM,
-      cachedZeroElevRad,
+      opts.trajectoryEndM ?? opts.targetDistM,
+      opts.stepM,
+      opts.tableStepM ?? 0.0,
+      cached,
     ));
     if (hit == null) throw StateError('Target calculation returned null');
+    final zeroElevRad = freshZero ?? cached ?? 0.0;
+    if (freshZero != null) _updateZeroCache(profile, conditions, freshZero);
     return BallisticsResult(
       hitResult: hit,
-      zeroElevationRad: freshZero ?? cachedZeroElevRad ?? 0.0,
+      zeroElevationRad: zeroElevRad,
+      holdRad: holdRad,
+      tableHolds: tableHolds,
     );
   }
 }

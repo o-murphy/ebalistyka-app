@@ -3,13 +3,13 @@
 // TrajectoryTable is a plain StatefulWidget — no Riverpod needed.
 //   flutter test test/trajectory_table_test.dart
 
-import 'package:eballistica/features/tables/details_table_mv.dart';
-import 'package:eballistica/features/tables/widgets/details_table.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eballistica/shared/models/formatted_row.dart';
-import 'package:eballistica/features/tables/widgets/trajectory_table.dart';
+import 'package:ebalistyka/shared/models/formatted_row.dart';
+import 'package:ebalistyka/features/tables/widgets/trajectory_table.dart';
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ FormattedTableData _makeTable({
 }
 
 DetailsTableData _makeFullSpoiler() => const DetailsTableData(
-  rifleName: 'Test Rifle',
+  weaponName: 'Test Rifle',
   caliber: '7.62 mm',
   twist: '1:11"',
   dragModel: 'G7',
@@ -195,9 +195,9 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('RIFLE'), findsOneWidget);
+      expect(find.text('WEAPON'), findsOneWidget);
       expect(find.text('PROJECTILE'), findsOneWidget);
-      expect(find.text('ATMOSPHERE'), findsOneWidget);
+      expect(find.text('CONDITIONS'), findsOneWidget);
     });
 
     testWidgets('renders rifle details correctly', (tester) async {
@@ -233,18 +233,21 @@ void main() {
       expect(find.text('90°'), findsOneWidget);
     });
 
-    testWidgets('returns empty space if no data provided', (tester) async {
-      // Create an empty part object if your model allows it
-      const emptyDetails = DetailsTableData(rifleName: '');
+    testWidgets('shows all section headers even when fields are empty', (
+      tester,
+    ) async {
+      const emptyDetails = DetailsTableData(weaponName: '');
 
       await tester.pumpWidget(
         _wrap(const DetailsTableContent(details: emptyDetails)),
       );
       await tester.pump();
 
-      // If your code has a check for items.isEmpty -> SizedBox.shrink()
-      expect(find.text('RIFLE'), findsNothing);
-      expect(find.text('ATMOSPHERE'), findsNothing);
+      // All sections always shown regardless of data
+      expect(find.text('WEAPON'), findsOneWidget);
+      expect(find.text('CARTRIDGE'), findsOneWidget);
+      expect(find.text('PROJECTILE'), findsOneWidget);
+      expect(find.text('CONDITIONS'), findsOneWidget);
     });
   });
 
