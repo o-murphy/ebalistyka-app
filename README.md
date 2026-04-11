@@ -7,7 +7,7 @@
 ![Status: Alpha](https://img.shields.io/badge/status-alpha-orange)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey)
 
-> **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
+> [!WARNING] **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
 
 A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance C++ ballistic solver engine with RK4/Euler integration.
 
@@ -15,7 +15,7 @@ A cross-platform ballistic trajectory calculator built with Flutter. Powered by 
 
 ## Screenshots
 
-> Screenshots coming soon.
+> [!NOTE] Screenshots can be updated on changes.
 
 | Home | Conditions | Trajectory Tables |
 |------|-----------|-------------------|
@@ -150,4 +150,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 See [LICENSE](LICENSE) for the full text.
 
-> `bclibc` (the ballistic solver engine, located in `external/bclibc`) is licensed separately under the **GNU Lesser General Public License v3.0**. See [`external/bclibc/LICENSE`](external/bclibc/LICENSE).
+> [!NOTE] `bclibc` (the ballistic solver engine, located in `external/bclibc`) is licensed separately under the **GNU Lesser General Public License v3.0**. See [`external/bclibc/LICENSE`](external/bclibc/LICENSE).

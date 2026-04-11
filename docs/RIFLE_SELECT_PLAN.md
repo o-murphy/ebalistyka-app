@@ -462,3 +462,42 @@ ProfilesScreen  (/home/profiles)
 - [x] Duplicate sight — реалізовано: повне копіювання полів
 - [x] Remove ammo / sight — реалізовано з confirm dialog
 - [ ] Export / Import profile / ammo / sight — формат TBD (наразі SnackBar "not yet available")
+
+---
+
+## Alpha Release TODO
+
+### 🔴 Блокери (без цього альфа не функціональна)
+
+- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop). Секції: Ballistics · Muzzle Velocity · Zero Conditions
+  - ⚠️ **Caliber логіка:** калібр НЕ вводиться вручну — визначається автоматично з `Weapon.caliberInch` активного профілю (або профілю, для якого створюється ammo). У wizard `Ammo.caliberInch` встановлюється програмно, відображається readonly. При виборі з колекції (`AmmoCollectionScreen`) — фільтрується за калібром профілю.
+  - ⚠️ **`Weapon.caliberName`:** поле є в entity та копіюється при duplicate, але ніде не відображається і не задається в UI (тільки `caliberInch` використовується в розрахунках). При реалізації WeaponWizardScreen вирішити: відображати як human-readable label (readonly, з колекції) або прибрати з UI зовсім.
+  - ⚠️ **Powder sensitivity — потенційна зміна логіки:** поточний стан — on/off (`powderSensitivityFrac`). Планується 3 режими:
+    - `off` — без температурної корекції
+    - `coeff` — задається `powderSensitivityFrac` вручну
+    - `table` — задається таблицею (`powderSensitivityTC` + `powderSensitivityVMps`); таблиця використовується для розрахунку і автоматичного оновлення `powderSensitivityFrac` (можливо в окремому підекрані wizard), після чого engine працює через `frac` як завжди → **зміни до entities не потрібні**.
+- [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
+- [ ] `WeaponCollectionScreen` — реалізувати
+- [ ] `SightCollectionScreen` — реалізувати
+
+### 🟠 Важливо для альфи
+
+- [ ] `DistanceConvertorScreen` — реалізувати (stub)
+- [ ] `VelocityConvertorScreen` — реалізувати (stub)
+- [ ] Table export — підключити кнопку (HTML exporter `table_html_exporter.dart` вже є)
+- [ ] Zero Conditions UI — окремий екран редагування `zeroConditions` (відмінних від поточних `conditions`)
+- [ ] Settings → About links — GitHub посилання як мінімум
+
+---
+
+## Post-Alpha TODO
+
+- [ ] A7P import UI — `file_picker` → `a7p_parser.dart` → завантажити в профіль
+- [ ] A7P export UI — серіалізація → `share_plus`
+- [ ] Profile / ammo / sight Export/Import — формат TBD
+- [ ] Localization uk/en — ARB + `flutter_localizations`
+- [ ] RulerSelector widget — touch-drag ruler для QuickActionsPanel
+- [ ] Reticle fullscreen screen — відкривається з Home Page 1
+- [ ] Help overlay — coach marks
+- [ ] Tools screen — відкривається з кнопки More на Home
+- [ ] Settings → Privacy Policy / Terms of Use / Changelog links
