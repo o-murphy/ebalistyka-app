@@ -15,7 +15,10 @@ class HomeTablePage extends ConsumerWidget {
     final vmState = vmAsync.value;
 
     if (vmState is HomeUiNoData) {
-      return EmptyStatePlaceholder(message: vmState.message);
+      return EmptyStatePlaceholder(
+        type: vmState.type,
+        message: vmState.message,
+      );
     }
     if (vmState is HomeUiError) {
       return Center(child: Text('Error: ${vmState.message}'));

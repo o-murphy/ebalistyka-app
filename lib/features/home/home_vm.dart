@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
@@ -89,8 +90,9 @@ class HomeUiReady extends HomeUiState {
 }
 
 class HomeUiNoData extends HomeUiState {
-  final String message;
-  const HomeUiNoData(this.message);
+  final String? message;
+  final EmptyStateType type;
+  const HomeUiNoData({this.message, this.type = EmptyStateType.noData});
 }
 
 class HomeUiError extends HomeUiState {
@@ -124,8 +126,14 @@ class HomeChartPointInfo {
 
 class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
-  Future<HomeUiState> build() async =>
-      const HomeUiNoData('Select a profile to start');
+  Future<HomeUiState> build() async {
+    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
+      if (next.hasValue && next.value == null) {
+        state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
+      }
+    });
+    return const HomeUiNoData(type: EmptyStateType.noProfile);
+  }
 
   Future<void> recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
@@ -134,15 +142,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final formatter = ref.read(unitFormatterProvider);
 
     if (ctx == null || settings == null) {
-      state = const AsyncData(HomeUiNoData('No active profile selected'));
+      state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
       return;
     }
     final profile = ctx.profile;
     final conditions = ctx.conditions;
     if (profile.ammo.target == null) {
-      state = const AsyncData(
-        HomeUiNoData('Select ammo for the active profile'),
-      );
+      state = const AsyncData(HomeUiNoData(type: EmptyStateType.noAmmo));
       return;
     }
 

@@ -10,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
@@ -261,7 +260,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   SizedBox(
                     height: centralBlockHeight,
                     child: vmState is HomeUiNoData
-                        ? EmptyStatePlaceholder(message: vmState.message)
+                        ? EmptyStatePlaceholder(
+                            type: vmState.type,
+                            message: vmState.message,
+                          )
                         : Stack(
                             children: [
                               Column(
@@ -301,34 +303,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
 
                   // Add bottom padding to prevent content from hiding under Bottom Block
-                  SizedBox(height: bottomHeight),
+                  if (vmState is! HomeUiNoData) SizedBox(height: bottomHeight),
                 ],
               ),
             ),
 
             // ── Bottom Block — Fixed page indicator (sticky at bottom) ────────────
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: bottomHeight,
-                alignment: Alignment.center,
-                color: Theme.of(context).colorScheme.surface,
-                child: PageDotsIndicator(
-                  current: _currentPage,
-                  count: 3,
-                  onPageChanged: (page) {
-                    _pageController.animateToPage(
-                      page,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                    setState(() => _currentPage = page);
-                  },
+            if (vmState is! HomeUiNoData)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: bottomHeight,
+                  alignment: Alignment.center,
+                  color: Theme.of(context).colorScheme.surface,
+                  child: PageDotsIndicator(
+                    current: _currentPage,
+                    count: 3,
+                    onPageChanged: (page) {
+                      _pageController.animateToPage(
+                        page,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                      setState(() => _currentPage = page);
+                    },
+                  ),
                 ),
               ),
-            ),
           ],
         );
       },

@@ -80,7 +80,8 @@ class ConditionsUiState {
 class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   @override
   Future<ConditionsUiState> build() async {
-    final ctx = await ref.watch(shotContextProvider.future);
+    // Non-async read: profile is optional, no loading cascade when profile changes
+    final ctx = ref.watch(shotContextProvider).value;
     final conditions = await ref.watch(shotConditionsProvider.future);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
@@ -232,8 +233,8 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         inputField: InputField.lookAngle,
         formatter: formatter,
       ),
-      mvAtPowderTemp: powderSensOn ? mvStr : null,
-      powderSensitivity: powderSensOn ? sensStr : null,
+      mvAtPowderTemp: (powderSensOn && mvStr.isNotEmpty) ? mvStr : null,
+      powderSensitivity: (powderSensOn && sensStr.isNotEmpty) ? sensStr : null,
     );
   }
 

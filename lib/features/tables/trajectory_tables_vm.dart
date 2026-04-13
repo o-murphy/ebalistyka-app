@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
@@ -26,8 +27,12 @@ class TrajectoryTablesUiLoading extends TrajectoryTablesUiState {
 }
 
 class TrajectoryTablesUiEmpty extends TrajectoryTablesUiState {
-  final String message;
-  const TrajectoryTablesUiEmpty([this.message = 'No data']);
+  final String? message;
+  final EmptyStateType type;
+  const TrajectoryTablesUiEmpty({
+    this.message,
+    this.type = EmptyStateType.noData,
+  });
 }
 
 class TrajectoryTablesUiReady extends TrajectoryTablesUiState {
@@ -55,6 +60,13 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
   @override
   Future<TrajectoryTablesUiState> build() async {
+    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
+      if (next.hasValue && next.value == null) {
+        state = const AsyncData(
+          TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
+        );
+      }
+    });
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {
       _rebuild();
     });
@@ -69,7 +81,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
     if (ctx == null) {
       state = const AsyncData(
-        TrajectoryTablesUiEmpty('No active profile selected'),
+        TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
       );
       return;
     }
@@ -79,7 +91,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
 
     if (profile.ammo.target == null) {
       state = const AsyncData(
-        TrajectoryTablesUiEmpty('Select ammo for the active profile'),
+        TrajectoryTablesUiEmpty(type: EmptyStateType.noAmmo),
       );
       return;
     }

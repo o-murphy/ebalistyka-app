@@ -1,5 +1,6 @@
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,9 @@ class ShotDetailsScreen extends ConsumerWidget {
 
   Widget _buildContent(BuildContext context, ShotDetailsUiState state) {
     if (state is! ShotDetailsReady) {
-      if (state is ShotDetailsError) return Center(child: Text(state.message));
+      if (state is ShotDetailsError) {
+        return EmptyStatePlaceholder(type: state.type, message: state.message);
+      }
       return const Center(child: CircularProgressIndicator());
     }
 
