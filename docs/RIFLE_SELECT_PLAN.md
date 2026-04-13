@@ -264,7 +264,7 @@ ProfileCard
               └─ context.pop(Ammo) → appStateProvider.saveAmmo
 ```
 
-🔧 Роутинг і callbacks реалізовані, AmmoWizardScreen — stub.
+🔧 Роутинг і callbacks реалізовані. AmmoWizardScreen частково реалізований (Name + Projectile + DragModel секція). Muzzle Velocity і Zero Conditions — ще не реалізовані.
 
 ### Flow 6: Edit Sight properties
 
@@ -316,7 +316,16 @@ ProfileCard PopupMenu → "Duplicate"
 - `ammo-select/cartridge-collection` або `bullet-collection` → AmmoWizardScreen (pre-filled, тип readonly)
 - `ammo-edit` — редагування існуючого (initial = Ammo з appState)
 
-Секції: Ballistics · Muzzle Velocity · Zero Conditions
+Секції (заплановані): Name · Projectile · DragModel · Muzzle Velocity · Zero Conditions
+
+**Поточний стан:**
+- ✅ Name — з touched-validation
+- ✅ Projectile — Caliber, Weight, Length (`UnitValueFieldTile`)
+- ✅ DragModel — `SegmentedButton<DragType>` (G1/G7/CUSTOM) + `_buildBcSection`: Multi-BC switch, Single BC field, placeholder ListTile для редактора Multi-BC таблиці / Custom drag table
+- ❌ Muzzle Velocity — не реалізовано
+- ❌ Zero Conditions — не реалізовано
+- ❌ Caliber readonly з Weapon — не реалізовано
+- ❌ Routes до multi-bc editor і custom drag table editor — `debugPrint` placeholder
 
 ### SightWizardScreen
 
@@ -393,6 +402,10 @@ ProfilesScreen  (/home/profiles)
 │   └── AmmoCollectionScreen       (.../bullet-collection)     ← filter: bullets
 │         └── AmmoWizardScreen     (.../ammo-wizard)
 ├── AmmoWizardScreen         (/home/profiles/ammo-edit)
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g1)   ← TODO: G1 multi-BC table
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g7)   ← TODO: G7 multi-BC table
+│   ├── CustomDragTableScreen      (.../ammo-edit/drag-table)    ← TODO: custom drag model
+│   └── PowderSensitivityScreen    (.../ammo-edit/powder-sensitivity) ← TODO: temperature sensitivity table → auto-calc powderSensitivityFrac
 ├── MySightsScreen           (/home/profiles/sight-select)
 │   ├── SightWizardScreen      (.../sight-create)
 │   └── SightCollectionScreen  (.../sight-collection)
@@ -444,6 +457,7 @@ ProfilesScreen  (/home/profiles)
 | `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
 | `lib/shared/widgets/confirm_dialog.dart` | ✅ | reusable confirm: isDestructive (error) / tertiary colors |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | |
+| `lib/features/home/sub_screens/ammo_wizard_screen.dart` | 🔧 | Name + Projectile + DragModel (G1/G7/CUSTOM + BC). Muzzle Velocity і Zero Conditions — не реалізовано |
 | `lib/features/home/sub_screens/sight_wizard_screen.dart` | ✅ | Sight form: Name/Optics/Mounting/Clicks/Magnification |
 | `lib/router.dart` | ✅ | Routes константи |
 | `assets/json/collection.json` | ✅ | Вбудована колекція |
@@ -452,7 +466,7 @@ ProfilesScreen  (/home/profiles)
 
 ## TODO
 
-- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop)
+- [~] `AmmoWizardScreen` — частково реалізований (Name, Projectile, DragModel). Залишилось: Muzzle Velocity, Zero Conditions, Caliber readonly з Weapon
 - [x] `SightWizardScreen` — реалізовано: Name, Optics (FFP/SFP/LWIR), Mounting (height/offset), Clicks (UnitInputWithPicker + FC.adjustment), Magnification range
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
 - [ ] `WeaponCollectionScreen` — реалізувати
@@ -469,7 +483,7 @@ ProfilesScreen  (/home/profiles)
 
 ### 🔴 Блокери (без цього альфа не функціональна)
 
-- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop). Секції: Ballistics · Muzzle Velocity · Zero Conditions
+- [~] `AmmoWizardScreen` — частково реалізований. Залишилось: Muzzle Velocity, Zero Conditions, Caliber readonly з Weapon
   - ⚠️ **Caliber логіка:** калібр НЕ вводиться вручну — визначається автоматично з `Weapon.caliberInch` активного профілю (або профілю, для якого створюється ammo). У wizard `Ammo.caliberInch` встановлюється програмно, відображається readonly. При виборі з колекції (`AmmoCollectionScreen`) — фільтрується за калібром профілю.
   - ⚠️ **`Weapon.caliberName`:** поле є в entity та копіюється при duplicate, але ніде не відображається і не задається в UI (тільки `caliberInch` використовується в розрахунках). При реалізації WeaponWizardScreen вирішити: відображати як human-readable label (readonly, з колекції) або прибрати з UI зовсім.
   - ⚠️ **Powder sensitivity — потенційна зміна логіки:** поточний стан — on/off (`powderSensitivityFrac`). Планується 3 режими:

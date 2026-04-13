@@ -158,7 +158,7 @@ abstract final class FC {
     accuracy: 0,
   );
 
-  static const bulletWeight = FieldConstraints(
+  static const projectileWeight = FieldConstraints(
     rawUnit: Unit.grain,
     minRaw: 1.0,
     maxRaw: 800.0,
@@ -166,7 +166,7 @@ abstract final class FC {
     accuracy: 1,
   );
 
-  static const bulletLength = FieldConstraints(
+  static const projectileLength = FieldConstraints(
     rawUnit: Unit.millimeter,
     minRaw: 1.0,
     maxRaw: 100.0,
@@ -174,7 +174,7 @@ abstract final class FC {
     accuracy: 1,
   );
 
-  static const bulletDiameter = FieldConstraints(
+  static const projectileDiameter = FieldConstraints(
     rawUnit: Unit.millimeter,
     minRaw: 1.0,
     maxRaw: 30.0,

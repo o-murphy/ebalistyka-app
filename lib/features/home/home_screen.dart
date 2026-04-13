@@ -9,6 +9,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
@@ -17,6 +19,7 @@ import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
 import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
 import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
 import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -145,11 +148,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                IconButton.filledTonal(
-                                  onPressed: () =>
-                                      context.push(Routes.ammoSelect),
-                                  icon: const Icon(IconDef.ammo),
-                                ),
+                                if (vmState is HomeUiReady)
+                                  IconButton.filledTonal(
+                                    onPressed: () {
+                                      final appState = ref
+                                          .read(appStateProvider)
+                                          .value;
+                                      final profile = appState?.activeProfile;
+                                      final ammo = appState?.cartridges
+                                          .where(
+                                            (a) =>
+                                                a.id == profile?.ammo.targetId,
+                                          )
+                                          .firstOrNull;
+                                      if (ammo != null) {
+                                        context.push(
+                                          Routes.profileEditAmmo,
+                                          extra: ammo,
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(IconDef.ammo),
+                                  ),
                               ],
                             ),
 
@@ -240,42 +260,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   // ── Central block — 3 pages ───────────────────────────────────
                   SizedBox(
                     height: centralBlockHeight,
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Expanded(
-                              child: PageView(
-                                controller: _pageController,
-                                onPageChanged: (i) =>
-                                    setState(() => _currentPage = i),
-                                children: const [
-                                  HomeReticlePage(),
-                                  HomeTablePage(),
-                                  HomeChartPage(),
+                    child: vmState is HomeUiNoData
+                        ? EmptyStatePlaceholder(message: vmState.message)
+                        : Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Expanded(
+                                    child: PageView(
+                                      controller: _pageController,
+                                      onPageChanged: (i) =>
+                                          setState(() => _currentPage = i),
+                                      children: const [
+                                        HomeReticlePage(),
+                                        HomeTablePage(),
+                                        HomeChartPage(),
+                                      ],
+                                    ),
+                                  ),
+                                  // Padding for spacing - bottom indicator will overlay
+                                  const SizedBox(height: 8),
                                 ],
                               ),
-                            ),
-                            // Padding for spacing - bottom indicator will overlay
-                            const SizedBox(height: 8),
-                          ],
-                        ),
-                        // Brief spinner overlay — fades in then out after each recalc.
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: FadeTransition(
-                              opacity: _calcDoneAnim,
-                              child: Container(
-                                color: Colors.black.withAlpha(90),
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
+                              // Brief spinner overlay — fades in then out after each recalc.
+                              Positioned.fill(
+                                child: IgnorePointer(
+                                  child: FadeTransition(
+                                    opacity: _calcDoneAnim,
+                                    child: Container(
+                                      color: Colors.black.withAlpha(90),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
 
                   // Add bottom padding to prevent content from hiding under Bottom Block

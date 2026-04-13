@@ -110,7 +110,9 @@ final appRouter = GoRouter(
                       routes: [
                         GoRoute(
                           path: 'create',
-                          builder: (_, _) => const AmmoWizardScreen(),
+                          builder: (_, state) => AmmoWizardScreen(
+                            caliberInch: state.extra as double?,
+                          ),
                         ),
                         GoRoute(
                           path: 'cartridge-collection',

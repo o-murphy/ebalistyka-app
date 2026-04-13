@@ -24,27 +24,29 @@ class MyAmmoScreen extends ConsumerWidget {
   /// Falls back to the active profile when null.
   final String? profileId;
 
-  Future<void> _showAddAmmoSheet(BuildContext context) => showActionSheet(
-    context,
-    title: 'Add Ammo',
-    entries: [
-      ActionSheetItem(
-        icon: IconDef.addCircle,
-        title: 'Create new',
-        onTap: () async => context.push(Routes.ammoCreate),
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select cartridge from collection',
-        onTap: () async => context.push(Routes.cartridgeCollection),
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select bullet from collection',
-        onTap: () async => context.push(Routes.bulletCollection),
-      ),
-    ],
-  );
+  Future<void> _showAddAmmoSheet(BuildContext context, Weapon? weapon) =>
+      showActionSheet(
+        context,
+        title: 'Add Ammo',
+        entries: [
+          ActionSheetItem(
+            icon: IconDef.addCircle,
+            title: 'Create new',
+            onTap: () async =>
+                context.push(Routes.ammoCreate, extra: weapon?.caliberInch),
+          ),
+          ActionSheetItem(
+            icon: IconDef.openCollection,
+            title: 'Select cartridge from collection',
+            onTap: () async => context.push(Routes.cartridgeCollection),
+          ),
+          ActionSheetItem(
+            icon: IconDef.openCollection,
+            title: 'Select bullet from collection',
+            onTap: () async => context.push(Routes.bulletCollection),
+          ),
+        ],
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,7 +78,7 @@ class MyAmmoScreen extends ConsumerWidget {
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
-        onPressed: () => _showAddAmmoSheet(context),
+        onPressed: () => _showAddAmmoSheet(context, weapon),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,

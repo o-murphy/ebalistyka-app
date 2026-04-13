@@ -53,12 +53,14 @@ class IconDef {
   static const IconData torqueConvertor = Icons.settings_outlined;
   static const IconData temperatureConvertor = Icons.device_thermostat_outlined;
   // actions
+  static const IconData minus = Icons.remove_outlined;
+  static const IconData plus = Icons.add_outlined;
   static const IconData link = Icons.open_in_new_outlined;
   static const IconData add = Icons.add_outlined;
   static const IconData addCircle = Icons.add_circle_outline;
   static const IconData edit = Icons.edit_outlined;
   static const IconData copy = Icons.copy_outlined;
-  static const IconData remove = Icons.remove_outlined;
+  static const IconData remove = Icons.delete_forever_outlined;
   static const IconData clear = Icons.clear_outlined;
   static const IconData dropDown = Icons.arrow_drop_down_outlined;
   static const IconData openCollection = Icons.folder_open_outlined;

@@ -49,17 +49,17 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   @override
   void initState() {
     super.initState();
-    final r = widget.initial;
-    _nameCtrl = TextEditingController(text: r?.name ?? '');
-    _caliberRaw = r != null
-        ? r.caliber.in_(FC.bulletDiameter.rawUnit)
-        : Distance.inch(0.338).in_(FC.bulletDiameter.rawUnit);
-    final twistAbs = r?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
+    final w = widget.initial;
+    _nameCtrl = TextEditingController(text: w?.name ?? '');
+    _caliberRaw = w != null
+        ? w.caliber.in_(FC.projectileDiameter.rawUnit)
+        : Distance.inch(0.338).in_(FC.projectileDiameter.rawUnit);
+    final twistAbs = w?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
     _twistRaw = twistAbs > 0 ? twistAbs : FC.twist.minRaw;
-    _rightHand = r != null ? r.isRightHandTwist : true;
+    _rightHand = w != null ? w.isRightHandTwist : true;
 
     // Ініціалізуємо barrel length з існуючого значення, якщо воно є
-    _barrelLengthRaw = r?.barrelLength?.in_(FC.barrelLength.rawUnit);
+    _barrelLengthRaw = w?.barrelLength?.in_(FC.barrelLength.rawUnit);
 
     // Показуємо секцію, якщо є значення в базі
     _showExtraFields = _barrelLengthRaw != null;
@@ -86,7 +86,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   Weapon _buildWeapon() {
     final weapon = widget.initial ?? Weapon();
     weapon.name = _nameCtrl.text.trim();
-    weapon.caliber = Distance(_caliberRaw, FC.bulletDiameter.rawUnit);
+    weapon.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
     weapon.twist = Distance(
       _rightHand ? _twistRaw : -_twistRaw,
       FC.twist.rawUnit,
@@ -150,7 +150,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                   UnitValueFieldTile(
                     label: 'Caliber diameter',
                     rawValue: _caliberRaw,
-                    constraints: FC.bulletDiameter,
+                    constraints: FC.projectileDiameter,
                     displayUnit: units.diameterUnit,
                     icon: IconDef.caliber,
                     onChanged: (v) => setState(() => _caliberRaw = v),

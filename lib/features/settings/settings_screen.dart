@@ -144,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () =>
-                _launchUrl("https://github.com/o-murphy/test_flutter_app"),
+                _launchUrl("https://github.com/o-murphy/ebalistyka-app"),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),

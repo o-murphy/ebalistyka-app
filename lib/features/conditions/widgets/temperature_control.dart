@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -24,109 +23,14 @@ class TempControl extends StatelessWidget {
 
   double get _display => rawValue.convert(_fc.rawUnit, displayUnit);
 
-  double _toDisplay(double raw) => raw.convert(_fc.rawUnit, displayUnit);
-  double _toRaw(double display) => display.convert(displayUnit, _fc.rawUnit);
-
-  int get _accuracy {
-    if (_fc.rawUnit == displayUnit) return _fc.accuracy;
-    final stepDisplay =
-        (_toDisplay(_fc.minRaw + _fc.stepRaw) - _toDisplay(_fc.minRaw)).abs();
-    if (stepDisplay <= 0) return _fc.accuracy;
-    final digits = (-log(stepDisplay) / ln10).ceil();
-    return digits < 0 ? 0 : digits;
-  }
-
   void _showDialog(BuildContext context) {
-    final sym = displayUnit.symbol;
-    final inputAcc = _accuracy;
-    final dispMin = _toDisplay(_fc.minRaw);
-    final dispMax = _toDisplay(_fc.maxRaw);
-    double editRaw = rawValue;
-
-    final controller = TextEditingController(
-      text: _display.toStringAsFixed(inputAcc),
-    );
-
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        String? errorText;
-        return StatefulBuilder(
-          builder: (ctx, setState) {
-            void step(int dir) {
-              editRaw = (editRaw + dir * _fc.stepRaw).clamp(
-                _fc.minRaw,
-                _fc.maxRaw,
-              );
-              controller.text = _toDisplay(editRaw).toStringAsFixed(inputAcc);
-              errorText = null;
-            }
-
-            return AlertDialog(
-              title: Text('Temperature  ($sym)'),
-              content: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(IconDef.remove),
-                    onPressed: () => setState(() => step(-1)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      autofocus: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                        signed: true,
-                      ),
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        suffixText: sym,
-                        errorText: errorText,
-                      ),
-                      onChanged: (text) {
-                        final parsed = double.tryParse(
-                          text.replaceAll(',', '.'),
-                        );
-                        setState(() {
-                          if (parsed == null) {
-                            errorText = 'Invalid number';
-                          } else if (parsed < dispMin || parsed > dispMax) {
-                            errorText =
-                                '${dispMin.toStringAsFixed(inputAcc)} – '
-                                '${dispMax.toStringAsFixed(inputAcc)}';
-                          } else {
-                            errorText = null;
-                            editRaw = _toRaw(parsed);
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(IconDef.add),
-                    onPressed: () => setState(() => step(1)),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: errorText != null
-                      ? null
-                      : () {
-                          onChanged(editRaw.clamp(_fc.minRaw, _fc.maxRaw));
-                          Navigator.pop(ctx);
-                        },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    showUnitEditDialog(
+      context,
+      label: 'Temperature',
+      rawValue: rawValue,
+      constraints: _fc,
+      displayUnit: displayUnit,
+      onChanged: onChanged,
     );
   }
 
@@ -140,7 +44,7 @@ class TempControl extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton.filledTonal(
-          icon: const Icon(IconDef.remove),
+          icon: const Icon(IconDef.minus),
           onPressed: () =>
               onChanged((rawValue - _fc.stepRaw).clamp(_fc.minRaw, _fc.maxRaw)),
           style: IconButton.styleFrom(minimumSize: const Size(44, 44)),
