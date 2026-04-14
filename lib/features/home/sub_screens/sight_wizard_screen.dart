@@ -46,8 +46,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late double _minMagRaw;
   late double _maxMagRaw;
 
-  bool _nameTouched = false;
-
   static const _clickUnits = [
     Unit.mil,
     Unit.moa,
@@ -133,7 +131,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
     if (!_isValid) return;
     context.pop(_buildSight());
   }

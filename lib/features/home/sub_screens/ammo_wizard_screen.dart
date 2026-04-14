@@ -40,8 +40,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late final TextEditingController _vendorCtrl;
   late final TextEditingController _projectileNameCtrl;
 
-  bool _nameTouched = false;
-
   late double _caliberRaw;
   double? _weightRaw;
   double? _lengthRaw;
@@ -228,7 +226,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
     if (!_isValid) return;
     context.pop(_buildAmmo());
   }

@@ -45,8 +45,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   bool _showExtraFields = false;
   late double? _barrelLengthRaw;
 
-  bool _nameTouched = false;
-
   @override
   void initState() {
     super.initState();
@@ -106,7 +104,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
     if (!_isValid) return;
     context.pop(_buildWeapon());
   }
