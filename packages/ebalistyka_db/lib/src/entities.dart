@@ -33,15 +33,16 @@ class Weapon {
   @Index()
   String name = "";
 
-  double caliberInch = 0.0;
+  double caliberInch = -1.0;
   String caliberName = "";
   double twistInch = 0.0;
 
-  double? barrelLengthInch;
+  double barrelLengthInch = -1.0;
 
   double zeroElevationRad = 0.0;
 
   String? vendor;
+  String? notes;
   String? image;
 
   final owner = ToOne<Owner>();
@@ -67,6 +68,7 @@ class Sight {
   double maxMagnification = 1.0;
 
   String? reticleImage;
+  double calibratedMagnification = -1.0;
 
   String? vendor;
   String? notes;
@@ -86,18 +88,18 @@ class Ammo {
   @Index()
   String name = "";
 
-  double caliberInch = 0.0;
-  double weightGrain = 0.0;
-  double lengthInch = 0.0;
+  double caliberInch = -1.0;
+  double weightGrain = -1.0;
+  double lengthInch = -1.0;
 
   String dragTypeValue = "g1";
 
-  double bcG1 = 1.0;
-  double bcG7 = 1.0;
+  double bcG1 = -1.0;
+  double bcG7 = -1.0;
   bool useMultiBcG1 = false;
   bool useMultiBcG7 = false;
 
-  double? muzzleVelocityMps;
+  double muzzleVelocityMps = -1.0;
   double muzzleVelocityTemperatureC = 15.0;
 
   bool usePowderSensitivity = false;

@@ -43,14 +43,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   bool _nameTouched = false;
 
   late double _caliberRaw;
-  late double _weightRaw;
-  late double _lengthRaw;
+  double? _weightRaw;
+  double? _lengthRaw;
   late DragType _dragType;
   late bool _useMultiBcG1;
   late bool _useMultiBcG7;
-  late double _bcG1;
-  late double _bcG7;
-  late double _mvRaw;
+  double? _bcG1;
+  double? _bcG7;
+  double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
   late double _zeroLookAngleRaw;
@@ -77,23 +77,26 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _scheduleCaliberMismatchToast();
     _nameCtrl = TextEditingController(text: a?.name ?? '');
     _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
+    final caliberRaw = a != null && a.caliberInch > 0
+        ? a.caliber.in_(FC.projectileDiameter.rawUnit)
+        : null;
     _caliberRaw =
-        a?.caliber.in_(FC.projectileDiameter.rawUnit) ??
+        caliberRaw ??
         Distance.inch(
           widget.caliberInch ?? FC.projectileDiameter.minRaw,
         ).in_(FC.projectileDiameter.rawUnit);
-    _weightRaw =
-        a?.weight.in_(FC.projectileWeight.rawUnit) ??
-        FC.projectileWeight.minRaw;
-    _lengthRaw =
-        a?.length.in_(FC.projectileLength.rawUnit) ??
-        FC.projectileLength.minRaw;
+    _weightRaw = (a != null && a.weightGrain > 0)
+        ? a.weight.in_(FC.projectileWeight.rawUnit)
+        : null;
+    _lengthRaw = (a != null && a.lengthInch > 0)
+        ? a.length.in_(FC.projectileLength.rawUnit)
+        : null;
     _dragType = a?.dragType ?? DragType.g1;
     _useMultiBcG1 = a?.useMultiBcG1 ?? false;
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
-    _bcG1 = a?.bcG1 ?? 1.0;
-    _bcG7 = a?.bcG7 ?? 1.0;
-    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit) ?? 0.0;
+    _bcG1 = (a != null && a.bcG1 > 0) ? a.bcG1 : null;
+    _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
+    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
     _zeroLookAngleRaw = a?.zeroLookAngle.in_(FC.lookAngle.rawUnit) ?? 0.0;
@@ -158,7 +161,20 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_caliberRaw <= 0) return false;
+    if ((_weightRaw ?? 0) <= 0) return false;
+    if ((_lengthRaw ?? 0) <= 0) return false;
+    if ((_mvRaw ?? 0) <= 0) return false;
+    // BC: relevant for the current drag type must be positive
+    // (multi-BC mode bypasses single-BC field — allow save when table is set)
+    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0)
+      return false;
+    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0)
+      return false;
+    return true;
+  }
 
   void _validateName() {
     setState(() {
@@ -175,14 +191,20 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         ? null
         : _projectileNameCtrl.text.trim();
     ammo.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
-    ammo.weight = Weight(_weightRaw, FC.projectileWeight.rawUnit);
-    ammo.length = Distance(_lengthRaw, FC.projectileLength.rawUnit);
+    ammo.weightGrain = _weightRaw != null
+        ? Weight(_weightRaw!, FC.projectileWeight.rawUnit).in_(Unit.grain)
+        : -1.0;
+    ammo.lengthInch = _lengthRaw != null
+        ? Distance(_lengthRaw!, FC.projectileLength.rawUnit).in_(Unit.inch)
+        : -1.0;
     ammo.dragType = _dragType;
     ammo.useMultiBcG1 = _useMultiBcG1;
     ammo.useMultiBcG7 = _useMultiBcG7;
-    ammo.bcG1 = _bcG1;
-    ammo.bcG7 = _bcG7;
-    ammo.mv = Velocity(_mvRaw, FC.muzzleVelocity.rawUnit);
+    ammo.bcG1 = _bcG1 ?? -1.0;
+    ammo.bcG7 = _bcG7 ?? -1.0;
+    ammo.muzzleVelocityMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : -1.0;
     ammo.mvTemperature = Temperature(_mvTempRaw, FC.temperature.rawUnit);
 
     ammo.zeroDistance = Distance(_zeroDistRaw, FC.zeroDistance.rawUnit);
@@ -218,9 +240,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   List<Widget> _buildBcSection({
     required DragType dt,
     required bool useMulti,
-    required double bcRaw,
+    required double? bcRaw,
     required ValueChanged<bool> onMultiChanged,
-    required ValueChanged<double> onBcChanged,
+    required ValueChanged<double?> onBcChanged,
   }) {
     final dtName = dt.name.toUpperCase();
     return [
@@ -234,12 +256,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         dense: true,
       ),
       if (!useMulti)
-        UnitValueFieldTile(
+        NullableUnitValueFieldTile(
           title: 'Ballistic coefficient $dtName',
           rawValue: bcRaw,
           constraints: FC.ballisticCoefficient,
           displayUnit: Unit.fraction,
           icon: IconDef.dragModel,
+          isRequired: true,
           onChanged: (v) => setState(() => onBcChanged(v)),
         ),
       // TODO: there should be a route to multi-bc edit screen (form)
@@ -360,20 +383,22 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                       : '—',
                   icon: IconDef.caliber,
                 ),
-                UnitValueFieldTile(
+                NullableUnitValueFieldTile(
                   title: 'Weight',
                   rawValue: _weightRaw,
                   constraints: FC.projectileWeight,
                   displayUnit: units.weightUnit,
                   icon: IconDef.weigth,
+                  isRequired: true,
                   onChanged: (v) => setState(() => _weightRaw = v),
                 ),
-                UnitValueFieldTile(
+                NullableUnitValueFieldTile(
                   title: 'Length',
                   rawValue: _lengthRaw,
                   constraints: FC.projectileLength,
                   displayUnit: units.lengthUnit,
                   icon: IconDef.length,
+                  isRequired: true,
                   onChanged: (v) => setState(() => _lengthRaw = v),
                 ),
                 _buildDragModel(),
@@ -381,13 +406,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                 // ── Cartridge ──────────────────────────────────────────────
                 const Divider(height: 1),
                 const ListSectionTile('Cartridge'),
-                UnitValueFieldTile(
+                NullableUnitValueFieldTile(
                   title: 'Muzzle velocity',
                   subtitle: "Measured / Vendor provided",
                   rawValue: _mvRaw,
                   constraints: FC.muzzleVelocity,
                   displayUnit: units.velocityUnit,
                   icon: IconDef.velocity,
+                  isRequired: true,
                   onChanged: (v) => setState(() => _mvRaw = v),
                 ),
                 UnitValueFieldTile(
@@ -521,7 +547,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
             ),
           ),
           // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          _ActionBar(onDiscard: _onDiscard, onSave: _isValid ? _onSave : null),
         ],
       ),
     );

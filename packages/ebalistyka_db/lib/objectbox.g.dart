@@ -599,7 +599,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(6, 9008070843231077690),
     name: 'Sight',
-    lastPropertyId: const obx_int.IdUid(18, 245945662969613122),
+    lastPropertyId: const obx_int.IdUid(19, 7311475921948675322),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -699,6 +699,12 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(18, 245945662969613122),
         name: 'sightHorizontalOffsetInch',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(19, 7311475921948675322),
+        name: 'calibratedMagnification',
         type: 8,
         flags: 0,
       ),
@@ -927,7 +933,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(9, 1731139601222753801),
     name: 'Weapon',
-    lastPropertyId: const obx_int.IdUid(14, 1674882739474789598),
+    lastPropertyId: const obx_int.IdUid(15, 7306895034727410707),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -991,6 +997,12 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(14, 1674882739474789598),
         name: 'caliberName',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(15, 7306895034727410707),
+        name: 'notes',
         type: 9,
         flags: 0,
       ),
@@ -1421,10 +1433,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
             86,
             0,
           )
-          ..muzzleVelocityMps = const fb.Float64Reader().vTableGetNullable(
+          ..muzzleVelocityMps = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             88,
+            0,
           )
           ..muzzleVelocityTemperatureC = const fb.Float64Reader().vTableGet(
             buffer,
@@ -1955,7 +1968,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final imageOffset = object.image == null
             ? null
             : fbb.writeString(object.image!);
-        fbb.startTable(19);
+        fbb.startTable(20);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(2, focalPlaneValueOffset);
@@ -1972,6 +1985,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addInt64(15, object.owner.targetId);
         fbb.addFloat64(16, object.sightHeightInch);
         fbb.addFloat64(17, object.sightHorizontalOffsetInch);
+        fbb.addFloat64(18, object.calibratedMagnification);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2039,6 +2053,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             38,
+            0,
+          )
+          ..calibratedMagnification = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            40,
             0,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -2297,7 +2317,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
             ? null
             : fbb.writeString(object.image!);
         final caliberNameOffset = fbb.writeString(object.caliberName);
-        fbb.startTable(15);
+        final notesOffset = object.notes == null
+            ? null
+            : fbb.writeString(object.notes!);
+        fbb.startTable(16);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(5, vendorOffset);
@@ -2308,6 +2331,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(10, object.barrelLengthInch);
         fbb.addFloat64(12, object.zeroElevationRad);
         fbb.addOffset(13, caliberNameOffset);
+        fbb.addOffset(14, notesOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2338,10 +2362,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
             22,
             0,
           )
-          ..barrelLengthInch = const fb.Float64Reader().vTableGetNullable(
+          ..barrelLengthInch = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             24,
+            0,
           )
           ..zeroElevationRad = const fb.Float64Reader().vTableGet(
             buffer,
@@ -2351,7 +2376,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
           )
           ..caliberName = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 30, '');
+          ).vTableGet(buffer, rootOffset, 30, '')
+          ..notes = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGetNullable(buffer, rootOffset, 32);
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2985,6 +3013,11 @@ class Sight_ {
     _entities[5].properties[15],
   );
 
+  /// See [Sight.calibratedMagnification].
+  static final calibratedMagnification = obx.QueryDoubleProperty<Sight>(
+    _entities[5].properties[16],
+  );
+
   /// see [Sight.profiles]
   static final profiles = obx.QueryBacklinkToMany<Profile, Sight>(
     Profile_.sight,
@@ -3201,6 +3234,11 @@ class Weapon_ {
   /// See [Weapon.caliberName].
   static final caliberName = obx.QueryStringProperty<Weapon>(
     _entities[8].properties[9],
+  );
+
+  /// See [Weapon.notes].
+  static final notes = obx.QueryStringProperty<Weapon>(
+    _entities[8].properties[10],
   );
 }
 

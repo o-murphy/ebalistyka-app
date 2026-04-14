@@ -101,7 +101,11 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
   );
 }
 
-/// Тайл для опціонального значення (може бути null)
+/// Тайл для опціонального значення (може бути null).
+///
+/// [isRequired] — якщо `true` і значення `null`, тайл підсвічується кольором
+/// помилки (червоний icon + текст "Required"). Використовується для полів,
+/// які блокують збереження коли порожні.
 class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
   const NullableUnitValueFieldTile({
     super.key,
@@ -113,11 +117,16 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
     super.symbol,
     super.icon,
     super.subtitle,
+    this.isRequired = false,
   });
+
+  final bool isRequired;
+
+  bool get _isEmpty => rawValue == null;
 
   @override
   String _getDisplayText() {
-    if (rawValue == null) return '—';
+    if (_isEmpty) return isRequired ? 'Required' : '—';
 
     final helper = UnitConversionHelper(
       constraints: constraints,
@@ -128,13 +137,40 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
 
   @override
   TextStyle? _getDisplayTextStyle(ThemeData theme) {
-    if (rawValue == null) {
+    if (_isEmpty) {
       return theme.textTheme.bodyMedium?.copyWith(
         fontFamily: 'monospace',
-        color: theme.colorScheme.onSurfaceVariant,
+        color: isRequired
+            ? theme.colorScheme.error
+            : theme.colorScheme.onSurfaceVariant,
       );
     }
     return super._getDisplayTextStyle(theme);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final showError = isRequired && _isEmpty;
+
+    return ListTile(
+      tileColor: showError ? theme.colorScheme.tertiaryContainer : null,
+      leading: icon != null
+          ? Icon(icon, color: showError ? theme.colorScheme.tertiary : null)
+          : null,
+      title: Text(title),
+      subtitle: subtitle != null ? Text(subtitle!) : null,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_getDisplayText(), style: _getDisplayTextStyle(theme)),
+          const SizedBox(width: 8),
+          Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
+        ],
+      ),
+      onTap: () => _showDialog(context),
+      dense: true,
+    );
   }
 
   @override

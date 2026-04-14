@@ -27,7 +27,7 @@ extension AmmoExtension on Ammo {
   set weight(Weight v) => weightGrain = v.in_(Unit.grain);
 
   Velocity? get mv =>
-      muzzleVelocityMps != null ? Velocity.mps(muzzleVelocityMps!) : null;
+      muzzleVelocityMps >= 0 ? Velocity.mps(muzzleVelocityMps) : null;
   set mv(Velocity v) => muzzleVelocityMps = v.in_(Unit.mps);
 
   Temperature get mvTemperature =>
@@ -75,8 +75,7 @@ extension AmmoExtension on Ammo {
     DragType.custom => false,
   };
 
-  bool get isReadyForCalculation =>
-      muzzleVelocityMps != null && muzzleVelocityMps! > 0;
+  bool get isReadyForCalculation => muzzleVelocityMps > 0;
 
   bclibc.DragModel toDragModel() {
     switch (dragType) {

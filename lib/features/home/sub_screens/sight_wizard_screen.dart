@@ -92,7 +92,14 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_minMagRaw <= 0) return false;
+    if (_maxMagRaw <= 0) return false;
+    if (_vClickRaw <= 0) return false;
+    if (_hClickRaw <= 0) return false;
+    return true;
+  }
 
   void _validateName() {
     setState(() {
@@ -267,7 +274,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
             ),
           ),
           // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          _ActionBar(onDiscard: _onDiscard, onSave: _isValid ? _onSave : null),
         ],
       ),
     );

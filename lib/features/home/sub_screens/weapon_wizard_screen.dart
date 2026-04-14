@@ -51,7 +51,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
     super.initState();
     final w = widget.initial;
     _nameCtrl = TextEditingController(text: w?.name ?? '');
-    _caliberRaw = w != null
+    _caliberRaw = (w != null && w.caliberInch > 0)
         ? w.caliber.in_(FC.projectileDiameter.rawUnit)
         : Distance.inch(0.338).in_(FC.projectileDiameter.rawUnit);
     final twistAbs = w?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
@@ -73,7 +73,12 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_caliberRaw <= 0) return false;
+    if (_twistRaw <= 0) return false;
+    return true;
+  }
 
   void _validateName() {
     setState(() {
@@ -208,7 +213,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
             ),
           ),
           // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          _ActionBar(onDiscard: _onDiscard, onSave: _isValid ? _onSave : null),
         ],
       ),
     );

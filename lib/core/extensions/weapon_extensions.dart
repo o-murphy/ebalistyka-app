@@ -14,12 +14,11 @@ extension WeaponExtension on Weapon {
   Angular get zeroElevation => Angular.radian(zeroElevationRad);
   set zeroElevation(Angular value) => zeroElevationRad = value.in_(Unit.radian);
 
-  Distance? get barrelLength {
-    final v = barrelLengthInch;
-    return v == null ? null : Distance.inch(v);
-  }
+  Distance? get barrelLength =>
+      barrelLengthInch >= 0 ? Distance.inch(barrelLengthInch) : null;
 
-  set barrelLength(Distance? value) => barrelLengthInch = value?.in_(Unit.inch);
+  set barrelLength(Distance? value) =>
+      barrelLengthInch = value?.in_(Unit.inch) ?? -1.0;
 
   bclibc.Weapon toWeapon(Distance sightHeight) => bclibc.Weapon(
     sightHeight: sightHeight,
