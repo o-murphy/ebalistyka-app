@@ -34,7 +34,7 @@ class TablesScreen extends ConsumerWidget {
                   ),
                 IconButton(
                   icon: const Icon(Icons.share_outlined),
-                  onPressed: () => _onShare(ref),
+                  onPressed: () => _onShare(context, ref),
                   tooltip: 'Share',
                 ),
               ],
@@ -53,10 +53,19 @@ class TablesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _onShare(WidgetRef ref) async {
+  Future<void> _onShare(BuildContext context, WidgetRef ref) async {
     final vmState = ref.read(trajectoryTablesVmProvider).value;
     if (vmState is! TrajectoryTablesUiReady) return;
     final details = ref.read(detailsTableMvProvider);
-    await TableHtmlExporter.share(details: details, tables: vmState);
+
+    // Визначаємо, чи використовується темна тема в додатку
+    final brightness = Theme.of(context).brightness;
+    final isDarkMode = brightness == Brightness.dark;
+
+    await TableHtmlExporter.share(
+      details: details,
+      tables: vmState,
+      darkMode: isDarkMode,
+    );
   }
 }

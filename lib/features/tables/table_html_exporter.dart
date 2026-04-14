@@ -16,8 +16,13 @@ class TableHtmlExporter {
   static Future<void> share({
     required DetailsTableData? details,
     required TrajectoryTablesUiReady tables,
+    bool darkMode = false,
   }) async {
-    final html = _buildHtml(details: details, tables: tables);
+    final html = _buildHtml(
+      details: details,
+      tables: tables,
+      darkMode: darkMode,
+    );
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/trajectory_table.html');
     await file.writeAsString(html, flush: true);
@@ -49,6 +54,7 @@ class TableHtmlExporter {
   static String _buildHtml({
     required DetailsTableData? details,
     required TrajectoryTablesUiReady tables,
+    required bool darkMode,
   }) {
     final title = details != null
         ? '${_esc(details.weaponName)} — Trajectory'
@@ -63,16 +69,17 @@ class TableHtmlExporter {
       )
       ..writeln('<title>$title</title>')
       ..writeln('<style>')
-      ..writeln(_css)
+      ..writeln(_getCss(darkMode))
       ..writeln('</style>')
       ..writeln('<script>')
       ..writeln(_js)
       ..writeln('</script>')
       ..writeln('</head>')
-      ..writeln('<body>')
+      ..writeln('<body${darkMode ? ' class="dark"' : ''}>')
       ..writeln('<div class="toolbar" id="toolbar">')
       ..writeln('  <span class="toolbar-title">${_esc(title)}</span>')
       ..writeln('  <div class="toolbar-actions">')
+      ..writeln('    <button onclick="toggleTheme()">🌓 Theme</button>')
       ..writeln('    <button onclick="saveHtml()">Save</button>')
       ..writeln('    <button onclick="window.print()">Print</button>')
       ..writeln('  </div>')
@@ -221,81 +228,165 @@ class TableHtmlExporter {
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;');
 
-  // ── CSS ───────────────────────────────────────────────────────────────────
+  // ── CSS with theme support ─────────────────────────────────────────────────
 
-  static const _css = r'''
+  static String _getCss(bool darkMode) => '''
+    :root {
+      /* Light theme (default) */
+      --bg-body: #f2f2f7;
+      --bg-card: #ffffff;
+      --bg-toolbar: rgba(242,242,247,.85);
+      --border-color: #e5e5ea;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --text-tertiary: #8e8e93;
+      --header-bg: #f2f2f7;
+      --row-alt-bg: #fafafa;
+      --zero-bg: #fff0f0;
+      --zero-color: #c0392b;
+      --subsonic-bg: #f0eeff;
+      --subsonic-color: #5856d6;
+      --target-bg: #e8f4ff;
+      --target-color: #0071e3;
+      --toolbar-blur: blur(12px);
+    }
+
+    body.dark {
+      --bg-body: #000000;
+      --bg-card: #1c1c1e;
+      --bg-toolbar: rgba(28,28,30,.85);
+      --border-color: #38383a;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+      --text-tertiary: #636366;
+      --header-bg: #1c1c1e;
+      --row-alt-bg: #2c2c2e;
+      --zero-bg: #3a1c1c;
+      --zero-color: #ff6b6b;
+      --subsonic-bg: #2a1f3d;
+      --subsonic-color: #9b9bff;
+      --target-bg: #1a3445;
+      --target-color: #4da8ff;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 13px; line-height: 1.5; color: #1c1c1e; background: #f2f2f7;
+      font-size: 13px; line-height: 1.5; 
+      color: var(--text-primary); 
+      background: var(--bg-body);
       padding: 16px; padding-top: 60px;
+      transition: background 0.2s ease, color 0.2s ease;
     }
+    
     .toolbar {
       position: fixed; top: 0; left: 0; right: 0; height: 44px; z-index: 100;
-      background: rgba(242,242,247,.85); backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e5e5ea;
+      background: var(--bg-toolbar); backdrop-filter: var(--toolbar-blur);
+      border-bottom: 1px solid var(--border-color);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 16px; gap: 12px;
     }
+    
     .toolbar-title { font-weight: 600; font-size: 14px; overflow: hidden;
                      text-overflow: ellipsis; white-space: nowrap; }
+    
     .toolbar-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    
     .toolbar button {
       font-size: 13px; font-family: inherit; cursor: pointer;
-      padding: 0; border: none; background: none;
-      color: #0071e3; font-weight: 500; text-decoration: underline;
+      padding: 6px 12px; border: 1px solid var(--border-color);
+      background: var(--bg-card); border-radius: 6px;
+      color: var(--text-primary); font-weight: 500;
+      transition: all 0.2s ease;
     }
-    .toolbar button:hover { color: #0077ed; }
+    
+    .toolbar button:hover { 
+      opacity: 0.8;
+      transform: translateY(-1px);
+    }
+    
     @media print {
       .toolbar { display: none; }
-      body { padding-top: 16px; background: #fff; }
+      body { padding-top: 16px; background: #fff; color: #000; }
+      body.dark { background: #fff; color: #000; }
+      .card, .traj { background: #fff; border: 1px solid #ddd; }
     }
+    
     h1 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    
     h2 {
       font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.7px; color: #636366; margin-bottom: 6px;
+      letter-spacing: 0.7px; color: var(--text-secondary); margin-bottom: 6px;
     }
+    
     section { margin-bottom: 20px; }
 
     /* Details cards */
     .details { display: flex; flex-wrap: wrap; gap: 12px; }
     .details h1 { flex: 0 0 100%; }
+    
     .card {
-      background: #fff; border-radius: 10px; padding: 12px 14px;
+      background: var(--bg-card); border-radius: 10px; padding: 12px 14px;
       flex: 1 1 180px; box-shadow: 0 1px 3px rgba(0,0,0,.07);
+      border: 1px solid var(--border-color);
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
+    
     table.info { width: 100%; border-collapse: collapse; }
     table.info td { padding: 3px 0; vertical-align: top; }
-    td.lbl { color: #636366; padding-right: 12px; white-space: nowrap; }
+    td.lbl { color: var(--text-secondary); padding-right: 12px; white-space: nowrap; }
     td.val { font-weight: 500; font-variant-numeric: tabular-nums; }
 
     /* Trajectory table */
-    .traj { background: #fff; border-radius: 10px; padding: 12px 14px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .traj { background: var(--bg-card); border-radius: 10px; padding: 12px 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.07); border: 1px solid var(--border-color); }
     .scroll { overflow-x: auto; }
+    
     table.traj-tbl {
       border-collapse: collapse; font-size: 12px;
       font-variant-numeric: tabular-nums; white-space: nowrap;
       width: 100%; min-width: max-content;
     }
+    
     table.traj-tbl th, table.traj-tbl td {
-      border: 1px solid #e5e5ea; padding: 4px 10px; text-align: right;
+      border: 1px solid var(--border-color); padding: 4px 10px; text-align: right;
     }
+    
     table.traj-tbl th {
-      background: #f2f2f7; font-size: 11px; font-weight: 600;
+      background: var(--header-bg); font-size: 11px; font-weight: 600;
       text-align: center; position: sticky; top: 0;
     }
-    .unit { font-weight: 400; color: #8e8e93; }
-    td.rng { text-align: center; font-weight: 600; background: #f2f2f7; }
-    tr:nth-child(even) td { background: #fafafa; }
-    tr.zero    td { background: #fff0f0 !important; color: #c0392b; font-weight: 600; }
-    tr.subsonic td { background: #f0eeff !important; color: #5856d6; font-weight: 600; }
-    tr.target  td { background: #e8f4ff !important; color: #0071e3; font-weight: 600; }
+    
+    .unit { font-weight: 400; color: var(--text-tertiary); }
+    td.rng { text-align: center; font-weight: 600; background: var(--header-bg); }
+    tr:nth-child(even) td { background: var(--row-alt-bg); }
+    
+    tr.zero    td { background: var(--zero-bg) !important; color: var(--zero-color); font-weight: 600; }
+    tr.subsonic td { background: var(--subsonic-bg) !important; color: var(--subsonic-color); font-weight: 600; }
+    tr.target  td { background: var(--target-bg) !important; color: var(--target-color); font-weight: 600; }
   ''';
 
-  // ── JS ────────────────────────────────────────────────────────────────────
+  // ── JS with theme toggle ───────────────────────────────────────────────────
 
   static const _js = r'''
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        localStorage.setItem('trajTheme', 'light');
+      } else {
+        body.classList.add('dark');
+        localStorage.setItem('trajTheme', 'dark');
+      }
+    }
+    
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('trajTheme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+    }
+    
     function saveHtml() {
       const html = document.documentElement.outerHTML;
       const blob = new Blob([html], { type: 'text/html' });
