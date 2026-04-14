@@ -6,19 +6,4 @@ export 'sight_wizard_screen.dart';
 export 'ammo_wizard_screen.dart';
 export 'sight_collection_screen.dart';
 export 'weapon_collection_screen.dart';
-
-import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
-import 'package:flutter/material.dart';
-
-// ── Ammo ──────────────────────────────────────────────────────────────────────
-
-/// Shared collection screen for both cartridges and bullets.
-/// [filterBullet] — true → show bullets only, false → show cartridges only.
-class AmmoCollectionScreen extends StatelessWidget {
-  const AmmoCollectionScreen({required this.filterBullet, super.key});
-  final bool filterBullet;
-  @override
-  Widget build(BuildContext context) => StubScreen(
-    title: filterBullet ? 'Bullet Collection' : 'Cartridge Collection',
-  );
-}
+export 'ammo_collection_screen.dart';

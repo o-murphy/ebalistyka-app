@@ -34,8 +34,9 @@ sealed class HomeUiState {
 
 class HomeUiReady extends HomeUiState {
   // Top block
-  final String rifleName;
-  final String cartridgeName;
+  final String profileName;
+  final String weaponName;
+  final String ammoName;
   final double windAngleDeg;
 
   // Info tiles
@@ -66,8 +67,9 @@ class HomeUiReady extends HomeUiState {
   final int? selectedChartIndex;
 
   const HomeUiReady({
-    required this.rifleName,
-    required this.cartridgeName,
+    required this.profileName,
+    required this.weaponName,
+    required this.ammoName,
     required this.windAngleDeg,
     required this.tempDisplay,
     required this.altDisplay,
@@ -204,8 +206,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final info = _buildPointInfo(point, formatter);
     state = AsyncData(
       HomeUiReady(
-        rifleName: current.rifleName,
-        cartridgeName: current.cartridgeName,
+        profileName: current.profileName,
+        weaponName: current.weaponName,
+        ammoName: current.ammoName,
         windAngleDeg: current.windAngleDeg,
         tempDisplay: current.tempDisplay,
         altDisplay: current.altDisplay,
@@ -299,8 +302,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         : null;
 
     return HomeUiReady(
-      rifleName: profile.weapon.target?.name ?? '',
-      cartridgeName: profile.ammo.target?.name ?? '',
+      profileName: profile.name,
+      weaponName: profile.weapon.target?.name ?? '',
+      ammoName: profile.ammo.target?.name ?? '',
       windAngleDeg: windDirDeg,
       tempDisplay: tempStr,
       altDisplay: altStr,

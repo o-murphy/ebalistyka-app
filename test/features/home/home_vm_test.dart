@@ -235,8 +235,8 @@ void main() {
     tearDown(() => container.dispose());
 
     test('rifle and cartridge names are set', () {
-      expect(state.rifleName, 'Test Rifle');
-      expect(state.cartridgeName, 'Test .308');
+      expect(state.weaponName, 'Test Rifle');
+      expect(state.ammoName, 'Test .308');
     });
 
     test('wind angle is set from conditions', () {
