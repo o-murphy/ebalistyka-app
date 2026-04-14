@@ -113,7 +113,10 @@ class MyAmmoScreen extends ConsumerWidget {
                   onEdit: () async {
                     final result = await context.push<Ammo?>(
                       Routes.profileEditAmmo,
-                      extra: item,
+                      extra: (
+                        item,
+                        item.caliberInch > 0 ? item.caliberInch : null,
+                      ),
                     );
                     if (result != null && context.mounted) {
                       await ref

@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,6 +93,13 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     if (profile.ammo.target == null) {
       state = const AsyncData(
         TrajectoryTablesUiEmpty(type: EmptyStateType.noAmmo),
+      );
+      return;
+    }
+
+    if (!profile.isReadyForCalculation) {
+      state = const AsyncData(
+        TrajectoryTablesUiEmpty(type: EmptyStateType.incompleteAmmo),
       );
       return;
     }

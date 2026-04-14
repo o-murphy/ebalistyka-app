@@ -75,7 +75,21 @@ extension AmmoExtension on Ammo {
     DragType.custom => false,
   };
 
-  bool get isReadyForCalculation => muzzleVelocityMps > 0;
+  bool get isReadyForCalculation {
+    if (muzzleVelocityMps <= 0) return false;
+    if (caliberInch <= 0) return false;
+    if (weightGrain <= 0) return false;
+    if (lengthInch <= 0) return false;
+    switch (dragType) {
+      case DragType.g1:
+        if (!useMultiBcG1 && bcG1 <= 0) return false;
+      case DragType.g7:
+        if (!useMultiBcG7 && bcG7 <= 0) return false;
+      case DragType.custom:
+        break;
+    }
+    return true;
+  }
 
   bclibc.DragModel toDragModel() {
     switch (dragType) {

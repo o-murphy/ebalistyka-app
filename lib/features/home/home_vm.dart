@@ -152,6 +152,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       return;
     }
 
+    if (!profile.isReadyForCalculation) {
+      state = const AsyncData(
+        HomeUiNoData(type: EmptyStateType.incompleteAmmo),
+      );
+      return;
+    }
+
     if (state.value is! HomeUiReady) {
       state = const AsyncLoading<HomeUiState>();
     }
