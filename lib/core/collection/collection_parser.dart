@@ -208,7 +208,8 @@ abstract final class CollectionParser {
   // ── Sight ──────────────────────────────────────────────────────────────────
 
   static Sight _parseSight(Map<String, dynamic> j) {
-    final click = (j['horizontalClick'] as num? ?? 0.1).toDouble();
+    final clickY = (j['verticalClick'] as num? ?? 0.1).toDouble();
+    final clickX = (j['horizontalClick'] as num? ?? 0.1).toDouble();
     final calibMag = j['calibratedMagnification'] as num?;
     return Sight()
       ..id = j['id'] as int? ?? 0
@@ -220,8 +221,8 @@ abstract final class CollectionParser {
       ..sightHeightInch = (j['sightHeightInch'] as num? ?? 0.0).toDouble()
       ..sightHorizontalOffsetInch =
           (j['sightHorizontalOffsetInch'] as num? ?? 0.0).toDouble()
-      ..verticalClick = click
-      ..horizontalClick = click
+      ..verticalClick = clickY
+      ..horizontalClick = clickX
       ..verticalClickUnit = j['verticalClickUnit'] as String? ?? 'mil'
       ..horizontalClickUnit = j['horizontalClickUnit'] as String? ?? 'mil'
       ..minMagnification = (j['minMagnification'] as num? ?? 0.0).toDouble()
