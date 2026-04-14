@@ -30,7 +30,9 @@ class SightCollectionScreen extends ConsumerWidget {
                   body: CollectionSightTileBody(sight: sight),
                   item: SightCollectionItem(ref: sight),
                   onSelect: () async {
-                    await ref.read(appStateProvider.notifier).saveSight(sight);
+                    await ref
+                        .read(appStateProvider.notifier)
+                        .saveSight(sight.clone());
                     if (context.mounted) context.pop();
                   },
                 ),

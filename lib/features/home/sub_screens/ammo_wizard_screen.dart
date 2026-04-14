@@ -169,10 +169,12 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     if ((_mvRaw ?? 0) <= 0) return false;
     // BC: relevant for the current drag type must be positive
     // (multi-BC mode bypasses single-BC field — allow save when table is set)
-    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0)
+    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0) {
       return false;
-    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0)
+    }
+    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0) {
       return false;
+    }
     return true;
   }
 
