@@ -191,7 +191,6 @@ class BallisticsServiceImpl implements BallisticsService {
       sight?.sightHeightInch ?? 0.0,
       weapon?.twistInch ?? 0.0,
       ammo.muzzleVelocityMps ?? 0.0,
-      ammo.powderTemperatureC,
       ammo.powderSensitivityFrac,
       firstBc,
       ammo.weightGrain,

@@ -79,7 +79,7 @@ void main() {
         ..dragTypeValue = 'g7'
         ..bcG7 = 0.475
         ..muzzleVelocityMps = 800.0
-        ..powderTemperatureC = 15.0;
+        ..muzzleVelocityTemperatureC = 15.0;
 
       final id = store.box<Ammo>().put(ammo);
       final found = store.box<Ammo>().get(id)!;

@@ -105,14 +105,10 @@ abstract final class CollectionParser {
       ..mvTemperature = Temperature.celsius(
         (j['muzzleVelocityTemperature'] as num? ?? 15.0).toDouble(),
       )
-      ..powderTemp = Temperature.celsius(
-        (j['powderTemperature'] as num? ?? 15.0).toDouble(),
-      )
       ..powderSensitivity = Ratio.fraction(
         (j['powderSensitivity'] as num? ?? 0.0).toDouble(),
       )
       ..usePowderSensitivity = j['usePowderSensitivity'] as bool? ?? false
-      ..usePowderTempForMv = j['usePowderTempForMv'] as bool? ?? false
       ..useMultiBcG1 = useMultiG1
       ..useMultiBcG7 = useMultiG7;
 

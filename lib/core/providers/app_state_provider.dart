@@ -186,7 +186,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           ..length = Distance.inch(1.555)
           ..bcG7 = 0.314
           ..mv = Velocity.mps(888.0)
-          ..powderTemp = Temperature.celsius(29.0)
+          ..mvTemperature = Temperature.celsius(29.0)
           ..powderSensitivity = Ratio.fraction(0.02)
           ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
@@ -198,7 +198,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           ..length = Distance.inch(1.567)
           ..bcG7 = 0.322
           ..mv = Velocity.mps(885.0)
-          ..powderTemp = Temperature.celsius(15.0)
+          ..mvTemperature = Temperature.celsius(15.0)
           ..powderSensitivity = Ratio.fraction(0.02)
           ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
@@ -210,7 +210,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           ..length = Distance.inch(1.700)
           ..bcG7 = 0.381
           ..mv = Velocity.mps(825.0)
-          ..powderTemp = Temperature.celsius(15.0)
+          ..mvTemperature = Temperature.celsius(15.0)
           ..powderSensitivity = Ratio.fraction(0.123)
           ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
@@ -269,10 +269,8 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       ..useMultiBcG7 = original.useMultiBcG7
       ..muzzleVelocityMps = original.muzzleVelocityMps
       ..muzzleVelocityTemperatureC = original.muzzleVelocityTemperatureC
-      ..powderTemperatureC = original.powderTemperatureC
       ..powderSensitivityFrac = original.powderSensitivityFrac
       ..usePowderSensitivity = original.usePowderSensitivity
-      ..usePowderTempForMv = original.usePowderTempForMv
       ..powderSensitivityTC = original.powderSensitivityTC != null
           ? Float64List.fromList(original.powderSensitivityTC!)
           : null

@@ -38,8 +38,7 @@ Profile _makeProfile() {
     ..caliberInch = 0.308
     ..lengthInch = 1.22
     ..muzzleVelocityMps = 800.0
-    ..muzzleVelocityTemperatureC = 15.0
-    ..powderTemperatureC = 15.0;
+    ..muzzleVelocityTemperatureC = 15.0;
 
   final profile = Profile()..name = 'Test Shot';
   profile.weapon.target = weapon;

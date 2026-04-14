@@ -10,7 +10,7 @@ import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,6 +46,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late bool _useMultiBcG7;
   late double _bcG1;
   late double _bcG7;
+  late double _mvRaw;
 
   @override
   void initState() {
@@ -64,6 +65,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
     _bcG1 = a?.bcG1 ?? 1.0;
     _bcG7 = a?.bcG7 ?? 1.0;
+    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit) ?? 0.0;
   }
 
   @override
@@ -95,6 +97,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.useMultiBcG7 = _useMultiBcG7;
     ammo.bcG1 = _bcG1;
     ammo.bcG7 = _bcG7;
+    ammo.mv = Velocity(_mvRaw, FC.muzzleVelocity.rawUnit);
     return ammo;
   }
 
@@ -237,7 +240,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                     onEditingComplete: _validateName,
                   ),
                 ),
-                // ── Mounting ──────────────────────────────────────────────
+                // ── Projectile ──────────────────────────────────────────────
                 const Divider(height: 1),
                 const ListSectionTile('Projectile'),
                 InfoListTile(
@@ -266,6 +269,17 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                   onChanged: (v) => setState(() => _lengthRaw = v),
                 ),
                 _buildDragModel(),
+                // ── Cartridge ──────────────────────────────────────────────
+                const Divider(height: 1),
+                const ListSectionTile('Cartridge'),
+                UnitValueFieldTile(
+                  label: 'Muzzle velocity',
+                  rawValue: _mvRaw,
+                  constraints: FC.muzzleVelocity,
+                  displayUnit: units.velocityUnit,
+                  icon: IconDef.velocity,
+                  onChanged: (v) => setState(() => _mvRaw = v),
+                ),
               ],
             ),
           ),

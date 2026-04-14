@@ -28,7 +28,7 @@ Ammo _makeAmmo({
   ..lengthInch = 1.220
   ..bcG7 = 0.475
   ..muzzleVelocityMps = muzzleVelocityMps
-  ..powderTemperatureC = 15.0
+  ..muzzleVelocityTemperatureC = 15.0
   ..powderSensitivityFrac = powderSensitivityFrac
   ..usePowderSensitivity = usePowderSensitivity
   ..zeroDistanceMeter = zeroDistanceMeter
