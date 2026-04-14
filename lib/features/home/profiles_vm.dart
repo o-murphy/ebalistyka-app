@@ -66,11 +66,13 @@ class ProfileCardData {
   const ProfileCardData({
     required this.id,
     required this.name,
+    required this.weaponFingerprint,
     required this.weaponName,
     required this.weaponCaliber,
     required this.twist,
     required this.rightHanded,
     this.ammoId,
+    required this.ammoFingerprint,
     required this.ammoCaliber,
     required this.cartridgeName,
     required this.projectileName,
@@ -78,6 +80,7 @@ class ProfileCardData {
     required this.muzzleVelocity,
     required this.weight,
     this.sightId,
+    required this.sightFingerprint,
     required this.sightName,
     required this.sightHeight,
     required this.focalPlane,
@@ -88,18 +91,29 @@ class ProfileCardData {
 
   final String id;
   final String name;
+
+  /// Hash of all weapon entity fields. Triggers card rebuild on any weapon edit.
+  final int weaponFingerprint;
   final String weaponName;
   final String weaponCaliber;
   final String twist;
   final bool rightHanded;
+
   final int? ammoId;
+
+  /// Hash of all ammo fields. Triggers card rebuild on any ammo edit.
+  final int ammoFingerprint;
   final String ammoCaliber;
   final String cartridgeName;
   final String projectileName;
   final String dragModel;
   final String muzzleVelocity;
   final String weight;
+
   final int? sightId;
+
+  /// Hash of all sight entity fields. Triggers card rebuild on any sight edit.
+  final int sightFingerprint;
   final String sightName;
   final String sightHeight;
   final FocalPlane focalPlane;
@@ -112,49 +126,23 @@ class ProfileCardData {
     if (other is! ProfileCardData) return false;
     return id == other.id &&
         name == other.name &&
-        weaponName == other.weaponName &&
-        weaponCaliber == other.weaponCaliber &&
-        twist == other.twist &&
-        rightHanded == other.rightHanded &&
+        weaponFingerprint == other.weaponFingerprint &&
         ammoId == other.ammoId &&
-        ammoCaliber == other.ammoCaliber &&
-        cartridgeName == other.cartridgeName &&
-        projectileName == other.projectileName &&
-        dragModel == other.dragModel &&
-        muzzleVelocity == other.muzzleVelocity &&
-        weight == other.weight &&
+        ammoFingerprint == other.ammoFingerprint &&
         sightId == other.sightId &&
-        sightName == other.sightName &&
-        sightHeight == other.sightHeight &&
-        focalPlane == other.focalPlane &&
-        magnification == other.magnification &&
-        verticalClick == other.verticalClick &&
-        horizontalClick == other.horizontalClick;
+        sightFingerprint == other.sightFingerprint;
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hash(
     id,
     name,
-    weaponName,
-    weaponCaliber,
-    twist,
-    rightHanded,
+    weaponFingerprint,
     ammoId,
-    ammoCaliber,
-    cartridgeName,
-    projectileName,
-    dragModel,
-    muzzleVelocity,
-    weight,
+    ammoFingerprint,
     sightId,
-    sightName,
-    sightHeight,
-    focalPlane,
-    magnification,
-    verticalClick,
-    horizontalClick,
-  ]);
+    sightFingerprint,
+  );
 }
 
 final profileCardProvider = Provider.autoDispose
@@ -192,6 +180,7 @@ ProfileCardData _buildCardData(
   return ProfileCardData(
     id: profile.id.toString(),
     name: profile.name,
+    weaponFingerprint: _weaponFingerprint(weapon),
     weaponName: weapon?.name ?? '—',
     weaponCaliber: weapon != null ? formatter.diameter(weapon.caliber) : '—',
     twist: weapon != null && weapon.twistInch.abs() > 0
@@ -199,6 +188,7 @@ ProfileCardData _buildCardData(
         : '—',
     rightHanded: weapon?.isRightHandTwist ?? true,
     ammoId: ammo?.id,
+    ammoFingerprint: _ammoFingerprint(ammo),
     ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
     cartridgeName: ammo?.name ?? '—',
     projectileName: ammo?.projectileName ?? '—',
@@ -208,6 +198,7 @@ ProfileCardData _buildCardData(
         : '—',
     weight: ammo != null ? formatter.weight(ammo.weight) : '—',
     sightId: sight?.id,
+    sightFingerprint: _sightFingerprint(sight),
     sightName: sight?.name ?? 'Not selected',
     sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
     focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
@@ -224,6 +215,68 @@ ProfileCardData _buildCardData(
         ? formatter.click(sight.horizontalClick, sight.horizontalClickUnitValue)
         : '—',
   );
+}
+
+int _weaponFingerprint(Weapon? w) {
+  if (w == null) return 0;
+  return Object.hashAll([
+    w.name,
+    w.caliberInch,
+    w.caliberName,
+    w.twistInch,
+    w.barrelLengthInch,
+    w.zeroElevationRad,
+    w.vendor,
+  ]);
+}
+
+int _ammoFingerprint(Ammo? a) {
+  if (a == null) return 0;
+  return Object.hashAll([
+    a.name,
+    a.caliberInch,
+    a.weightGrain,
+    a.lengthInch,
+    a.projectileName,
+    a.vendor,
+    a.muzzleVelocityMps,
+    a.muzzleVelocityTemperatureC,
+    a.usePowderSensitivity,
+    a.powderSensitivityFrac,
+    a.zeroDistanceMeter,
+    a.zeroTemperatureC,
+    a.zeroPressurehPa,
+    a.zeroHumidityFrac,
+    a.zeroAltitudeMeter,
+    a.zeroPowderTemperatureC,
+    a.zeroUseDiffPowderTemperature,
+    a.zeroLookAngleRad,
+    a.zeroUseCoriolis,
+    a.zeroLatitudeDeg,
+    a.zeroAzimuthDeg,
+    a.bcG1,
+    a.bcG7,
+    a.dragTypeValue,
+    a.useMultiBcG1,
+    a.useMultiBcG7,
+  ]);
+}
+
+int _sightFingerprint(Sight? s) {
+  if (s == null) return 0;
+  return Object.hashAll([
+    s.name,
+    s.focalPlaneValue,
+    s.sightHeightInch,
+    s.sightHorizontalOffsetInch,
+    s.verticalClick,
+    s.horizontalClick,
+    s.verticalClickUnit,
+    s.horizontalClickUnit,
+    s.minMagnification,
+    s.maxMagnification,
+    s.vendor,
+  ]);
 }
 
 // ── Profile actions ───────────────────────────────────────────────────────────

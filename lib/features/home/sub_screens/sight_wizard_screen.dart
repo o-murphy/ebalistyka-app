@@ -175,7 +175,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                 const Divider(height: 1),
                 const ListSectionTile('Mounting'),
                 UnitValueFieldTile(
-                  label: 'Sight height',
+                  title: 'Sight height',
                   rawValue: _sightHeightRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
@@ -183,7 +183,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   onChanged: (v) => setState(() => _sightHeightRaw = v),
                 ),
                 UnitValueFieldTile(
-                  label: 'Horizontal offset',
+                  title: 'Horizontal offset',
                   rawValue: _horizontalOffsetRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
@@ -219,7 +219,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   ),
                 ),
                 UnitValueFieldTile(
-                  label: 'Min magnification',
+                  title: 'Min magnification',
                   rawValue: _minMagRaw,
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
@@ -228,7 +228,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   onChanged: (v) => setState(() => _minMagRaw = v),
                 ),
                 UnitValueFieldTile(
-                  label: 'Max magnification',
+                  title: 'Max magnification',
                   rawValue: _maxMagRaw,
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
@@ -294,7 +294,7 @@ class _SightPlaceholder extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
-        height: 120,
+        height: 160,
         child: Card(
           child: Center(
             child: Column(

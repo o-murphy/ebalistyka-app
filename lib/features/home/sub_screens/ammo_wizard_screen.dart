@@ -6,8 +6,10 @@ import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -34,6 +36,7 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
 
 class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _projectileNameCtrl;
 
   String? _nameError;
   bool _nameTouched = false;
@@ -47,12 +50,31 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late double _bcG1;
   late double _bcG7;
   late double _mvRaw;
+  late double _mvTempRaw;
+  late double _zeroDistRaw;
+  late double _zeroLookAngleRaw;
+  late double _zeroTempRaw;
+  late double _zeroAltRaw;
+  late double _zeroPressureRaw;
+  late double _zeroHumidityRaw;
+  late bool _usePowderSensitivity;
+  late double _powderSensRaw;
+  late bool _zeroUseDiffPowderTemp;
+  late double _zeroPowderTempRaw;
+  late bool _zeroUseCoriolis;
+  late double _zeroLatitudeRaw;
+  late double _zeroAzimuthRaw;
+
+  final _scrollController = ScrollController();
+  final _powderSensKey = GlobalKey();
+  final _coriolisKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     final a = widget.initial;
     _nameCtrl = TextEditingController(text: a?.name ?? '');
+    _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
     _caliberRaw =
         a?.caliber.in_(FC.projectileDiameter.rawUnit) ??
         Distance.inch(
@@ -66,12 +88,41 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _bcG1 = a?.bcG1 ?? 1.0;
     _bcG7 = a?.bcG7 ?? 1.0;
     _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit) ?? 0.0;
+    _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
+    _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
+    _zeroLookAngleRaw = a?.zeroLookAngle.in_(FC.lookAngle.rawUnit) ?? 0.0;
+    _zeroTempRaw = a?.zeroTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
+    _zeroAltRaw = a?.zeroAltitude.in_(FC.altitude.rawUnit) ?? 0.0;
+    _zeroPressureRaw = a?.zeroPressure.in_(FC.pressure.rawUnit) ?? 0.0;
+    _zeroHumidityRaw = a?.zeroHumidityFrac ?? 0.0;
+    _usePowderSensitivity = a?.usePowderSensitivity ?? false;
+    _powderSensRaw = a?.powderSensitivityFrac ?? 0.0;
+    _zeroUseDiffPowderTemp = a?.zeroUseDiffPowderTemperature ?? false;
+    _zeroPowderTempRaw = a?.zeroPowderTemp.in_(FC.temperature.rawUnit) ?? 15.0;
+    _zeroUseCoriolis = a?.zeroUseCoriolis ?? false;
+    _zeroLatitudeRaw = a?.zeroLatitudeDeg ?? 0.0;
+    _zeroAzimuthRaw = a?.zeroAzimuthDeg ?? 0.0;
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _projectileNameCtrl.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollTo(GlobalKey key) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = key.currentContext;
+      if (ctx != null) {
+        Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   // ── Validation ────────────────────────────────────────────────────────────
@@ -89,6 +140,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   Ammo _buildAmmo() {
     final ammo = widget.initial ?? Ammo();
     ammo.name = _nameCtrl.text.trim();
+    ammo.projectileName = _projectileNameCtrl.text.trim().isEmpty
+        ? null
+        : _projectileNameCtrl.text.trim();
     ammo.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
     ammo.weight = Weight(_weightRaw, FC.projectileWeight.rawUnit);
     ammo.length = Distance(_lengthRaw, FC.projectileLength.rawUnit);
@@ -98,6 +152,24 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.bcG1 = _bcG1;
     ammo.bcG7 = _bcG7;
     ammo.mv = Velocity(_mvRaw, FC.muzzleVelocity.rawUnit);
+    ammo.mvTemperature = Temperature(_mvTempRaw, FC.temperature.rawUnit);
+
+    ammo.zeroDistance = Distance(_zeroDistRaw, FC.zeroDistance.rawUnit);
+    ammo.zeroLookAngle = Angular(_zeroLookAngleRaw, FC.lookAngle.rawUnit);
+    ammo.zeroTemperature = Temperature(_zeroTempRaw, FC.temperature.rawUnit);
+    ammo.zeroPressure = Pressure(_zeroPressureRaw, FC.pressure.rawUnit);
+    ammo.zeroHumidityFrac = _zeroHumidityRaw;
+    ammo.zeroAltitude = Distance(_zeroAltRaw, FC.altitude.rawUnit);
+    ammo.usePowderSensitivity = _usePowderSensitivity;
+    ammo.powderSensitivity = Ratio.fraction(_powderSensRaw);
+    ammo.zeroUseDiffPowderTemperature = _zeroUseDiffPowderTemp;
+    ammo.zeroPowderTemp = Temperature(
+      _zeroPowderTempRaw,
+      FC.temperature.rawUnit,
+    );
+    ammo.zeroUseCoriolis = _zeroUseCoriolis;
+    ammo.zeroLatitudeDeg = _zeroLatitudeRaw;
+    ammo.zeroAzimuthDeg = _zeroAzimuthRaw;
     return ammo;
   }
 
@@ -132,7 +204,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
       ),
       if (!useMulti)
         UnitValueFieldTile(
-          label: 'Ballistic coefficient $dtName',
+          title: 'Ballistic coefficient $dtName',
           rawValue: bcRaw,
           constraints: FC.ballisticCoefficient,
           displayUnit: Unit.fraction,
@@ -142,12 +214,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
       // TODO: there should be a route to multi-bc edit screen (form)
       if (useMulti)
         ListTile(
+          leading: Icon(IconDef.dragModel),
           title: Text('Edit $dtName Multi-BC table'),
-          trailing: Icon(
-            IconDef.edit,
-            size: 16,
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          trailing: const Icon(IconDef.chevronRight),
           dense: true,
           onTap: () => debugPrint("Route to multi-bc editor"),
         ),
@@ -192,12 +261,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         if (_dragType == DragType.custom)
           // TODO: there should be a route to custom drag table edit/view screen (form)
           ListTile(
+            leading: Icon(IconDef.dragModel),
             title: Text('Edit $dtName DragModel'),
-            trailing: Icon(
-              IconDef.edit,
-              size: 16,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => debugPrint("Route to drag table editor"),
           ),
@@ -221,6 +287,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         children: [
           Expanded(
             child: ListView(
+              controller: _scrollController,
               children: [
                 _AmmoPlaceholder(),
                 // ── Name ──────────────────────────────────────────────────
@@ -243,6 +310,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                 // ── Projectile ──────────────────────────────────────────────
                 const Divider(height: 1),
                 const ListSectionTile('Projectile'),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: TextField(
+                    controller: _projectileNameCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Projectile name',
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                ),
                 InfoListTile(
                   label: 'Caliber',
                   value: _caliberRaw > 0
@@ -253,7 +330,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                   icon: IconDef.caliber,
                 ),
                 UnitValueFieldTile(
-                  label: 'Weight',
+                  title: 'Weight',
                   rawValue: _weightRaw,
                   constraints: FC.projectileWeight,
                   displayUnit: units.weightUnit,
@@ -261,7 +338,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                   onChanged: (v) => setState(() => _weightRaw = v),
                 ),
                 UnitValueFieldTile(
-                  label: 'Length',
+                  title: 'Length',
                   rawValue: _lengthRaw,
                   constraints: FC.projectileLength,
                   displayUnit: units.lengthUnit,
@@ -269,16 +346,145 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                   onChanged: (v) => setState(() => _lengthRaw = v),
                 ),
                 _buildDragModel(),
+
                 // ── Cartridge ──────────────────────────────────────────────
                 const Divider(height: 1),
                 const ListSectionTile('Cartridge'),
                 UnitValueFieldTile(
-                  label: 'Muzzle velocity',
+                  title: 'Muzzle velocity',
+                  subtitle: "Measured / Vendor provided",
                   rawValue: _mvRaw,
                   constraints: FC.muzzleVelocity,
                   displayUnit: units.velocityUnit,
                   icon: IconDef.velocity,
                   onChanged: (v) => setState(() => _mvRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Muzzle velocity temperature',
+                  subtitle: 'Powder temperature at the time of measurement',
+                  rawValue: _mvTempRaw,
+                  constraints: FC.temperature,
+                  displayUnit: units.temperatureUnit,
+                  icon: IconDef.temperature,
+                  onChanged: (v) => setState(() => _mvTempRaw = v),
+                ),
+                SwitchListTile(
+                  title: const Text('Powder temperature sensitivity'),
+                  secondary: const Icon(IconDef.powderTemperature),
+                  value: _usePowderSensitivity,
+                  onChanged: (v) {
+                    setState(() => _usePowderSensitivity = v);
+                    if (v) _scrollTo(_powderSensKey);
+                  },
+                  dense: true,
+                ),
+
+                // ── Zeroing ──────────────────────────────────────────────
+                const Divider(height: 1),
+                const ListSectionTile('Zeroing'),
+                UnitValueFieldTile(
+                  title: 'Distance',
+                  subtitle: 'Zeroing distance',
+                  rawValue: _zeroDistRaw,
+                  constraints: FC.zeroDistance,
+                  displayUnit: units.distanceUnit,
+                  icon: IconDef.range,
+                  onChanged: (v) => setState(() => _zeroDistRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Look angle',
+                  subtitle: 'Zeroing look angle',
+                  rawValue: _zeroLookAngleRaw,
+                  constraints: FC.lookAngle,
+                  displayUnit: units.angularUnit,
+                  icon: IconDef.angle,
+                  onChanged: (v) => setState(() => _zeroLookAngleRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Temperature',
+                  subtitle: 'Zeroing atmospheric temperature',
+                  rawValue: _zeroTempRaw,
+                  constraints: FC.temperature,
+                  displayUnit: units.temperatureUnit,
+                  icon: IconDef.temperature,
+                  onChanged: (v) => setState(() => _zeroTempRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Pressure',
+                  subtitle: 'Zeroing atmospheric pressure',
+                  rawValue: _zeroPressureRaw,
+                  constraints: FC.pressure,
+                  displayUnit: units.pressureUnit,
+                  icon: IconDef.pressure,
+                  onChanged: (v) => setState(() => _zeroPressureRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Humidity',
+                  subtitle: 'Zeroing atmospheric humidity',
+                  rawValue: _zeroHumidityRaw,
+                  constraints: FC.humidity,
+                  displayUnit: Unit.percent,
+                  icon: IconDef.humidity,
+                  onChanged: (v) => setState(() => _zeroHumidityRaw = v),
+                ),
+                UnitValueFieldTile(
+                  title: 'Altitude',
+                  subtitle: 'Zeroing altitude',
+                  rawValue: _zeroAltRaw,
+                  constraints: FC.altitude,
+                  displayUnit: units.distanceUnit,
+                  icon: IconDef.altitude,
+                  onChanged: (v) => setState(() => _zeroAltRaw = v),
+                ),
+                // TODO: Zeroing atmo params
+
+                // ── Powder sensitivity ──────────────────────────────────────────────
+                if (_usePowderSensitivity) ...[
+                  const Divider(height: 1),
+                  PowderSensSection(
+                    key: _powderSensKey,
+                    showToggle: false,
+                    usePowderSensitivity: _usePowderSensitivity,
+                    useDiffPowderTemp: _zeroUseDiffPowderTemp,
+                    temperatureUnit: units.temperatureUnit,
+                    powderTempRaw: _zeroPowderTempRaw,
+                    powderSensRaw: _powderSensRaw,
+                    mvValue: () {
+                      final ammo = _buildAmmo();
+                      if (!ammo.isReadyForCalculation) return null;
+                      return fmt.velocity(
+                        ammo.toZeroAmmo().getVelocityForTemp(
+                          ammo.toZeroAtmo().powderTemp,
+                        ),
+                      );
+                    }(),
+                    sensitivityValue: fmt.powderSensitivity(
+                      Ratio.fraction(_powderSensRaw),
+                    ),
+                    onDiffTempToggled: (v) =>
+                        setState(() => _zeroUseDiffPowderTemp = v),
+                    onPowderTempChanged: (v) =>
+                        setState(() => _zeroPowderTempRaw = v),
+                    onPowderSensChanged: (v) =>
+                        setState(() => _powderSensRaw = v),
+                  ),
+                ],
+
+                // ── Zeroing coriolis ────────────────────────────────────────
+                const Divider(height: 1),
+                CoriolisSection(
+                  key: _coriolisKey,
+                  useCoriolis: _zeroUseCoriolis,
+                  latitudeRaw: _zeroLatitudeRaw,
+                  azimuthRaw: _zeroAzimuthRaw,
+                  angularUnit: Unit.degree,
+                  onCoriolisToggled: (v) {
+                    setState(() => _zeroUseCoriolis = v);
+                    if (v) _scrollTo(_coriolisKey);
+                  },
+                  onLatitudeChanged: (v) =>
+                      setState(() => _zeroLatitudeRaw = v),
+                  onAzimuthChanged: (v) => setState(() => _zeroAzimuthRaw = v),
                 ),
               ],
             ),
@@ -299,7 +505,7 @@ class _AmmoPlaceholder extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
-        height: 120,
+        height: 160,
         child: Card(
           child: Center(
             child: Column(

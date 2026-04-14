@@ -148,7 +148,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                 const ListSectionTile('Ballistics'),
                 if (caliberEditable)
                   UnitValueFieldTile(
-                    label: 'Caliber diameter',
+                    title: 'Caliber diameter',
                     rawValue: _caliberRaw,
                     constraints: FC.projectileDiameter,
                     displayUnit: units.diameterUnit,
@@ -166,7 +166,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                 // ── Hardware ─────────────────────────────────────────────────
                 const ListSectionTile('Hardware'),
                 UnitValueFieldTile(
-                  label: 'Twist rate',
+                  title: 'Twist rate',
                   rawValue: _twistRaw,
                   constraints: FC.twist,
                   displayUnit: units.twistUnit,
@@ -195,7 +195,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                 if (_showExtraFields) ...[
                   const SizedBox(height: 8),
                   NullableUnitValueFieldTile(
-                    label: 'Barrel length',
+                    title: 'Barrel length',
                     rawValue: _barrelLengthRaw,
                     constraints: FC.barrelLength,
                     displayUnit: units.barrelLengthUnit,

@@ -188,7 +188,7 @@ class _ConstrainedDistanceTile extends StatelessWidget {
 
     return UnitValueFieldTile(
       icon: icon,
-      label: label,
+      title: label,
       rawValue: rawValueM,
       constraints: updatedConstraints,
       displayUnit: displayUnit,

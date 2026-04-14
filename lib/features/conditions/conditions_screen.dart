@@ -1,15 +1,15 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
-import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:ebalistyka/features/conditions/widgets/temperature_control.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 
 class ConditionsScreen extends ConsumerWidget {
   const ConditionsScreen({super.key});
@@ -96,79 +96,29 @@ class ConditionsScreen extends ConsumerWidget {
           ),
           const Divider(height: 1),
 
-          // ── Switches ──────────────────────────────────────────────────
-          SwitchListTile(
-            title: const Text('Powder temperature sensitivity'),
-            secondary: const Icon(IconDef.powderTemperature),
-            value: state.powderSensOn,
-            onChanged: (v) => notifier.setPowderSensitivity(v),
-            dense: true,
+          // ── Powder sensitivity ─────────────────────────────────────────
+          PowderSensSection(
+            usePowderSensitivity: state.powderSensOn,
+            useDiffPowderTemp: state.useDiffPowderTemp,
+            temperatureUnit: state.temperature.displayUnit,
+            powderTempRaw: state.powderTemperature?.rawValue,
+            mvValue: state.mvAtPowderTemp,
+            sensitivityValue: state.powderSensitivity,
+            onSensitivityToggled: notifier.setPowderSensitivity,
+            onDiffTempToggled: notifier.setDiffPowderTemp,
+            onPowderTempChanged: notifier.updatePowderTemp,
           ),
-          if (state.powderSensOn) ...[
-            SwitchListTile(
-              title: const Text('Use different powder temperature'),
-              subtitle: Text(
-                state.useDiffPowderTemp
-                    ? "Uses powder temperature"
-                    : "Uses atmospheric temperature",
-              ),
-              secondary: const Icon(IconDef.temperature),
-              value: state.useDiffPowderTemp,
-              onChanged: (v) => notifier.setDiffPowderTemp(v),
-              dense: true,
-            ),
-            if (state.powderTemperature != null)
-              UnitValueFieldTile(
-                label: 'Powder temperature',
-                icon: IconDef.powderTemperature,
-                rawValue: state.powderTemperature!.rawValue,
-                constraints: FC.temperature,
-                displayUnit: state.powderTemperature!.displayUnit,
-                onChanged: (v) => notifier.updatePowderTemp(v),
-              ),
-            if (state.mvAtPowderTemp != null)
-              InfoListTile(
-                label: state.useDiffPowderTemp
-                    ? 'Muzzle velocity at powder temperature'
-                    : 'Muzzle velocity at atmospheric temperature',
-                value: state.mvAtPowderTemp!,
-                icon: IconDef.velocity,
-              ),
-            if (state.powderSensitivity != null)
-              InfoListTile(
-                label: 'Powder sensitivity',
-                value: state.powderSensitivity!,
-                icon: IconDef.powderSensitivity,
-              ),
-          ],
           const Divider(height: 1),
-          SwitchListTile(
-            title: const Text('Coriolis effect'),
-            secondary: const Icon(IconDef.coriolis),
-            value: state.coriolisOn,
-            onChanged: (v) => notifier.setCoriolis(v),
-            dense: true,
+          // ── Coriolis ───────────────────────────────────────────────────
+          CoriolisSection(
+            useCoriolis: state.coriolisOn,
+            latitudeRaw: state.latitude.rawValue,
+            azimuthRaw: state.azimuth.rawValue,
+            angularUnit: state.latitude.displayUnit,
+            onCoriolisToggled: notifier.setCoriolis,
+            onLatitudeChanged: notifier.updateLatitude,
+            onAzimuthChanged: notifier.updateAzimuth,
           ),
-          if (state.coriolisOn) ...[
-            UnitValueFieldTile(
-              label: 'Latitude',
-              icon: IconDef.latitude,
-              rawValue: state.latitude.rawValue,
-              constraints: FC.latitude,
-              displayUnit: state.latitude.displayUnit,
-              symbol: '°',
-              onChanged: (v) => notifier.updateLatitude(v),
-            ),
-            UnitValueFieldTile(
-              label: 'Azimuth',
-              icon: IconDef.azimuth,
-              rawValue: state.azimuth.rawValue,
-              constraints: FC.azimuth,
-              displayUnit: state.azimuth.displayUnit,
-              symbol: '°',
-              onChanged: (v) => notifier.updateAzimuth(v),
-            ),
-          ],
           const SizedBox(height: 16),
         ],
       ),

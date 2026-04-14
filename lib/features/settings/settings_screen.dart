@@ -93,7 +93,7 @@ class SettingsScreen extends ConsumerWidget {
 
           UnitValueFieldTile(
             icon: Icons.table_rows_outlined,
-            label: 'Table distance step',
+            title: 'Table distance step',
             rawValue: settings.homeTableDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
@@ -101,7 +101,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           UnitValueFieldTile(
             icon: Icons.show_chart_outlined,
-            label: 'Chart distance step',
+            title: 'Chart distance step',
             rawValue: settings.homeChartDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,

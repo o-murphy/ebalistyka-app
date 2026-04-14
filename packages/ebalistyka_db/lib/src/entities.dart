@@ -118,10 +118,10 @@ class Ammo {
   double zeroTemperatureC = 15.0;
   double zeroPressurehPa = 1013;
   double zeroHumidityFrac = 0.0;
-  double zeroPowderTemperatureC = 15.0;
 
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
+  double zeroPowderTemperatureC = 15.0;
 
   double zeroLatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;
