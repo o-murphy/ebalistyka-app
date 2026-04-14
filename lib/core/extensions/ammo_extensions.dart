@@ -35,9 +35,6 @@ extension AmmoExtension on Ammo {
   set mvTemperature(Temperature t) =>
       muzzleVelocityTemperatureC = t.in_(Unit.celsius);
 
-  Temperature get powderTemp => Temperature.celsius(powderTemperatureC);
-  set powderTemp(Temperature v) => powderTemperatureC = v.in_(Unit.celsius);
-
   Ratio get powderSensitivity => Ratio.fraction(powderSensitivityFrac);
   set powderSensitivity(Ratio v) =>
       powderSensitivityFrac = v.in_(Unit.fraction);
@@ -141,7 +138,7 @@ extension AmmoExtension on Ammo {
   bclibc.Ammo toZeroAmmo() => bclibc.Ammo(
     dm: toDragModel(),
     mv: mv,
-    powderTemp: usePowderTempForMv ? powderTemp : mvTemperature,
+    powderTemp: mvTemperature,
     tempModifier: powderSensitivityFrac,
     usePowderSensitivity: usePowderSensitivity,
   );
@@ -149,7 +146,7 @@ extension AmmoExtension on Ammo {
   bclibc.Ammo toCurrentAmmo(ShootingConditions cond) => bclibc.Ammo(
     dm: toDragModel(),
     mv: mv,
-    powderTemp: usePowderTempForMv ? powderTemp : mvTemperature,
+    powderTemp: mvTemperature,
     tempModifier: powderSensitivityFrac,
     usePowderSensitivity: cond.usePowderSensitivity,
   );

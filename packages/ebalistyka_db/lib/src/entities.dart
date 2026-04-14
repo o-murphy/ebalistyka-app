@@ -96,13 +96,12 @@ class Ammo {
   double bcG7 = 1.0;
   bool useMultiBcG1 = false;
   bool useMultiBcG7 = false;
+
   double? muzzleVelocityMps;
   double muzzleVelocityTemperatureC = 15.0;
-  double powderTemperatureC = 15.0;
-  double powderSensitivityFrac = 0.0;
 
   bool usePowderSensitivity = false;
-  bool usePowderTempForMv = false;
+  double powderSensitivityFrac = 0.0;
 
   Float64List? powderSensitivityTC;
   Float64List? powderSensitivityVMps;
@@ -119,10 +118,10 @@ class Ammo {
   double zeroTemperatureC = 15.0;
   double zeroPressurehPa = 1013;
   double zeroHumidityFrac = 0.0;
-  double zeroPowderTemperatureC = 15.0;
 
   bool zeroUseDiffPowderTemperature = false;
   bool zeroUseCoriolis = false;
+  double zeroPowderTemperatureC = 15.0;
 
   double zeroLatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;

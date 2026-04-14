@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
@@ -23,8 +24,9 @@ class ShotDetailsLoading extends ShotDetailsUiState {
 }
 
 class ShotDetailsError extends ShotDetailsUiState {
-  final String message;
-  const ShotDetailsError(this.message);
+  final String? message;
+  final EmptyStateType type;
+  const ShotDetailsError({this.message, this.type = EmptyStateType.error});
 }
 
 class ShotDetailsReady extends ShotDetailsUiState {
@@ -87,8 +89,11 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
       final settings = await ref.read(settingsProvider.future);
       final formatter = ref.read(unitFormatterProvider);
 
-      if (ctx == null || ctx.profile.ammo.target == null) {
-        return const ShotDetailsError('No cartridge selected');
+      if (ctx == null) {
+        return const ShotDetailsError(type: EmptyStateType.noProfile);
+      }
+      if (ctx.profile.ammo.target == null) {
+        return const ShotDetailsError(type: EmptyStateType.noAmmo);
       }
 
       final profile = ctx.profile;
@@ -105,7 +110,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
       return _buildReadyState(profile, conditions, formatter, result.hitResult);
     } catch (e) {
-      return ShotDetailsError(e.toString());
+      return ShotDetailsError(message: e.toString());
     }
   }
 

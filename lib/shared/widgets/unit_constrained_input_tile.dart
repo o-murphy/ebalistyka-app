@@ -14,9 +14,10 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
     required this.constraints,
     required this.displayUnit,
     required this.onChanged,
-    required this.label,
+    required this.title,
     this.symbol,
     this.icon,
+    this.subtitle,
     super.key,
   });
 
@@ -24,9 +25,10 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
   final FieldConstraints constraints;
   final Unit displayUnit;
   final ValueChanged<T> onChanged;
-  final String label;
+  final String title;
   final String? symbol;
   final IconData? icon;
+  final String? subtitle;
 
   String get _sym => symbol ?? displayUnit.symbol;
 
@@ -46,7 +48,8 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
 
     return ListTile(
       leading: icon != null ? Icon(icon) : null,
-      title: Text(label),
+      title: Text(title),
+      subtitle: subtitle != null ? Text(subtitle!) : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -71,9 +74,10 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
     required super.constraints,
     required super.displayUnit,
     required super.onChanged,
-    required super.label,
+    required super.title,
     super.symbol,
     super.icon,
+    super.subtitle,
   });
 
   @override
@@ -88,7 +92,7 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
   @override
   void _showDialog(BuildContext context) => showUnitEditDialog(
     context,
-    label: label,
+    label: title,
     rawValue: rawValue,
     constraints: constraints,
     displayUnit: displayUnit,
@@ -105,9 +109,10 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
     required super.constraints,
     required super.displayUnit,
     required super.onChanged,
-    required super.label,
+    required super.title,
     super.symbol,
     super.icon,
+    super.subtitle,
   });
 
   @override
@@ -135,7 +140,7 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
   @override
   void _showDialog(BuildContext context) => showNullableUnitEditDialog(
     context,
-    label: label,
+    label: title,
     rawValue: rawValue,
     constraints: constraints,
     displayUnit: displayUnit,

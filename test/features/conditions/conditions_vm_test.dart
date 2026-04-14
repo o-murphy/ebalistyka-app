@@ -28,7 +28,6 @@ Profile _makeProfile() {
     ..lengthInch = 1.22
     ..muzzleVelocityMps = 800.0
     ..muzzleVelocityTemperatureC = 15.0
-    ..powderTemperatureC = 15.0
     ..powderSensitivityFrac = 0.001
     ..usePowderSensitivity = true;
 

@@ -39,7 +39,6 @@ class A7pParser {
       ..length = Distance.millimeter(p.bLength / 100.0)
       ..mv = Velocity.mps(p.cMuzzleVelocity / 10.0)
       ..mvTemperature = Temperature.celsius(p.cZeroTemperature.toDouble())
-      ..powderTemp = Temperature.celsius(p.cZeroPTemperature.toDouble())
       ..powderSensitivity = Ratio.fraction(p.cTCoeff / 1000.0)
       ..usePowderSensitivity = p.cTCoeff != 0
       ..zeroDistance = Distance.meter(_zeroDistanceMeter(p))

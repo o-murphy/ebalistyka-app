@@ -3,9 +3,9 @@ export 'my_profiles_screen.dart';
 export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
 export 'sight_wizard_screen.dart';
+export 'ammo_wizard_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
-import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 
 // ── Weapon ────────────────────────────────────────────────────────────────────
@@ -28,16 +28,6 @@ class AmmoCollectionScreen extends StatelessWidget {
   Widget build(BuildContext context) => StubScreen(
     title: filterBullet ? 'Bullet Collection' : 'Cartridge Collection',
   );
-}
-
-/// Reusable ammo form: null = create new, non-null = edit existing.
-/// Returns Ammo? via context.pop(ammo).
-class AmmoWizardScreen extends StatelessWidget {
-  const AmmoWizardScreen({this.initial, super.key});
-  final Ammo? initial;
-  @override
-  Widget build(BuildContext context) =>
-      StubScreen(title: initial == null ? 'Create Ammo' : 'Edit Ammo');
 }
 
 // ── Sight ─────────────────────────────────────────────────────────────────────

@@ -173,12 +173,6 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(45, 824601022869745530),
-        name: 'powderTemperatureC',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(46, 1096154456700048161),
         name: 'powderSensitivityFrac',
         type: 8,
@@ -266,12 +260,6 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(60, 7509424573994252574),
         name: 'zeroAltitudeMeter',
         type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(61, 6275749238367959778),
-        name: 'usePowderTempForMv',
-        type: 1,
         flags: 0,
       ),
     ],
@@ -1241,6 +1229,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
       8458352093651103584,
       8552267728328334166,
       3711858234252380760,
+      824601022869745530,
+      6275749238367959778,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1324,7 +1314,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(41, object.lengthInch);
         fbb.addFloat64(42, object.muzzleVelocityMps);
         fbb.addFloat64(43, object.muzzleVelocityTemperatureC);
-        fbb.addFloat64(44, object.powderTemperatureC);
         fbb.addFloat64(45, object.powderSensitivityFrac);
         fbb.addOffset(46, powderSensitivityTCOffset);
         fbb.addOffset(47, powderSensitivityVMpsOffset);
@@ -1340,7 +1329,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(57, object.zeroOffsetXRad);
         fbb.addFloat64(58, object.zeroOffsetYRad);
         fbb.addFloat64(59, object.zeroAltitudeMeter);
-        fbb.addBool(60, object.usePowderTempForMv);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1444,12 +1432,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             90,
             0,
           )
-          ..powderTemperatureC = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            92,
-            0,
-          )
           ..powderSensitivityFrac = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
@@ -1519,12 +1501,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
             rootOffset,
             122,
             0,
-          )
-          ..usePowderTempForMv = const fb.BoolReader().vTableGet(
-            buffer,
-            rootOffset,
-            124,
-            false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -2634,89 +2610,79 @@ class Ammo_ {
     _entities[0].properties[23],
   );
 
-  /// See [Ammo.powderTemperatureC].
-  static final powderTemperatureC = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[24],
-  );
-
   /// See [Ammo.powderSensitivityFrac].
   static final powderSensitivityFrac = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[25],
+    _entities[0].properties[24],
   );
 
   /// See [Ammo.powderSensitivityTC].
   static final powderSensitivityTC = obx.QueryDoubleVectorProperty<Ammo>(
-    _entities[0].properties[26],
+    _entities[0].properties[25],
   );
 
   /// See [Ammo.powderSensitivityVMps].
   static final powderSensitivityVMps = obx.QueryDoubleVectorProperty<Ammo>(
-    _entities[0].properties[27],
+    _entities[0].properties[26],
   );
 
   /// See [Ammo.multiBcTableG1VMps].
   static final multiBcTableG1VMps = obx.QueryDoubleVectorProperty<Ammo>(
-    _entities[0].properties[28],
+    _entities[0].properties[27],
   );
 
   /// See [Ammo.multiBcTableG7VMps].
   static final multiBcTableG7VMps = obx.QueryDoubleVectorProperty<Ammo>(
-    _entities[0].properties[29],
+    _entities[0].properties[28],
   );
 
   /// See [Ammo.cusomDragTableMach].
   static final cusomDragTableMach = obx.QueryDoubleVectorProperty<Ammo>(
-    _entities[0].properties[30],
+    _entities[0].properties[29],
   );
 
   /// See [Ammo.zeroDistanceMeter].
   static final zeroDistanceMeter = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[31],
+    _entities[0].properties[30],
   );
 
   /// See [Ammo.zeroLookAngleRad].
   static final zeroLookAngleRad = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[32],
+    _entities[0].properties[31],
   );
 
   /// See [Ammo.zeroTemperatureC].
   static final zeroTemperatureC = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[33],
+    _entities[0].properties[32],
   );
 
   /// See [Ammo.zeroPressurehPa].
   static final zeroPressurehPa = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[34],
+    _entities[0].properties[33],
   );
 
   /// See [Ammo.zeroHumidityFrac].
   static final zeroHumidityFrac = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[35],
+    _entities[0].properties[34],
   );
 
   /// See [Ammo.zeroPowderTemperatureC].
   static final zeroPowderTemperatureC = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[36],
+    _entities[0].properties[35],
   );
 
   /// See [Ammo.zeroOffsetXRad].
   static final zeroOffsetXRad = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[37],
+    _entities[0].properties[36],
   );
 
   /// See [Ammo.zeroOffsetYRad].
   static final zeroOffsetYRad = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[38],
+    _entities[0].properties[37],
   );
 
   /// See [Ammo.zeroAltitudeMeter].
   static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
-    _entities[0].properties[39],
-  );
-
-  /// See [Ammo.usePowderTempForMv].
-  static final usePowderTempForMv = obx.QueryBooleanProperty<Ammo>(
-    _entities[0].properties[40],
+    _entities[0].properties[38],
   );
 
   /// see [Ammo.profiles]

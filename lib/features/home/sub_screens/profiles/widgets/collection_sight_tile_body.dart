@@ -32,7 +32,7 @@ class CollectionSightTileBody extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
             child: const Center(
-              child: Icon(IconDef.image, size: 50, color: Colors.grey),
+              child: Icon(IconDef.sight, size: 50, color: Colors.grey),
             ),
           ),
           // Content

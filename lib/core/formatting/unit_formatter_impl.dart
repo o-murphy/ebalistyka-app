@@ -44,14 +44,14 @@ class UnitFormatterImpl implements UnitFormatter {
   String energy(Energy dim) => _fmt(dim, FC.energy, _u.energyUnit);
 
   @override
-  String weight(Weight dim) => _fmt(dim, FC.bulletWeight, _u.weightUnit);
+  String weight(Weight dim) => _fmt(dim, FC.projectileWeight, _u.weightUnit);
 
   @override
-  String length(Distance dim) => _fmt(dim, FC.bulletLength, _u.lengthUnit);
+  String length(Distance dim) => _fmt(dim, FC.projectileLength, _u.lengthUnit);
 
   @override
   String diameter(Distance dim) =>
-      _fmt(dim, FC.bulletDiameter, _u.diameterUnit);
+      _fmt(dim, FC.projectileDiameter, _u.diameterUnit);
 
   @override
   String sightHeight(Distance dim) =>

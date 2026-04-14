@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
@@ -17,6 +19,7 @@ import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
 import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
 import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
 import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -145,11 +148,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                IconButton.filledTonal(
-                                  onPressed: () =>
-                                      context.push(Routes.ammoSelect),
-                                  icon: const Icon(IconDef.ammo),
-                                ),
+                                if (vmState is HomeUiReady)
+                                  IconButton.filledTonal(
+                                    onPressed: () {
+                                      final appState = ref
+                                          .read(appStateProvider)
+                                          .value;
+                                      final profile = appState?.activeProfile;
+                                      final ammo = appState?.cartridges
+                                          .where(
+                                            (a) =>
+                                                a.id == profile?.ammo.targetId,
+                                          )
+                                          .firstOrNull;
+                                      final weapon = appState?.weapons
+                                          .where(
+                                            (w) =>
+                                                w.id ==
+                                                profile?.weapon.targetId,
+                                          )
+                                          .firstOrNull;
+                                      if (ammo != null) {
+                                        context.push(
+                                          Routes.profileEditAmmo,
+                                          extra: (ammo, weapon?.caliberInch),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(IconDef.ammo),
+                                  ),
                               ],
                             ),
 
@@ -175,7 +202,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
-                                        onBottomPressed: () {},
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Notes',
+                                            ),
                                       ),
                                     ),
                                     Expanded(
@@ -218,8 +249,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           (IconDef.humidity, humidStr),
                                           (IconDef.velocity, pressStr),
                                         ],
-                                        onTopPressed: () {},
-                                        onBottomPressed: () {},
+                                        onTopPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Help',
+                                            ),
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Tools',
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -240,73 +279,79 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   // ── Central block — 3 pages ───────────────────────────────────
                   SizedBox(
                     height: centralBlockHeight,
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Expanded(
-                              child: PageView(
-                                controller: _pageController,
-                                onPageChanged: (i) =>
-                                    setState(() => _currentPage = i),
-                                children: const [
-                                  HomeReticlePage(),
-                                  HomeTablePage(),
-                                  HomeChartPage(),
+                    child: vmState is HomeUiNoData
+                        ? EmptyStatePlaceholder(
+                            type: vmState.type,
+                            message: vmState.message,
+                          )
+                        : Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Expanded(
+                                    child: PageView(
+                                      controller: _pageController,
+                                      onPageChanged: (i) =>
+                                          setState(() => _currentPage = i),
+                                      children: const [
+                                        HomeReticlePage(),
+                                        HomeTablePage(),
+                                        HomeChartPage(),
+                                      ],
+                                    ),
+                                  ),
+                                  // Padding for spacing - bottom indicator will overlay
+                                  const SizedBox(height: 8),
                                 ],
                               ),
-                            ),
-                            // Padding for spacing - bottom indicator will overlay
-                            const SizedBox(height: 8),
-                          ],
-                        ),
-                        // Brief spinner overlay — fades in then out after each recalc.
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: FadeTransition(
-                              opacity: _calcDoneAnim,
-                              child: Container(
-                                color: Colors.black.withAlpha(90),
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
+                              // Brief spinner overlay — fades in then out after each recalc.
+                              Positioned.fill(
+                                child: IgnorePointer(
+                                  child: FadeTransition(
+                                    opacity: _calcDoneAnim,
+                                    child: Container(
+                                      color: Colors.black.withAlpha(90),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ),
 
                   // Add bottom padding to prevent content from hiding under Bottom Block
-                  SizedBox(height: bottomHeight),
+                  if (vmState is! HomeUiNoData) SizedBox(height: bottomHeight),
                 ],
               ),
             ),
 
             // ── Bottom Block — Fixed page indicator (sticky at bottom) ────────────
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: bottomHeight,
-                alignment: Alignment.center,
-                color: Theme.of(context).colorScheme.surface,
-                child: PageDotsIndicator(
-                  current: _currentPage,
-                  count: 3,
-                  onPageChanged: (page) {
-                    _pageController.animateToPage(
-                      page,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                    setState(() => _currentPage = page);
-                  },
+            if (vmState is! HomeUiNoData)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: bottomHeight,
+                  alignment: Alignment.center,
+                  color: Theme.of(context).colorScheme.surface,
+                  child: PageDotsIndicator(
+                    current: _currentPage,
+                    count: 3,
+                    onPageChanged: (page) {
+                      _pageController.animateToPage(
+                        page,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                      setState(() => _currentPage = page);
+                    },
+                  ),
                 ),
               ),
-            ),
           ],
         );
       },

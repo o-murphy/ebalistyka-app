@@ -7,6 +7,7 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
@@ -24,27 +25,29 @@ class MyAmmoScreen extends ConsumerWidget {
   /// Falls back to the active profile when null.
   final String? profileId;
 
-  Future<void> _showAddAmmoSheet(BuildContext context) => showActionSheet(
-    context,
-    title: 'Add Ammo',
-    entries: [
-      ActionSheetItem(
-        icon: IconDef.addCircle,
-        title: 'Create new',
-        onTap: () async => context.push(Routes.ammoCreate),
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select cartridge from collection',
-        onTap: () async => context.push(Routes.cartridgeCollection),
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select bullet from collection',
-        onTap: () async => context.push(Routes.bulletCollection),
-      ),
-    ],
-  );
+  Future<void> _showAddAmmoSheet(BuildContext context, Weapon? weapon) =>
+      showActionSheet(
+        context,
+        title: 'Add Ammo',
+        entries: [
+          ActionSheetItem(
+            icon: IconDef.addCircle,
+            title: 'Create new',
+            onTap: () async =>
+                context.push(Routes.ammoCreate, extra: weapon?.caliberInch),
+          ),
+          ActionSheetItem(
+            icon: IconDef.openCollection,
+            title: 'Select cartridge from collection',
+            onTap: () async => context.push(Routes.cartridgeCollection),
+          ),
+          ActionSheetItem(
+            icon: IconDef.openCollection,
+            title: 'Select bullet from collection',
+            onTap: () async => context.push(Routes.bulletCollection),
+          ),
+        ],
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,7 +79,7 @@ class MyAmmoScreen extends ConsumerWidget {
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
-        onPressed: () => _showAddAmmoSheet(context),
+        onPressed: () => _showAddAmmoSheet(context, weapon),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
@@ -131,9 +134,7 @@ class MyAmmoScreen extends ConsumerWidget {
                         .read(appStateProvider.notifier)
                         .duplicateAmmo(item.id, name);
                   },
-                  onExport: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Export not yet available')),
-                  ),
+                  onExport: () => showNotAvailableSnackBar(context, 'Export'),
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,

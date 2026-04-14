@@ -91,7 +91,7 @@ appStateProvider
     │
     ├──► profileCardProvider(id)  Provider.autoDispose.family<ProfileCardData?, String>
     │         Дані одного профілю: джойнить weapon/ammo/sight по targetId.
-    │         ProfileCardData має власний == по всіх 20 полях (incl. sightHeight/focalPlane/magnification/verticalClick/horizontalClick).
+    │         ProfileCardData.== спрощено до 7 полів: id, name, weaponFingerprint, ammoId, ammoFingerprint, sightId, sightFingerprint.
     │         → ProfileCard.ref.watch — ребілдиться тільки якщо цей профіль змінився.
     │
     └──► profilesActionsProvider  Notifier<void>
@@ -104,8 +104,16 @@ appStateProvider
 Зміна ammo/sight/weapon content → `appStateProvider` оновлюється → `profileCardProvider` оновлюється →
 але `profilesPagingProvider` повертає той самий `ProfilesPagingState` → пейджинг не змінюється.
 
-⚠️ **Важливо:** якщо поле відображається в `ProfileCard` але відсутнє в `ProfileCardData.==`,
-Riverpod побачить "рівні" об'єкти і НЕ ребілдить картку. Усі рядкові поля з `_buildCardData` мають бути в `==`.
+`ProfileCardData` використовує три fingerprint-и замість перевірки кожного поля:
+
+| Fingerprint | Що хешує |
+|---|---|
+| `weaponFingerprint` | всі поля `Weapon` (name, caliberInch, caliberName, twistInch, barrelLengthInch, zeroElevationRad, vendor) |
+| `ammoFingerprint` | всі поля `Ammo` — display (name, caliber, weight, length, projectileName, vendor) + calc (mv, mvTemp, powderSens, всі zero*, bc, dragType тощо) |
+| `sightFingerprint` | всі поля `Sight` (name, focalPlane, height, offset, clicks, clickUnits, magnification, vendor) |
+
+`==` спрощено до 7 полів: `id`, `name`, `weaponFingerprint`, `ammoId`, `ammoFingerprint`, `sightId`, `sightFingerprint`.
+Будь-яка зміна будь-якого entity автоматично тригерить rebuild картки — без ризику пропустити поле.
 
 ---
 
@@ -118,13 +126,29 @@ Riverpod побачить "рівні" об'єкти і НЕ ребілдить 
 | ammo (ToOne) | Profile | MyAmmoScreen |
 | sight (ToOne) | Profile | MySightsScreen |
 | caliber, twist, barrelLength | Weapon | WeaponWizardScreen |
-| dragType, bc, mv, zero* | Ammo | AmmoWizardScreen |
+| dragType, bc, mv, mvTemperatureC, zero*, usePowderSensitivity, powderSensitivityFrac | Ammo | AmmoWizardScreen |
 | sightHeight | Sight | SightWizardScreen |
-| conditions (atmo, wind, distance) | ShootingConditions (global) | ConditionsScreen / HomeScreen |
+| conditions (atmo, wind, distance, powderTemperatureC, usePowderSensitivity) | ShootingConditions (global) | ConditionsScreen / HomeScreen |
 | GeneralSettings, UnitSettings | Owner (global) | SettingsScreen |
 
 > Термін "cartridge" і "projectile" залишаються тільки в таблицях, HTML-звітах
 > та assets/json/collection.json. В коді — ammo/bullet.
+
+### Ammo — поля та їх семантика
+
+| Поле | Тип | Семантика |
+|---|---|---|
+| `muzzleVelocityMps` | `double?` | MV виміряний / наданий виробником |
+| `muzzleVelocityTemperatureC` | `double` | T₀ — температура пороху при вимірюванні MV (еталон для корекції). **Завжди** передається як `ammo.powderTemp` у bclibc |
+| `usePowderSensitivity` | `bool` | Вмикає порохову температурну корекцію |
+| `powderSensitivityFrac` | `double` | Коефіцієнт чутливості (fraction / 15°C) |
+| `zeroPowderTemperatureC` | `double` | Температура пороху при пристрілці (якщо `zeroUseDiffPowderTemperature`) |
+| `zeroUseDiffPowderTemperature` | `bool` | Відрізняється температура пороху при пристрілці від атмосферної |
+
+> `Ammo.powderTemperatureC` і `Ammo.usePowderTempForMv` **видалені**. Поточна поточна
+> температура пороху (T₁) знаходиться виключно в `ShootingConditions.powderTemperatureC`.
+> `bclibc.Ammo.powderTemp` = T₀ (muzzleVelocityTemperatureC) завжди;
+> `bclibc.Atmo.powderTemp` = T₁ (з conditions або zero) — поточна.
 
 ---
 
@@ -259,12 +283,14 @@ ProfileCard
 ```
 ProfileCard
   └─ "Ammo" section tap → onEditAmmo callback → _ProfilesScreenState._onEditAmmo
-      └─ reads Ammo entity from appState
-          └─ AmmoWizardScreen(initial: ammo)  ← /home/profiles/ammo-edit
+      └─ reads Ammo + weapon.caliberInch від профілю
+          └─ AmmoWizardScreen(initial: ammo, caliberInch: weapon.caliberInch)  ← /home/profiles/ammo-edit
+              │  extra: (Ammo?, double?) — record передається через router
+              │  якщо ammo.caliberInch != weapon.caliberInch → SnackBar з кнопкою "Update"
               └─ context.pop(Ammo) → appStateProvider.saveAmmo
 ```
 
-🔧 Роутинг і callbacks реалізовані, AmmoWizardScreen — stub.
+✅ Роутинг і callbacks реалізовані. AmmoWizardScreen повністю реалізований.
 
 ### Flow 6: Edit Sight properties
 
@@ -289,7 +315,7 @@ ProfileCard PopupMenu → "Duplicate"
          sight  → та сама ToOne reference
 ```
 
-❌ Не реалізовано (TODO).
+✅ Реалізовано.
 
 ---
 
@@ -316,7 +342,17 @@ ProfileCard PopupMenu → "Duplicate"
 - `ammo-select/cartridge-collection` або `bullet-collection` → AmmoWizardScreen (pre-filled, тип readonly)
 - `ammo-edit` — редагування існуючого (initial = Ammo з appState)
 
-Секції: Ballistics · Muzzle Velocity · Zero Conditions
+**Поточний стан:**
+- ✅ Name — з touched-validation
+- ✅ Projectile name — nullable, без валідації
+- ✅ Projectile — Caliber (readonly info), Weight, Length (`UnitValueFieldTile`)
+- ✅ DragModel — `SegmentedButton<DragType>` (G1/G7/CUSTOM) + `_buildBcSection`: Multi-BC switch, Single BC field, placeholder ListTile для редактора Multi-BC таблиці / Custom drag table
+- ✅ Cartridge — Muzzle Velocity, Muzzle Velocity Temperature (T₀), `usePowderSensitivity` switch
+- ✅ Zero Conditions — Distance, Look Angle, Temperature, Pressure, Humidity, Altitude
+- ✅ Powder Sensitivity — `PowderSensSection(showToggle: false)` (розгортається після switch у Cartridge): diff temp switch, powder temp field, sensitivity input, calculated MV info. Scroll-to-section при вмиканні.
+- ✅ Coriolis — `CoriolisSection`: switch + latitude + azimuth. Scroll-to-section при вмиканні.
+- ✅ Caliber mismatch detection — при edit передається `caliberInch` з weapon профілю через record `(Ammo?, double?)`; якщо розходження → SnackBar "Ammo caliber differs from weapon caliber" з кнопкою "Update"
+- ❌ Routes до multi-bc editor і custom drag table editor — `debugPrint` placeholder
 
 ### SightWizardScreen
 
@@ -393,6 +429,10 @@ ProfilesScreen  (/home/profiles)
 │   └── AmmoCollectionScreen       (.../bullet-collection)     ← filter: bullets
 │         └── AmmoWizardScreen     (.../ammo-wizard)
 ├── AmmoWizardScreen         (/home/profiles/ammo-edit)
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g1)   ← TODO: G1 multi-BC table
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g7)   ← TODO: G7 multi-BC table
+│   ├── CustomDragTableScreen      (.../ammo-edit/drag-table)    ← TODO: custom drag model
+│   └── PowderSensitivityScreen    (.../ammo-edit/powder-sensitivity) ← TODO: temperature sensitivity table → auto-calc powderSensitivityFrac
 ├── MySightsScreen           (/home/profiles/sight-select)
 │   ├── SightWizardScreen      (.../sight-create)
 │   └── SightCollectionScreen  (.../sight-collection)
@@ -429,14 +469,14 @@ ProfilesScreen  (/home/profiles)
 | `lib/core/providers/settings_provider.dart` | ✅ | OB streams, seed defaults |
 | `lib/core/providers/db_provider.dart` | ✅ | storeProvider + ownerProvider |
 | `lib/core/extensions/weapon_extensions.dart` | ✅ | |
-| `lib/core/extensions/ammo_extensions.dart` | ✅ | DragType enum, typed getters |
+| `lib/core/extensions/ammo_extensions.dart` | ✅ | DragType enum, typed getters; `toZeroAmmo()`/`toCurrentAmmo()` завжди передають `mvTemperature` як T₀ |
 | `lib/core/extensions/sight_extensions.dart` | ✅ | |
 | `lib/core/extensions/profile_extensions.dart` | ✅ | isReadyForCalculation, toShot |
 | `lib/core/extensions/conditions_extensions.dart` | ✅ | typed getters/setters |
 | `lib/core/extensions/settings_extensions.dart` | ✅ | enum getters (ThemeMode, Unit) |
 | `lib/core/a7p/a7p_parser.dart` | ✅ | proto → OB entities |
 | `lib/core/collection/collection_parser.dart` | ✅ | JSON → OB entities |
-| `lib/features/home/profiles_vm.dart` | ✅ | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>); `ProfileCardData.==` covers all 20 display fields — sight content fields (sightHeight, focalPlane, magnification, verticalClick, horizontalClick) must all be in `==` or card tiles won't rebuild on edit |
+| `lib/features/home/profiles_vm.dart` | ✅ | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>); `ProfileCardData.==` — 7 полів: id + name + `weaponFingerprint` + ammoId + `ammoFingerprint` + sightId + `sightFingerprint`; кожен fingerprint хешує всі поля відповідного entity |
 | `lib/features/home/sub_screens/my_profiles_screen.dart` | ✅ | ProfilesScreen: PageView, paging listener, FAB, per-profile callbacks |
 | `lib/features/home/sub_screens/profiles/widgets/profile_card.dart` | ✅ | ConsumerStatefulWidget; watchає profileCardProvider(id); _ProfileControlTile з ammo/sight FABs + hints |
 | `lib/features/home/sub_screens/my_ammo_screen.dart` | ✅ | Вибір ammo для профілю |
@@ -444,6 +484,10 @@ ProfilesScreen  (/home/profiles)
 | `lib/shared/widgets/text_input_dialog.dart` | ✅ | touched-validation |
 | `lib/shared/widgets/confirm_dialog.dart` | ✅ | reusable confirm: isDestructive (error) / tertiary colors |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | |
+| `lib/features/home/sub_screens/ammo_wizard_screen.dart` | 🔧 | Name + ProjectileName (nullable) + Projectile + DragModel + Cartridge (MV, mvTemp, powderSens switch) + Zero Conditions + PowderSensSection + CoriolisSection. Caliber mismatch SnackBar з "Update". Відсутнє: multi-bc/drag-table editor routes |
+| `lib/shared/widgets/snackbars.dart` | ✅ | `showNotAvailableSnackBar(context, feature)` — реюзабл тост для незавершених функцій |
+| `lib/shared/widgets/powder_sens_section.dart` | ✅ | Reusable powder sensitivity section. `showToggle:false` (wizard) — switch зовні, контент завжди показується; `showToggle:true` default (conditions) — switch вбудований. `powderSensRaw!=null` → input; `powderSensRaw==null` → info tile |
+| `lib/shared/widgets/coriolis_section.dart` | ✅ | Reusable coriolis section: switch + latitude + azimuth |
 | `lib/features/home/sub_screens/sight_wizard_screen.dart` | ✅ | Sight form: Name/Optics/Mounting/Clicks/Magnification |
 | `lib/router.dart` | ✅ | Routes константи |
 | `assets/json/collection.json` | ✅ | Вбудована колекція |
@@ -452,16 +496,17 @@ ProfilesScreen  (/home/profiles)
 
 ## TODO
 
-- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop)
-- [x] `SightWizardScreen` — реалізовано: Name, Optics (FFP/SFP/LWIR), Mounting (height/offset), Clicks (UnitInputWithPicker + FC.adjustment), Magnification range
+- [~] `AmmoWizardScreen` — майже готовий. Залишилось: routes до multi-bc/drag-table editor
+- [x] `SightWizardScreen` — реалізовано
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
 - [ ] `WeaponCollectionScreen` — реалізувати
 - [ ] `SightCollectionScreen` — реалізувати
-- [x] Duplicate profile — реалізовано: weapon копіюється (новий entity), ammo/sight — ті самі refs
-- [x] Duplicate ammo — реалізовано: повне копіювання полів включно з Float64List таблицями
-- [x] Duplicate sight — реалізовано: повне копіювання полів
+- [x] Duplicate profile — реалізовано
+- [x] Duplicate ammo — реалізовано
+- [x] Duplicate sight — реалізовано
 - [x] Remove ammo / sight — реалізовано з confirm dialog
-- [ ] Export / Import profile / ammo / sight — формат TBD (наразі SnackBar "not yet available")
+- [x] Caliber mismatch detection в AmmoWizardScreen (edit mode) — SnackBar з "Update"
+- [ ] Export / Import profile / ammo / sight — формат TBD (наразі `showNotAvailableSnackBar`)
 
 ---
 
@@ -469,13 +514,14 @@ ProfilesScreen  (/home/profiles)
 
 ### 🔴 Блокери (без цього альфа не функціональна)
 
-- [ ] `AmmoWizardScreen` — реалізувати (stub; `initial: Ammo?`, повертає `Ammo?` через pop). Секції: Ballistics · Muzzle Velocity · Zero Conditions
-  - ⚠️ **Caliber логіка:** калібр НЕ вводиться вручну — визначається автоматично з `Weapon.caliberInch` активного профілю (або профілю, для якого створюється ammo). У wizard `Ammo.caliberInch` встановлюється програмно, відображається readonly. При виборі з колекції (`AmmoCollectionScreen`) — фільтрується за калібром профілю.
+- [~] `AmmoWizardScreen` — майже готовий. Залишилось: routes до multi-bc/drag-table editor
   - ⚠️ **`Weapon.caliberName`:** поле є в entity та копіюється при duplicate, але ніде не відображається і не задається в UI (тільки `caliberInch` використовується в розрахунках). При реалізації WeaponWizardScreen вирішити: відображати як human-readable label (readonly, з колекції) або прибрати з UI зовсім.
   - ⚠️ **Powder sensitivity — потенційна зміна логіки:** поточний стан — on/off (`powderSensitivityFrac`). Планується 3 режими:
     - `off` — без температурної корекції
     - `coeff` — задається `powderSensitivityFrac` вручну
-    - `table` — задається таблицею (`powderSensitivityTC` + `powderSensitivityVMps`); таблиця використовується для розрахунку і автоматичного оновлення `powderSensitivityFrac` (можливо в окремому підекрані wizard), після чого engine працює через `frac` як завжди → **зміни до entities не потрібні**.
+    - `table` — задається таблицею (`powderSensitivityTC` + `powderSensitivityVMps`); таблиця для розрахунку і автоматичного оновлення `powderSensitivityFrac` (в окремому підекрані wizard), після чого engine працює через `frac` → **зміни до entities не потрібні**
+  - ✅ **Caliber mismatch detection:** при edit передається `caliberInch` з weapon профілю через record `(Ammo?, double?)`; розходження → SnackBar з кнопкою "Update" для автоматичного виправлення
+  - ✅ **T₀/T₁ логіка:** `Ammo.powderTemperatureC` і `Ammo.usePowderTempForMv` видалені. `bclibc.Ammo.powderTemp` = T₀ = `muzzleVelocityTemperatureC` (завжди). T₁ — виключно у `ShootingConditions` або `zeroConditions`.
 - [ ] `AmmoCollectionScreen` — реалізувати (filter: cartridge / bullet)
 - [ ] `WeaponCollectionScreen` — реалізувати
 - [ ] `SightCollectionScreen` — реалізувати
@@ -499,5 +545,5 @@ ProfilesScreen  (/home/profiles)
 - [ ] RulerSelector widget — touch-drag ruler для QuickActionsPanel
 - [ ] Reticle fullscreen screen — відкривається з Home Page 1
 - [ ] Help overlay — coach marks
-- [ ] Tools screen — відкривається з кнопки More на Home
+- [ ] Tools screen — відкривається з кнопки More на Home (наразі `showNotAvailableSnackBar`)
 - [ ] Settings → Privacy Policy / Terms of Use / Changelog links

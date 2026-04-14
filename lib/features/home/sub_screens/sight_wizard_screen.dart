@@ -59,27 +59,27 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   @override
   void initState() {
     super.initState();
-    final r = widget.initial;
-    _nameCtrl = TextEditingController(text: r?.name ?? '');
+    final s = widget.initial;
+    _nameCtrl = TextEditingController(text: s?.name ?? '');
 
-    _sightHeightRaw = r?.sightHeight.in_(FC.sightHeight.rawUnit) ?? 0.0;
+    _sightHeightRaw = s?.sightHeight.in_(FC.sightHeight.rawUnit) ?? 0.0;
     _horizontalOffsetRaw =
-        r?.horizontalOffset.in_(FC.sightHeight.rawUnit) ?? 0.0;
+        s?.horizontalOffset.in_(FC.sightHeight.rawUnit) ?? 0.0;
 
-    _focalPlane = r?.focalPlane ?? FocalPlane.ffp;
+    _focalPlane = s?.focalPlane ?? FocalPlane.ffp;
 
-    _vClickUnit = r?.verticalClickUnitValue ?? Unit.mil;
-    _vClickRaw = r != null
-        ? Angular(r.verticalClick, _vClickUnit).in_(FC.adjustment.rawUnit)
+    _vClickUnit = s?.verticalClickUnitValue ?? Unit.mil;
+    _vClickRaw = s != null
+        ? Angular(s.verticalClick, _vClickUnit).in_(FC.adjustment.rawUnit)
         : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
 
-    _hClickUnit = r?.horizontalClickUnitValue ?? Unit.mil;
-    _hClickRaw = r != null
-        ? Angular(r.horizontalClick, _hClickUnit).in_(FC.adjustment.rawUnit)
+    _hClickUnit = s?.horizontalClickUnitValue ?? Unit.mil;
+    _hClickRaw = s != null
+        ? Angular(s.horizontalClick, _hClickUnit).in_(FC.adjustment.rawUnit)
         : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
 
-    final storedMin = r?.minMagnification ?? 0.0;
-    final storedMax = r?.maxMagnification ?? 0.0;
+    final storedMin = s?.minMagnification ?? 0.0;
+    final storedMax = s?.maxMagnification ?? 0.0;
     _minMagRaw = storedMin > 0 ? storedMin : 1.0;
     _maxMagRaw = storedMax > 0 ? storedMax : 1.0;
   }
@@ -175,7 +175,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                 const Divider(height: 1),
                 const ListSectionTile('Mounting'),
                 UnitValueFieldTile(
-                  label: 'Sight height',
+                  title: 'Sight height',
                   rawValue: _sightHeightRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
@@ -183,7 +183,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   onChanged: (v) => setState(() => _sightHeightRaw = v),
                 ),
                 UnitValueFieldTile(
-                  label: 'Horizontal offset',
+                  title: 'Horizontal offset',
                   rawValue: _horizontalOffsetRaw,
                   constraints: FC.sightHeight,
                   displayUnit: units.sightHeightUnit,
@@ -219,7 +219,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   ),
                 ),
                 UnitValueFieldTile(
-                  label: 'Min magnification',
+                  title: 'Min magnification',
                   rawValue: _minMagRaw,
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
@@ -228,7 +228,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   onChanged: (v) => setState(() => _minMagRaw = v),
                 ),
                 UnitValueFieldTile(
-                  label: 'Max magnification',
+                  title: 'Max magnification',
                   rawValue: _maxMagRaw,
                   constraints: FC.magnification,
                   displayUnit: Unit.scalar,
@@ -294,7 +294,7 @@ class _SightPlaceholder extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
-        height: 120,
+        height: 160,
         child: Card(
           child: Center(
             child: Column(

@@ -21,7 +21,10 @@ class TrajectoryTable extends ConsumerWidget {
     }
 
     if (vmState is TrajectoryTablesUiEmpty) {
-      return EmptyStatePlaceholder(message: vmState.message);
+      return EmptyStatePlaceholder(
+        type: vmState.type,
+        message: vmState.message,
+      );
     }
 
     if (vmState is TrajectoryTablesUiError) {
