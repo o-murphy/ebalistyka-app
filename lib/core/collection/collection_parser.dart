@@ -56,6 +56,7 @@ abstract final class CollectionParser {
   static Weapon _parseWeapon(Map<String, dynamic> j) {
     final barrelRaw = j['barrelLengthInch'] as num?;
     return Weapon()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..notes = j['notes'] as String?
@@ -80,6 +81,7 @@ abstract final class CollectionParser {
     final mvRaw = j['muzzleVelocityMps'] as num?;
 
     final ammo = Ammo()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..projectileName = j['projectileName'] as String?
@@ -209,6 +211,7 @@ abstract final class CollectionParser {
     final click = (j['horizontalClick'] as num? ?? 0.1).toDouble();
     final calibMag = j['calibratedMagnification'] as num?;
     return Sight()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..image = j['image'] as String?
