@@ -37,20 +37,18 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
 
 class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _vendorCtrl;
   late final TextEditingController _projectileNameCtrl;
 
-  String? _nameError;
-  bool _nameTouched = false;
-
   late double _caliberRaw;
-  late double _weightRaw;
-  late double _lengthRaw;
+  double? _weightRaw;
+  double? _lengthRaw;
   late DragType _dragType;
   late bool _useMultiBcG1;
   late bool _useMultiBcG7;
-  late double _bcG1;
-  late double _bcG7;
-  late double _mvRaw;
+  double? _bcG1;
+  double? _bcG7;
+  double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
   late double _zeroLookAngleRaw;
@@ -76,24 +74,28 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     final a = widget.initial;
     _scheduleCaliberMismatchToast();
     _nameCtrl = TextEditingController(text: a?.name ?? '');
+    _vendorCtrl = TextEditingController(text: a?.vendor ?? '');
     _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
+    final caliberRaw = a != null && a.caliberInch > 0
+        ? a.caliber.in_(FC.projectileDiameter.rawUnit)
+        : null;
     _caliberRaw =
-        a?.caliber.in_(FC.projectileDiameter.rawUnit) ??
+        caliberRaw ??
         Distance.inch(
           widget.caliberInch ?? FC.projectileDiameter.minRaw,
         ).in_(FC.projectileDiameter.rawUnit);
-    _weightRaw =
-        a?.weight.in_(FC.projectileWeight.rawUnit) ??
-        FC.projectileWeight.minRaw;
-    _lengthRaw =
-        a?.length.in_(FC.projectileLength.rawUnit) ??
-        FC.projectileLength.minRaw;
+    _weightRaw = (a != null && a.weightGrain > 0)
+        ? a.weight.in_(FC.projectileWeight.rawUnit)
+        : null;
+    _lengthRaw = (a != null && a.lengthInch > 0)
+        ? a.length.in_(FC.projectileLength.rawUnit)
+        : null;
     _dragType = a?.dragType ?? DragType.g1;
     _useMultiBcG1 = a?.useMultiBcG1 ?? false;
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
-    _bcG1 = a?.bcG1 ?? 1.0;
-    _bcG7 = a?.bcG7 ?? 1.0;
-    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit) ?? 0.0;
+    _bcG1 = (a != null && a.bcG1 > 0) ? a.bcG1 : null;
+    _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
+    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
     _zeroLookAngleRaw = a?.zeroLookAngle.in_(FC.lookAngle.rawUnit) ?? 0.0;
@@ -113,6 +115,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _vendorCtrl.dispose();
     _projectileNameCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -158,12 +161,21 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
-
-  void _validateName() {
-    setState(() {
-      _nameError = _nameCtrl.text.trim().isEmpty ? 'Name is required' : null;
-    });
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_caliberRaw <= 0) return false;
+    if ((_weightRaw ?? 0) <= 0) return false;
+    if ((_lengthRaw ?? 0) <= 0) return false;
+    if ((_mvRaw ?? 0) <= 0) return false;
+    // BC: relevant for the current drag type must be positive
+    // (multi-BC mode bypasses single-BC field — allow save when table is set)
+    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0) {
+      return false;
+    }
+    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0) {
+      return false;
+    }
+    return true;
   }
 
   // ── Build result ──────────────────────────────────────────────────────────
@@ -171,18 +183,27 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   Ammo _buildAmmo() {
     final ammo = widget.initial ?? Ammo();
     ammo.name = _nameCtrl.text.trim();
+    ammo.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
     ammo.projectileName = _projectileNameCtrl.text.trim().isEmpty
         ? null
         : _projectileNameCtrl.text.trim();
     ammo.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
-    ammo.weight = Weight(_weightRaw, FC.projectileWeight.rawUnit);
-    ammo.length = Distance(_lengthRaw, FC.projectileLength.rawUnit);
+    ammo.weightGrain = _weightRaw != null
+        ? Weight(_weightRaw!, FC.projectileWeight.rawUnit).in_(Unit.grain)
+        : -1.0;
+    ammo.lengthInch = _lengthRaw != null
+        ? Distance(_lengthRaw!, FC.projectileLength.rawUnit).in_(Unit.inch)
+        : -1.0;
     ammo.dragType = _dragType;
     ammo.useMultiBcG1 = _useMultiBcG1;
     ammo.useMultiBcG7 = _useMultiBcG7;
-    ammo.bcG1 = _bcG1;
-    ammo.bcG7 = _bcG7;
-    ammo.mv = Velocity(_mvRaw, FC.muzzleVelocity.rawUnit);
+    ammo.bcG1 = _bcG1 ?? -1.0;
+    ammo.bcG7 = _bcG7 ?? -1.0;
+    ammo.muzzleVelocityMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : -1.0;
     ammo.mvTemperature = Temperature(_mvTempRaw, FC.temperature.rawUnit);
 
     ammo.zeroDistance = Distance(_zeroDistRaw, FC.zeroDistance.rawUnit);
@@ -205,8 +226,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
-    _validateName();
     if (!_isValid) return;
     context.pop(_buildAmmo());
   }
@@ -218,9 +237,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   List<Widget> _buildBcSection({
     required DragType dt,
     required bool useMulti,
-    required double bcRaw,
+    required double? bcRaw,
     required ValueChanged<bool> onMultiChanged,
-    required ValueChanged<double> onBcChanged,
+    required ValueChanged<double?> onBcChanged,
   }) {
     final dtName = dt.name.toUpperCase();
     return [
@@ -234,12 +253,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         dense: true,
       ),
       if (!useMulti)
-        UnitValueFieldTile(
+        NullableUnitValueFieldTile(
           title: 'Ballistic coefficient $dtName',
           rawValue: bcRaw,
           constraints: FC.ballisticCoefficient,
           displayUnit: Unit.fraction,
           icon: IconDef.dragModel,
+          isRequired: true,
           onChanged: (v) => setState(() => onBcChanged(v)),
         ),
       // TODO: there should be a route to multi-bc edit screen (form)
@@ -314,214 +334,220 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
       title: title,
       isSubscreen: true,
       showBack: false,
-      body: Column(
+      bottomBar: _ActionBar(
+        onDiscard: _onDiscard,
+        onSave: _isValid ? _onSave : null,
+      ),
+      body: ListView(
+        controller: _scrollController,
         children: [
-          Expanded(
-            child: ListView(
-              controller: _scrollController,
-              children: [
-                _AmmoPlaceholder(),
-                // ── Name ──────────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: TextField(
-                    controller: _nameCtrl,
-                    decoration: InputDecoration(
-                      labelText: 'Ammo name',
-                      errorText: _nameError,
-                    ),
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) {
-                      if (_nameTouched) _validateName();
-                      setState(() {}); // update title
-                    },
-                    onEditingComplete: _validateName,
-                  ),
-                ),
-                // ── Projectile ──────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Projectile'),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: TextField(
-                    controller: _projectileNameCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Projectile name',
-                    ),
-                    textCapitalization: TextCapitalization.words,
-                  ),
-                ),
-                InfoListTile(
-                  label: 'Caliber',
-                  value: _caliberRaw > 0
-                      ? fmt.diameter(
-                          Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
-                        )
-                      : '—',
-                  icon: IconDef.caliber,
-                ),
-                UnitValueFieldTile(
-                  title: 'Weight',
-                  rawValue: _weightRaw,
-                  constraints: FC.projectileWeight,
-                  displayUnit: units.weightUnit,
-                  icon: IconDef.weigth,
-                  onChanged: (v) => setState(() => _weightRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Length',
-                  rawValue: _lengthRaw,
-                  constraints: FC.projectileLength,
-                  displayUnit: units.lengthUnit,
-                  icon: IconDef.length,
-                  onChanged: (v) => setState(() => _lengthRaw = v),
-                ),
-                _buildDragModel(),
-
-                // ── Cartridge ──────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Cartridge'),
-                UnitValueFieldTile(
-                  title: 'Muzzle velocity',
-                  subtitle: "Measured / Vendor provided",
-                  rawValue: _mvRaw,
-                  constraints: FC.muzzleVelocity,
-                  displayUnit: units.velocityUnit,
-                  icon: IconDef.velocity,
-                  onChanged: (v) => setState(() => _mvRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Muzzle velocity temperature',
-                  subtitle: 'Powder temperature at the time of measurement',
-                  rawValue: _mvTempRaw,
-                  constraints: FC.temperature,
-                  displayUnit: units.temperatureUnit,
-                  icon: IconDef.temperature,
-                  onChanged: (v) => setState(() => _mvTempRaw = v),
-                ),
-                SwitchListTile(
-                  title: const Text('Powder temperature sensitivity'),
-                  secondary: const Icon(IconDef.powderTemperature),
-                  value: _usePowderSensitivity,
-                  onChanged: (v) {
-                    setState(() => _usePowderSensitivity = v);
-                    if (v) _scrollTo(_powderSensKey);
-                  },
-                  dense: true,
-                ),
-
-                // ── Zeroing ──────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Zeroing'),
-                UnitValueFieldTile(
-                  title: 'Distance',
-                  subtitle: 'Zeroing distance',
-                  rawValue: _zeroDistRaw,
-                  constraints: FC.zeroDistance,
-                  displayUnit: units.distanceUnit,
-                  icon: IconDef.range,
-                  onChanged: (v) => setState(() => _zeroDistRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Look angle',
-                  subtitle: 'Zeroing look angle',
-                  rawValue: _zeroLookAngleRaw,
-                  constraints: FC.lookAngle,
-                  displayUnit: units.angularUnit,
-                  icon: IconDef.angle,
-                  onChanged: (v) => setState(() => _zeroLookAngleRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Temperature',
-                  subtitle: 'Zeroing atmospheric temperature',
-                  rawValue: _zeroTempRaw,
-                  constraints: FC.temperature,
-                  displayUnit: units.temperatureUnit,
-                  icon: IconDef.temperature,
-                  onChanged: (v) => setState(() => _zeroTempRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Pressure',
-                  subtitle: 'Zeroing atmospheric pressure',
-                  rawValue: _zeroPressureRaw,
-                  constraints: FC.pressure,
-                  displayUnit: units.pressureUnit,
-                  icon: IconDef.pressure,
-                  onChanged: (v) => setState(() => _zeroPressureRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Humidity',
-                  subtitle: 'Zeroing atmospheric humidity',
-                  rawValue: _zeroHumidityRaw,
-                  constraints: FC.humidity,
-                  displayUnit: Unit.percent,
-                  icon: IconDef.humidity,
-                  onChanged: (v) => setState(() => _zeroHumidityRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Altitude',
-                  subtitle: 'Zeroing altitude',
-                  rawValue: _zeroAltRaw,
-                  constraints: FC.altitude,
-                  displayUnit: units.distanceUnit,
-                  icon: IconDef.altitude,
-                  onChanged: (v) => setState(() => _zeroAltRaw = v),
-                ),
-                // TODO: Zeroing atmo params
-
-                // ── Powder sensitivity ──────────────────────────────────────────────
-                if (_usePowderSensitivity) ...[
-                  const Divider(height: 1),
-                  PowderSensSection(
-                    key: _powderSensKey,
-                    showToggle: false,
-                    usePowderSensitivity: _usePowderSensitivity,
-                    useDiffPowderTemp: _zeroUseDiffPowderTemp,
-                    temperatureUnit: units.temperatureUnit,
-                    powderTempRaw: _zeroPowderTempRaw,
-                    powderSensRaw: _powderSensRaw,
-                    mvValue: () {
-                      final ammo = _buildAmmo();
-                      if (!ammo.isReadyForCalculation) return null;
-                      return fmt.velocity(
-                        ammo.toZeroAmmo().getVelocityForTemp(
-                          ammo.toZeroAtmo().powderTemp,
-                        ),
-                      );
-                    }(),
-                    sensitivityValue: fmt.powderSensitivity(
-                      Ratio.fraction(_powderSensRaw),
-                    ),
-                    onDiffTempToggled: (v) =>
-                        setState(() => _zeroUseDiffPowderTemp = v),
-                    onPowderTempChanged: (v) =>
-                        setState(() => _zeroPowderTempRaw = v),
-                    onPowderSensChanged: (v) =>
-                        setState(() => _powderSensRaw = v),
-                  ),
-                ],
-
-                // ── Zeroing coriolis ────────────────────────────────────────
-                const Divider(height: 1),
-                CoriolisSection(
-                  key: _coriolisKey,
-                  useCoriolis: _zeroUseCoriolis,
-                  latitudeRaw: _zeroLatitudeRaw,
-                  azimuthRaw: _zeroAzimuthRaw,
-                  angularUnit: Unit.degree,
-                  onCoriolisToggled: (v) {
-                    setState(() => _zeroUseCoriolis = v);
-                    if (v) _scrollTo(_coriolisKey);
-                  },
-                  onLatitudeChanged: (v) =>
-                      setState(() => _zeroLatitudeRaw = v),
-                  onAzimuthChanged: (v) => setState(() => _zeroAzimuthRaw = v),
-                ),
-              ],
+          _AmmoPlaceholder(),
+          // ── Name ──────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Ammo name',
+                errorText: _nameCtrl.text.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
+                labelStyle: _nameCtrl.text.trim().isEmpty
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
+              ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) {
+                setState(() {});
+              },
             ),
           ),
-          // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _vendorCtrl,
+              decoration: const InputDecoration(labelText: 'Vendor'),
+              textCapitalization: TextCapitalization.words,
+            ),
+          ),
+          // ── Projectile ──────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Projectile'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: TextField(
+              controller: _projectileNameCtrl,
+              decoration: const InputDecoration(labelText: 'Projectile name'),
+              textCapitalization: TextCapitalization.words,
+            ),
+          ),
+          InfoListTile(
+            label: 'Caliber',
+            value: _caliberRaw > 0
+                ? fmt.diameter(
+                    Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
+                  )
+                : '—',
+            icon: IconDef.caliber,
+          ),
+          NullableUnitValueFieldTile(
+            title: 'Weight',
+            rawValue: _weightRaw,
+            constraints: FC.projectileWeight,
+            displayUnit: units.weightUnit,
+            icon: IconDef.weigth,
+            isRequired: true,
+            onChanged: (v) => setState(() => _weightRaw = v),
+          ),
+          NullableUnitValueFieldTile(
+            title: 'Length',
+            rawValue: _lengthRaw,
+            constraints: FC.projectileLength,
+            displayUnit: units.lengthUnit,
+            icon: IconDef.length,
+            isRequired: true,
+            onChanged: (v) => setState(() => _lengthRaw = v),
+          ),
+          _buildDragModel(),
+
+          // ── Cartridge ──────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Cartridge'),
+          NullableUnitValueFieldTile(
+            title: 'Muzzle velocity',
+            subtitle: "Measured / Vendor provided",
+            rawValue: _mvRaw,
+            constraints: FC.muzzleVelocity,
+            displayUnit: units.velocityUnit,
+            icon: IconDef.velocity,
+            isRequired: true,
+            onChanged: (v) => setState(() => _mvRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Muzzle velocity temperature',
+            subtitle: 'Powder temperature at the time of measurement',
+            rawValue: _mvTempRaw,
+            constraints: FC.temperature,
+            displayUnit: units.temperatureUnit,
+            icon: IconDef.temperature,
+            onChanged: (v) => setState(() => _mvTempRaw = v),
+          ),
+          SwitchListTile(
+            title: const Text('Powder temperature sensitivity'),
+            secondary: const Icon(IconDef.powderTemperature),
+            value: _usePowderSensitivity,
+            onChanged: (v) {
+              setState(() => _usePowderSensitivity = v);
+              if (v) _scrollTo(_powderSensKey);
+            },
+            dense: true,
+          ),
+
+          // ── Zeroing ──────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Zeroing'),
+          UnitValueFieldTile(
+            title: 'Distance',
+            subtitle: 'Zeroing distance',
+            rawValue: _zeroDistRaw,
+            constraints: FC.zeroDistance,
+            displayUnit: units.distanceUnit,
+            icon: IconDef.range,
+            onChanged: (v) => setState(() => _zeroDistRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Look angle',
+            subtitle: 'Zeroing look angle',
+            rawValue: _zeroLookAngleRaw,
+            constraints: FC.lookAngle,
+            displayUnit: units.angularUnit,
+            icon: IconDef.angle,
+            onChanged: (v) => setState(() => _zeroLookAngleRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Temperature',
+            subtitle: 'Zeroing atmospheric temperature',
+            rawValue: _zeroTempRaw,
+            constraints: FC.temperature,
+            displayUnit: units.temperatureUnit,
+            icon: IconDef.temperature,
+            onChanged: (v) => setState(() => _zeroTempRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Pressure',
+            subtitle: 'Zeroing atmospheric pressure',
+            rawValue: _zeroPressureRaw,
+            constraints: FC.pressure,
+            displayUnit: units.pressureUnit,
+            icon: IconDef.pressure,
+            onChanged: (v) => setState(() => _zeroPressureRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Humidity',
+            subtitle: 'Zeroing atmospheric humidity',
+            rawValue: _zeroHumidityRaw,
+            constraints: FC.humidity,
+            displayUnit: Unit.percent,
+            icon: IconDef.humidity,
+            onChanged: (v) => setState(() => _zeroHumidityRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Altitude',
+            subtitle: 'Zeroing altitude',
+            rawValue: _zeroAltRaw,
+            constraints: FC.altitude,
+            displayUnit: units.distanceUnit,
+            icon: IconDef.altitude,
+            onChanged: (v) => setState(() => _zeroAltRaw = v),
+          ),
+          // TODO: Zeroing atmo params
+
+          // ── Powder sensitivity ──────────────────────────────────────────────
+          if (_usePowderSensitivity) ...[
+            const Divider(height: 1),
+            PowderSensSection(
+              key: _powderSensKey,
+              showToggle: false,
+              usePowderSensitivity: _usePowderSensitivity,
+              useDiffPowderTemp: _zeroUseDiffPowderTemp,
+              temperatureUnit: units.temperatureUnit,
+              powderTempRaw: _zeroPowderTempRaw,
+              powderSensRaw: _powderSensRaw,
+              mvValue: () {
+                final ammo = _buildAmmo();
+                if (!ammo.isReadyForCalculation) return null;
+                return fmt.velocity(
+                  ammo.toZeroAmmo().getVelocityForTemp(
+                    ammo.toZeroAtmo().powderTemp,
+                  ),
+                );
+              }(),
+              sensitivityValue: fmt.powderSensitivity(
+                Ratio.fraction(_powderSensRaw),
+              ),
+              onDiffTempToggled: (v) =>
+                  setState(() => _zeroUseDiffPowderTemp = v),
+              onPowderTempChanged: (v) =>
+                  setState(() => _zeroPowderTempRaw = v),
+              onPowderSensChanged: (v) => setState(() => _powderSensRaw = v),
+            ),
+          ],
+
+          // ── Zeroing coriolis ────────────────────────────────────────
+          const Divider(height: 1),
+          CoriolisSection(
+            key: _coriolisKey,
+            useCoriolis: _zeroUseCoriolis,
+            latitudeRaw: _zeroLatitudeRaw,
+            azimuthRaw: _zeroAzimuthRaw,
+            angularUnit: Unit.degree,
+            onCoriolisToggled: (v) {
+              setState(() => _zeroUseCoriolis = v);
+              if (v) _scrollTo(_coriolisKey);
+            },
+            onLatitudeChanged: (v) => setState(() => _zeroLatitudeRaw = v),
+            onAzimuthChanged: (v) => setState(() => _zeroAzimuthRaw = v),
+          ),
         ],
       ),
     );
@@ -571,16 +597,19 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
-        children: [
-          OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-          const SizedBox(width: 12),
-          Expanded(
-            child: FilledButton(onPressed: onSave, child: const Text('Save')),
-          ),
-        ],
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          children: [
+            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(onPressed: onSave, child: const Text('Save')),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -42,13 +42,32 @@ class CollectionAmmoTileBody extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Name - top
-                Text(
-                  "${ammo.name}\n${ammo.projectileName ?? '—'}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                // Vendor + Name - top
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (ammo.vendor != null && ammo.vendor!.isNotEmpty)
+                      Text(
+                        ammo.vendor!,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    Text(
+                      ammo.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    if (ammo.projectileName != null &&
+                        ammo.projectileName!.isNotEmpty)
+                      Text(
+                        ammo.projectileName!,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                  ],
                 ),
                 // Bottom information
                 Column(

@@ -50,8 +50,11 @@ test: native
 	flutter analyze && flutter test 2>&1
 
 format:
-	dart format lib/ && dart format test/
-	cd packages/bclibc_ffi && dart format lib/ 2>/dev/null || true
+	dart format lib test \
+		packages/bclibc_ffi/lib \
+		packages/ebalistyka_db/lib \
+		packages/reticle_gen/lib \
+		packages/reticle_gen/bin
 
 run:
 	flutter run

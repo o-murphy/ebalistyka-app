@@ -64,8 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    final rifleName = vmState is HomeUiReady ? vmState.rifleName : '—';
-    final cartridgeName = vmState is HomeUiReady ? vmState.cartridgeName : '—';
+    final profileName = vmState is HomeUiReady ? vmState.profileName : '—';
     final tempStr = vmState is HomeUiReady ? vmState.tempDisplay : '—';
     final altStr = vmState is HomeUiReady ? vmState.altDisplay : '—';
     final pressStr = vmState is HomeUiReady ? vmState.pressDisplay : '—';
@@ -138,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            '$rifleName · $cartridgeName',
+                                            profileName,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),

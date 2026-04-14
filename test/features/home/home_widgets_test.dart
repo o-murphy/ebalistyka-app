@@ -133,8 +133,9 @@ HomeUiReady _makeReady({
   FormattedTableData tableData = _kDefaultTableData,
 }) {
   return HomeUiReady(
-    rifleName: 'Test Rifle',
-    cartridgeName: 'Test .308',
+    profileName: 'Test Profile',
+    weaponName: 'Test Rifle',
+    ammoName: 'Test .308',
     windAngleDeg: 90.0,
     tempDisplay: '20 °C',
     altDisplay: '150 m',

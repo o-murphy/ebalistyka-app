@@ -1,13 +1,21 @@
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
-enum EmptyStateType { noProfile, noAmmo, noSight, error, noData }
+enum EmptyStateType {
+  noProfile,
+  noAmmo,
+  noSight,
+  incompleteAmmo,
+  error,
+  noData,
+}
 
 extension _EmptyStateTypeProps on EmptyStateType {
   IconData get icon => switch (this) {
     EmptyStateType.noProfile => Icons.military_tech_outlined,
     EmptyStateType.noAmmo => IconDef.ammo,
     EmptyStateType.noSight => IconDef.sight,
+    EmptyStateType.incompleteAmmo => IconDef.ammo,
     EmptyStateType.error => Icons.error_outline,
     EmptyStateType.noData => Icons.inbox_outlined,
   };
@@ -16,6 +24,7 @@ extension _EmptyStateTypeProps on EmptyStateType {
     EmptyStateType.noProfile => 'No profile selected',
     EmptyStateType.noAmmo => 'No ammo selected',
     EmptyStateType.noSight => 'No sight selected',
+    EmptyStateType.incompleteAmmo => 'Ammo data is incomplete',
     EmptyStateType.error => 'Something went wrong',
     EmptyStateType.noData => 'No data',
   };

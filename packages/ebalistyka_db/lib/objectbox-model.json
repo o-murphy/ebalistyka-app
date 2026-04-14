@@ -464,18 +464,13 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
-        },
-        {
-          "id": "7:3085806308739651023",
-          "name": "sortOrder",
-          "type": 6
         }
       ],
       "relations": []
     },
     {
       "id": "6:9008070843231077690",
-      "lastPropertyId": "18:245945662969613122",
+      "lastPropertyId": "19:7311475921948675322",
       "name": "Sight",
       "properties": [
         {
@@ -562,6 +557,11 @@
         {
           "id": "18:245945662969613122",
           "name": "sightHorizontalOffsetInch",
+          "type": 8
+        },
+        {
+          "id": "19:7311475921948675322",
+          "name": "calibratedMagnification",
           "type": 8
         }
       ],
@@ -748,7 +748,7 @@
     },
     {
       "id": "9:1731139601222753801",
-      "lastPropertyId": "14:1674882739474789598",
+      "lastPropertyId": "15:7306895034727410707",
       "name": "Weapon",
       "properties": [
         {
@@ -805,6 +805,11 @@
         {
           "id": "14:1674882739474789598",
           "name": "caliberName",
+          "type": 9
+        },
+        {
+          "id": "15:7306895034727410707",
+          "name": "notes",
           "type": 9
         }
       ],
@@ -986,7 +991,8 @@
     8552267728328334166,
     3711858234252380760,
     824601022869745530,
-    6275749238367959778
+    6275749238367959778,
+    3085806308739651023
   ],
   "retiredRelationUids": [],
   "version": 1

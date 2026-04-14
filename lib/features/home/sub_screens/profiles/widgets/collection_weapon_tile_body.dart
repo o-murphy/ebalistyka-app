@@ -1,27 +1,23 @@
-import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CollectionSightTileBody extends ConsumerWidget {
-  const CollectionSightTileBody({super.key, required this.sight});
+class CollectionWeaponTileBody extends ConsumerWidget {
+  const CollectionWeaponTileBody({super.key, required this.weapon});
 
-  final Sight sight;
+  final Weapon weapon;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
 
-    final verticalClick = formatter.click(
-      sight.verticalClick,
-      sight.verticalClickUnitValue,
-    );
-    final horizontalClick = formatter.click(
-      sight.horizontalClick,
-      sight.horizontalClickUnitValue,
-    );
+    final twistIcon = weapon.isRightHandTwist ? IconDef.twistR : IconDef.twistL;
+    final twistStr = formatter.twist(weapon.twist);
+    final caliberStr = formatter.diameter(weapon.caliber);
+    final barrelLength = weapon.barrelLength;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -32,7 +28,7 @@ class CollectionSightTileBody extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
             child: const Center(
-              child: Icon(IconDef.sight, size: 50, color: Colors.grey),
+              child: Icon(IconDef.image, size: 50, color: Colors.grey),
             ),
           ),
           // Content
@@ -46,16 +42,16 @@ class CollectionSightTileBody extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (sight.vendor != null && sight.vendor!.isNotEmpty)
+                    if (weapon.vendor != null && weapon.vendor!.isNotEmpty)
                       Text(
-                        sight.vendor!,
+                        weapon.vendor!,
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.grey,
                         ),
                       ),
                     Text(
-                      sight.name,
+                      weapon.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -67,70 +63,59 @@ class CollectionSightTileBody extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Reticle
-                    const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(IconDef.sight, size: 14),
-                        SizedBox(width: 6),
-                        Text("<reticle>", style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    // 2nd row: vertical_click + height
+                    // Row 1: caliber + barrel length
                     Row(
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(IconDef.verticalClick, size: 14),
+                            const Icon(IconDef.caliber, size: 14),
                             const SizedBox(width: 6),
                             Text(
-                              verticalClick,
+                              caliberStr,
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
-                        const SizedBox(width: 12),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(IconDef.height, size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              formatter.sightHeight(sight.sightHeight),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    // 3rd row: horizontal_click + magnification range
-                    Row(
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(IconDef.horizontalClick, size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              horizontalClick,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(IconDef.magnificationMax, size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              formatter.magnificationRange(
-                                sight.minMagnification,
-                                sight.maxMagnification,
+                        if (barrelLength != null) ...[
+                          const SizedBox(width: 12),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(IconDef.length, size: 14),
+                              const SizedBox(width: 6),
+                              Text(
+                                formatter.barrelLength(barrelLength),
+                                style: const TextStyle(fontSize: 12),
                               ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    // Row 2: twist rate + twist direction
+                    Row(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(twistIcon, size: 14),
+                            const SizedBox(width: 6),
+                            Text(
+                              twistStr,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(twistIcon, size: 14),
+                            const SizedBox(width: 6),
+                            Text(
+                              weapon.isRightHandTwist ? 'RH' : 'LH',
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],

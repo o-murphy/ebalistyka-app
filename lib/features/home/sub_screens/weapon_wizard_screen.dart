@@ -31,6 +31,8 @@ class WeaponWizardScreen extends ConsumerStatefulWidget {
 
 class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _vendorCtrl;
+  late final TextEditingController _caliberNameCtrl;
 
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
   // caliberDiameter: Unit.millimeter (FC.bulletDiameter)
@@ -43,15 +45,14 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   bool _showExtraFields = false;
   late double? _barrelLengthRaw;
 
-  String? _nameError;
-  bool _nameTouched = false;
-
   @override
   void initState() {
     super.initState();
     final w = widget.initial;
     _nameCtrl = TextEditingController(text: w?.name ?? '');
-    _caliberRaw = w != null
+    _vendorCtrl = TextEditingController(text: w?.vendor ?? '');
+    _caliberNameCtrl = TextEditingController(text: w?.caliberName ?? '');
+    _caliberRaw = (w != null && w.caliberInch > 0)
         ? w.caliber.in_(FC.projectileDiameter.rawUnit)
         : Distance.inch(0.338).in_(FC.projectileDiameter.rawUnit);
     final twistAbs = w?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
@@ -68,17 +69,18 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _vendorCtrl.dispose();
+    _caliberNameCtrl.dispose();
     super.dispose();
   }
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
-
-  void _validateName() {
-    setState(() {
-      _nameError = _nameCtrl.text.trim().isEmpty ? 'Name is required' : null;
-    });
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_caliberRaw <= 0) return false;
+    if (_twistRaw <= 0) return false;
+    return true;
   }
 
   // ── Build result ──────────────────────────────────────────────────────────
@@ -86,6 +88,10 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   Weapon _buildWeapon() {
     final weapon = widget.initial ?? Weapon();
     weapon.name = _nameCtrl.text.trim();
+    weapon.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
+    weapon.caliberName = _caliberNameCtrl.text.trim();
     weapon.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
     weapon.twist = Distance(
       _rightHand ? _twistRaw : -_twistRaw,
@@ -98,8 +104,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
-    _validateName();
     if (!_isValid) return;
     context.pop(_buildWeapon());
   }
@@ -122,93 +126,109 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
       title: title,
       isSubscreen: true,
       showBack: false,
-      body: Column(
+      bottomBar: _ActionBar(
+        onDiscard: _onDiscard,
+        onSave: _isValid ? _onSave : null,
+      ),
+      body: ListView(
         children: [
-          Expanded(
-            child: ListView(
-              children: [
-                _RiflePlaceholder(),
-                // ── Name ────────────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: TextField(
-                    controller: _nameCtrl,
-                    decoration: InputDecoration(
-                      labelText: 'Weapon name',
-                      errorText: _nameError,
-                    ),
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) {
-                      if (_nameTouched) _validateName();
-                    },
-                    onEditingComplete: _validateName,
-                  ),
-                ),
-                // ── Ballistics ───────────────────────────────────────────────
-                const ListSectionTile('Ballistics'),
-                if (caliberEditable)
-                  UnitValueFieldTile(
-                    title: 'Caliber diameter',
-                    rawValue: _caliberRaw,
-                    constraints: FC.projectileDiameter,
-                    displayUnit: units.diameterUnit,
-                    icon: IconDef.caliber,
-                    onChanged: (v) => setState(() => _caliberRaw = v),
-                  )
-                else
-                  InfoListTile(
-                    label: 'Caliber diameter',
-                    value: widget.initial != null
-                        ? fmt.diameter(widget.initial!.caliber)
-                        : '—',
-                    icon: IconDef.caliber,
-                  ),
-                // ── Hardware ─────────────────────────────────────────────────
-                const ListSectionTile('Hardware'),
-                UnitValueFieldTile(
-                  title: 'Twist rate',
-                  rawValue: _twistRaw,
-                  constraints: FC.twist,
-                  displayUnit: units.twistUnit,
-                  symbol: '1:${units.twistUnit.symbol}',
-                  icon: twistDirIcon,
-                  onChanged: (v) => setState(() => _twistRaw = v),
-                ),
-                SwitchListTile(
-                  secondary: Icon(twistDirIcon),
-                  title: const Text('Twist direction'),
-                  subtitle: Text(_rightHand ? 'right' : 'left'),
-                  value: _rightHand,
-                  onChanged: (v) => setState(() => _rightHand = v),
-                  dense: true,
-                ),
-                // ── Extra fields section ────────────────────────────────────
-                Divider(height: 1),
-                SwitchListTile(
-                  secondary: const Icon(IconDef.moreHoriz),
-                  title: const Text('Additional parameters'),
-                  subtitle: const Text('Barrel length, etc.'),
-                  value: _showExtraFields,
-                  onChanged: (v) => setState(() => _showExtraFields = v),
-                  dense: true,
-                ),
-                if (_showExtraFields) ...[
-                  const SizedBox(height: 8),
-                  NullableUnitValueFieldTile(
-                    title: 'Barrel length',
-                    rawValue: _barrelLengthRaw,
-                    constraints: FC.barrelLength,
-                    displayUnit: units.barrelLengthUnit,
-                    icon: IconDef.length,
-                    onChanged: (v) => setState(() => _barrelLengthRaw = v),
-                  ),
-                  // Тут можна додати інші додаткові поля в майбутньому
-                ],
-              ],
+          _RiflePlaceholder(),
+          // ── Name ────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Weapon name',
+                errorText: _nameCtrl.text.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
+                labelStyle: _nameCtrl.text.trim().isEmpty
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
+              ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) {
+                setState(() {});
+              },
             ),
           ),
-          // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _vendorCtrl,
+              decoration: const InputDecoration(labelText: 'Vendor'),
+              textCapitalization: TextCapitalization.words,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              controller: _caliberNameCtrl,
+              decoration: const InputDecoration(labelText: 'Caliber name'),
+              textCapitalization: TextCapitalization.words,
+            ),
+          ),
+          // ── Ballistics ───────────────────────────────────────────────
+          const ListSectionTile('Ballistics'),
+          if (caliberEditable)
+            UnitValueFieldTile(
+              title: 'Caliber diameter',
+              rawValue: _caliberRaw,
+              constraints: FC.projectileDiameter,
+              displayUnit: units.diameterUnit,
+              icon: IconDef.caliber,
+              onChanged: (v) => setState(() => _caliberRaw = v),
+            )
+          else
+            InfoListTile(
+              label: 'Caliber diameter',
+              value: widget.initial != null
+                  ? fmt.diameter(widget.initial!.caliber)
+                  : '—',
+              icon: IconDef.caliber,
+            ),
+          // ── Hardware ─────────────────────────────────────────────────
+          const ListSectionTile('Hardware'),
+          UnitValueFieldTile(
+            title: 'Twist rate',
+            rawValue: _twistRaw,
+            constraints: FC.twist,
+            displayUnit: units.twistUnit,
+            symbol: '1:${units.twistUnit.symbol}',
+            icon: twistDirIcon,
+            onChanged: (v) => setState(() => _twistRaw = v),
+          ),
+          SwitchListTile(
+            secondary: Icon(twistDirIcon),
+            title: const Text('Twist direction'),
+            subtitle: Text(_rightHand ? 'right' : 'left'),
+            value: _rightHand,
+            onChanged: (v) => setState(() => _rightHand = v),
+            dense: true,
+          ),
+          // ── Extra fields section ────────────────────────────────────
+          Divider(height: 1),
+          SwitchListTile(
+            secondary: const Icon(IconDef.moreHoriz),
+            title: const Text('Additional parameters'),
+            subtitle: const Text('Barrel length, etc.'),
+            value: _showExtraFields,
+            onChanged: (v) => setState(() => _showExtraFields = v),
+            dense: true,
+          ),
+          if (_showExtraFields) ...[
+            const SizedBox(height: 8),
+            NullableUnitValueFieldTile(
+              title: 'Barrel length',
+              rawValue: _barrelLengthRaw,
+              constraints: FC.barrelLength,
+              displayUnit: units.barrelLengthUnit,
+              icon: IconDef.length,
+              onChanged: (v) => setState(() => _barrelLengthRaw = v),
+            ),
+            // Тут можна додати інші додаткові поля в майбутньому
+          ],
         ],
       ),
     );
@@ -258,16 +278,19 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
-        children: [
-          OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-          const SizedBox(width: 12),
-          Expanded(
-            child: FilledButton(onPressed: onSave, child: const Text('Save')),
-          ),
-        ],
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          children: [
+            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(onPressed: onSave, child: const Text('Save')),
+            ),
+          ],
+        ),
       ),
     );
   }

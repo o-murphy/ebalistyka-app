@@ -36,6 +36,7 @@ class IconDef {
   static const IconData verticalClick = Icons.swap_vert_outlined;
   static const IconData horizontalClick = Icons.swap_horiz_outlined;
   // special
+  static const IconData weapon = Icons.military_tech_outlined;
   static const IconData ammo = Icons.rocket_launch_outlined;
   static const IconData sight = Icons.my_location_outlined;
   static const IconData ffp = Icons.first_page_outlined;

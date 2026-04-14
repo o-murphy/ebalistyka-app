@@ -167,7 +167,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
           trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
-          leading: const Icon(Icons.military_tech_outlined),
+          leading: const Icon(IconDef.weapon),
           title: Text(data.weaponName),
           subtitle: const Text("Weapon name"),
           dense: true,
@@ -357,14 +357,7 @@ class _ProfileControlTile extends StatelessWidget {
           children: [
             // Main content
             const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(IconDef.image, size: 48, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text('Profile Controls Area'),
-                ],
-              ),
+              child: Icon(IconDef.weapon, size: 48, color: Colors.grey),
             ),
 
             // Top right button (edit button)

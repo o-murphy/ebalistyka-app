@@ -1,0 +1,16 @@
+name: reticle_gen
+description: Simple svg ballistic reticle generator.
+version: 0.0.1
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.11.4
+
+# Add regular dependencies here.
+dependencies:
+  args: ^2.7.0
+  xml: ^6.6.1
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

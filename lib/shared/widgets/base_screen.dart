@@ -10,6 +10,7 @@ class BaseScreen extends StatelessWidget {
     this.showBack = true,
     this.floatingActionButton,
     this.withTabs,
+    this.bottomBar,
     super.key,
   });
 
@@ -20,6 +21,10 @@ class BaseScreen extends StatelessWidget {
   final bool showBack;
   final Widget? floatingActionButton;
   final List<Tab>? withTabs;
+
+  /// Pinned bottom bar (e.g. action buttons in wizards).
+  /// Placed in Scaffold.bottomNavigationBar so the body never scrolls behind it.
+  final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +37,9 @@ class BaseScreen extends StatelessWidget {
         withTabs: withTabs,
       ),
       body: SafeArea(child: body),
+      bottomNavigationBar: bottomBar != null
+          ? SafeArea(child: bottomBar!)
+          : null,
       floatingActionButton: floatingActionButton,
     );
   }

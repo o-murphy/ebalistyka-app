@@ -31,27 +31,19 @@ abstract final class CollectionParser {
   static BuiltinCollection parse(String jsonString) {
     final map = jsonDecode(jsonString) as Map<String, dynamic>;
 
-    // calibers lookup: id → diameter in inches
-    final calibers = <int, double>{};
-    for (final c in (map['calibers'] as List? ?? [])) {
-      final cm = c as Map<String, dynamic>;
-      calibers[cm['id'] as int] = ((cm['diameter'] ?? cm['caliber']) as num)
-          .toDouble();
-    }
-
     final ammoList = (map['ammo'] as List? ?? []).cast<Map<String, dynamic>>();
 
     return BuiltinCollection(
       weapons: (map['weapon'] as List? ?? [])
-          .map((w) => _parseWeapon(w as Map<String, dynamic>, calibers))
+          .map((w) => _parseWeapon(w as Map<String, dynamic>))
           .toList(),
       cartridges: ammoList
           .where((j) => (j['type'] as String?) != 'bullet')
-          .map((j) => _parseAmmo(j, calibers))
+          .map(_parseAmmo)
           .toList(),
       bullets: ammoList
           .where((j) => (j['type'] as String?) == 'bullet')
-          .map((j) => _parseAmmo(j, calibers))
+          .map(_parseAmmo)
           .toList(),
       sights: (map['sights'] as List? ?? [])
           .map((s) => _parseSight(s as Map<String, dynamic>))
@@ -61,20 +53,17 @@ abstract final class CollectionParser {
 
   // ── Weapon ─────────────────────────────────────────────────────────────────
 
-  static Weapon _parseWeapon(
-    Map<String, dynamic> j,
-    Map<int, double> calibers,
-  ) {
-    final caliberId = j['caliberId'] as int?;
-    final diameterInch = caliberId != null ? calibers[caliberId] : null;
-    final barrelRaw =
-        (j['extra'] as Map<String, dynamic>?)?['barrelLength'] as num?;
+  static Weapon _parseWeapon(Map<String, dynamic> j) {
+    final barrelRaw = j['barrelLengthInch'] as num?;
     return Weapon()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
+      ..notes = j['notes'] as String?
       ..image = j['image'] as String?
-      ..twist = Distance.inch((j['rTwist'] as num).toDouble())
-      ..caliber = Distance.inch(diameterInch ?? 0.0)
+      ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
+      ..caliberName = j['caliberName'] as String? ?? ''
+      ..twist = Distance.inch((j['twistInch'] as num).toDouble())
       ..barrelLength = barrelRaw != null
           ? Distance.inch(barrelRaw.toDouble())
           : null;
@@ -82,44 +71,46 @@ abstract final class CollectionParser {
 
   // ── Ammo ───────────────────────────────────────────────────────────────────
 
-  static Ammo _parseAmmo(Map<String, dynamic> j, Map<int, double> calibers) {
-    final caliberId = j['caliberId'] as int?;
-    final diameterInch =
-        (caliberId != null ? calibers[caliberId] : null) ?? 0.0;
-    final dragType = _dragType(j['dType'] as String? ?? 'G1');
+  static Ammo _parseAmmo(Map<String, dynamic> j) {
+    final dragType = _dragType(j['dragTypeValue'] as String? ?? 'g1');
 
     final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
     final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
     final useCustom = j['useCusomDragTable'] as bool? ?? false;
 
+    final mvRaw = j['muzzleVelocityMps'] as num?;
+
     final ammo = Ammo()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..projectileName = j['projectileName'] as String?
       ..image = j['image'] as String?
       ..dragType = dragType
-      ..caliber = Distance.inch(diameterInch)
-      ..weight = Weight.grain((j['bulletWeight'] as num? ?? 0.0).toDouble())
-      ..length = Distance.inch((j['bulletLength'] as num? ?? 0.0).toDouble())
-      ..mv = Velocity.mps((j['muzzleVelocity'] as num? ?? 0.0).toDouble())
+      ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
+      ..weightGrain = (j['weightGrain'] as num?)?.toDouble() ?? -1.0
+      ..lengthInch = (j['lengthInch'] as num?)?.toDouble() ?? -1.0
+      ..muzzleVelocityMps = mvRaw != null ? mvRaw.toDouble() : -1.0
       ..mvTemperature = Temperature.celsius(
-        (j['muzzleVelocityTemperature'] as num? ?? 15.0).toDouble(),
+        (j['muzzleVelocityTemperatureC'] as num? ?? 15.0).toDouble(),
       )
       ..powderSensitivity = Ratio.fraction(
-        (j['powderSensitivity'] as num? ?? 0.0).toDouble(),
+        (j['powderSensitivityFrac'] as num? ?? 0.0).toDouble(),
       )
       ..usePowderSensitivity = j['usePowderSensitivity'] as bool? ?? false
       ..useMultiBcG1 = useMultiG1
       ..useMultiBcG7 = useMultiG7;
 
     // BC values
+    final bcG1Raw = j['bcG1'] as num?;
+    final bcG7Raw = j['bcG7'] as num?;
     if (dragType == DragType.g7) {
-      ammo.bcG7 = (j['bcG7'] as num? ?? 0.0).toDouble();
+      ammo.bcG7 = bcG7Raw?.toDouble() ?? -1.0;
       if (useMultiG7) {
         _applyMultiBc(ammo, j['multiBCtableG7'] as List? ?? [], isG7: true);
       }
     } else if (dragType == DragType.g1) {
-      ammo.bcG1 = (j['bcG1'] as num? ?? 0.0).toDouble();
+      ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
       if (useMultiG1) {
         _applyMultiBc(ammo, j['multiBCtableG1'] as List? ?? [], isG7: false);
       }
@@ -217,22 +208,26 @@ abstract final class CollectionParser {
   // ── Sight ──────────────────────────────────────────────────────────────────
 
   static Sight _parseSight(Map<String, dynamic> j) {
-    final mag = j['magnification'] as Map<String, dynamic>?;
+    final clickY = (j['verticalClick'] as num? ?? 0.1).toDouble();
+    final clickX = (j['horizontalClick'] as num? ?? 0.1).toDouble();
+    final calibMag = j['calibratedMagnification'] as num?;
     return Sight()
+      ..id = j['id'] as int? ?? 0
       ..name = j['name'] as String
       ..vendor = j['vendor'] as String?
       ..image = j['image'] as String?
       ..reticleImage = j['reticleImage'] as String?
-      ..focalPlaneValue = j['focalPlane'] as String? ?? 'ffp'
-      ..sightHeightInch = (j['sightHeight'] as num? ?? 0.0).toDouble()
-      ..sightHorizontalOffsetInch = (j['sightHorizontalOffset'] as num? ?? 0.0)
-          .toDouble()
-      ..verticalClick = (j['verticalClick'] as num? ?? 0.1).toDouble()
-      ..horizontalClick = (j['horizontalClick'] as num? ?? 0.1).toDouble()
+      ..focalPlaneValue = j['focalPlaneValue'] as String? ?? 'ffp'
+      ..sightHeightInch = (j['sightHeightInch'] as num? ?? 0.0).toDouble()
+      ..sightHorizontalOffsetInch =
+          (j['sightHorizontalOffsetInch'] as num? ?? 0.0).toDouble()
+      ..verticalClick = clickY
+      ..horizontalClick = clickX
       ..verticalClickUnit = j['verticalClickUnit'] as String? ?? 'mil'
       ..horizontalClickUnit = j['horizontalClickUnit'] as String? ?? 'mil'
-      ..minMagnification = (mag?['min'] as num? ?? 0.0).toDouble()
-      ..maxMagnification = (mag?['max'] as num? ?? 0.0).toDouble();
+      ..minMagnification = (j['minMagnification'] as num? ?? 0.0).toDouble()
+      ..maxMagnification = (j['maxMagnification'] as num? ?? 0.0).toDouble()
+      ..calibratedMagnification = calibMag?.toDouble() ?? -1.0;
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────

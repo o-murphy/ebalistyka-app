@@ -25,29 +25,71 @@ class MyAmmoScreen extends ConsumerWidget {
   /// Falls back to the active profile when null.
   final String? profileId;
 
-  Future<void> _showAddAmmoSheet(BuildContext context, Weapon? weapon) =>
-      showActionSheet(
-        context,
-        title: 'Add Ammo',
-        entries: [
-          ActionSheetItem(
-            icon: IconDef.addCircle,
-            title: 'Create new',
-            onTap: () async =>
-                context.push(Routes.ammoCreate, extra: weapon?.caliberInch),
-          ),
-          ActionSheetItem(
-            icon: IconDef.openCollection,
-            title: 'Select cartridge from collection',
-            onTap: () async => context.push(Routes.cartridgeCollection),
-          ),
-          ActionSheetItem(
-            icon: IconDef.openCollection,
-            title: 'Select bullet from collection',
-            onTap: () async => context.push(Routes.bulletCollection),
-          ),
-        ],
-      );
+  Future<void> _showAddAmmoSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Weapon? weapon,
+  ) => showActionSheet(
+    context,
+    title: 'Add Ammo',
+    entries: [
+      ActionSheetItem(
+        icon: IconDef.addCircle,
+        title: 'Create new',
+        onTap: () async {
+          final result = await context.push<Ammo?>(
+            Routes.ammoCreate,
+            extra: weapon?.caliberInch,
+          );
+          if (result != null && context.mounted) {
+            await ref.read(appStateProvider.notifier).saveAmmo(result);
+          }
+        },
+      ),
+      ActionSheetItem(
+        icon: IconDef.openCollection,
+        title: 'Select cartridge from collection',
+        onTap: () async {
+          final template = await context.push<Ammo?>(
+            Routes.cartridgeCollection,
+            extra: weapon?.caliberInch,
+          );
+          if (template == null || !context.mounted) return;
+          final result = await context.push<Ammo?>(
+            Routes.profileEditAmmo,
+            extra: (
+              template,
+              template.caliberInch > 0 ? template.caliberInch : null,
+            ),
+          );
+          if (result != null && context.mounted) {
+            await ref.read(appStateProvider.notifier).saveAmmo(result);
+          }
+        },
+      ),
+      ActionSheetItem(
+        icon: IconDef.openCollection,
+        title: 'Select bullet from collection',
+        onTap: () async {
+          final template = await context.push<Ammo?>(
+            Routes.bulletCollection,
+            extra: weapon?.caliberInch,
+          );
+          if (template == null || !context.mounted) return;
+          final result = await context.push<Ammo?>(
+            Routes.profileEditAmmo,
+            extra: (
+              template,
+              template.caliberInch > 0 ? template.caliberInch : null,
+            ),
+          );
+          if (result != null && context.mounted) {
+            await ref.read(appStateProvider.notifier).saveAmmo(result);
+          }
+        },
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,7 +121,7 @@ class MyAmmoScreen extends ConsumerWidget {
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
-        onPressed: () => _showAddAmmoSheet(context, weapon),
+        onPressed: () => _showAddAmmoSheet(context, ref, weapon),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
@@ -113,7 +155,10 @@ class MyAmmoScreen extends ConsumerWidget {
                   onEdit: () async {
                     final result = await context.push<Ammo?>(
                       Routes.profileEditAmmo,
-                      extra: item,
+                      extra: (
+                        item,
+                        item.caliberInch > 0 ? item.caliberInch : null,
+                      ),
                     );
                     if (result != null && context.mounted) {
                       await ref

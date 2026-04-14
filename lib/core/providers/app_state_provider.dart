@@ -227,7 +227,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
         final profile = Profile()
           ..name = ammos[i].name
-          ..sortOrder = i
           ..weapon.target = weapon
           ..sight.target = sight
           ..ammo.target = ammos[i]

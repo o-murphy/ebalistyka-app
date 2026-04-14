@@ -26,6 +26,7 @@ class SightWizardScreen extends ConsumerStatefulWidget {
 
 class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _vendorCtrl;
 
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
   // sightHeight / horizontalOffset: Unit.millimeter (FC.sightHeight)
@@ -45,9 +46,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late double _minMagRaw;
   late double _maxMagRaw;
 
-  String? _nameError;
-  bool _nameTouched = false;
-
   static const _clickUnits = [
     Unit.mil,
     Unit.moa,
@@ -61,6 +59,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
     super.initState();
     final s = widget.initial;
     _nameCtrl = TextEditingController(text: s?.name ?? '');
+    _vendorCtrl = TextEditingController(text: s?.vendor ?? '');
 
     _sightHeightRaw = s?.sightHeight.in_(FC.sightHeight.rawUnit) ?? 0.0;
     _horizontalOffsetRaw =
@@ -87,17 +86,19 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _vendorCtrl.dispose();
     super.dispose();
   }
 
   // ── Validation ────────────────────────────────────────────────────────────
 
-  bool get _isValid => _nameCtrl.text.trim().isNotEmpty;
-
-  void _validateName() {
-    setState(() {
-      _nameError = _nameCtrl.text.trim().isEmpty ? 'Name is required' : null;
-    });
+  bool get _isValid {
+    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (_minMagRaw <= 0) return false;
+    if (_maxMagRaw <= 0) return false;
+    if (_vClickRaw <= 0) return false;
+    if (_hClickRaw <= 0) return false;
+    return true;
   }
 
   // ── Build result ──────────────────────────────────────────────────────────
@@ -105,6 +106,9 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   Sight _buildSight() {
     final sight = widget.initial ?? Sight();
     sight.name = _nameCtrl.text.trim();
+    sight.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
     sight.sightHeight = Distance(_sightHeightRaw, FC.sightHeight.rawUnit);
     sight.horizontalOffset = Distance(
       _horizontalOffsetRaw,
@@ -127,8 +131,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   }
 
   void _onSave() {
-    _nameTouched = true;
-    _validateName();
     if (!_isValid) return;
     context.pop(_buildSight());
   }
@@ -148,126 +150,132 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
       title: title,
       isSubscreen: true,
       showBack: false,
-      body: Column(
+      bottomBar: _ActionBar(
+        onDiscard: _onDiscard,
+        onSave: _isValid ? _onSave : null,
+      ),
+      body: ListView(
         children: [
-          Expanded(
-            child: ListView(
-              children: [
-                _SightPlaceholder(),
-                // ── Name ──────────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: TextField(
-                    controller: _nameCtrl,
-                    decoration: InputDecoration(
-                      labelText: 'Sight name',
-                      errorText: _nameError,
-                    ),
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) {
-                      if (_nameTouched) _validateName();
-                      setState(() {}); // update title
-                    },
-                    onEditingComplete: _validateName,
-                  ),
-                ),
-                // ── Mounting ──────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Mounting'),
-                UnitValueFieldTile(
-                  title: 'Sight height',
-                  rawValue: _sightHeightRaw,
-                  constraints: FC.sightHeight,
-                  displayUnit: units.sightHeightUnit,
-                  icon: IconDef.height,
-                  onChanged: (v) => setState(() => _sightHeightRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Horizontal offset',
-                  rawValue: _horizontalOffsetRaw,
-                  constraints: FC.sightHeight,
-                  displayUnit: units.sightHeightUnit,
-                  icon: IconDef.horizontalOffset,
-                  onChanged: (v) => setState(() => _horizontalOffsetRaw = v),
-                ),
-                // ── Reticle ────────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Reticle'),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                  child: SegmentedButton<FocalPlane>(
-                    segments: const [
-                      ButtonSegment(
-                        value: FocalPlane.ffp,
-                        label: Text('FFP'),
-                        icon: Icon(IconDef.ffp),
-                      ),
-                      ButtonSegment(
-                        value: FocalPlane.sfp,
-                        label: Text('SFP'),
-                        icon: Icon(IconDef.sfp),
-                      ),
-                      ButtonSegment(
-                        value: FocalPlane.lwir,
-                        label: Text('LWIR'),
-                        icon: Icon(IconDef.lwir),
-                      ),
-                    ],
-                    selected: {_focalPlane},
-                    onSelectionChanged: (s) =>
-                        setState(() => _focalPlane = s.first),
-                  ),
-                ),
-                UnitValueFieldTile(
-                  title: 'Min magnification',
-                  rawValue: _minMagRaw,
-                  constraints: FC.magnification,
-                  displayUnit: Unit.scalar,
-                  symbol: 'x',
-                  icon: IconDef.magnificationMin,
-                  onChanged: (v) => setState(() => _minMagRaw = v),
-                ),
-                UnitValueFieldTile(
-                  title: 'Max magnification',
-                  rawValue: _maxMagRaw,
-                  constraints: FC.magnification,
-                  displayUnit: Unit.scalar,
-                  symbol: 'x',
-                  icon: IconDef.magnificationMax,
-                  onChanged: (v) => setState(() => _maxMagRaw = v),
-                ),
-                // ── Clicks ────────────────────────────────────────────────
-                const Divider(height: 1),
-                const ListSectionTile('Clicks'),
-                _clickLabel(context, 'Vertical click'),
-                UnitInputWithPicker(
-                  value: _vClickRaw,
-                  constraints: FC.adjustment,
-                  displayUnit: _vClickUnit,
-                  options: _clickUnits,
-                  unitLabel: 'Click unit',
-                  onChanged: (v) {
-                    if (v != null) setState(() => _vClickRaw = v);
-                  },
-                  onUnitChanged: (u) => setState(() => _vClickUnit = u),
-                ),
-                _clickLabel(context, 'Horizontal click'),
-                UnitInputWithPicker(
-                  value: _hClickRaw,
-                  constraints: FC.adjustment,
-                  displayUnit: _hClickUnit,
-                  options: _clickUnits,
-                  unitLabel: 'Click unit',
-                  onChanged: (v) {
-                    if (v != null) setState(() => _hClickRaw = v);
-                  },
-                  onUnitChanged: (u) => setState(() => _hClickUnit = u),
-                ),
-              ],
+          _SightPlaceholder(),
+          // ── Name ──────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Sight name',
+                errorText: _nameCtrl.text.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
+                labelStyle: _nameCtrl.text.trim().isEmpty
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
+              ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) {
+                setState(() {});
+              },
             ),
           ),
-          // ── Action bar ───────────────────────────────────────────────────
-          _ActionBar(onDiscard: _onDiscard, onSave: _onSave),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _vendorCtrl,
+              decoration: const InputDecoration(labelText: 'Vendor'),
+              textCapitalization: TextCapitalization.words,
+            ),
+          ),
+          // ── Mounting ──────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Mounting'),
+          UnitValueFieldTile(
+            title: 'Sight height',
+            rawValue: _sightHeightRaw,
+            constraints: FC.sightHeight,
+            displayUnit: units.sightHeightUnit,
+            icon: IconDef.height,
+            onChanged: (v) => setState(() => _sightHeightRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Horizontal offset',
+            rawValue: _horizontalOffsetRaw,
+            constraints: FC.sightHeight,
+            displayUnit: units.sightHeightUnit,
+            icon: IconDef.horizontalOffset,
+            onChanged: (v) => setState(() => _horizontalOffsetRaw = v),
+          ),
+          // ── Reticle ────────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Reticle'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: SegmentedButton<FocalPlane>(
+              segments: const [
+                ButtonSegment(
+                  value: FocalPlane.ffp,
+                  label: Text('FFP'),
+                  icon: Icon(IconDef.ffp),
+                ),
+                ButtonSegment(
+                  value: FocalPlane.sfp,
+                  label: Text('SFP'),
+                  icon: Icon(IconDef.sfp),
+                ),
+                ButtonSegment(
+                  value: FocalPlane.lwir,
+                  label: Text('LWIR'),
+                  icon: Icon(IconDef.lwir),
+                ),
+              ],
+              selected: {_focalPlane},
+              onSelectionChanged: (s) => setState(() => _focalPlane = s.first),
+            ),
+          ),
+          UnitValueFieldTile(
+            title: 'Min magnification',
+            rawValue: _minMagRaw,
+            constraints: FC.magnification,
+            displayUnit: Unit.scalar,
+            symbol: 'x',
+            icon: IconDef.magnificationMin,
+            onChanged: (v) => setState(() => _minMagRaw = v),
+          ),
+          UnitValueFieldTile(
+            title: 'Max magnification',
+            rawValue: _maxMagRaw,
+            constraints: FC.magnification,
+            displayUnit: Unit.scalar,
+            symbol: 'x',
+            icon: IconDef.magnificationMax,
+            onChanged: (v) => setState(() => _maxMagRaw = v),
+          ),
+          // ── Clicks ────────────────────────────────────────────────
+          const Divider(height: 1),
+          const ListSectionTile('Clicks'),
+          _clickLabel(context, 'Vertical click'),
+          UnitInputWithPicker(
+            value: _vClickRaw,
+            constraints: FC.adjustment,
+            displayUnit: _vClickUnit,
+            options: _clickUnits,
+            unitLabel: 'Click unit',
+            onChanged: (v) {
+              if (v != null) setState(() => _vClickRaw = v);
+            },
+            onUnitChanged: (u) => setState(() => _vClickUnit = u),
+          ),
+          _clickLabel(context, 'Horizontal click'),
+          UnitInputWithPicker(
+            value: _hClickRaw,
+            constraints: FC.adjustment,
+            displayUnit: _hClickUnit,
+            options: _clickUnits,
+            unitLabel: 'Click unit',
+            onChanged: (v) {
+              if (v != null) setState(() => _hClickRaw = v);
+            },
+            onUnitChanged: (u) => setState(() => _hClickUnit = u),
+          ),
         ],
       ),
     );
@@ -329,16 +337,19 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
-        children: [
-          OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-          const SizedBox(width: 12),
-          Expanded(
-            child: FilledButton(onPressed: onSave, child: const Text('Save')),
-          ),
-        ],
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Row(
+          children: [
+            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(onPressed: onSave, child: const Text('Save')),
+            ),
+          ],
+        ),
       ),
     );
   }

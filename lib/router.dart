@@ -116,13 +116,17 @@ final appRouter = GoRouter(
                         ),
                         GoRoute(
                           path: 'cartridge-collection',
-                          builder: (_, _) =>
-                              const AmmoCollectionScreen(filterBullet: false),
+                          builder: (_, state) => AmmoCollectionScreen(
+                            filterBullet: false,
+                            caliberInch: state.extra as double?,
+                          ),
                         ),
                         GoRoute(
                           path: 'bullet-collection',
-                          builder: (_, _) =>
-                              const AmmoCollectionScreen(filterBullet: true),
+                          builder: (_, state) => AmmoCollectionScreen(
+                            filterBullet: true,
+                            caliberInch: state.extra as double?,
+                          ),
                         ),
                       ],
                     ),
