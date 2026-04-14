@@ -40,7 +40,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late final TextEditingController _vendorCtrl;
   late final TextEditingController _projectileNameCtrl;
 
-  String? _nameError;
   bool _nameTouched = false;
 
   late double _caliberRaw;
@@ -181,12 +180,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     return true;
   }
 
-  void _validateName() {
-    setState(() {
-      _nameError = _nameCtrl.text.trim().isEmpty ? 'Name is required' : null;
-    });
-  }
-
   // ── Build result ──────────────────────────────────────────────────────────
 
   Ammo _buildAmmo() {
@@ -236,7 +229,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   void _onSave() {
     _nameTouched = true;
-    _validateName();
     if (!_isValid) return;
     context.pop(_buildAmmo());
   }
@@ -354,28 +346,23 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         children: [
           _AmmoPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
-          ColoredBox(
-            color: _nameCtrl.text.trim().isEmpty
-                ? Theme.of(context).colorScheme.tertiaryContainer
-                : Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: TextField(
-                controller: _nameCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Ammo name',
-                  errorText: _nameError,
-                  labelStyle: _nameCtrl.text.trim().isEmpty
-                      ? TextStyle(color: Theme.of(context).colorScheme.error)
-                      : null,
-                ),
-                textCapitalization: TextCapitalization.words,
-                onChanged: (_) {
-                  if (_nameTouched) _validateName();
-                  setState(() {});
-                },
-                onEditingComplete: _validateName,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Ammo name',
+                errorText: _nameCtrl.text.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
+                labelStyle: _nameCtrl.text.trim().isEmpty
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
               ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) {
+                setState(() {});
+              },
             ),
           ),
           Padding(

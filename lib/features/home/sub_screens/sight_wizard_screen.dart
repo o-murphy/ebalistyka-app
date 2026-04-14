@@ -46,7 +46,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late double _minMagRaw;
   late double _maxMagRaw;
 
-  String? _nameError;
   bool _nameTouched = false;
 
   static const _clickUnits = [
@@ -104,12 +103,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
     return true;
   }
 
-  void _validateName() {
-    setState(() {
-      _nameError = _nameCtrl.text.trim().isEmpty ? 'Name is required' : null;
-    });
-  }
-
   // ── Build result ──────────────────────────────────────────────────────────
 
   Sight _buildSight() {
@@ -141,7 +134,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
 
   void _onSave() {
     _nameTouched = true;
-    _validateName();
     if (!_isValid) return;
     context.pop(_buildSight());
   }
@@ -169,28 +161,23 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
         children: [
           _SightPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
-          ColoredBox(
-            color: _nameCtrl.text.trim().isEmpty
-                ? Theme.of(context).colorScheme.tertiaryContainer
-                : Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: TextField(
-                controller: _nameCtrl,
-                decoration: InputDecoration(
-                  labelText: 'Sight name',
-                  errorText: _nameError,
-                  labelStyle: _nameCtrl.text.trim().isEmpty
-                      ? TextStyle(color: Theme.of(context).colorScheme.error)
-                      : null,
-                ),
-                textCapitalization: TextCapitalization.words,
-                onChanged: (_) {
-                  if (_nameTouched) _validateName();
-                  setState(() {});
-                },
-                onEditingComplete: _validateName,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: TextField(
+              controller: _nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Sight name',
+                errorText: _nameCtrl.text.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
+                labelStyle: _nameCtrl.text.trim().isEmpty
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
               ),
+              textCapitalization: TextCapitalization.words,
+              onChanged: (_) {
+                setState(() {});
+              },
             ),
           ),
           Padding(
