@@ -97,7 +97,9 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   Weapon _buildWeapon() {
     final weapon = widget.initial ?? Weapon();
     weapon.name = _nameCtrl.text.trim();
-    weapon.vendor = _vendorCtrl.text.trim().isEmpty ? null : _vendorCtrl.text.trim();
+    weapon.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
     weapon.caliberName = _caliberNameCtrl.text.trim();
     weapon.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
     weapon.twist = Distance(
@@ -155,9 +157,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
                   labelText: 'Weapon name',
                   errorText: _nameError,
                   labelStyle: _nameCtrl.text.trim().isEmpty
-                      ? TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        )
+                      ? TextStyle(color: Theme.of(context).colorScheme.error)
                       : null,
                 ),
                 textCapitalization: TextCapitalization.words,

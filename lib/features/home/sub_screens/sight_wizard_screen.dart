@@ -115,7 +115,9 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   Sight _buildSight() {
     final sight = widget.initial ?? Sight();
     sight.name = _nameCtrl.text.trim();
-    sight.vendor = _vendorCtrl.text.trim().isEmpty ? null : _vendorCtrl.text.trim();
+    sight.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
     sight.sightHeight = Distance(_sightHeightRaw, FC.sightHeight.rawUnit);
     sight.horizontalOffset = Distance(
       _horizontalOffsetRaw,
@@ -179,9 +181,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                   labelText: 'Sight name',
                   errorText: _nameError,
                   labelStyle: _nameCtrl.text.trim().isEmpty
-                      ? TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        )
+                      ? TextStyle(color: Theme.of(context).colorScheme.error)
                       : null,
                 ),
                 textCapitalization: TextCapitalization.words,

@@ -357,14 +357,7 @@ class _ProfileControlTile extends StatelessWidget {
           children: [
             // Main content
             const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(IconDef.weapon, size: 48, color: Colors.grey),
-                  SizedBox(height: 8),
-                  Text('Profile Controls Area'),
-                ],
-              ),
+              child: Icon(IconDef.weapon, size: 48, color: Colors.grey),
             ),
 
             // Top right button (edit button)

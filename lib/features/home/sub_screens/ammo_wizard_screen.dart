@@ -192,7 +192,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   Ammo _buildAmmo() {
     final ammo = widget.initial ?? Ammo();
     ammo.name = _nameCtrl.text.trim();
-    ammo.vendor = _vendorCtrl.text.trim().isEmpty ? null : _vendorCtrl.text.trim();
+    ammo.vendor = _vendorCtrl.text.trim().isEmpty
+        ? null
+        : _vendorCtrl.text.trim();
     ammo.projectileName = _projectileNameCtrl.text.trim().isEmpty
         ? null
         : _projectileNameCtrl.text.trim();
@@ -364,9 +366,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                   labelText: 'Ammo name',
                   errorText: _nameError,
                   labelStyle: _nameCtrl.text.trim().isEmpty
-                      ? TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        )
+                      ? TextStyle(color: Theme.of(context).colorScheme.error)
                       : null,
                 ),
                 textCapitalization: TextCapitalization.words,
