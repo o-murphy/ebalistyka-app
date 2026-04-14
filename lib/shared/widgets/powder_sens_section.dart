@@ -75,7 +75,7 @@ class PowderSensSection extends StatelessWidget {
           if (powderSensRaw != null)
             UnitValueFieldTile(
               title: 'Powder sensitivity',
-              subtitle: 'Velocity change per temperature delta',
+              subtitle: 'Velocity change per 15°C temperature delta',
               rawValue: powderSensRaw!,
               constraints: FC.powderSensitivity,
               displayUnit: Unit.percent,
