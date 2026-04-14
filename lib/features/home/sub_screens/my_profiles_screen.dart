@@ -97,8 +97,14 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         title: 'From collection',
         onTap: () async {
           final name = await _askProfileName();
-          if (name != null && mounted) {
-            context.push(Routes.profileAddWeaponCollection, extra: name);
+          if (name == null || !mounted) return;
+          final weapon = await context.push<Weapon?>(
+            Routes.profileAddWeaponCollection,
+          );
+          if (weapon != null && mounted) {
+            await ref
+                .read(profilesActionsProvider.notifier)
+                .createProfile(name, weapon);
           }
         },
       ),

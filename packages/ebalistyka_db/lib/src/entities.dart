@@ -310,8 +310,6 @@ class Profile with Cloneable<Profile> {
   @Index()
   String name = "";
 
-  int sortOrder = 0;
-
   final weapon = ToOne<Weapon>();
   final sight = ToOne<Sight>();
   final ammo = ToOne<Ammo>();
@@ -319,11 +317,10 @@ class Profile with Cloneable<Profile> {
   final owner = ToOne<Owner>();
 
   @override
-  Profile copyWith({int? id, String? name, int? sortOrder}) {
+  Profile copyWith({int? id, String? name}) {
     return Profile()
       ..id = id ?? this.id
-      ..name = name ?? this.name
-      ..sortOrder = sortOrder ?? this.sortOrder;
+      ..name = name ?? this.name;
   }
 }
 

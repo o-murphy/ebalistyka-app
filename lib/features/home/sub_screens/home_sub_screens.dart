@@ -5,18 +5,10 @@ export 'my_sights_screen.dart';
 export 'sight_wizard_screen.dart';
 export 'ammo_wizard_screen.dart';
 export 'sight_collection_screen.dart';
+export 'weapon_collection_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
-
-// ── Weapon ────────────────────────────────────────────────────────────────────
-
-class WeaponCollectionScreen extends StatelessWidget {
-  const WeaponCollectionScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Weapon Collection');
-}
 
 // ── Ammo ──────────────────────────────────────────────────────────────────────
 

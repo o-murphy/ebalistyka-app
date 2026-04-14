@@ -17,21 +17,16 @@ class AnglesConvertorScreen extends ConsumerWidget {
     final state = ref.watch(anglesConvertorVmProvider);
     final notifier = ref.read(anglesConvertorVmProvider.notifier);
 
-    final rawDistanceInMeters = state.rawDistanceValue != null
-        ? state.rawDistanceValue!.convert(state.distanceInputUnit, Unit.meter)
-        : 0.0;
-    final rawAngleInMil = state.rawAngularValue != null
-        ? state.rawAngularValue!.convert(state.angularInputUnit, Unit.mil)
-        : 0.0;
-
     return BaseScreen(
       title: 'Angles Converter',
       isSubscreen: true,
       body: ListView(
         children: [
           ValueInputWithUnitPicker(
-            value: rawDistanceInMeters,
-            constraints: notifier.getDistanceConstraintsForUnit(Unit.meter),
+            value: state.rawDistanceValue,
+            constraints: notifier.getDistanceConstraintsForUnit(
+              state.distanceInputUnit,
+            ),
             displayUnit: state.distanceInputUnit,
             onChanged: notifier.updateDistanceValue,
             onUnitChanged: notifier.changeDistanceUnit,
@@ -41,8 +36,10 @@ class AnglesConvertorScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           ValueInputWithUnitPicker(
-            value: rawAngleInMil,
-            constraints: notifier.getAngularConstraintsForUnit(Unit.mil),
+            value: state.rawAngularValue,
+            constraints: notifier.getAngularConstraintsForUnit(
+              state.angularInputUnit,
+            ),
             displayUnit: state.angularInputUnit,
             onChanged: notifier.updateAngularValue,
             onUnitChanged: notifier.changeAngularUnit,

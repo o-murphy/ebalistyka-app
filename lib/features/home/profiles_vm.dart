@@ -227,6 +227,8 @@ int _weaponFingerprint(Weapon? w) {
     w.barrelLengthInch,
     w.zeroElevationRad,
     w.vendor,
+    w.notes,
+    w.image,
   ]);
 }
 
@@ -239,10 +241,13 @@ int _ammoFingerprint(Ammo? a) {
     a.lengthInch,
     a.projectileName,
     a.vendor,
+    a.image,
     a.muzzleVelocityMps,
     a.muzzleVelocityTemperatureC,
     a.usePowderSensitivity,
     a.powderSensitivityFrac,
+    Object.hashAll(a.powderSensitivityTC ?? const []),
+    Object.hashAll(a.powderSensitivityVMps ?? const []),
     a.zeroDistanceMeter,
     a.zeroTemperatureC,
     a.zeroPressurehPa,
@@ -254,11 +259,19 @@ int _ammoFingerprint(Ammo? a) {
     a.zeroUseCoriolis,
     a.zeroLatitudeDeg,
     a.zeroAzimuthDeg,
+    a.zeroOffsetXRad,
+    a.zeroOffsetYRad,
     a.bcG1,
     a.bcG7,
     a.dragTypeValue,
     a.useMultiBcG1,
     a.useMultiBcG7,
+    Object.hashAll(a.multiBcTableG1VMps ?? const []),
+    Object.hashAll(a.multiBcTableG1Bc ?? const []),
+    Object.hashAll(a.multiBcTableG7VMps ?? const []),
+    Object.hashAll(a.multiBcTableG7Bc ?? const []),
+    Object.hashAll(a.cusomDragTableMach ?? const []),
+    Object.hashAll(a.cusomDragTableCd ?? const []),
   ]);
 }
 
@@ -275,7 +288,11 @@ int _sightFingerprint(Sight? s) {
     s.horizontalClickUnit,
     s.minMagnification,
     s.maxMagnification,
+    s.reticleImage,
+    s.calibratedMagnification,
     s.vendor,
+    s.notes,
+    s.image,
   ]);
 }
 

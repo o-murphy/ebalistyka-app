@@ -586,12 +586,6 @@ final _entities = <obx_int.ModelEntity>[
         relationField: 'owner',
         relationTarget: 'Owner',
       ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(7, 3085806308739651023),
-        name: 'sortOrder',
-        type: 6,
-        flags: 0,
-      ),
     ],
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
@@ -1243,6 +1237,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
       3711858234252380760,
       824601022869745530,
       6275749238367959778,
+      3085806308739651023,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1883,7 +1878,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addInt64(3, object.sight.targetId);
         fbb.addInt64(4, object.ammo.targetId);
         fbb.addInt64(5, object.owner.targetId);
-        fbb.addInt64(6, object.sortOrder);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1895,13 +1889,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
           ..name = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 6, '')
-          ..sortOrder = const fb.Int64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            16,
-            0,
-          );
+          ).vTableGet(buffer, rootOffset, 6, '');
         object.weapon.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2925,11 +2913,6 @@ class Profile_ {
   /// See [Profile.owner].
   static final owner = obx.QueryRelationToOne<Profile, Owner>(
     _entities[4].properties[5],
-  );
-
-  /// See [Profile.sortOrder].
-  static final sortOrder = obx.QueryIntegerProperty<Profile>(
-    _entities[4].properties[6],
   );
 }
 
