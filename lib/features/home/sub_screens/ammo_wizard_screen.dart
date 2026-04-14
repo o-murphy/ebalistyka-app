@@ -10,6 +10,7 @@ import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -73,6 +74,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   void initState() {
     super.initState();
     final a = widget.initial;
+    _scheduleCaliberMismatchToast();
     _nameCtrl = TextEditingController(text: a?.name ?? '');
     _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
     _caliberRaw =
@@ -110,6 +112,31 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _projectileNameCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scheduleCaliberMismatchToast() {
+    final weaponCaliber = widget.caliberInch;
+    final ammoCaliber = widget.initial?.caliberInch;
+    if (weaponCaliber == null || ammoCaliber == null) return;
+    if ((weaponCaliber - ammoCaliber).abs() < 0.0001) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Ammo caliber differs from weapon caliber'),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: 'Update',
+            onPressed: () => setState(
+              () => _caliberRaw = Distance.inch(
+                weaponCaliber,
+              ).in_(FC.projectileDiameter.rawUnit),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   void _scrollTo(GlobalKey key) {
@@ -218,7 +245,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           title: Text('Edit $dtName Multi-BC table'),
           trailing: const Icon(IconDef.chevronRight),
           dense: true,
-          onTap: () => debugPrint("Route to multi-bc editor"),
+          onTap: () => showNotAvailableSnackBar(context, 'Multi-BC editor'),
         ),
     ];
   }
@@ -265,7 +292,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
             title: Text('Edit $dtName DragModel'),
             trailing: const Icon(IconDef.chevronRight),
             dense: true,
-            onTap: () => debugPrint("Route to drag table editor"),
+            onTap: () => showNotAvailableSnackBar(context, 'Drag Table editor'),
           ),
       ],
     );

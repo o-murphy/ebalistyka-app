@@ -8,6 +8,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -104,9 +105,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       ActionSheetItem(
         icon: IconDef.import,
         title: 'Import from file',
-        onTap: () async => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Import not yet available')),
-        ),
+        onTap: () async => showNotAvailableSnackBar(context, 'Import'),
       ),
     ],
   );
@@ -173,13 +172,16 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         .firstOrNull;
     if (profile == null) return;
 
+    final weapon = appState.weapons
+        .where((w) => w.id == profile.weapon.targetId)
+        .firstOrNull;
     final ammo = appState.cartridges
         .where((a) => a.id == profile.ammo.targetId)
         .firstOrNull;
 
     final result = await context.push<Ammo?>(
       Routes.profileEditAmmo,
-      extra: ammo,
+      extra: (ammo, weapon?.caliberInch),
     );
     if (result != null && mounted) {
       await ref.read(appStateProvider.notifier).saveAmmo(result);

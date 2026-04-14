@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
@@ -160,10 +161,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                                 a.id == profile?.ammo.targetId,
                                           )
                                           .firstOrNull;
+                                      final weapon = appState?.weapons
+                                          .where(
+                                            (w) =>
+                                                w.id ==
+                                                profile?.weapon.targetId,
+                                          )
+                                          .firstOrNull;
                                       if (ammo != null) {
                                         context.push(
                                           Routes.profileEditAmmo,
-                                          extra: ammo,
+                                          extra: (ammo, weapon?.caliberInch),
                                         );
                                       }
                                     },
@@ -194,7 +202,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
-                                        onBottomPressed: () {},
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Notes',
+                                            ),
                                       ),
                                     ),
                                     Expanded(
@@ -237,8 +249,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           (IconDef.humidity, humidStr),
                                           (IconDef.velocity, pressStr),
                                         ],
-                                        onTopPressed: () {},
-                                        onBottomPressed: () {},
+                                        onTopPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Help',
+                                            ),
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              'Tools',
+                                            ),
                                       ),
                                     ),
                                   ],

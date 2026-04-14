@@ -4,6 +4,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,9 +123,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
                         .read(appStateProvider.notifier)
                         .duplicateSight(item.id, name);
                   },
-                  onExport: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Export not yet available')),
-                  ),
+                  onExport: () => showNotAvailableSnackBar(context, 'Export'),
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,
