@@ -80,10 +80,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _caliberRaw =
         a?.caliber.in_(FC.projectileDiameter.rawUnit) ??
         Distance.inch(
-          widget.caliberInch ?? 0.0,
+          widget.caliberInch ?? FC.projectileDiameter.minRaw,
         ).in_(FC.projectileDiameter.rawUnit);
-    _weightRaw = a?.weight.in_(FC.projectileWeight.rawUnit) ?? 0.0;
-    _lengthRaw = a?.length.in_(FC.projectileLength.rawUnit) ?? 0.0;
+    _weightRaw =
+        a?.weight.in_(FC.projectileWeight.rawUnit) ??
+        FC.projectileWeight.minRaw;
+    _lengthRaw =
+        a?.length.in_(FC.projectileLength.rawUnit) ??
+        FC.projectileLength.minRaw;
     _dragType = a?.dragType ?? DragType.g1;
     _useMultiBcG1 = a?.useMultiBcG1 ?? false;
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
@@ -95,7 +99,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _zeroLookAngleRaw = a?.zeroLookAngle.in_(FC.lookAngle.rawUnit) ?? 0.0;
     _zeroTempRaw = a?.zeroTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroAltRaw = a?.zeroAltitude.in_(FC.altitude.rawUnit) ?? 0.0;
-    _zeroPressureRaw = a?.zeroPressure.in_(FC.pressure.rawUnit) ?? 0.0;
+    _zeroPressureRaw = a?.zeroPressure.in_(FC.pressure.rawUnit) ?? 1013;
     _zeroHumidityRaw = a?.zeroHumidityFrac ?? 0.0;
     _usePowderSensitivity = a?.usePowderSensitivity ?? false;
     _powderSensRaw = a?.powderSensitivityFrac ?? 0.0;
