@@ -59,6 +59,7 @@ abstract final class Routes {
   // Ammo wizard sub-screens
   static const ammoEditMultiBcG1 = '/home/profiles/ammo-edit/multi-bc-g1';
   static const ammoEditMultiBcG7 = '/home/profiles/ammo-edit/multi-bc-g7';
+  static const ammoEditDragTable = '/home/profiles/ammo-edit/drag-table';
 
   // Tables stack
   static const tableConfig = '/tables/configure';
@@ -185,6 +186,14 @@ final appRouter = GoRouter(
                               initialBc: e.bc,
                             );
                           },
+                        ),
+                        GoRoute(
+                          path: 'drag-table',
+                          builder: (_, state) => CustomDragTableEditorScreen(
+                            initialTable:
+                                state.extra
+                                    as List<({double mach, double cd})>?,
+                          ),
                         ),
                         GoRoute(
                           path: 'multi-bc-g7',

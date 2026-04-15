@@ -13,7 +13,6 @@ import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
-import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -53,6 +52,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   double? _bcG7;
   List<({double vMps, double bc})>? _multiBcG1Table;
   List<({double vMps, double bc})>? _multiBcG7Table;
+  List<({double mach, double cd})>? _customDragTable;
   double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
@@ -102,6 +102,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
     _multiBcG1Table = _decodeTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc);
     _multiBcG7Table = _decodeTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc);
+    _customDragTable = _decodeCustomTable(
+      a?.cusomDragTableMach,
+      a?.cusomDragTableCd,
+    );
     _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
@@ -134,6 +138,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   ) {
     if (vMps == null || bcs == null || vMps.isEmpty) return null;
     return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
+  }
+
+  static List<({double mach, double cd})>? _decodeCustomTable(
+    Float64List? mach,
+    Float64List? cd,
+  ) {
+    if (mach == null || cd == null || mach.isEmpty) return null;
+    return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
   }
 
   void _scheduleCaliberMismatchToast() {
@@ -196,6 +208,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         return false;
       }
     }
+    if (_dragType == DragType.custom) {
+      if (_customDragTable == null || _customDragTable!.isEmpty) return false;
+    }
     return true;
   }
 
@@ -246,6 +261,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
       ammo.multiBcTableG7VMps = null;
       ammo.multiBcTableG7Bc = null;
     }
+    final custom = _customDragTable;
+    if (custom != null && custom.isNotEmpty) {
+      ammo.cusomDragTableMach = Float64List.fromList(
+        custom.map((r) => r.mach).toList(),
+      );
+      ammo.cusomDragTableCd = Float64List.fromList(
+        custom.map((r) => r.cd).toList(),
+      );
+    } else {
+      ammo.cusomDragTableMach = null;
+      ammo.cusomDragTableCd = null;
+    }
     ammo.muzzleVelocityMps = _mvRaw != null
         ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
         : -1.0;
@@ -278,6 +305,15 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   void _onDiscard() => context.pop(null);
 
   // ── Navigation ────────────────────────────────────────────────────────────
+
+  Future<void> _navigateToDragTableEditor() async {
+    final result = await context.push<List<({double mach, double cd})>>(
+      Routes.ammoEditDragTable,
+      extra: _customDragTable,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _customDragTable = result.isEmpty ? null : result);
+  }
 
   Future<void> _navigateToMultiBcEditor(DragType dt) async {
     final table = dt == DragType.g1 ? _multiBcG1Table : _multiBcG7Table;
@@ -363,7 +399,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   }
 
   Widget _buildDragModel() {
-    final dtName = _dragType.name.toUpperCase();
     return Column(
       children: [
         Padding(
@@ -400,13 +435,30 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
             onBcChanged: (v) => _bcG7 = v,
           ),
         if (_dragType == DragType.custom)
-          // TODO: there should be a route to custom drag table edit/view screen (form)
-          ListTile(
-            leading: Icon(IconDef.dragModel),
-            title: Text('Edit $dtName DragModel'),
-            trailing: const Icon(IconDef.chevronRight),
-            dense: true,
-            onTap: () => showNotAvailableSnackBar(context, 'Drag Table editor'),
+          Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              final isEmpty =
+                  _customDragTable == null || _customDragTable!.isEmpty;
+              final count = _customDragTable?.length ?? 0;
+              return ListTile(
+                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                leading: Icon(
+                  IconDef.dragModel,
+                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                ),
+                title: const Text('Edit Custom Drag Table'),
+                subtitle: Text(
+                  isEmpty ? 'Required' : '$count point${count == 1 ? '' : 's'}',
+                  style: isEmpty
+                      ? TextStyle(color: theme.colorScheme.error)
+                      : null,
+                ),
+                trailing: const Icon(IconDef.chevronRight),
+                dense: true,
+                onTap: _navigateToDragTableEditor,
+              );
+            },
           ),
       ],
     );
