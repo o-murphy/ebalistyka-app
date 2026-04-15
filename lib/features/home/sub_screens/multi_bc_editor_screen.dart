@@ -53,9 +53,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
     List<(String, String)>? initialRows;
     if (isEmpty && mvMps != null && mvMps > 0 && bc != null && bc > 0) {
       final vDisplay = Velocity.mps(mvMps).in_(velocityUnit);
-      initialRows = [
-        (vDisplay.toStringAsFixed(vAcc), bc.toStringAsFixed(3)),
-      ];
+      initialRows = [(vDisplay.toStringAsFixed(vAcc), bc.toStringAsFixed(3))];
     } else if (!isEmpty) {
       initialRows = table!.map((r) {
         final vDisplay = Velocity.mps(r.vMps).in_(velocityUnit);
@@ -76,10 +74,8 @@ class MultiBcEditorScreen extends ConsumerWidget {
       onSave: (rows) {
         final result = rows
             .map(
-              (r) => (
-                vMps: Velocity(r.$1, velocityUnit).in_(Unit.mps),
-                bc: r.$2,
-              ),
+              (r) =>
+                  (vMps: Velocity(r.$1, velocityUnit).in_(Unit.mps), bc: r.$2),
             )
             .toList();
         context.pop<List<({double vMps, double bc})>>(result);
@@ -185,10 +181,8 @@ class _TwoColumnTableEditorScreenState
   @override
   void initState() {
     super.initState();
-    _col1Ctrls =
-        List.generate(widget.rowCount, (_) => TextEditingController());
-    _col2Ctrls =
-        List.generate(widget.rowCount, (_) => TextEditingController());
+    _col1Ctrls = List.generate(widget.rowCount, (_) => TextEditingController());
+    _col2Ctrls = List.generate(widget.rowCount, (_) => TextEditingController());
 
     final rows = widget.initialRows;
     if (rows != null) {
@@ -330,8 +324,7 @@ class _RowEditor extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: col1Ctrl,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textAlign: TextAlign.center,
             enabled: !readOnly,
             decoration: InputDecoration(
@@ -345,8 +338,7 @@ class _RowEditor extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: col2Ctrl,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             textAlign: TextAlign.center,
             enabled: !readOnly,
             decoration: InputDecoration(

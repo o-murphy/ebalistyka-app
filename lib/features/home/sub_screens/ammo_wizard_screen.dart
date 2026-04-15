@@ -13,6 +13,7 @@ import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
+import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -53,6 +54,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   List<({double vMps, double bc})>? _multiBcG1Table;
   List<({double vMps, double bc})>? _multiBcG7Table;
   List<({double mach, double cd})>? _customDragTable;
+  List<({double tempC, double vMps})>? _powderSensTable;
   double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
@@ -106,6 +108,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
       a?.cusomDragTableMach,
       a?.cusomDragTableCd,
     );
+    _powderSensTable = _decodePowderSensTable(
+      a?.powderSensitivityTC,
+      a?.powderSensitivityVMps,
+    );
     _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
@@ -146,6 +152,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   ) {
     if (mach == null || cd == null || mach.isEmpty) return null;
     return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
+  }
+
+  static List<({double tempC, double vMps})>? _decodePowderSensTable(
+    Float64List? tempC,
+    Float64List? vMps,
+  ) {
+    if (tempC == null || vMps == null || tempC.isEmpty) return null;
+    return List.generate(tempC.length, (i) => (tempC: tempC[i], vMps: vMps[i]));
   }
 
   void _scheduleCaliberMismatchToast() {
@@ -286,6 +300,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.zeroAltitude = Distance(_zeroAltRaw, FC.altitude.rawUnit);
     ammo.usePowderSensitivity = _usePowderSensitivity;
     ammo.powderSensitivity = Ratio.fraction(_powderSensRaw);
+    final psTable = _powderSensTable;
+    if (psTable != null && psTable.isNotEmpty) {
+      ammo.powderSensitivityTC = Float64List.fromList(
+        psTable.map((r) => r.tempC).toList(),
+      );
+      ammo.powderSensitivityVMps = Float64List.fromList(
+        psTable.map((r) => r.vMps).toList(),
+      );
+    } else {
+      ammo.powderSensitivityTC = null;
+      ammo.powderSensitivityVMps = null;
+    }
     ammo.zeroUseDiffPowderTemperature = _zeroUseDiffPowderTemp;
     ammo.zeroPowderTemp = Temperature(
       _zeroPowderTempRaw,
@@ -313,6 +339,23 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     );
     if (!mounted || result == null) return;
     setState(() => _customDragTable = result.isEmpty ? null : result);
+  }
+
+  Future<void> _navigateToPowderSensTable() async {
+    final result = await context.push<PowderSensTableResult>(
+      Routes.ammoEditPowderSensTable,
+      extra: (table: _powderSensTable, mvMps: _mvRaw, tempC: _mvTempRaw),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _powderSensTable = result.table.isEmpty ? null : result.table;
+      final sens = result.sensitivity;
+      // Only update coefficient when table has valid pairs — empty table
+      // preserves the manually-entered coefficient.
+      if (sens != null && result.table.isNotEmpty) {
+        _powderSensRaw = sens.clamp(0.0, double.infinity);
+      }
+    });
   }
 
   Future<void> _navigateToMultiBcEditor(DragType dt) async {
@@ -672,6 +715,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
               onPowderTempChanged: (v) =>
                   setState(() => _zeroPowderTempRaw = v),
               onPowderSensChanged: (v) => setState(() => _powderSensRaw = v),
+            ),
+            ListTile(
+              leading: const Icon(IconDef.powderTemperature),
+              title: const Text('Calculate from measurements'),
+              subtitle: Text(
+                _powderSensTable != null
+                    ? '${_powderSensTable!.length} measurement${_powderSensTable!.length == 1 ? '' : 's'}'
+                    : 'Tap to add T→V measurements',
+              ),
+              trailing: const Icon(IconDef.chevronRight),
+              dense: true,
+              onTap: _navigateToPowderSensTable,
             ),
           ],
 

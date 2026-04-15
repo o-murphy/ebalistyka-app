@@ -352,13 +352,13 @@ Name field підсвічується кольором `tertiaryContainer` + lab
 - ✅ Vendor — nullable текстове поле
 - ✅ Projectile name — nullable, без валідації
 - ✅ Projectile — Caliber (readonly info), Weight, Length (`NullableUnitValueFieldTile`, isRequired: true)
-- ✅ DragModel — `SegmentedButton<DragType>` (G1/G7/CUSTOM) + `_buildBcSection`: Multi-BC switch, Single BC field, placeholder ListTile для редактора Multi-BC таблиці / Custom drag table
+- ✅ DragModel — `SegmentedButton<DragType>` (G1/G7/CUSTOM) + `_buildBcSection`: Multi-BC switch, Single BC field, "Edit table" ListTile для Multi-BC таблиці / Custom drag table (з required-підсвіткою якщо таблиця порожня)
 - ✅ Cartridge — Muzzle Velocity, Muzzle Velocity Temperature (T₀), `usePowderSensitivity` switch
 - ✅ Zero Conditions — Distance, Look Angle, Temperature, Pressure, Humidity, Altitude
-- ✅ Powder Sensitivity — `PowderSensSection(showToggle: false)` (розгортається після switch у Cartridge): diff temp switch, powder temp field, sensitivity input, calculated MV info. Scroll-to-section при вмиканні.
+- ✅ Powder Sensitivity — `PowderSensSection(showToggle: false)` (розгортається після switch у Cartridge): diff temp switch, powder temp field, sensitivity input, calculated MV info. Scroll-to-section при вмиканні. ListTile "Calculate from measurements" → `PowderSensTableEditorScreen`; порожня таблиця не перезаписує вручну введений коефіцієнт.
 - ✅ Coriolis — `CoriolisSection`: switch + latitude + azimuth. Scroll-to-section при вмиканні.
 - ✅ Caliber mismatch detection — при edit передається `caliberInch` з weapon профілю через record `(Ammo?, double?)`; якщо розходження → SnackBar "Ammo caliber differs from weapon caliber" з кнопкою "Update"
-- ❌ Routes до multi-bc editor і custom drag table editor — `showNotAvailableSnackBar` placeholder
+- ✅ Routes до multi-bc editor, custom drag table editor, powder sensitivity table editor — повністю реалізовано
 
 ### SightWizardScreen
 
@@ -445,10 +445,10 @@ ProfilesScreen  (/home/profiles)
 │   └── AmmoCollectionScreen       (.../bullet-collection)     ← filter: bullets, caliber filter
 │         └── AmmoWizardScreen     (.../ammo-wizard)
 ├── AmmoWizardScreen         (/home/profiles/ammo-edit)
-│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g1)   ← TODO: G1 multi-BC table
-│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g7)   ← TODO: G7 multi-BC table
-│   ├── CustomDragTableScreen      (.../ammo-edit/drag-table)    ← TODO: custom drag model
-│   └── PowderSensitivityScreen    (.../ammo-edit/powder-sensitivity) ← TODO: temperature sensitivity table → auto-calc powderSensitivityFrac
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g1)   ← ✅ G1 multi-BC table (5 rows, sort desc by V)
+│   ├── MultiBcEditorScreen        (.../ammo-edit/multi-bc-g7)   ← ✅ G7 multi-BC table (5 rows, sort desc by V)
+│   ├── CustomDragTableEditorScreen (.../ammo-edit/drag-table)   ← ✅ custom drag model (100 rows, readonly by default)
+│   └── PowderSensTableEditorScreen (.../ammo-edit/powder-sensitivity) ← ✅ T→V table (10 rows), auto-calc powderSensitivityFrac; порожня таблиця не перезаписує коефіцієнт
 ├── MySightsScreen           (/home/profiles/sight-select)
 │   ├── SightWizardScreen      (.../sight-create)
 │   └── SightCollectionScreen  (.../sight-collection)
@@ -503,7 +503,11 @@ ProfilesScreen  (/home/profiles)
 | `lib/features/home/sub_screens/ammo_collection_screen.dart` | ✅ | Вибір ammo з builtin колекції; `filterBullet` + `caliberInch` filter (tolerance 0.001") |
 | `lib/features/home/sub_screens/sight_collection_screen.dart` | ✅ | Вибір sight з builtin колекції → SightWizardScreen |
 | `lib/features/home/sub_screens/weapon_wizard_screen.dart` | ✅ | name + vendor + caliberName + caliber + twist + barrelLength; immediate required highlighting |
-| `lib/features/home/sub_screens/ammo_wizard_screen.dart` | 🔧 | name + vendor + projectileName + усі балістичні поля. Відсутнє: multi-bc/drag-table editor routes |
+| `lib/features/home/sub_screens/ammo_wizard_screen.dart` | ✅ | name + vendor + projectileName + усі балістичні поля + routes до всіх sub-screens |
+| `lib/features/home/sub_screens/multi_bc_editor_screen.dart` | ✅ | `MultiBcEditorScreen` (G1/G7, 5 rows, sort desc by V) + `CustomDragTableEditorScreen` (100 rows, readOnly); shared internal `_TwoColumnTableEditorScreen` |
+| `lib/features/home/sub_screens/custom_drag_table_editor_screen.dart` | ✅ | Re-export `CustomDragTableEditorScreen` з `multi_bc_editor_screen.dart` |
+| `lib/features/home/sub_screens/powder_sens_table_editor_screen.dart` | ✅ | `PowderSensTableEditorScreen` (10 rows, T→V); live sensitivity preview; порожня таблиця не перезаписує коефіцієнт |
+| `packages/bclibc_ffi/lib/src/munition.dart` | ✅ | `calcPowderSensCoeff(v0,t0,v1,t1)→double?` standalone helper (null для вироджених пар); `velocityForPowderTemp` |
 | `lib/features/home/sub_screens/sight_wizard_screen.dart` | ✅ | name + vendor + mounting + reticle + clicks + magnification; immediate required highlighting |
 | `lib/features/home/sub_screens/profiles/widgets/collection_weapon_tile_body.dart` | ✅ | 2 рядки: caliber+barrel / twist+direction; vendor над назвою |
 | `lib/features/home/sub_screens/profiles/widgets/collection_ammo_tile_body.dart` | ✅ | vendor над назвою; projectileName тільки якщо non-null/non-empty |
@@ -521,7 +525,7 @@ ProfilesScreen  (/home/profiles)
 
 ## TODO
 
-- [~] `AmmoWizardScreen` — майже готовий. Залишилось: routes до multi-bc/drag-table editor
+- [x] `AmmoWizardScreen` — повністю реалізовано, включно з routes до всіх sub-screens
 - [x] `SightWizardScreen` — реалізовано
 - [x] `AmmoCollectionScreen` — реалізовано (filter: cartridge / bullet, caliber filter)
 - [x] `WeaponCollectionScreen` — реалізовано
@@ -541,11 +545,8 @@ ProfilesScreen  (/home/profiles)
 
 ### 🔴 Блокери (без цього альфа не функціональна)
 
-- [~] `AmmoWizardScreen` — майже готовий. Залишилось: routes до multi-bc/drag-table editor
-  - ⚠️ **Powder sensitivity — потенційна зміна логіки:** поточний стан — on/off (`powderSensitivityFrac`). Планується 3 режими:
-    - `off` — без температурної корекції
-    - `coeff` — задається `powderSensitivityFrac` вручну
-    - `table` — задається таблицею (`powderSensitivityTC` + `powderSensitivityVMps`); таблиця для розрахунку і автоматичного оновлення `powderSensitivityFrac` (в окремому підекрані wizard), після чого engine працює через `frac` → **зміни до entities не потрібні**
+- [x] `AmmoWizardScreen` — повністю реалізовано, включно з routes до всіх sub-screens
+  - ✅ **Powder sensitivity:** реалізовано 2 варіанти — вручну (`powderSensitivityFrac`) або через таблицю T→V (`PowderSensTableEditorScreen`). Таблиця розраховує та записує `powderSensitivityFrac`; engine завжди працює через `frac` — **зміни до entities не потрібні**. Порожня таблиця не перезаписує вручну введений коефіцієнт.
   - ✅ **Caliber mismatch detection:** при edit передається `caliberInch` з weapon профілю через record `(Ammo?, double?)`; розходження → SnackBar з кнопкою "Update" для автоматичного виправлення
   - ✅ **T₀/T₁ логіка:** `Ammo.powderTemperatureC` і `Ammo.usePowderTempForMv` видалені. `bclibc.Ammo.powderTemp` = T₀ = `muzzleVelocityTemperatureC` (завжди). T₁ — виключно у `ShootingConditions` або `zeroConditions`.
 

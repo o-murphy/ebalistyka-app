@@ -60,6 +60,8 @@ abstract final class Routes {
   static const ammoEditMultiBcG1 = '/home/profiles/ammo-edit/multi-bc-g1';
   static const ammoEditMultiBcG7 = '/home/profiles/ammo-edit/multi-bc-g7';
   static const ammoEditDragTable = '/home/profiles/ammo-edit/drag-table';
+  static const ammoEditPowderSensTable =
+      '/home/profiles/ammo-edit/powder-sensitivity';
 
   // Tables stack
   static const tableConfig = '/tables/configure';
@@ -169,6 +171,24 @@ final appRouter = GoRouter(
                         );
                       },
                       routes: [
+                        GoRoute(
+                          path: 'powder-sensitivity',
+                          builder: (_, state) {
+                            final e =
+                                state.extra
+                                    as ({
+                                      List<({double tempC, double vMps})>?
+                                      table,
+                                      double? mvMps,
+                                      double? tempC,
+                                    });
+                            return PowderSensTableEditorScreen(
+                              initialTable: e.table,
+                              referenceMvMps: e.mvMps,
+                              referenceTempC: e.tempC,
+                            );
+                          },
+                        ),
                         GoRoute(
                           path: 'multi-bc-g1',
                           builder: (_, state) {
