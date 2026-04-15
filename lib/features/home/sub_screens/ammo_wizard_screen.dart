@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
@@ -48,6 +51,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late bool _useMultiBcG7;
   double? _bcG1;
   double? _bcG7;
+  List<({double vMps, double bc})>? _multiBcG1Table;
+  List<({double vMps, double bc})>? _multiBcG7Table;
   double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
@@ -95,6 +100,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
     _bcG1 = (a != null && a.bcG1 > 0) ? a.bcG1 : null;
     _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
+    _multiBcG1Table = _decodeTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc);
+    _multiBcG7Table = _decodeTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc);
     _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
@@ -119,6 +126,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _projectileNameCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  static List<({double vMps, double bc})>? _decodeTable(
+    Float64List? vMps,
+    Float64List? bcs,
+  ) {
+    if (vMps == null || bcs == null || vMps.isEmpty) return null;
+    return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
   }
 
   void _scheduleCaliberMismatchToast() {
@@ -167,13 +182,19 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     if ((_weightRaw ?? 0) <= 0) return false;
     if ((_lengthRaw ?? 0) <= 0) return false;
     if ((_mvRaw ?? 0) <= 0) return false;
-    // BC: relevant for the current drag type must be positive
-    // (multi-BC mode bypasses single-BC field — allow save when table is set)
-    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0) {
-      return false;
+    if (_dragType == DragType.g1) {
+      if (_useMultiBcG1) {
+        if (_multiBcG1Table == null || _multiBcG1Table!.isEmpty) return false;
+      } else if ((_bcG1 ?? 0) <= 0) {
+        return false;
+      }
     }
-    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0) {
-      return false;
+    if (_dragType == DragType.g7) {
+      if (_useMultiBcG7) {
+        if (_multiBcG7Table == null || _multiBcG7Table!.isEmpty) return false;
+      } else if ((_bcG7 ?? 0) <= 0) {
+        return false;
+      }
     }
     return true;
   }
@@ -201,6 +222,30 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.useMultiBcG7 = _useMultiBcG7;
     ammo.bcG1 = _bcG1 ?? -1.0;
     ammo.bcG7 = _bcG7 ?? -1.0;
+    final g1 = _multiBcG1Table;
+    if (g1 != null && g1.isNotEmpty) {
+      ammo.multiBcTableG1VMps = Float64List.fromList(
+        g1.map((r) => r.vMps).toList(),
+      );
+      ammo.multiBcTableG1Bc = Float64List.fromList(
+        g1.map((r) => r.bc).toList(),
+      );
+    } else {
+      ammo.multiBcTableG1VMps = null;
+      ammo.multiBcTableG1Bc = null;
+    }
+    final g7 = _multiBcG7Table;
+    if (g7 != null && g7.isNotEmpty) {
+      ammo.multiBcTableG7VMps = Float64List.fromList(
+        g7.map((r) => r.vMps).toList(),
+      );
+      ammo.multiBcTableG7Bc = Float64List.fromList(
+        g7.map((r) => r.bc).toList(),
+      );
+    } else {
+      ammo.multiBcTableG7VMps = null;
+      ammo.multiBcTableG7Bc = null;
+    }
     ammo.muzzleVelocityMps = _mvRaw != null
         ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
         : -1.0;
@@ -232,11 +277,36 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   void _onDiscard() => context.pop(null);
 
+  // ── Navigation ────────────────────────────────────────────────────────────
+
+  Future<void> _navigateToMultiBcEditor(DragType dt) async {
+    final table = dt == DragType.g1 ? _multiBcG1Table : _multiBcG7Table;
+    final bc = dt == DragType.g1 ? _bcG1 : _bcG7;
+    final route = dt == DragType.g1
+        ? Routes.ammoEditMultiBcG1
+        : Routes.ammoEditMultiBcG7;
+
+    final result = await context.push<List<({double vMps, double bc})>>(
+      route,
+      extra: (table: table, mvMps: _mvRaw, bc: bc),
+    );
+
+    if (!mounted || result == null) return;
+    setState(() {
+      if (dt == DragType.g1) {
+        _multiBcG1Table = result.isEmpty ? null : result;
+      } else {
+        _multiBcG7Table = result.isEmpty ? null : result;
+      }
+    });
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   List<Widget> _buildBcSection({
     required DragType dt,
     required bool useMulti,
+    required List<({double vMps, double bc})>? multiTable,
     required double? bcRaw,
     required ValueChanged<bool> onMultiChanged,
     required ValueChanged<double?> onBcChanged,
@@ -262,14 +332,32 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           isRequired: true,
           onChanged: (v) => setState(() => onBcChanged(v)),
         ),
-      // TODO: there should be a route to multi-bc edit screen (form)
       if (useMulti)
-        ListTile(
-          leading: Icon(IconDef.dragModel),
-          title: Text('Edit $dtName Multi-BC table'),
-          trailing: const Icon(IconDef.chevronRight),
-          dense: true,
-          onTap: () => showNotAvailableSnackBar(context, 'Multi-BC editor'),
+        Builder(
+          builder: (context) {
+            final theme = Theme.of(context);
+            final isEmpty = multiTable == null || multiTable.isEmpty;
+            final count = multiTable?.length ?? 0;
+            return ListTile(
+              tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+              leading: Icon(
+                IconDef.dragModel,
+                color: isEmpty ? theme.colorScheme.tertiary : null,
+              ),
+              title: Text('Edit $dtName Multi-BC table'),
+              subtitle: Text(
+                isEmpty
+                    ? 'Required'
+                    : '$count breakpoint${count == 1 ? '' : 's'}',
+                style: isEmpty
+                    ? TextStyle(color: theme.colorScheme.error)
+                    : null,
+              ),
+              trailing: const Icon(IconDef.chevronRight),
+              dense: true,
+              onTap: () => _navigateToMultiBcEditor(dt),
+            );
+          },
         ),
     ];
   }
@@ -297,6 +385,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ..._buildBcSection(
             dt: DragType.g1,
             useMulti: _useMultiBcG1,
+            multiTable: _multiBcG1Table,
             bcRaw: _bcG1,
             onMultiChanged: (v) => _useMultiBcG1 = v,
             onBcChanged: (v) => _bcG1 = v,
@@ -305,6 +394,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ..._buildBcSection(
             dt: DragType.g7,
             useMulti: _useMultiBcG7,
+            multiTable: _multiBcG7Table,
             bcRaw: _bcG7,
             onMultiChanged: (v) => _useMultiBcG7 = v,
             onBcChanged: (v) => _bcG7 = v,

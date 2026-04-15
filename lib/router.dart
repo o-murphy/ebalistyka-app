@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -54,6 +55,10 @@ abstract final class Routes {
   static const profileEditWeapon = '/home/profiles/weapon-edit';
   static const profileEditAmmo = '/home/profiles/ammo-edit';
   static const profileEditSight = '/home/profiles/sight-edit';
+
+  // Ammo wizard sub-screens
+  static const ammoEditMultiBcG1 = '/home/profiles/ammo-edit/multi-bc-g1';
+  static const ammoEditMultiBcG7 = '/home/profiles/ammo-edit/multi-bc-g7';
 
   // Tables stack
   static const tableConfig = '/tables/configure';
@@ -162,6 +167,44 @@ final appRouter = GoRouter(
                           caliberInch: extra?.$2,
                         );
                       },
+                      routes: [
+                        GoRoute(
+                          path: 'multi-bc-g1',
+                          builder: (_, state) {
+                            final e =
+                                state.extra
+                                    as ({
+                                      List<({double vMps, double bc})>? table,
+                                      double? mvMps,
+                                      double? bc,
+                                    });
+                            return MultiBcEditorScreen(
+                              dragType: DragType.g1,
+                              initialTable: e.table,
+                              initialMvMps: e.mvMps,
+                              initialBc: e.bc,
+                            );
+                          },
+                        ),
+                        GoRoute(
+                          path: 'multi-bc-g7',
+                          builder: (_, state) {
+                            final e =
+                                state.extra
+                                    as ({
+                                      List<({double vMps, double bc})>? table,
+                                      double? mvMps,
+                                      double? bc,
+                                    });
+                            return MultiBcEditorScreen(
+                              dragType: DragType.g7,
+                              initialTable: e.table,
+                              initialMvMps: e.mvMps,
+                              initialBc: e.bc,
+                            );
+                          },
+                        ),
+                      ],
                     ),
                     GoRoute(
                       path: 'sight-edit',
