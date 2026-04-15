@@ -270,8 +270,8 @@ int _ammoFingerprint(Ammo? a) {
     Object.hashAll(a.multiBcTableG1Bc ?? const []),
     Object.hashAll(a.multiBcTableG7VMps ?? const []),
     Object.hashAll(a.multiBcTableG7Bc ?? const []),
-    Object.hashAll(a.cusomDragTableMach ?? const []),
-    Object.hashAll(a.cusomDragTableCd ?? const []),
+    Object.hashAll(a.customDragTableMach ?? const []),
+    Object.hashAll(a.customDragTableCd ?? const []),
   ]);
 }
 

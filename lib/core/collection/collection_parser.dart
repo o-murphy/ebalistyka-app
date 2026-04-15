@@ -105,7 +105,7 @@ abstract final class CollectionParser {
       ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
       _applyMultiBc(ammo, _decodeJsonList(j['multiBcG1Table']), isG7: false);
     } else if (dragType == DragType.custom) {
-      _applyCustomDrag(ammo, _decodeJsonList(j['cusomDragTable']));
+      _applyCustomDrag(ammo, _decodeJsonList(j['customDragTable']));
     }
 
     // Powder sensitivity table [{tC, vMps}] — inferred from presence
@@ -190,10 +190,10 @@ abstract final class CollectionParser {
 
   static void _applyCustomDrag(Ammo ammo, List rows) {
     if (rows.isEmpty) return;
-    ammo.cusomDragTableMach = Float64List.fromList(
+    ammo.customDragTableMach = Float64List.fromList(
       rows.map<double>((r) => ((r as Map)['mach'] as num).toDouble()).toList(),
     );
-    ammo.cusomDragTableCd = Float64List.fromList(
+    ammo.customDragTableCd = Float64List.fromList(
       rows.map<double>((r) => ((r as Map)['cd'] as num).toDouble()).toList(),
     );
   }

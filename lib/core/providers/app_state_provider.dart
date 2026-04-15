@@ -288,11 +288,11 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       ..multiBcTableG7Bc = original.multiBcTableG7Bc != null
           ? Float64List.fromList(original.multiBcTableG7Bc!)
           : null
-      ..cusomDragTableMach = original.cusomDragTableMach != null
-          ? Float64List.fromList(original.cusomDragTableMach!)
+      ..customDragTableMach = original.customDragTableMach != null
+          ? Float64List.fromList(original.customDragTableMach!)
           : null
-      ..cusomDragTableCd = original.cusomDragTableCd != null
-          ? Float64List.fromList(original.cusomDragTableCd!)
+      ..customDragTableCd = original.customDragTableCd != null
+          ? Float64List.fromList(original.customDragTableCd!)
           : null
       ..zeroDistanceMeter = original.zeroDistanceMeter
       ..zeroLookAngleRad = original.zeroLookAngleRad

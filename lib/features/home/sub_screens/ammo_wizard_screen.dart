@@ -105,8 +105,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _multiBcG1Table = _decodeTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc);
     _multiBcG7Table = _decodeTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc);
     _customDragTable = _decodeCustomTable(
-      a?.cusomDragTableMach,
-      a?.cusomDragTableCd,
+      a?.customDragTableMach,
+      a?.customDragTableCd,
     );
     _powderSensTable = _decodePowderSensTable(
       a?.powderSensitivityTC,
@@ -277,15 +277,15 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     }
     final custom = _customDragTable;
     if (custom != null && custom.isNotEmpty) {
-      ammo.cusomDragTableMach = Float64List.fromList(
+      ammo.customDragTableMach = Float64List.fromList(
         custom.map((r) => r.mach).toList(),
       );
-      ammo.cusomDragTableCd = Float64List.fromList(
+      ammo.customDragTableCd = Float64List.fromList(
         custom.map((r) => r.cd).toList(),
       );
     } else {
-      ammo.cusomDragTableMach = null;
-      ammo.cusomDragTableCd = null;
+      ammo.customDragTableMach = null;
+      ammo.customDragTableCd = null;
     }
     ammo.muzzleVelocityMps = _mvRaw != null
         ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)

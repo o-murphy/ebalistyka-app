@@ -179,7 +179,7 @@ class BallisticsServiceImpl implements BallisticsService {
         ammo.isMultiBC ? (ammo.multiBcTableG7VMps?.length ?? 1) : 1,
       DragType.g1 =>
         ammo.isMultiBC ? (ammo.multiBcTableG1VMps?.length ?? 1) : 1,
-      DragType.custom => ammo.cusomDragTableMach?.length ?? 0,
+      DragType.custom => ammo.customDragTableMach?.length ?? 0,
     };
     final firstBc = switch (ammo.dragType) {
       DragType.g7 => ammo.bcG7,
