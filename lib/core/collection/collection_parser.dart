@@ -74,10 +74,6 @@ abstract final class CollectionParser {
   static Ammo _parseAmmo(Map<String, dynamic> j) {
     final dragType = _dragType(j['dragTypeValue'] as String? ?? 'g1');
 
-    final useMultiG1 = j['useMultiBcG1'] as bool? ?? false;
-    final useMultiG7 = j['useMultiBcG7'] as bool? ?? false;
-    final useCustom = j['useCusomDragTable'] as bool? ?? false;
-
     final mvRaw = j['muzzleVelocityMps'] as num?;
 
     final ammo = Ammo()
@@ -97,29 +93,23 @@ abstract final class CollectionParser {
       ..powderSensitivity = Ratio.fraction(
         (j['powderSensitivityFrac'] as num? ?? 0.0).toDouble(),
       )
-      ..usePowderSensitivity = j['usePowderSensitivity'] as bool? ?? false
-      ..useMultiBcG1 = useMultiG1
-      ..useMultiBcG7 = useMultiG7;
+      ..usePowderSensitivity = j['usePowderSensitivity'] as bool? ?? false;
 
-    // BC values
+    // BC values — useMultiBcG1/G7 inferred from table presence
     final bcG1Raw = j['bcG1'] as num?;
     final bcG7Raw = j['bcG7'] as num?;
     if (dragType == DragType.g7) {
       ammo.bcG7 = bcG7Raw?.toDouble() ?? -1.0;
-      if (useMultiG7) {
-        _applyMultiBc(ammo, j['multiBCtableG7'] as List? ?? [], isG7: true);
-      }
+      _applyMultiBc(ammo, _decodeJsonList(j['multiBcG7Table']), isG7: true);
     } else if (dragType == DragType.g1) {
       ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
-      if (useMultiG1) {
-        _applyMultiBc(ammo, j['multiBCtableG1'] as List? ?? [], isG7: false);
-      }
-    } else if (useCustom) {
-      _applyCustomDrag(ammo, j['cusomDragTable'] as List? ?? []);
+      _applyMultiBc(ammo, _decodeJsonList(j['multiBcG1Table']), isG7: false);
+    } else if (dragType == DragType.custom) {
+      _applyCustomDrag(ammo, _decodeJsonList(j['cusomDragTable']));
     }
 
-    // Powder sensitivity table [{t, v}]
-    final sensTable = j['powderSensitivityTable'] as List? ?? [];
+    // Powder sensitivity table [{tC, vMps}] — inferred from presence
+    final sensTable = _decodeJsonList(j['powderSensitivityTable']);
     if (sensTable.isNotEmpty) {
       _applyPowderSensTable(ammo, sensTable);
     }
@@ -167,10 +157,20 @@ abstract final class CollectionParser {
     return ammo;
   }
 
+  /// Decodes a JSON-string-encoded list or returns an empty list for null.
+  static List<dynamic> _decodeJsonList(dynamic value) {
+    if (value == null) return const [];
+    if (value is String) {
+      if (value.isEmpty) return const [];
+      return jsonDecode(value) as List;
+    }
+    return const [];
+  }
+
   static void _applyMultiBc(Ammo ammo, List rows, {required bool isG7}) {
     if (rows.isEmpty) return;
     final vList = rows
-        .map<double>((r) => ((r as Map)['v'] as num).toDouble())
+        .map<double>((r) => ((r as Map)['vMps'] as num).toDouble())
         .toList();
     final bcList = rows
         .map<double>((r) => ((r as Map)['bc'] as num).toDouble())
@@ -179,17 +179,19 @@ abstract final class CollectionParser {
       ammo.multiBcTableG7VMps = Float64List.fromList(vList);
       ammo.multiBcTableG7Bc = Float64List.fromList(bcList);
       ammo.bcG7 = bcList.first;
+      ammo.useMultiBcG7 = true;
     } else {
       ammo.multiBcTableG1VMps = Float64List.fromList(vList);
       ammo.multiBcTableG1Bc = Float64List.fromList(bcList);
       ammo.bcG1 = bcList.first;
+      ammo.useMultiBcG1 = true;
     }
   }
 
   static void _applyCustomDrag(Ammo ammo, List rows) {
     if (rows.isEmpty) return;
     ammo.cusomDragTableMach = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['v'] as num).toDouble()).toList(),
+      rows.map<double>((r) => ((r as Map)['mach'] as num).toDouble()).toList(),
     );
     ammo.cusomDragTableCd = Float64List.fromList(
       rows.map<double>((r) => ((r as Map)['cd'] as num).toDouble()).toList(),
@@ -198,10 +200,10 @@ abstract final class CollectionParser {
 
   static void _applyPowderSensTable(Ammo ammo, List rows) {
     ammo.powderSensitivityTC = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['t'] as num).toDouble()).toList(),
+      rows.map<double>((r) => ((r as Map)['tC'] as num).toDouble()).toList(),
     );
     ammo.powderSensitivityVMps = Float64List.fromList(
-      rows.map<double>((r) => ((r as Map)['v'] as num).toDouble()).toList(),
+      rows.map<double>((r) => ((r as Map)['vMps'] as num).toDouble()).toList(),
     );
   }
 
