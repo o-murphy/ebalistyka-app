@@ -40,11 +40,9 @@ class HomeReticlePage extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Text(
-            vmState.cartridgeInfoLine.replaceAll('; ', '\n'),
+          child: _SemicolonWrappingText(
+            vmState.cartridgeInfoLine,
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
-            textAlign: TextAlign.center,
-            softWrap: true,
           ),
         ),
         Expanded(
@@ -82,6 +80,48 @@ class HomeReticlePage extends ConsumerWidget {
       ],
     );
   }
+}
+
+// ─── Semicolon-aware wrapping text ───────────────────────────────────────────
+
+class _SemicolonWrappingText extends StatelessWidget {
+  const _SemicolonWrappingText(this.text, {this.style});
+
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (_, constraints) {
+      final segments = text.split('; ');
+      if (segments.length <= 1) {
+        return Text(text, style: style, textAlign: TextAlign.center);
+      }
+
+      final maxWidth = constraints.maxWidth;
+      final lines = <String>[];
+      var current = segments.first;
+
+      for (int i = 1; i < segments.length; i++) {
+        final candidate = '$current; ${segments[i]}';
+        final tp = TextPainter(
+          text: TextSpan(text: candidate, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: double.infinity);
+
+        if (tp.width <= maxWidth) {
+          current = candidate;
+        } else {
+          lines.add(current);
+          current = segments[i];
+        }
+      }
+      lines.add(current);
+
+      return Text(lines.join('\n'), style: style, textAlign: TextAlign.center);
+    },
+  );
 }
 
 // ─── Reticle view ─────────────────────────────────────────────────────────────

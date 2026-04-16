@@ -33,12 +33,14 @@ A cross-platform ballistic trajectory calculator built with Flutter. Powered by 
 ## Features
 
 - **Shooting profiles** — create and manage profiles combining weapon, ammunition, and sight configurations
-- **Weapon, ammo & sight wizards** — step-by-step setup with optional import from built-in collections
-- **Trajectory tables** — compute and display ballistic tables
-- **Environmental conditions** — input atmosphere, wind, and target parameters for corrected solutions
-- **Unit converters** — length, weight, pressure, temperature, angular units, torque
-- **Configurable units** — choose your preferred measurement system in settings
-- **Adjustment display** — customise how turret/holdover corrections are shown
+- **Weapon, ammo & sight wizards** — step-by-step setup with optional import from a built-in collection
+- **Trajectory tables** — compute and display ballistic tables with HTML export
+- **Environmental conditions** — atmosphere, wind, Coriolis, target parameters
+- **Reticle view** — SVG mil-reticle with live drop/windage adjustment indicator, theme-aware colours
+- **Multi-BC & custom drag** — G1/G7 multi-BC tables and full custom drag curve support
+- **Powder sensitivity** — temperature-based MV correction tables
+- **Configurable units** — choose your preferred measurement system per quantity in settings
+- **Adjustment display** — arrows / signs / letters format, configurable in settings
 
 ---
 
