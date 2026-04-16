@@ -185,8 +185,8 @@ class Ammo with Cloneable<Ammo> {
   Float64List? multiBcTableG1Bc;
   Float64List? multiBcTableG7VMps;
   Float64List? multiBcTableG7Bc;
-  Float64List? cusomDragTableMach;
-  Float64List? cusomDragTableCd;
+  Float64List? customDragTableMach;
+  Float64List? customDragTableCd;
 
   double zeroDistanceMeter = 100.0;
   double zeroLookAngleRad = 0.0;
@@ -236,8 +236,8 @@ class Ammo with Cloneable<Ammo> {
     Float64List? multiBcTableG1Bc,
     Float64List? multiBcTableG7VMps,
     Float64List? multiBcTableG7Bc,
-    Float64List? cusomDragTableMach,
-    Float64List? cusomDragTableCd,
+    Float64List? customDragTableMach,
+    Float64List? customDragTableCd,
     double? zeroDistanceMeter,
     double? zeroLookAngleRad,
     double? zeroAltitudeMeter,
@@ -279,8 +279,8 @@ class Ammo with Cloneable<Ammo> {
       ..multiBcTableG1Bc = multiBcTableG1Bc ?? this.multiBcTableG1Bc
       ..multiBcTableG7VMps = multiBcTableG7VMps ?? this.multiBcTableG7VMps
       ..multiBcTableG7Bc = multiBcTableG7Bc ?? this.multiBcTableG7Bc
-      ..cusomDragTableMach = cusomDragTableMach ?? this.cusomDragTableMach
-      ..cusomDragTableCd = cusomDragTableCd ?? this.cusomDragTableCd
+      ..customDragTableMach = customDragTableMach ?? this.customDragTableMach
+      ..customDragTableCd = customDragTableCd ?? this.customDragTableCd
       ..zeroDistanceMeter = zeroDistanceMeter ?? this.zeroDistanceMeter
       ..zeroLookAngleRad = zeroLookAngleRad ?? this.zeroLookAngleRad
       ..zeroAltitudeMeter = zeroAltitudeMeter ?? this.zeroAltitudeMeter

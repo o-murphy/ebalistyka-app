@@ -991,7 +991,7 @@
       "weightGrain": 285,
       "lengthInch": 1.746,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.791,
       "bcG7": 0.397,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1001,7 +1001,11 @@
       "powderSensitivityFrac": 0.0144,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 2,
@@ -1013,7 +1017,7 @@
       "weightGrain": 250,
       "lengthInch": 1.567,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.641,
       "bcG7": 0.322,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1023,7 +1027,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 3,
@@ -1035,7 +1043,7 @@
       "weightGrain": 285,
       "lengthInch": 1.423,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.787,
       "bcG7": 0.395,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1045,7 +1053,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 4,
@@ -1057,7 +1069,7 @@
       "weightGrain": 150,
       "lengthInch": 1.123,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.398,
       "bcG7": 0.2,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1067,7 +1079,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 5,
@@ -1079,7 +1095,7 @@
       "weightGrain": 168,
       "lengthInch": 1.282,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.458,
       "bcG7": 0.23,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1089,7 +1105,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 6,
@@ -1101,7 +1121,7 @@
       "weightGrain": 180,
       "lengthInch": 1.277,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.492,
       "bcG7": 0.247,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1111,7 +1131,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 7,
@@ -1123,7 +1147,7 @@
       "weightGrain": 175,
       "lengthInch": 1.24,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.484,
       "bcG7": 0.243,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1133,7 +1157,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 8,
@@ -1145,7 +1173,7 @@
       "weightGrain": 168,
       "lengthInch": 1.215,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.434,
       "bcG7": 0.218,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1155,7 +1183,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 9,
@@ -1168,7 +1200,7 @@
       "lengthInch": 1.2,
       "dragTypeValue": "g1",
       "bcG1": 0.404,
-      "bcG7": null,
+      "bcG7": 0.203,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 805,
@@ -1177,7 +1209,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 10,
@@ -1190,7 +1226,7 @@
       "lengthInch": 1.2,
       "dragTypeValue": "g1",
       "bcG1": 0.304,
-      "bcG7": null,
+      "bcG7": 0.153,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 868,
@@ -1199,7 +1235,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 11,
@@ -1212,7 +1252,7 @@
       "lengthInch": 1.2,
       "dragTypeValue": "g1",
       "bcG1": 0.298,
-      "bcG7": null,
+      "bcG7": 0.15,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 850,
@@ -1221,7 +1261,11 @@
       "powderSensitivityFrac": 0.0141,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 12,
@@ -1234,7 +1278,7 @@
       "lengthInch": 1.25,
       "dragTypeValue": "g1",
       "bcG1": 0.42,
-      "bcG7": null,
+      "bcG7": 0.211,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 821,
@@ -1243,7 +1287,11 @@
       "powderSensitivityFrac": 0.0163,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 13,
@@ -1256,7 +1304,7 @@
       "lengthInch": 1.25,
       "dragTypeValue": "g1",
       "bcG1": 0.329,
-      "bcG7": null,
+      "bcG7": 0.165,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 785,
@@ -1265,7 +1313,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 14,
@@ -1278,7 +1330,7 @@
       "lengthInch": 1.2,
       "dragTypeValue": "g1",
       "bcG1": 0.48,
-      "bcG7": null,
+      "bcG7": 0.241,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 810,
@@ -1287,7 +1339,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 15,
@@ -1300,7 +1356,7 @@
       "lengthInch": 1.25,
       "dragTypeValue": "g1",
       "bcG1": 0.336,
-      "bcG7": null,
+      "bcG7": 0.169,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 775,
@@ -1309,7 +1365,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 16,
@@ -1322,7 +1382,7 @@
       "lengthInch": 1.3,
       "dragTypeValue": "g1",
       "bcG1": 0.366,
-      "bcG7": null,
+      "bcG7": 0.184,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 775,
@@ -1331,7 +1391,11 @@
       "powderSensitivityFrac": 0.0134,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 17,
@@ -1343,7 +1407,7 @@
       "weightGrain": 407,
       "lengthInch": 2.347,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 1.041,
       "bcG7": 0.523,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1353,7 +1417,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 18,
@@ -1365,7 +1433,7 @@
       "weightGrain": 375,
       "lengthInch": 2.18,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.836,
       "bcG7": 0.42,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1375,7 +1443,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 19,
@@ -1387,7 +1459,7 @@
       "weightGrain": 352,
       "lengthInch": 2,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.812,
       "bcG7": 0.408,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1397,7 +1469,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 20,
@@ -1410,7 +1486,7 @@
       "lengthInch": 2,
       "dragTypeValue": "g1",
       "bcG1": 0.805,
-      "bcG7": null,
+      "bcG7": 0.404,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 930,
@@ -1419,7 +1495,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 21,
@@ -1431,7 +1511,7 @@
       "weightGrain": 420,
       "lengthInch": 2.003,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.793,
       "bcG7": 0.398,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1441,7 +1521,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 22,
@@ -1454,7 +1538,7 @@
       "lengthInch": 1.88,
       "dragTypeValue": "g1",
       "bcG1": 0.68,
-      "bcG7": null,
+      "bcG7": 0.341,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 1000,
@@ -1463,7 +1547,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 23,
@@ -1475,7 +1563,7 @@
       "weightGrain": 147,
       "lengthInch": 1.433,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.667,
       "bcG7": 0.335,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1485,7 +1573,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 24,
@@ -1497,7 +1589,7 @@
       "weightGrain": 750,
       "lengthInch": 2.545,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 1.012,
       "bcG7": 0.508,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1507,7 +1599,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 25,
@@ -1520,7 +1616,7 @@
       "lengthInch": 2.3,
       "dragTypeValue": "g1",
       "bcG1": 0.62,
-      "bcG7": null,
+      "bcG7": 0.311,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 837,
@@ -1529,7 +1625,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 26,
@@ -1542,7 +1642,7 @@
       "lengthInch": 2.29,
       "dragTypeValue": "g1",
       "bcG1": 0.65,
-      "bcG7": null,
+      "bcG7": 0.326,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 838,
@@ -1551,7 +1651,11 @@
       "powderSensitivityFrac": 0.0142,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 27,
@@ -1564,7 +1668,7 @@
       "lengthInch": 2.205,
       "dragTypeValue": "g1",
       "bcG1": 0.65,
-      "bcG7": null,
+      "bcG7": 0.326,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 823,
@@ -1573,7 +1677,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 28,
@@ -1586,7 +1694,7 @@
       "lengthInch": 2.4,
       "dragTypeValue": "g1",
       "bcG1": 0.67,
-      "bcG7": null,
+      "bcG7": 0.336,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 901,
@@ -1595,7 +1703,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 29,
@@ -1608,7 +1720,7 @@
       "lengthInch": 0.8,
       "dragTypeValue": "g1",
       "bcG1": 0.235,
-      "bcG7": null,
+      "bcG7": 0.118,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 1020,
@@ -1617,7 +1729,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 30,
@@ -1629,7 +1745,7 @@
       "weightGrain": 62,
       "lengthInch": 0.906,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.319,
       "bcG7": 0.16,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1639,7 +1755,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 31,
@@ -1652,7 +1772,7 @@
       "lengthInch": 1,
       "dragTypeValue": "g1",
       "bcG1": 0.355,
-      "bcG7": null,
+      "bcG7": 0.178,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 902,
@@ -1661,7 +1781,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 32,
@@ -1674,7 +1798,7 @@
       "lengthInch": 0.981,
       "dragTypeValue": "g1",
       "bcG1": 0.166,
-      "bcG7": null,
+      "bcG7": 0.083,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 902,
@@ -1683,7 +1807,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 33,
@@ -1695,7 +1823,7 @@
       "weightGrain": 60,
       "lengthInch": 0.869,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.267,
       "bcG7": 0.134,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1705,7 +1833,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 34,
@@ -1718,7 +1850,7 @@
       "lengthInch": 1,
       "dragTypeValue": "g1",
       "bcG1": 0.301,
-      "bcG7": null,
+      "bcG7": 0.151,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 900,
@@ -1727,7 +1859,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 35,
@@ -1739,7 +1875,7 @@
       "weightGrain": 62,
       "lengthInch": 0.915,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.319,
       "bcG7": 0.16,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1749,7 +1885,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 36,
@@ -1762,7 +1902,7 @@
       "lengthInch": 0.85,
       "dragTypeValue": "g1",
       "bcG1": 0.45,
-      "bcG7": null,
+      "bcG7": 0.226,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 950,
@@ -1771,7 +1911,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 37,
@@ -1784,7 +1928,7 @@
       "lengthInch": 0.804,
       "dragTypeValue": "g1",
       "bcG1": 0.202,
-      "bcG7": null,
+      "bcG7": 0.101,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 990,
@@ -1793,7 +1937,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 38,
@@ -1805,7 +1953,7 @@
       "weightGrain": 56,
       "lengthInch": 0.741,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.247,
       "bcG7": 0.124,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1815,7 +1963,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 39,
@@ -1828,7 +1980,7 @@
       "lengthInch": 0.85,
       "dragTypeValue": "g1",
       "bcG1": 0.307,
-      "bcG7": null,
+      "bcG7": 0.154,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 920,
@@ -1837,7 +1989,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 40,
@@ -1850,7 +2006,7 @@
       "lengthInch": 0.797,
       "dragTypeValue": "g1",
       "bcG1": 0.209,
-      "bcG7": null,
+      "bcG7": 0.105,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 975,
@@ -1859,7 +2015,11 @@
       "powderSensitivityFrac": 0.0152,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 41,
@@ -1872,7 +2032,7 @@
       "lengthInch": 0.797,
       "dragTypeValue": "g1",
       "bcG1": 0.209,
-      "bcG7": null,
+      "bcG7": 0.105,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 975,
@@ -1881,7 +2041,11 @@
       "powderSensitivityFrac": 0.0152,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 42,
@@ -1894,7 +2058,7 @@
       "lengthInch": 0.75,
       "dragTypeValue": "g1",
       "bcG1": 0.204,
-      "bcG7": null,
+      "bcG7": 0.102,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 1013,
@@ -1903,7 +2067,11 @@
       "powderSensitivityFrac": 0.0147,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 43,
@@ -1916,7 +2084,7 @@
       "lengthInch": 0.75,
       "dragTypeValue": "g1",
       "bcG1": 0.3,
-      "bcG7": null,
+      "bcG7": 0.151,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 975,
@@ -1925,7 +2093,11 @@
       "powderSensitivityFrac": 0.0152,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 44,
@@ -1938,7 +2110,7 @@
       "lengthInch": 0.7,
       "dragTypeValue": "g1",
       "bcG1": 0.207,
-      "bcG7": null,
+      "bcG7": 0.104,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 1000,
@@ -1947,7 +2119,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 45,
@@ -1959,7 +2135,7 @@
       "weightGrain": 75,
       "lengthInch": 0.985,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.366,
       "bcG7": 0.184,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -1969,7 +2145,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 46,
@@ -1982,7 +2162,7 @@
       "lengthInch": 0.973,
       "dragTypeValue": "g1",
       "bcG1": 0.274,
-      "bcG7": null,
+      "bcG7": 0.138,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 933,
@@ -1991,7 +2171,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 47,
@@ -2003,7 +2187,7 @@
       "weightGrain": 55,
       "lengthInch": 0.815,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.243,
       "bcG7": 0.122,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2013,7 +2197,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 48,
@@ -2026,7 +2214,7 @@
       "lengthInch": 0.752,
       "dragTypeValue": "g1",
       "bcG1": 0.272,
-      "bcG7": null,
+      "bcG7": 0.137,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 980,
@@ -2035,7 +2223,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 49,
@@ -2048,7 +2240,7 @@
       "lengthInch": 0.82,
       "dragTypeValue": "g1",
       "bcG1": 0.307,
-      "bcG7": null,
+      "bcG7": 0.154,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 920,
@@ -2057,7 +2249,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 50,
@@ -2070,7 +2266,7 @@
       "lengthInch": 0.8,
       "dragTypeValue": "g1",
       "bcG1": 0.242,
-      "bcG7": null,
+      "bcG7": 0.122,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
       "muzzleVelocityMps": 1006,
@@ -2079,7 +2275,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 51,
@@ -2091,7 +2291,7 @@
       "weightGrain": 73,
       "lengthInch": 0.9,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.354,
       "bcG7": 0.178,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2101,7 +2301,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 52,
@@ -2113,7 +2317,7 @@
       "weightGrain": 77,
       "lengthInch": 1.066,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.402,
       "bcG7": 0.202,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2123,7 +2327,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 53,
@@ -2135,7 +2343,7 @@
       "weightGrain": 77,
       "lengthInch": 1.066,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.402,
       "bcG7": 0.202,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2145,7 +2353,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 54,
@@ -2157,7 +2369,7 @@
       "weightGrain": 77,
       "lengthInch": 0.997,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.384,
       "bcG7": 0.193,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2167,7 +2379,11 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     },
     {
       "id": 55,
@@ -2179,7 +2395,7 @@
       "weightGrain": 69,
       "lengthInch": 0.9,
       "dragTypeValue": "g7",
-      "bcG1": null,
+      "bcG1": 0.337,
       "bcG7": 0.169,
       "useMultiBcG1": false,
       "useMultiBcG7": false,
@@ -2189,7 +2405,167 @@
       "powderSensitivityFrac": 0.01,
       "type": "cartridge",
       "notes": null,
-      "image": null
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 56,
+      "name": "12.7x108 Б-32",
+      "vendor": "USSR",
+      "projectileName": "745GR B-32",
+      "caliberInch": 0.511,
+      "caliberName": "12.7x108mm",
+      "weightGrain": 745,
+      "lengthInch": 2.48,
+      "dragTypeValue": "g1",
+      "bcG1": 0.85,
+      "bcG7": 0.427,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 820,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 57,
+      "name": "12.7x108 DSHK BS",
+      "vendor": "USSR",
+      "projectileName": "857GR BS",
+      "caliberInch": 0.511,
+      "caliberName": "12.7x108mm",
+      "weightGrain": 857,
+      "lengthInch": 2.54,
+      "dragTypeValue": "g1",
+      "bcG1": 0.95,
+      "bcG7": 0.477,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 820,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 58,
+      "name": "12.7x108 MDZ",
+      "vendor": "USSR",
+      "projectileName": "664GR MDZ",
+      "caliberInch": 0.511,
+      "caliberName": "12.7x108mm",
+      "weightGrain": 664,
+      "lengthInch": 2.608,
+      "dragTypeValue": "g1",
+      "bcG1": 0.63,
+      "bcG7": 0.316,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 825,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 59,
+      "name": "14.5x114mm B-32",
+      "vendor": "USSR",
+      "projectileName": "992GR B-32",
+      "caliberInch": 0.586,
+      "caliberName": "14.5x114mm",
+      "weightGrain": 992,
+      "lengthInch": 2.703,
+      "dragTypeValue": "g7",
+      "bcG1": 0.793,
+      "bcG7": 0.398,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 1012,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 60,
+      "name": "14.5x114mm BS",
+      "vendor": "USSR",
+      "projectileName": "1015GR BS",
+      "caliberInch": 0.586,
+      "caliberName": "14.5x114mm",
+      "weightGrain": 1015,
+      "lengthInch": 2.039,
+      "dragTypeValue": "g1",
+      "bcG1": 0.621,
+      "bcG7": 0.312,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 1012,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
+    },
+    {
+      "id": 61,
+      "name": "14.5x114mm MDZ",
+      "vendor": "USSR",
+      "projectileName": "925GR MDZ",
+      "caliberInch": 0.586,
+      "caliberName": "14.5x114mm",
+      "weightGrain": 925,
+      "lengthInch": 2.776,
+      "dragTypeValue": "g1",
+      "bcG1": 0.668,
+      "bcG7": 0.335,
+      "useMultiBcG1": false,
+      "useMultiBcG7": false,
+      "muzzleVelocityMps": 1010,
+      "muzzleVelocityTemperatureC": 15,
+      "usePowderSensitivity": false,
+      "powderSensitivityFrac": 0.01,
+      "type": "cartridge",
+      "notes": null,
+      "image": null,
+      "multiBcG1Table": null,
+      "multiBcG7Table": null,
+      "customDragTable": null,
+      "powderSensitivityTable": null
     }
   ],
   "calibers": [
@@ -2296,6 +2672,14 @@
     {
       "caliberInch": 0.224,
       "caliberName": "223 Remington / 5.56x45 / 5.56mm NATO "
+    },
+    {
+      "caliberInch": 0.511,
+      "caliberName": "12.7x108mm"
+    },
+    {
+      "caliberInch": 0.586,
+      "caliberName": "14.5x114mm"
     }
   ]
 }

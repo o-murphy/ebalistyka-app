@@ -129,8 +129,8 @@ extension AmmoExtension on Ammo {
         );
 
       case DragType.custom:
-        final mach = cusomDragTableMach ?? Float64List(0);
-        final cd = cusomDragTableCd ?? Float64List(0);
+        final mach = customDragTableMach ?? Float64List(0);
+        final cd = customDragTableCd ?? Float64List(0);
         final table = List.generate(
           mach.length,
           (i) => (mach: mach[i], cd: cd[i]),

@@ -1,16 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
-import 'package:ebalistyka/shared/widgets/snackbars.dart';
+import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -48,6 +51,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late bool _useMultiBcG7;
   double? _bcG1;
   double? _bcG7;
+  List<({double vMps, double bc})>? _multiBcG1Table;
+  List<({double vMps, double bc})>? _multiBcG7Table;
+  List<({double mach, double cd})>? _customDragTable;
+  List<({double tempC, double vMps})>? _powderSensTable;
   double? _mvRaw;
   late double _mvTempRaw;
   late double _zeroDistRaw;
@@ -95,6 +102,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _useMultiBcG7 = a?.useMultiBcG7 ?? false;
     _bcG1 = (a != null && a.bcG1 > 0) ? a.bcG1 : null;
     _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
+    _multiBcG1Table = _decodeTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc);
+    _multiBcG7Table = _decodeTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc);
+    _customDragTable = _decodeCustomTable(
+      a?.customDragTableMach,
+      a?.customDragTableCd,
+    );
+    _powderSensTable = _decodePowderSensTable(
+      a?.powderSensitivityTC,
+      a?.powderSensitivityVMps,
+    );
     _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
     _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
     _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
@@ -119,6 +136,30 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _projectileNameCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  static List<({double vMps, double bc})>? _decodeTable(
+    Float64List? vMps,
+    Float64List? bcs,
+  ) {
+    if (vMps == null || bcs == null || vMps.isEmpty) return null;
+    return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
+  }
+
+  static List<({double mach, double cd})>? _decodeCustomTable(
+    Float64List? mach,
+    Float64List? cd,
+  ) {
+    if (mach == null || cd == null || mach.isEmpty) return null;
+    return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
+  }
+
+  static List<({double tempC, double vMps})>? _decodePowderSensTable(
+    Float64List? tempC,
+    Float64List? vMps,
+  ) {
+    if (tempC == null || vMps == null || tempC.isEmpty) return null;
+    return List.generate(tempC.length, (i) => (tempC: tempC[i], vMps: vMps[i]));
   }
 
   void _scheduleCaliberMismatchToast() {
@@ -167,13 +208,22 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     if ((_weightRaw ?? 0) <= 0) return false;
     if ((_lengthRaw ?? 0) <= 0) return false;
     if ((_mvRaw ?? 0) <= 0) return false;
-    // BC: relevant for the current drag type must be positive
-    // (multi-BC mode bypasses single-BC field — allow save when table is set)
-    if (_dragType == DragType.g1 && !_useMultiBcG1 && (_bcG1 ?? 0) <= 0) {
-      return false;
+    if (_dragType == DragType.g1) {
+      if (_useMultiBcG1) {
+        if (_multiBcG1Table == null || _multiBcG1Table!.isEmpty) return false;
+      } else if ((_bcG1 ?? 0) <= 0) {
+        return false;
+      }
     }
-    if (_dragType == DragType.g7 && !_useMultiBcG7 && (_bcG7 ?? 0) <= 0) {
-      return false;
+    if (_dragType == DragType.g7) {
+      if (_useMultiBcG7) {
+        if (_multiBcG7Table == null || _multiBcG7Table!.isEmpty) return false;
+      } else if ((_bcG7 ?? 0) <= 0) {
+        return false;
+      }
+    }
+    if (_dragType == DragType.custom) {
+      if (_customDragTable == null || _customDragTable!.isEmpty) return false;
     }
     return true;
   }
@@ -201,6 +251,42 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.useMultiBcG7 = _useMultiBcG7;
     ammo.bcG1 = _bcG1 ?? -1.0;
     ammo.bcG7 = _bcG7 ?? -1.0;
+    final g1 = _multiBcG1Table;
+    if (g1 != null && g1.isNotEmpty) {
+      ammo.multiBcTableG1VMps = Float64List.fromList(
+        g1.map((r) => r.vMps).toList(),
+      );
+      ammo.multiBcTableG1Bc = Float64List.fromList(
+        g1.map((r) => r.bc).toList(),
+      );
+    } else {
+      ammo.multiBcTableG1VMps = null;
+      ammo.multiBcTableG1Bc = null;
+    }
+    final g7 = _multiBcG7Table;
+    if (g7 != null && g7.isNotEmpty) {
+      ammo.multiBcTableG7VMps = Float64List.fromList(
+        g7.map((r) => r.vMps).toList(),
+      );
+      ammo.multiBcTableG7Bc = Float64List.fromList(
+        g7.map((r) => r.bc).toList(),
+      );
+    } else {
+      ammo.multiBcTableG7VMps = null;
+      ammo.multiBcTableG7Bc = null;
+    }
+    final custom = _customDragTable;
+    if (custom != null && custom.isNotEmpty) {
+      ammo.customDragTableMach = Float64List.fromList(
+        custom.map((r) => r.mach).toList(),
+      );
+      ammo.customDragTableCd = Float64List.fromList(
+        custom.map((r) => r.cd).toList(),
+      );
+    } else {
+      ammo.customDragTableMach = null;
+      ammo.customDragTableCd = null;
+    }
     ammo.muzzleVelocityMps = _mvRaw != null
         ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
         : -1.0;
@@ -214,6 +300,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.zeroAltitude = Distance(_zeroAltRaw, FC.altitude.rawUnit);
     ammo.usePowderSensitivity = _usePowderSensitivity;
     ammo.powderSensitivity = Ratio.fraction(_powderSensRaw);
+    final psTable = _powderSensTable;
+    if (psTable != null && psTable.isNotEmpty) {
+      ammo.powderSensitivityTC = Float64List.fromList(
+        psTable.map((r) => r.tempC).toList(),
+      );
+      ammo.powderSensitivityVMps = Float64List.fromList(
+        psTable.map((r) => r.vMps).toList(),
+      );
+    } else {
+      ammo.powderSensitivityTC = null;
+      ammo.powderSensitivityVMps = null;
+    }
     ammo.zeroUseDiffPowderTemperature = _zeroUseDiffPowderTemp;
     ammo.zeroPowderTemp = Temperature(
       _zeroPowderTempRaw,
@@ -232,11 +330,73 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   void _onDiscard() => context.pop(null);
 
+  // ── Navigation ────────────────────────────────────────────────────────────
+
+  Future<void> _navigateToDragTableEditor() async {
+    final result = await context.push<List<({double mach, double cd})>>(
+      Routes.ammoEditDragTable,
+      extra: _customDragTable,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _customDragTable = result.isEmpty ? null : result);
+  }
+
+  Future<void> _navigateToPowderSensTable() async {
+    final mvMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : null;
+    final tempC = Temperature(
+      _mvTempRaw,
+      FC.temperature.rawUnit,
+    ).in_(Unit.celsius);
+    final result = await context.push<PowderSensTableResult>(
+      Routes.ammoEditPowderSensTable,
+      extra: (table: _powderSensTable, mvMps: mvMps, tempC: tempC),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _powderSensTable = result.table.isEmpty ? null : result.table;
+      final sens = result.sensitivity;
+      // Only update coefficient when table has valid pairs — empty table
+      // preserves the manually-entered coefficient.
+      if (sens != null && result.table.isNotEmpty) {
+        _powderSensRaw = sens.clamp(0.0, double.infinity);
+      }
+    });
+  }
+
+  Future<void> _navigateToMultiBcEditor(DragType dt) async {
+    final table = dt == DragType.g1 ? _multiBcG1Table : _multiBcG7Table;
+    final bc = dt == DragType.g1 ? _bcG1 : _bcG7;
+    final route = dt == DragType.g1
+        ? Routes.ammoEditMultiBcG1
+        : Routes.ammoEditMultiBcG7;
+
+    final mvMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : null;
+
+    final result = await context.push<List<({double vMps, double bc})>>(
+      route,
+      extra: (table: table, mvMps: mvMps, bc: bc),
+    );
+
+    if (!mounted || result == null) return;
+    setState(() {
+      if (dt == DragType.g1) {
+        _multiBcG1Table = result.isEmpty ? null : result;
+      } else {
+        _multiBcG7Table = result.isEmpty ? null : result;
+      }
+    });
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   List<Widget> _buildBcSection({
     required DragType dt,
     required bool useMulti,
+    required List<({double vMps, double bc})>? multiTable,
     required double? bcRaw,
     required ValueChanged<bool> onMultiChanged,
     required ValueChanged<double?> onBcChanged,
@@ -262,20 +422,37 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           isRequired: true,
           onChanged: (v) => setState(() => onBcChanged(v)),
         ),
-      // TODO: there should be a route to multi-bc edit screen (form)
       if (useMulti)
-        ListTile(
-          leading: Icon(IconDef.dragModel),
-          title: Text('Edit $dtName Multi-BC table'),
-          trailing: const Icon(IconDef.chevronRight),
-          dense: true,
-          onTap: () => showNotAvailableSnackBar(context, 'Multi-BC editor'),
+        Builder(
+          builder: (context) {
+            final theme = Theme.of(context);
+            final isEmpty = multiTable == null || multiTable.isEmpty;
+            final count = multiTable?.length ?? 0;
+            return ListTile(
+              tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+              leading: Icon(
+                IconDef.dragModel,
+                color: isEmpty ? theme.colorScheme.tertiary : null,
+              ),
+              title: Text('Edit $dtName Multi-BC table'),
+              subtitle: Text(
+                isEmpty
+                    ? 'Required'
+                    : '$count breakpoint${count == 1 ? '' : 's'}',
+                style: isEmpty
+                    ? TextStyle(color: theme.colorScheme.error)
+                    : null,
+              ),
+              trailing: const Icon(IconDef.chevronRight),
+              dense: true,
+              onTap: () => _navigateToMultiBcEditor(dt),
+            );
+          },
         ),
     ];
   }
 
   Widget _buildDragModel() {
-    final dtName = _dragType.name.toUpperCase();
     return Column(
       children: [
         Padding(
@@ -297,6 +474,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ..._buildBcSection(
             dt: DragType.g1,
             useMulti: _useMultiBcG1,
+            multiTable: _multiBcG1Table,
             bcRaw: _bcG1,
             onMultiChanged: (v) => _useMultiBcG1 = v,
             onBcChanged: (v) => _bcG1 = v,
@@ -305,18 +483,36 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ..._buildBcSection(
             dt: DragType.g7,
             useMulti: _useMultiBcG7,
+            multiTable: _multiBcG7Table,
             bcRaw: _bcG7,
             onMultiChanged: (v) => _useMultiBcG7 = v,
             onBcChanged: (v) => _bcG7 = v,
           ),
         if (_dragType == DragType.custom)
-          // TODO: there should be a route to custom drag table edit/view screen (form)
-          ListTile(
-            leading: Icon(IconDef.dragModel),
-            title: Text('Edit $dtName DragModel'),
-            trailing: const Icon(IconDef.chevronRight),
-            dense: true,
-            onTap: () => showNotAvailableSnackBar(context, 'Drag Table editor'),
+          Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              final isEmpty =
+                  _customDragTable == null || _customDragTable!.isEmpty;
+              final count = _customDragTable?.length ?? 0;
+              return ListTile(
+                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                leading: Icon(
+                  IconDef.dragModel,
+                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                ),
+                title: const Text('Edit Custom Drag Table'),
+                subtitle: Text(
+                  isEmpty ? 'Required' : '$count point${count == 1 ? '' : 's'}',
+                  style: isEmpty
+                      ? TextStyle(color: theme.colorScheme.error)
+                      : null,
+                ),
+                trailing: const Icon(IconDef.chevronRight),
+                dense: true,
+                onTap: _navigateToDragTableEditor,
+              );
+            },
           ),
       ],
     );
@@ -530,6 +726,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
               onPowderTempChanged: (v) =>
                   setState(() => _zeroPowderTempRaw = v),
               onPowderSensChanged: (v) => setState(() => _powderSensRaw = v),
+            ),
+            ListTile(
+              leading: const Icon(IconDef.powderTemperature),
+              title: const Text('Calculate from measurements'),
+              subtitle: Text(
+                _powderSensTable != null
+                    ? '${_powderSensTable!.length} measurement${_powderSensTable!.length == 1 ? '' : 's'}'
+                    : 'Tap to add T→V measurements',
+              ),
+              trailing: const Icon(IconDef.chevronRight),
+              dense: true,
+              onTap: _navigateToPowderSensTable,
             ),
           ],
 

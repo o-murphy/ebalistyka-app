@@ -78,10 +78,10 @@ class A7pParser {
       case proto.GType.CUSTOM:
         final sorted = List.of(p.coefRows)
           ..sort((a, b) => a.mv.compareTo(b.mv));
-        ammo.cusomDragTableMach = Float64List.fromList(
+        ammo.customDragTableMach = Float64List.fromList(
           sorted.map((r) => r.mv / 10000.0).toList(),
         );
-        ammo.cusomDragTableCd = Float64List.fromList(
+        ammo.customDragTableCd = Float64List.fromList(
           sorted.map((r) => r.bcCd / 10000.0).toList(),
         );
       default: // G1

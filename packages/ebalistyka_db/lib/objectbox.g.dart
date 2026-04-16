@@ -81,7 +81,7 @@ final _entities = <obx_int.ModelEntity>[
       ),
       obx_int.ModelProperty(
         id: const obx_int.IdUid(22, 634242907511084069),
-        name: 'cusomDragTableCd',
+        name: 'customDragTableCd',
         type: 29,
         flags: 0,
       ),
@@ -204,7 +204,7 @@ final _entities = <obx_int.ModelEntity>[
       ),
       obx_int.ModelProperty(
         id: const obx_int.IdUid(51, 3103745605439968828),
-        name: 'cusomDragTableMach',
+        name: 'customDragTableMach',
         type: 29,
         flags: 0,
       ),
@@ -1269,9 +1269,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final multiBcTableG7BcOffset = object.multiBcTableG7Bc == null
             ? null
             : fbb.writeListFloat64(object.multiBcTableG7Bc!);
-        final cusomDragTableCdOffset = object.cusomDragTableCd == null
+        final customDragTableCdOffset = object.customDragTableCd == null
             ? null
-            : fbb.writeListFloat64(object.cusomDragTableCd!);
+            : fbb.writeListFloat64(object.customDragTableCd!);
         final projectileNameOffset = object.projectileName == null
             ? null
             : fbb.writeString(object.projectileName!);
@@ -1293,9 +1293,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final multiBcTableG7VMpsOffset = object.multiBcTableG7VMps == null
             ? null
             : fbb.writeListFloat64(object.multiBcTableG7VMps!);
-        final cusomDragTableMachOffset = object.cusomDragTableMach == null
+        final customDragTableMachOffset = object.customDragTableMach == null
             ? null
-            : fbb.writeListFloat64(object.cusomDragTableMach!);
+            : fbb.writeListFloat64(object.customDragTableMach!);
         fbb.startTable(62);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
@@ -1306,7 +1306,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addBool(9, object.useMultiBcG7);
         fbb.addOffset(17, multiBcTableG1BcOffset);
         fbb.addOffset(19, multiBcTableG7BcOffset);
-        fbb.addOffset(21, cusomDragTableCdOffset);
+        fbb.addOffset(21, customDragTableCdOffset);
         fbb.addBool(28, object.usePowderSensitivity);
         fbb.addBool(29, object.zeroUseDiffPowderTemperature);
         fbb.addBool(30, object.zeroUseCoriolis);
@@ -1326,7 +1326,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(47, powderSensitivityVMpsOffset);
         fbb.addOffset(48, multiBcTableG1VMpsOffset);
         fbb.addOffset(49, multiBcTableG7VMpsOffset);
-        fbb.addOffset(50, cusomDragTableMachOffset);
+        fbb.addOffset(50, customDragTableMachOffset);
         fbb.addFloat64(51, object.zeroDistanceMeter);
         fbb.addFloat64(52, object.zeroLookAngleRad);
         fbb.addFloat64(53, object.zeroTemperatureC);
@@ -1369,7 +1369,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
               .vTableGetNullable(buffer, rootOffset, 38)
           ..multiBcTableG7Bc = const obx_int.Float64ListReader()
               .vTableGetNullable(buffer, rootOffset, 42)
-          ..cusomDragTableCd = const obx_int.Float64ListReader()
+          ..customDragTableCd = const obx_int.Float64ListReader()
               .vTableGetNullable(buffer, rootOffset, 46)
           ..usePowderSensitivity = const fb.BoolReader().vTableGet(
             buffer,
@@ -1454,7 +1454,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
               .vTableGetNullable(buffer, rootOffset, 100)
           ..multiBcTableG7VMps = const obx_int.Float64ListReader()
               .vTableGetNullable(buffer, rootOffset, 102)
-          ..cusomDragTableMach = const obx_int.Float64ListReader()
+          ..customDragTableMach = const obx_int.Float64ListReader()
               .vTableGetNullable(buffer, rootOffset, 104)
           ..zeroDistanceMeter = const fb.Float64Reader().vTableGet(
             buffer,
@@ -2551,8 +2551,8 @@ class Ammo_ {
     _entities[0].properties[8],
   );
 
-  /// See [Ammo.cusomDragTableCd].
-  static final cusomDragTableCd = obx.QueryDoubleVectorProperty<Ammo>(
+  /// See [Ammo.customDragTableCd].
+  static final customDragTableCd = obx.QueryDoubleVectorProperty<Ammo>(
     _entities[0].properties[9],
   );
 
@@ -2651,8 +2651,8 @@ class Ammo_ {
     _entities[0].properties[28],
   );
 
-  /// See [Ammo.cusomDragTableMach].
-  static final cusomDragTableMach = obx.QueryDoubleVectorProperty<Ammo>(
+  /// See [Ammo.customDragTableMach].
+  static final customDragTableMach = obx.QueryDoubleVectorProperty<Ammo>(
     _entities[0].properties[29],
   );
 

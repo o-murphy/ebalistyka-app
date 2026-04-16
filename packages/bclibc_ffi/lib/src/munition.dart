@@ -33,26 +33,19 @@ class Ammo {
        powderTemp = powderTemp ?? Temperature.celsius(15);
 
   double calcPowderSens(Velocity otherVelocity, Temperature otherTemperature) {
-    final double v0 = mv.in_(Unit.mps);
-    final double t0 = powderTemp.in_(Unit.celsius);
-    final double v1 = otherVelocity.in_(Unit.mps);
-    final double t1 = otherTemperature.in_(Unit.celsius);
-
-    if (v0 <= 0 || v1 <= 0) {
-      throw ArgumentError('calcPowderSens requires positive muzzle velocities');
-    }
-
-    final double vDelta = (v0 - v1).abs();
-    final double tDelta = (t0 - t1).abs();
-    final double vLower = v1 < v0 ? v1 : v0;
-
-    if (vDelta == 0 || tDelta == 0) {
+    final coeff = calcPowderSensCoeff(
+      mv.in_(Unit.mps),
+      powderTemp.in_(Unit.celsius),
+      otherVelocity.in_(Unit.mps),
+      otherTemperature.in_(Unit.celsius),
+    );
+    if (coeff == null) {
       throw ArgumentError(
-        "otherVelocity and temperature can't be same as default",
+        'calcPowderSens: velocities must be positive and '
+        'pairs must differ in both velocity and temperature',
       );
     }
-
-    tempModifier = (vDelta / tDelta) * (15 / vLower) * 100.0;
+    tempModifier = coeff;
     return tempModifier;
   }
 
@@ -72,6 +65,30 @@ class Ammo {
   @override
   String toString() =>
       'Ammo(mv: $mv, powderTemp: $powderTemp, mod: ${tempModifier.toStringAsFixed(4)})';
+}
+
+/// Calculates powder sensitivity coefficient (fractional velocity change per 15°C)/// from two raw measurement pairs without requiring an [Ammo] object.
+/// from two raw measurement pairs without requiring an [Ammo] object.
+///
+/// - [v0Mps] / [t0C] — reference muzzle velocity and powder temperature
+/// - [v1Mps] / [t1C] — secondary measured velocity and temperature
+///
+/// Returns `null` when the pair is degenerate:
+///   - either velocity is non-positive
+///   - velocities are equal (no Δv)
+///   - temperatures are equal (no Δt)
+double? calcPowderSensCoeff(
+  double v0Mps,
+  double t0C,
+  double v1Mps,
+  double t1C,
+) {
+  if (v0Mps <= 0 || v1Mps <= 0) return null;
+  final double vDelta = (v0Mps - v1Mps).abs();
+  final double tDelta = (t0C - t1C).abs();
+  if (vDelta == 0 || tDelta == 0) return null;
+  final double vLower = v1Mps < v0Mps ? v1Mps : v0Mps;
+  return (vDelta / tDelta) * (15.0 / vLower);
 }
 
 double velocityForPowderTemp(
