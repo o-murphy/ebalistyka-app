@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000.0" height="3000.0" viewBox="-1500.0 -1500.0 3000.0 3000.0" data-mil-width="30.0" data-mil-height="30.0" data-factor="100" shape-rendering="crispEdges">
+  <clipPath id="clip0">
+    <circle cx="0.0" cy="0.0" r="1500.0" fill="white" stroke-width="0.0"/>
+  </clipPath>
+  <g clip-path="url(#clip0)">
+    <line x1="-1000.0" y1="0.0" x2="1000.0" y2="0.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="0.0" y1="-1000.0" x2="0.0" y2="1400.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-1000.0" y1="-50.0" x2="-1000.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-1000.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">10</text>
+    <line x1="-900.0" y1="-50.0" x2="-900.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-800.0" y1="-50.0" x2="-800.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-800.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">8</text>
+    <line x1="-700.0" y1="-50.0" x2="-700.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-600.0" y1="-50.0" x2="-600.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-600.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">6</text>
+    <line x1="-500.0" y1="-50.0" x2="-500.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-400.0" y1="-50.0" x2="-400.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-400.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">4</text>
+    <line x1="-300.0" y1="-50.0" x2="-300.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-200.0" y1="-50.0" x2="-200.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-200.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">2</text>
+    <line x1="-100.0" y1="-50.0" x2="-100.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="100.0" y1="-50.0" x2="100.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="200.0" y1="-50.0" x2="200.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="200.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">2</text>
+    <line x1="300.0" y1="-50.0" x2="300.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="400.0" y1="-50.0" x2="400.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="400.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">4</text>
+    <line x1="500.0" y1="-50.0" x2="500.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="600.0" y1="-50.0" x2="600.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="600.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">6</text>
+    <line x1="700.0" y1="-50.0" x2="700.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="800.0" y1="-50.0" x2="800.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="800.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">8</text>
+    <line x1="900.0" y1="-50.0" x2="900.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="1000.0" y1="-50.0" x2="1000.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="1000.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">10</text>
+    <line x1="-50.0" y1="-1000.0" x2="50.0" y2="-1000.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="-984.2499999999999" fill="onSurface" font-size="45.0" text-anchor="end">10</text>
+    <line x1="-50.0" y1="-900.0" x2="50.0" y2="-900.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="-800.0" x2="50.0" y2="-800.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="-784.25" fill="onSurface" font-size="45.0" text-anchor="end">8</text>
+    <line x1="-50.0" y1="-700.0" x2="50.0" y2="-700.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="-600.0" x2="50.0" y2="-600.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="-584.25" fill="onSurface" font-size="45.0" text-anchor="end">6</text>
+    <line x1="-50.0" y1="-500.0" x2="50.0" y2="-500.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="-400.0" x2="50.0" y2="-400.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="-384.25" fill="onSurface" font-size="45.0" text-anchor="end">4</text>
+    <line x1="-50.0" y1="-300.0" x2="50.0" y2="-300.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="-200.0" x2="50.0" y2="-200.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="-184.25" fill="onSurface" font-size="45.0" text-anchor="end">2</text>
+    <line x1="-50.0" y1="-100.0" x2="50.0" y2="-100.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="100.0" x2="50.0" y2="100.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="200.0" x2="50.0" y2="200.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="215.75000000000003" fill="onSurface" font-size="45.0" text-anchor="end">2</text>
+    <line x1="-50.0" y1="300.0" x2="50.0" y2="300.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="400.0" x2="50.0" y2="400.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="415.75" fill="onSurface" font-size="45.0" text-anchor="end">4</text>
+    <line x1="-50.0" y1="500.0" x2="50.0" y2="500.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="600.0" x2="50.0" y2="600.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="615.75" fill="onSurface" font-size="45.0" text-anchor="end">6</text>
+    <line x1="-50.0" y1="700.0" x2="50.0" y2="700.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="800.0" x2="50.0" y2="800.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="815.7500000000001" fill="onSurface" font-size="45.0" text-anchor="end">8</text>
+    <line x1="-50.0" y1="900.0" x2="50.0" y2="900.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="1000.0" x2="50.0" y2="1000.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="1015.7500000000001" fill="onSurface" font-size="45.0" text-anchor="end">10</text>
+    <line x1="-50.0" y1="1100.0" x2="50.0" y2="1100.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="1200.0" x2="50.0" y2="1200.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="1215.75" fill="onSurface" font-size="45.0" text-anchor="end">12</text>
+    <line x1="-50.0" y1="1300.0" x2="50.0" y2="1300.0" stroke="onSurface" stroke-width="5.0"/>
+    <line x1="-50.0" y1="1400.0" x2="50.0" y2="1400.0" stroke="onSurface" stroke-width="5.0"/>
+    <text x="-70.0" y="1415.75" fill="onSurface" font-size="45.0" text-anchor="end">14</text>
+  </g>
+  <circle cx="0.0" cy="0.0" r="1500.0" fill="transparent" stroke="onSurface" stroke-width="5.0"/>
+</svg>

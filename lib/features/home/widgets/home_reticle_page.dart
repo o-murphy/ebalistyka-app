@@ -1,6 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
@@ -40,11 +40,9 @@ class HomeReticlePage extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: Text(
+          child: _SemicolonWrappingText(
             vmState.cartridgeInfoLine,
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
         Expanded(
@@ -55,7 +53,12 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: _ReticleView(cs: cs),
+                  child: _ReticleView(
+                    cs: cs,
+                    elevMil: vmState.adjustmentElevMil,
+                    windMil: vmState.adjustmentWindMil,
+                    reticleId: vmState.reticleId,
+                  ),
                 ),
               ),
               Expanded(
@@ -80,84 +83,199 @@ class HomeReticlePage extends ConsumerWidget {
   }
 }
 
-// ─── Reticle view ─────────────────────────────────────────────────────────────
+// ─── Semicolon-aware wrapping text ───────────────────────────────────────────
 
-class _ReticleView extends StatelessWidget {
-  const _ReticleView({required this.cs});
-  final ColorScheme cs;
+class _SemicolonWrappingText extends StatelessWidget {
+  const _SemicolonWrappingText(this.text, {this.style});
+
+  final String text;
+  final TextStyle? style;
 
   @override
-  Widget build(BuildContext context) => AspectRatio(
-    aspectRatio: 1,
-    child: CustomPaint(painter: _ReticlePainter(cs: cs)),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (_, constraints) {
+      final segments = text.split('; ');
+      if (segments.length <= 1) {
+        return Text(text, style: style, textAlign: TextAlign.center);
+      }
+
+      final maxWidth = constraints.maxWidth;
+      final lines = <String>[];
+      var current = segments.first;
+
+      for (int i = 1; i < segments.length; i++) {
+        final candidate = '$current; ${segments[i]}';
+        final tp = TextPainter(
+          text: TextSpan(text: candidate, style: style),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: double.infinity);
+
+        if (tp.width <= maxWidth) {
+          current = candidate;
+        } else {
+          lines.add(current);
+          current = segments[i];
+        }
+      }
+      lines.add(current);
+
+      return Text(lines.join('\n'), style: style, textAlign: TextAlign.center);
+    },
   );
 }
 
-class _ReticlePainter extends CustomPainter {
-  const _ReticlePainter({required this.cs});
+// ─── Reticle SVG provider ─────────────────────────────────────────────────────
+
+/// Loads an SVG asset by reticle ID; falls back to default if not found.
+final reticleSvgProvider = FutureProvider.family<String, String?>((
+  ref,
+  id,
+) async {
+  const fallback = 'assets/reticles/default.svg';
+  if (id == null) return rootBundle.loadString(fallback);
+  try {
+    return await rootBundle.loadString('assets/reticles/$id.svg');
+  } catch (_) {
+    return rootBundle.loadString(fallback);
+  }
+});
+
+// ─── Reticle view ─────────────────────────────────────────────────────────────
+
+class _ReticleView extends ConsumerWidget {
+  const _ReticleView({
+    required this.cs,
+    required this.elevMil,
+    required this.windMil,
+    this.reticleId,
+  });
+
   final ColorScheme cs;
+  final double elevMil;
+  final double windMil;
+  final String? reticleId;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = math.min(cx, cy) - 4;
-
-    final stroke = Paint()
-      ..color = cs.onSurface.withAlpha(160)
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawCircle(Offset(cx, cy), r, stroke);
-
-    final gap = r * 0.09;
-    canvas.drawLine(Offset(cx, cy - r + 2), Offset(cx, cy - gap), stroke);
-    canvas.drawLine(Offset(cx, cy + gap), Offset(cx, cy + r - 2), stroke);
-    canvas.drawLine(Offset(cx - r + 2, cy), Offset(cx - gap, cy), stroke);
-    canvas.drawLine(Offset(cx + gap, cy), Offset(cx + r - 2, cy), stroke);
-
-    final tickPaint = Paint()
-      ..color = cs.onSurface.withAlpha(90)
-      ..strokeWidth = 0.8;
-    for (final frac in [0.25, 0.5, 0.75]) {
-      final halfTick = r * 0.055;
-      final yU = cy - r * frac;
-      final yD = cy + r * frac;
-      final xL = cx - r * frac;
-      final xR = cx + r * frac;
-      canvas.drawLine(
-        Offset(cx - halfTick, yU),
-        Offset(cx + halfTick, yU),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(cx - halfTick, yD),
-        Offset(cx + halfTick, yD),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(xL, cy - halfTick),
-        Offset(xL, cy + halfTick),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(xR, cy - halfTick),
-        Offset(xR, cy + halfTick),
-        tickPaint,
-      );
-    }
-
-    canvas.drawCircle(
-      Offset(cx, cy),
-      2.5,
-      Paint()
-        ..color = cs.primary
-        ..style = PaintingStyle.fill,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final svgAsync = ref.watch(reticleSvgProvider(reticleId));
+    return AspectRatio(
+      aspectRatio: 1,
+      child: svgAsync.when(
+        loading: () => const SizedBox.shrink(),
+        error: (_, __) => const SizedBox.shrink(),
+        data: (svgString) => _buildSvg(svgString),
+      ),
     );
   }
 
-  @override
-  bool shouldRepaint(_ReticlePainter old) => old.cs != cs;
+  Widget _buildSvg(String svgString) {
+    final meta = _parseSvgMeta(svgString);
+    final svg = _resolveRoles(svgString, cs);
+    final adjColor = _toHex(
+      cs.brightness == Brightness.dark
+          ? Colors.orangeAccent
+          : Colors.deepOrangeAccent,
+    );
+    final svgWithAdj = _injectAdjustment(
+      svg,
+      windMil: windMil,
+      elevMil: elevMil,
+      factor: meta.factor,
+      milWidth: meta.milWidth,
+      milHeight: meta.milHeight,
+      fillColor: adjColor,
+      strokeColor: adjColor,
+    );
+    return SvgPicture.string(
+      svgWithAdj,
+      fit: BoxFit.contain,
+      allowDrawingOutsideViewBox: true,
+    );
+  }
+
+  static String _resolveRoles(String svg, ColorScheme cs) {
+    final roles = {
+      'onSurface': cs.onSurface,
+      'onBackground': cs.onSurface,
+      'primary': cs.primary,
+      'secondary': cs.secondary,
+      'error': cs.error,
+    };
+    var result = svg;
+    for (final e in roles.entries) {
+      result = result.replaceAll('"${e.key}"', '"${_toHex(e.value)}"');
+    }
+    return result;
+  }
+
+  static String _toHex(Color c) {
+    final v = c.toARGB32();
+    return '#${(v & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+  }
+
+  // Injects adjustment indicator into SVG coordinate space (same as
+  // drawAdjustment in MilReticleCanvas): vertical line, horizontal line, dot.
+  static String _injectAdjustment(
+    String svg, {
+    required double windMil,
+    required double elevMil,
+    required double factor,
+    required double milWidth,
+    required double milHeight,
+    required String fillColor,
+    required String strokeColor,
+  }) {
+    final maxX = milWidth / 2;
+    final maxY = milHeight / 2;
+    final outOfRange = windMil.abs() > maxX || elevMil.abs() > maxY;
+
+    if (outOfRange) {
+      final fs = 1.8 * factor;
+      final dy = fs * 0.35; // baseline compensation
+      final elements = '''
+  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" fill="$fillColor" font-weight="bold">OUT OF RANGE</text>''';
+      return svg.replaceFirst('</svg>', '$elements\n</svg>');
+    }
+
+    final x = windMil * factor;
+    final y = elevMil * factor;
+    final sw = 0.05 * factor;
+    final r = 0.2 * factor;
+    final elements =
+        '''
+  <line x1="$x" y1="0" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
+  <line x1="0" y1="$y" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
+  <circle cx="$x" cy="$y" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
+    return svg.replaceFirst('</svg>', '$elements\n</svg>');
+  }
+
+  // Reads data-mil-width / data-factor from the SVG root element written by
+  // MilReticleCanvas.
+  static _SvgMeta _parseSvgMeta(String svg) {
+    double attr(String name, double fallback) {
+      final m = RegExp('$name="([^"]+)"').firstMatch(svg);
+      return m != null ? (double.tryParse(m.group(1)!) ?? fallback) : fallback;
+    }
+
+    return _SvgMeta(
+      milWidth: attr('data-mil-width', 30.0),
+      milHeight: attr('data-mil-height', 30.0),
+      factor: attr('data-factor', 100.0),
+    );
+  }
+}
+
+class _SvgMeta {
+  const _SvgMeta({
+    required this.milWidth,
+    required this.milHeight,
+    required this.factor,
+  });
+
+  final double milWidth;
+  final double milHeight;
+  final double factor;
 }
 
 // ─── Adjustment panel ─────────────────────────────────────────────────────────

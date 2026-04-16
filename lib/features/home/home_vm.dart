@@ -55,8 +55,11 @@ class HomeUiReady extends HomeUiState {
 
   // Bottom block — Page 1 (Reticle)
   final String cartridgeInfoLine;
+  final String? reticleId;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
+  final double adjustmentElevMil;
+  final double adjustmentWindMil;
 
   // Bottom block — Page 2 (Table)
   final FormattedTableData tableData;
@@ -76,6 +79,7 @@ class HomeUiReady extends HomeUiState {
     required this.pressDisplay,
     required this.humidDisplay,
     required this.cartridgeInfoLine,
+    this.reticleId,
     required this.windSpeedDisplay,
     required this.windSpeedMps,
     required this.lookAngleDisplay,
@@ -84,6 +88,8 @@ class HomeUiReady extends HomeUiState {
     required this.targetDistanceM,
     required this.adjustment,
     this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
+    this.adjustmentElevMil = 0.0,
+    this.adjustmentWindMil = 0.0,
     required this.tableData,
     required this.chartData,
     this.selectedPointInfo,
@@ -215,6 +221,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         pressDisplay: current.pressDisplay,
         humidDisplay: current.humidDisplay,
         cartridgeInfoLine: current.cartridgeInfoLine,
+        reticleId: current.reticleId,
         windSpeedDisplay: current.windSpeedDisplay,
         windSpeedMps: current.windSpeedMps,
         lookAngleDisplay: current.lookAngleDisplay,
@@ -223,6 +230,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         targetDistanceM: current.targetDistanceM,
         adjustment: current.adjustment,
         adjustmentFormat: current.adjustmentFormat,
+        adjustmentElevMil: current.adjustmentElevMil,
+        adjustmentWindMil: current.adjustmentWindMil,
         tableData: current.tableData,
         chartData: current.chartData,
         selectedPointInfo: info,
@@ -286,6 +295,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
 
     final adjustment = _buildAdjustment(hit, targetM, result.holdRad, settings);
+    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil);
+    final targetPoint = hit.trajectory.isNotEmpty
+        ? hit.getAtDistance(Distance.meter(targetM))
+        : null;
+    final windMil = targetPoint != null
+        ? -(targetPoint.windageAngle.in_(Unit.mil))
+        : 0.0;
     final tableData = _buildHomeTable(
       hit,
       targetM,
@@ -311,6 +327,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       pressDisplay: pressStr,
       humidDisplay: humidStr,
       cartridgeInfoLine: cartridgeInfoLine,
+      reticleId: profile.sight.target?.reticleImage,
       windSpeedDisplay: windSpeedDisplay,
       windSpeedMps: windMps,
       lookAngleDisplay: lookAngleDisplay,
@@ -319,6 +336,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetDistanceM: targetM,
       adjustment: adjustment,
       adjustmentFormat: settings.adjustmentDisplayFormat,
+      adjustmentElevMil: elevMil,
+      adjustmentWindMil: windMil,
       tableData: tableData,
       chartData: chartData,
       selectedPointInfo: autoInfo,

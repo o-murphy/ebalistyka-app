@@ -57,6 +57,13 @@ abstract interface class CanvasInterface {
     double fontSize,
     String textAnchor,
   });
+
+  /// Малює [draw] з обрізанням по формі [shape].
+  /// Форма описується тими ж методами канвасу; колір fill/stroke ігнорується.
+  void clip({
+    required void Function(CanvasInterface canvas) shape,
+    required void Function(CanvasInterface canvas) draw,
+  });
 }
 
 abstract interface class DrawerInterface {
@@ -67,13 +74,18 @@ class SVGCanvas implements CanvasInterface {
   final double width;
   final double height;
   late final XmlElement _svgElement;
+  late XmlElement _target;
+  int _clipCounter = 0;
 
   SVGCanvas({this.width = 640.0, this.height = 640.0});
 
   XmlElement get svg => _svgElement;
 
+  /// Поточний контейнер для запису елементів.
+  /// Підкласи, що додають елементи напряму, мають використовувати його.
+  XmlElement get target => _target;
+
   XmlElement generate(DrawerInterface drawer) {
-    // Створюємо SVG елемент з центрованим viewBox
     final double minX = -width / 2;
     final double minY = -height / 2;
 
@@ -83,8 +95,8 @@ class SVGCanvas implements CanvasInterface {
       XmlAttribute(XmlName('height'), height.toString()),
       XmlAttribute(XmlName('viewBox'), '$minX $minY $width $height'),
     ]);
+    _target = _svgElement;
 
-    // Передаємо canvas у drawer для малювання
     drawer.draw(this);
 
     return _svgElement;
@@ -99,7 +111,7 @@ class SVGCanvas implements CanvasInterface {
     String stroke,
     double strokeWidth,
   ) {
-    _svgElement.children.add(
+    _target.children.add(
       XmlElement(XmlName('line'), [
         XmlAttribute(XmlName('x1'), x1.toString()),
         XmlAttribute(XmlName('y1'), y1.toString()),
@@ -121,17 +133,18 @@ class SVGCanvas implements CanvasInterface {
     String? stroke,
     double? strokeWidth,
   }) {
-    final attributes = [
-      XmlAttribute(XmlName('x'), x.toString()),
-      XmlAttribute(XmlName('y'), y.toString()),
-      XmlAttribute(XmlName('width'), w.toString()),
-      XmlAttribute(XmlName('height'), h.toString()),
-      XmlAttribute(XmlName('fill'), fill),
-      if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-      if (strokeWidth != null)
-        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
-    ];
-    _svgElement.children.add(XmlElement(XmlName('rect'), attributes));
+    _target.children.add(
+      XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('x'), x.toString()),
+        XmlAttribute(XmlName('y'), y.toString()),
+        XmlAttribute(XmlName('width'), w.toString()),
+        XmlAttribute(XmlName('height'), h.toString()),
+        XmlAttribute(XmlName('fill'), fill),
+        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+        if (strokeWidth != null)
+          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+      ]),
+    );
   }
 
   @override
@@ -146,28 +159,30 @@ class SVGCanvas implements CanvasInterface {
     String? stroke,
     double? strokeWidth,
   }) {
-    final attributes = [
-      XmlAttribute(XmlName('cx'), cx.toString()),
-      XmlAttribute(XmlName('cy'), cy.toString()),
-      XmlAttribute(XmlName('r'), r.toString()),
-      XmlAttribute(XmlName('fill'), fill),
-      if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-      if (strokeWidth != null)
-        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
-    ];
-    _svgElement.children.add(XmlElement(XmlName('circle'), attributes));
+    _target.children.add(
+      XmlElement(XmlName('circle'), [
+        XmlAttribute(XmlName('cx'), cx.toString()),
+        XmlAttribute(XmlName('cy'), cy.toString()),
+        XmlAttribute(XmlName('r'), r.toString()),
+        XmlAttribute(XmlName('fill'), fill),
+        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+        if (strokeWidth != null)
+          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+      ]),
+    );
   }
 
   @override
   void path(String d, String fill, {String? stroke, double? strokeWidth}) {
-    final attributes = [
-      XmlAttribute(XmlName('d'), d),
-      XmlAttribute(XmlName('fill'), fill),
-      if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-      if (strokeWidth != null)
-        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
-    ];
-    _svgElement.children.add(XmlElement(XmlName('path'), attributes));
+    _target.children.add(
+      XmlElement(XmlName('path'), [
+        XmlAttribute(XmlName('d'), d),
+        XmlAttribute(XmlName('fill'), fill),
+        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+        if (strokeWidth != null)
+          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+      ]),
+    );
   }
 
   @override
@@ -179,18 +194,48 @@ class SVGCanvas implements CanvasInterface {
     double fontSize = 12,
     String textAnchor = 'middle',
   }) {
-    final textElement = XmlElement(
-      XmlName('text'),
-      [
-        XmlAttribute(XmlName('x'), x.toString()),
-        XmlAttribute(XmlName('y'), y.toString()),
-        XmlAttribute(XmlName('fill'), fill),
-        XmlAttribute(XmlName('font-size'), fontSize.toString()),
-        XmlAttribute(XmlName('text-anchor'), textAnchor),
-      ],
-      [XmlText(content)],
+    _target.children.add(
+      XmlElement(
+        XmlName('text'),
+        [
+          XmlAttribute(XmlName('x'), x.toString()),
+          XmlAttribute(XmlName('y'), y.toString()),
+          XmlAttribute(XmlName('fill'), fill),
+          XmlAttribute(XmlName('font-size'), fontSize.toString()),
+          XmlAttribute(XmlName('text-anchor'), textAnchor),
+        ],
+        [XmlText(content)],
+      ),
     );
-    _svgElement.children.add(textElement);
+  }
+
+  /// Обрізає вміст [draw] по формі [shape].
+  /// Генерує `<clipPath>` та `<g clip-path="url(#...)">` без використання `<defs>`.
+  @override
+  void clip({
+    required void Function(CanvasInterface canvas) shape,
+    required void Function(CanvasInterface canvas) draw,
+  }) {
+    final id = 'clip${_clipCounter++}';
+
+    // Визначення форми обрізання
+    final clipPathEl = XmlElement(XmlName('clipPath'), [
+      XmlAttribute(XmlName('id'), id),
+    ]);
+    final prevTarget = _target;
+    _target = clipPathEl;
+    shape(this);
+    _target = prevTarget;
+    _svgElement.children.add(clipPathEl);
+
+    // Група з застосованим clip
+    final groupEl = XmlElement(XmlName('g'), [
+      XmlAttribute(XmlName('clip-path'), 'url(#$id)'),
+    ]);
+    _target = groupEl;
+    draw(this);
+    _target = prevTarget;
+    _svgElement.children.add(groupEl);
   }
 }
 

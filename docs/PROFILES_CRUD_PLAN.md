@@ -552,11 +552,10 @@ ProfilesScreen  (/home/profiles)
 
 ### 🟠 Важливо для альфи
 
-- [ ] `DistanceConvertorScreen` — реалізувати (stub)
-- [ ] `VelocityConvertorScreen` — реалізувати (stub)
 - [x] Table export — кнопка підключена (`table_html_exporter.dart`)
 - [x] Zero Conditions UI — реалізовано в AmmoWizardScreen (секція Zeroing)
-- [ ] Settings → About links — GitHub посилання як мінімум
+
+Решта alpha UX → [ALPHA_UX.md](ALPHA_UX.md)
 
 ---
 
