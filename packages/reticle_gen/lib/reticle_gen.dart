@@ -344,6 +344,7 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double y = 0,
   }) {
+    if (step == 0) return;
     final pb = PathBuilder();
     final half = tickLength / 2;
     double x = start;
@@ -369,6 +370,7 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double x = 0,
   }) {
+    if (step == 0) return;
     final pb = PathBuilder();
     final half = tickLength / 2;
     double y = start;
@@ -412,6 +414,7 @@ class SVGCanvas implements CanvasInterface {
     String stroke,
     double strokeWidth,
   ) {
+    if (dashLen <= 0 && gapLen <= 0) return;
     final dx = x2 - x1;
     final dy = y2 - y1;
     final length = sqrt(dx * dx + dy * dy);
@@ -479,6 +482,10 @@ class SVGCanvas implements CanvasInterface {
     final dy = y2 - y1;
     final length = sqrt(dx * dx + dy * dy);
     if (length < 1e-9) {
+      dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+      return;
+    }
+    if (spacing <= 0) {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
