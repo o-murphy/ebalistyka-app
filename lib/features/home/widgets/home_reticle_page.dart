@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -125,22 +125,6 @@ class _SemicolonWrappingText extends StatelessWidget {
   );
 }
 
-// ─── Reticle SVG provider ─────────────────────────────────────────────────────
-
-/// Loads an SVG asset by reticle ID; falls back to default if not found.
-final reticleSvgProvider = FutureProvider.family<String, String?>((
-  ref,
-  id,
-) async {
-  const fallback = 'assets/reticles/default.svg';
-  if (id == null) return rootBundle.loadString(fallback);
-  try {
-    return await rootBundle.loadString('assets/reticles/$id.svg');
-  } catch (_) {
-    return rootBundle.loadString(fallback);
-  }
-});
-
 // ─── Reticle view ─────────────────────────────────────────────────────────────
 
 class _ReticleView extends ConsumerWidget {
@@ -171,7 +155,7 @@ class _ReticleView extends ConsumerWidget {
 
   Widget _buildSvg(String svgString) {
     final meta = _parseSvgMeta(svgString);
-    final svg = _resolveRoles(svgString, cs);
+    final svg = _clipViewMils(_resolveRoles(svgString, cs), meta);
     final adjColor = _toHex(
       cs.brightness == Brightness.dark
           ? Colors.orangeAccent
@@ -187,10 +171,19 @@ class _ReticleView extends ConsumerWidget {
       fillColor: adjColor,
       strokeColor: adjColor,
     );
-    return SvgPicture.string(
-      svgWithAdj,
-      fit: BoxFit.contain,
-      allowDrawingOutsideViewBox: true,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipOval(child: SvgPicture.string(svgWithAdj, fit: BoxFit.contain)),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: cs.onSurface),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -248,6 +241,21 @@ class _ReticleView extends ConsumerWidget {
   <line x1="0" y1="$y" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
   <circle cx="$x" cy="$y" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
     return svg.replaceFirst('</svg>', '$elements\n</svg>');
+  }
+
+  // Clips the SVG viewBox to [_kViewMils]×[_kViewMils] mils when the reticle
+  // is larger (e.g. mil_xt is 48×48). Replaces only the viewBox attribute so
+  // the existing content and clip-paths inside the SVG are unaffected.
+  static const double _kViewMils = 30.0;
+
+  static String _clipViewMils(String svg, _SvgMeta meta) {
+    if (meta.milWidth <= _kViewMils && meta.milHeight <= _kViewMils) return svg;
+    final half = _kViewMils / 2 * meta.factor;
+    final size = _kViewMils * meta.factor;
+    return svg.replaceFirst(
+      RegExp(r'viewBox="[^"]+"'),
+      'viewBox="${-half} ${-half} $size $size"',
+    );
   }
 
   // Reads data-mil-width / data-factor from the SVG root element written by

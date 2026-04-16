@@ -11,6 +11,9 @@ extension SvgExport on XmlElement {
 
 /// Інтерфейс для малювання на канвасі
 abstract interface class CanvasInterface {
+  double get width;
+  double get height;
+
   /// Малює лінію
   void line(
     double x1,

@@ -1,6 +1,11 @@
 import 'package:reticle_gen/reticle_gen.dart';
 import 'package:xml/xml.dart';
 
+/// Відношення cap-height до em-square для типових sans-serif шрифтів.
+/// Дозволяє задавати [fontSize] у реальних мілах (видима висота великих літер),
+/// а не в одиницях em-квадрата SVG.
+const double _capHeightRatio = 0.72;
+
 class MilReticleCanvas extends SVGCanvas {
   final int factor;
   final double milWidth;
@@ -35,7 +40,7 @@ class MilReticleCanvas extends SVGCanvas {
     x * factor,
     y * factor,
     fill,
-    fontSize: fontSize * factor,
+    fontSize: fontSize / _capHeightRatio * factor,
     textAnchor: textAnchor,
   );
 
