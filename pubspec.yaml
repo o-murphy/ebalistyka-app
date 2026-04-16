@@ -54,6 +54,7 @@ dependencies:
   data_table_2: ^2.7.2
   riverpod: ^3.2.1
   objectbox_flutter_libs: any
+  flutter_svg: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -79,7 +80,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/json/collection.json
+    - assets/json/
+    - assets/reticles/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,6 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
@@ -55,7 +55,11 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: _ReticleView(cs: cs),
+                  child: _ReticleView(
+                    cs: cs,
+                    elevMil: vmState.adjustmentElevMil,
+                    windMil: vmState.adjustmentWindMil,
+                  ),
                 ),
               ),
               Expanded(
@@ -83,81 +87,123 @@ class HomeReticlePage extends ConsumerWidget {
 // ─── Reticle view ─────────────────────────────────────────────────────────────
 
 class _ReticleView extends StatelessWidget {
-  const _ReticleView({required this.cs});
+  const _ReticleView({
+    required this.cs,
+    required this.elevMil,
+    required this.windMil,
+  });
+
   final ColorScheme cs;
+  final double elevMil;
+  final double windMil;
+
+  // Loaded once, reused across rebuilds.
+  static final Future<String> _svgString = rootBundle.loadString(
+    'assets/reticles/default.svg',
+  );
 
   @override
   Widget build(BuildContext context) => AspectRatio(
     aspectRatio: 1,
-    child: CustomPaint(painter: _ReticlePainter(cs: cs)),
+    child: FutureBuilder<String>(
+      future: _svgString,
+      builder: (_, snap) {
+        if (!snap.hasData) return const SizedBox.shrink();
+        final meta = _parseSvgMeta(snap.data!);
+        final svg = _resolveRoles(snap.data!, cs);
+        final svgWithAdj = _injectAdjustment(
+          svg,
+          windMil: windMil,
+          elevMil: elevMil,
+          factor: meta.factor,
+          fillColor: _toHex(
+            cs.brightness == Brightness.dark
+                ? Colors.orangeAccent
+                : Colors.deepOrangeAccent,
+          ),
+          strokeColor: _toHex(
+            cs.brightness == Brightness.dark
+                ? Colors.orangeAccent
+                : Colors.deepOrangeAccent,
+          ),
+        );
+        return SvgPicture.string(
+          svgWithAdj,
+          fit: BoxFit.contain,
+          allowDrawingOutsideViewBox: true,
+        );
+      },
+    ),
   );
-}
 
-class _ReticlePainter extends CustomPainter {
-  const _ReticlePainter({required this.cs});
-  final ColorScheme cs;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = math.min(cx, cy) - 4;
-
-    final stroke = Paint()
-      ..color = cs.onSurface.withAlpha(160)
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawCircle(Offset(cx, cy), r, stroke);
-
-    final gap = r * 0.09;
-    canvas.drawLine(Offset(cx, cy - r + 2), Offset(cx, cy - gap), stroke);
-    canvas.drawLine(Offset(cx, cy + gap), Offset(cx, cy + r - 2), stroke);
-    canvas.drawLine(Offset(cx - r + 2, cy), Offset(cx - gap, cy), stroke);
-    canvas.drawLine(Offset(cx + gap, cy), Offset(cx + r - 2, cy), stroke);
-
-    final tickPaint = Paint()
-      ..color = cs.onSurface.withAlpha(90)
-      ..strokeWidth = 0.8;
-    for (final frac in [0.25, 0.5, 0.75]) {
-      final halfTick = r * 0.055;
-      final yU = cy - r * frac;
-      final yD = cy + r * frac;
-      final xL = cx - r * frac;
-      final xR = cx + r * frac;
-      canvas.drawLine(
-        Offset(cx - halfTick, yU),
-        Offset(cx + halfTick, yU),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(cx - halfTick, yD),
-        Offset(cx + halfTick, yD),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(xL, cy - halfTick),
-        Offset(xL, cy + halfTick),
-        tickPaint,
-      );
-      canvas.drawLine(
-        Offset(xR, cy - halfTick),
-        Offset(xR, cy + halfTick),
-        tickPaint,
-      );
+  static String _resolveRoles(String svg, ColorScheme cs) {
+    final roles = {
+      'onSurface': cs.onSurface,
+      'onBackground': cs.onSurface,
+      'primary': cs.primary,
+      'secondary': cs.secondary,
+      'error': cs.error,
+    };
+    var result = svg;
+    for (final e in roles.entries) {
+      result = result.replaceAll('"${e.key}"', '"${_toHex(e.value)}"');
     }
-
-    canvas.drawCircle(
-      Offset(cx, cy),
-      2.5,
-      Paint()
-        ..color = cs.primary
-        ..style = PaintingStyle.fill,
-    );
+    return result;
   }
 
-  @override
-  bool shouldRepaint(_ReticlePainter old) => old.cs != cs;
+  static String _toHex(Color c) {
+    final v = c.toARGB32();
+    return '#${(v & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+  }
+
+  // Injects adjustment indicator into SVG coordinate space (same as
+  // drawAdjustment in MilReticleCanvas): vertical line, horizontal line, dot.
+  static String _injectAdjustment(
+    String svg, {
+    required double windMil,
+    required double elevMil,
+    required double factor,
+    required String fillColor,
+    required String strokeColor,
+  }) {
+    final x = windMil * factor;
+    final y = elevMil * factor;
+    final sw = 0.05 * factor;
+    final r = 0.2 * factor;
+    final elements =
+        '''
+  <line x1="$x" y1="0" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
+  <line x1="0" y1="$y" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
+  <circle cx="$x" cy="$y" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
+    return svg.replaceFirst('</svg>', '$elements\n</svg>');
+  }
+
+  // Reads data-mil-width / data-factor from the SVG root element written by
+  // MilReticleCanvas.
+  static _SvgMeta _parseSvgMeta(String svg) {
+    double attr(String name, double fallback) {
+      final m = RegExp('$name="([^"]+)"').firstMatch(svg);
+      return m != null ? (double.tryParse(m.group(1)!) ?? fallback) : fallback;
+    }
+
+    return _SvgMeta(
+      milWidth: attr('data-mil-width', 30.0),
+      milHeight: attr('data-mil-height', 30.0),
+      factor: attr('data-factor', 100.0),
+    );
+  }
+}
+
+class _SvgMeta {
+  const _SvgMeta({
+    required this.milWidth,
+    required this.milHeight,
+    required this.factor,
+  });
+
+  final double milWidth;
+  final double milHeight;
+  final double factor;
 }
 
 // ─── Adjustment panel ─────────────────────────────────────────────────────────

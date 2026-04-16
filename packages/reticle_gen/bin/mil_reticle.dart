@@ -3,12 +3,41 @@ import 'package:xml/xml.dart';
 
 class MilReticleCanvas extends SVGCanvas {
   final int factor;
+  final double milWidth;
+  final double milHeight;
 
   MilReticleCanvas({
-    double milWidth = 30.0,
-    double milHeight = 30.0,
+    this.milWidth = 30.0,
+    this.milHeight = 30.0,
     this.factor = 100,
   }) : super(width: milWidth * factor, height: milHeight * factor);
+
+  @override
+  XmlElement generate(DrawerInterface drawer) {
+    final el = super.generate(drawer);
+    el.setAttribute('data-mil-width', milWidth.toString());
+    el.setAttribute('data-mil-height', milHeight.toString());
+    el.setAttribute('data-factor', factor.toString());
+    el.setAttribute('shape-rendering', 'crispEdges');
+    return el;
+  }
+
+  @override
+  void text(
+    String content,
+    double x,
+    double y,
+    String fill, {
+    double fontSize = 12,
+    String textAnchor = 'middle',
+  }) => super.text(
+    content,
+    x * factor,
+    y * factor,
+    fill,
+    fontSize: fontSize * factor,
+    textAnchor: textAnchor,
+  );
 
   @override
   void line(
@@ -93,14 +122,15 @@ class MilReticleCanvas extends SVGCanvas {
 class MilReticleDrawer implements DrawerInterface {
   @override
   void draw(CanvasInterface canvas) {
-    const String color = "black";
+    const String color = "onSurface";
     const double thickness = 0.05; // Товщина ліній
     const double tickHalfLength =
         0.5; // Половина довжини риски (щоб загальна була 1 міл)
 
     canvas
       // Малюємо фон
-      ..fill("white")
+      // ..fill("white")
+      ..circle(0, 0, 15, "transparent", stroke: color, strokeWidth: thickness)
       // 1. Основні осі (від -10 до 10 мілів)
       ..line(-10, 0, 10, 0, color, thickness) // Горизонтальна
       ..line(0, -10, 0, 10, color, thickness); // Вертикальна
@@ -112,21 +142,43 @@ class MilReticleDrawer implements DrawerInterface {
 
       double pos = i.toDouble();
 
-      canvas
-        // Риски на ГОРИЗОНТАЛЬНІЙ осі (вертикальні палички)
-        // Малюємо від -0.5 до 0.5 по осі Y на позиції X = i
-        ..line(pos, -tickHalfLength, pos, tickHalfLength, color, thickness)
-        // Риски на ВЕРТИКАЛЬНІЙ осі (горизонтальні палички)
-        // Малюємо від -0.5 до 0.5 по осі X на позиції Y = i
-        ..line(-tickHalfLength, pos, tickHalfLength, pos, color, thickness);
+      const double fontSize = 0.45; // мілів
+      const double labelOffset = 0.2; // відступ від краю риски
+      final bool showLabel = i.abs() % 2 == 0;
+
+      // Риски на ГОРИЗОНТАЛЬНІЙ осі
+      canvas.line(pos, -tickHalfLength, pos, tickHalfLength, color, thickness);
+      if (showLabel) {
+        canvas.text(
+          i.abs().toStringAsFixed(0),
+          pos,
+          -(tickHalfLength + labelOffset + fontSize),
+          color,
+          fontSize: fontSize,
+          textAnchor: 'middle',
+        );
+      }
+      // Риски на ВЕРТИКАЛЬНІЙ осі
+      canvas.line(-tickHalfLength, pos, tickHalfLength, pos, color, thickness);
+      if (showLabel) {
+        canvas.text(
+          i.abs().toStringAsFixed(0),
+          -(tickHalfLength + labelOffset),
+          pos + fontSize * 0.35, // компенсація baseline
+          color,
+          fontSize: fontSize,
+          textAnchor: 'end',
+        );
+      }
     }
   }
 }
 
-void main() {
+void main(List<String> args) {
+  final outputPath = args.isNotEmpty ? args.first : 'default.svg';
   final drawer = MilReticleDrawer();
   MilReticleCanvas()
-    ..generate(drawer) // Намалювали сітку
-    ..drawAdjustment(0.53, 4.6) // Додали червону точку
-    ..svg.export('final.svg');
+    ..generate(drawer)
+    // ..drawAdjustment(0.53, 4.6)
+    ..svg.export(outputPath);
 }
