@@ -101,7 +101,10 @@ class MilReticleCanvas extends SVGCanvas {
   void path(String d, String fill, {String? stroke, double? strokeWidth}) {
     // SVG transform="scale(factor)" scales both coordinates AND stroke-width,
     // so coordinates and strokeWidth stay in mil units — no manual multiplication.
+    // nextId() is inherited from SVGCanvas and honours the hint set by helpers
+    // such as hRuler/cross before they call this.path().
     target.children.add(XmlElement(XmlName('path'), [
+      XmlAttribute(XmlName('id'), nextId('path')),
       XmlAttribute(XmlName('d'), d),
       XmlAttribute(XmlName('fill'), fill),
       if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),

@@ -112,6 +112,9 @@ class SVGCanvas implements CanvasInterface {
   late XmlElement _target;
   int _clipCounter = 0;
 
+  final Map<String, int> _idCounters = {};
+  String? _idHint;
+
   SVGCanvas({this.width = 640.0, this.height = 640.0});
 
   XmlElement get svg => _svgElement;
@@ -119,6 +122,26 @@ class SVGCanvas implements CanvasInterface {
   /// Поточний контейнер для запису елементів.
   /// Підкласи, що додають елементи напряму, мають використовувати його.
   XmlElement get target => _target;
+
+  /// Returns the next auto-generated element id for [prefix] and increments
+  /// the internal counter for that prefix.
+  ///
+  /// If a hint was set by a higher-level helper (e.g. [hRuler] sets `'hruler'`
+  /// before calling [path]), the hint is used as the prefix instead, so the
+  /// emitted element gets a semantically meaningful id like `hruler-0`.
+  /// Subclasses may call this method directly.
+  String nextId(String prefix) {
+    final p = _idHint ?? prefix;
+    _idHint = null;
+    final n = _idCounters[p] ?? 0;
+    _idCounters[p] = n + 1;
+    return '$p-$n';
+  }
+
+  // Sets a one-shot hint consumed by the next [nextId] call.
+  // Uses ??= so the first caller wins when helpers delegate to each other
+  // (e.g. hDashLine sets 'hdashline' before calling dashLine which also hints).
+  void _hint(String h) { _idHint ??= h; }
 
   XmlElement generate(DrawerInterface drawer) {
     final double minX = -width / 2;
@@ -148,6 +171,7 @@ class SVGCanvas implements CanvasInterface {
   ) {
     _target.children.add(
       XmlElement(XmlName('line'), [
+        XmlAttribute(XmlName('id'), nextId('line')),
         XmlAttribute(XmlName('x1'), x1.toString()),
         XmlAttribute(XmlName('y1'), y1.toString()),
         XmlAttribute(XmlName('x2'), x2.toString()),
@@ -170,6 +194,7 @@ class SVGCanvas implements CanvasInterface {
   }) {
     _target.children.add(
       XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('id'), nextId('rect')),
         XmlAttribute(XmlName('x'), x.toString()),
         XmlAttribute(XmlName('y'), y.toString()),
         XmlAttribute(XmlName('width'), w.toString()),
@@ -183,7 +208,10 @@ class SVGCanvas implements CanvasInterface {
   }
 
   @override
-  void fill(String fill) => rect(-width / 2, -height / 2, width, height, fill);
+  void fill(String fill) {
+    _hint('fill');
+    rect(-width / 2, -height / 2, width, height, fill);
+  }
 
   @override
   void circle(
@@ -196,6 +224,7 @@ class SVGCanvas implements CanvasInterface {
   }) {
     _target.children.add(
       XmlElement(XmlName('circle'), [
+        XmlAttribute(XmlName('id'), nextId('circle')),
         XmlAttribute(XmlName('cx'), cx.toString()),
         XmlAttribute(XmlName('cy'), cy.toString()),
         XmlAttribute(XmlName('r'), r.toString()),
@@ -211,6 +240,7 @@ class SVGCanvas implements CanvasInterface {
   void path(String d, String fill, {String? stroke, double? strokeWidth}) {
     _target.children.add(
       XmlElement(XmlName('path'), [
+        XmlAttribute(XmlName('id'), nextId('path')),
         XmlAttribute(XmlName('d'), d),
         XmlAttribute(XmlName('fill'), fill),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
@@ -233,6 +263,7 @@ class SVGCanvas implements CanvasInterface {
       XmlElement(
         XmlName('text'),
         [
+          XmlAttribute(XmlName('id'), nextId('text')),
           XmlAttribute(XmlName('x'), x.toString()),
           XmlAttribute(XmlName('y'), y.toString()),
           XmlAttribute(XmlName('fill'), fill),
@@ -251,11 +282,10 @@ class SVGCanvas implements CanvasInterface {
     required void Function(CanvasInterface canvas) shape,
     required void Function(CanvasInterface canvas) draw,
   }) {
-    final id = 'clip${_clipCounter++}';
+    final clipId = 'clip${_clipCounter++}';
 
-    // Визначення форми обрізання
     final clipPathEl = XmlElement(XmlName('clipPath'), [
-      XmlAttribute(XmlName('id'), id),
+      XmlAttribute(XmlName('id'), clipId),
     ]);
     final prevTarget = _target;
     _target = clipPathEl;
@@ -263,9 +293,9 @@ class SVGCanvas implements CanvasInterface {
     _target = prevTarget;
     _svgElement.children.add(clipPathEl);
 
-    // Група з застосованим clip
     final groupEl = XmlElement(XmlName('g'), [
-      XmlAttribute(XmlName('clip-path'), 'url(#$id)'),
+      XmlAttribute(XmlName('id'), nextId('clipgroup')),
+      XmlAttribute(XmlName('clip-path'), 'url(#$clipId)'),
     ]);
     _target = groupEl;
     draw(this);
@@ -277,11 +307,15 @@ class SVGCanvas implements CanvasInterface {
   // Subclasses (e.g. MilReticleCanvas) override line/circle/path, so all
   // helpers below pick up coordinate scaling for free via polymorphic dispatch.
 
-  void hLine(double y, double x1, double x2, String stroke, double strokeWidth) =>
-      line(x1, y, x2, y, stroke, strokeWidth);
+  void hLine(double y, double x1, double x2, String stroke, double strokeWidth) {
+    _hint('hline');
+    line(x1, y, x2, y, stroke, strokeWidth);
+  }
 
-  void vLine(double x, double y1, double y2, String stroke, double strokeWidth) =>
-      line(x, y1, x, y2, stroke, strokeWidth);
+  void vLine(double x, double y1, double y2, String stroke, double strokeWidth) {
+    _hint('vline');
+    line(x, y1, x, y2, stroke, strokeWidth);
+  }
 
   void dot(
     double cx,
@@ -290,7 +324,10 @@ class SVGCanvas implements CanvasInterface {
     String fill, {
     String? stroke,
     double? strokeWidth,
-  }) => circle(cx, cy, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+  }) {
+    _hint('dot');
+    circle(cx, cy, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+  }
 
   // ── Multi-element helpers that emit a single <path> ─────────────────────────
   // Each builds a PathBuilder in the canvas's native coordinate space, then
@@ -315,7 +352,10 @@ class SVGCanvas implements CanvasInterface {
       pb.lineTo(x, y + half);
       x += step;
     }
-    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    if (!pb.isEmpty) {
+      _hint('hruler');
+      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   /// Tick marks along Y, centred at [x], from [start] to [end] with [step]
@@ -337,7 +377,10 @@ class SVGCanvas implements CanvasInterface {
       pb.lineTo(x + half, y);
       y += step;
     }
-    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    if (!pb.isEmpty) {
+      _hint('vruler');
+      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   /// Crosshair centred at ([cx], [cy]) with total arm length [size].
@@ -354,6 +397,7 @@ class SVGCanvas implements CanvasInterface {
       ..lineTo(cx + half, cy)
       ..moveTo(cx, cy - half)
       ..lineTo(cx, cy + half);
+    _hint('cross');
     path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
   }
 
@@ -387,7 +431,10 @@ class SVGCanvas implements CanvasInterface {
       t = endT;
       drawing = !drawing;
     }
-    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    if (!pb.isEmpty) {
+      _hint('dashline');
+      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   void hDashLine(
@@ -398,7 +445,10 @@ class SVGCanvas implements CanvasInterface {
     double gapLen,
     String stroke,
     double strokeWidth,
-  ) => dashLine(x1, y, x2, y, dashLen, gapLen, stroke, strokeWidth);
+  ) {
+    _hint('hdashline');
+    dashLine(x1, y, x2, y, dashLen, gapLen, stroke, strokeWidth);
+  }
 
   void vDashLine(
     double x,
@@ -408,7 +458,10 @@ class SVGCanvas implements CanvasInterface {
     double gapLen,
     String stroke,
     double strokeWidth,
-  ) => dashLine(x, y1, x, y2, dashLen, gapLen, stroke, strokeWidth);
+  ) {
+    _hint('vdashline');
+    dashLine(x, y1, x, y2, dashLen, gapLen, stroke, strokeWidth);
+  }
 
   /// Evenly spaced dots along the line from ([x1],[y1]) to ([x2],[y2]).
   void dotLine(
@@ -495,7 +548,10 @@ class SVGCanvas implements CanvasInterface {
   ) {
     final pb = PathBuilder();
     build(pb);
-    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    if (!pb.isEmpty) {
+      _hint('batch');
+      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 }
 
