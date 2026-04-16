@@ -1,3 +1,4 @@
+import 'dart:developer' show log;
 import 'dart:math';
 
 import 'package:xml/xml.dart';
@@ -142,6 +143,9 @@ class SVGCanvas implements CanvasInterface {
   // Uses ??= so the first caller wins when helpers delegate to each other
   // (e.g. hDashLine sets 'hdashline' before calling dashLine which also hints).
   void _hint(String h) { _idHint ??= h; }
+
+  static void _warn(String method, String reason) =>
+      log('$method: $reason', name: 'reticle_gen', level: 900);
 
   XmlElement generate(DrawerInterface drawer) {
     final double minX = -width / 2;
@@ -344,7 +348,7 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double y = 0,
   }) {
-    if (step == 0) return;
+    if (step == 0) { _warn('hRuler', 'step must not be zero'); return; }
     final pb = PathBuilder();
     final half = tickLength / 2;
     double x = start;
@@ -370,7 +374,7 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double x = 0,
   }) {
-    if (step == 0) return;
+    if (step == 0) { _warn('vRuler', 'step must not be zero'); return; }
     final pb = PathBuilder();
     final half = tickLength / 2;
     double y = start;
@@ -414,7 +418,7 @@ class SVGCanvas implements CanvasInterface {
     String stroke,
     double strokeWidth,
   ) {
-    if (dashLen <= 0 && gapLen <= 0) return;
+    if (dashLen <= 0 && gapLen <= 0) { _warn('dashLine', 'dashLen and gapLen are both <= 0'); return; }
     final dx = x2 - x1;
     final dy = y2 - y1;
     final length = sqrt(dx * dx + dy * dy);
@@ -486,6 +490,7 @@ class SVGCanvas implements CanvasInterface {
       return;
     }
     if (spacing <= 0) {
+      _warn('dotLine', 'spacing must be > 0, drawing single dot');
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
