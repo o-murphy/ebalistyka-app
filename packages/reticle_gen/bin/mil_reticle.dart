@@ -108,7 +108,7 @@ class MilReticleCanvas extends SVGCanvas {
       XmlAttribute(XmlName('transform'), 'scale($factor)'),
     ]);
 
-    svg.children.add(scaledPath);
+    target.children.add(scaledPath);
   }
 
   void drawAdjustment(double x, double y) {
@@ -127,50 +127,59 @@ class MilReticleDrawer implements DrawerInterface {
     const double tickHalfLength =
         0.5; // Половина довжини риски (щоб загальна була 1 міл)
 
+    const double fontSize = 0.45; // мілів
+    const double labelOffset = 0.2; // відступ від краю риски
+
     canvas
-      // Малюємо фон
-      // ..fill("white")
-      ..circle(0, 0, 15, "transparent", stroke: color, strokeWidth: thickness)
-      // 1. Основні осі (від -10 до 10 мілів)
-      ..line(-10, 0, 10, 0, color, thickness) // Горизонтальна
-      ..line(0, -10, 0, 10, color, thickness); // Вертикальна
+      ..clip(
+        shape: (c) => c.circle(0, 0, 15, 'white'),
+        draw: (c) {
+          c
+            // 1. Основні осі
+            ..line(-10, 0, 10, 0, color, thickness) // Горизонтальна
+            ..line(0, -10, 0, 14, color, thickness); // Вертикальна
 
-    // 2. Малюємо риски кожний 1 MIL
-    for (int i = -10; i <= 10; i++) {
-      // Пропускаємо центр (0), бо там основні осі
-      if (i == 0) continue;
+          // 2а. Риски на ГОРИЗОНТАЛЬНІЙ осі (-10..10)
+          for (int i = -10; i <= 10; i++) {
+            if (i == 0) continue;
+            final double pos = i.toDouble();
+            final bool showLabel = i.abs() % 2 == 0;
 
-      double pos = i.toDouble();
+            c.line(pos, -tickHalfLength, pos, tickHalfLength, color, thickness);
+            if (showLabel) {
+              c.text(
+                i.abs().toStringAsFixed(0),
+                pos,
+                -(tickHalfLength + labelOffset + fontSize),
+                color,
+                fontSize: fontSize,
+                textAnchor: 'middle',
+              );
+            }
+          }
 
-      const double fontSize = 0.45; // мілів
-      const double labelOffset = 0.2; // відступ від краю риски
-      final bool showLabel = i.abs() % 2 == 0;
+          // 2б. Риски на ВЕРТИКАЛЬНІЙ осі (-10..14)
+          for (int i = -10; i <= 14; i++) {
+            if (i == 0) continue;
+            final double pos = i.toDouble();
+            final bool showLabel = i.abs() % 2 == 0;
 
-      // Риски на ГОРИЗОНТАЛЬНІЙ осі
-      canvas.line(pos, -tickHalfLength, pos, tickHalfLength, color, thickness);
-      if (showLabel) {
-        canvas.text(
-          i.abs().toStringAsFixed(0),
-          pos,
-          -(tickHalfLength + labelOffset + fontSize),
-          color,
-          fontSize: fontSize,
-          textAnchor: 'middle',
-        );
-      }
-      // Риски на ВЕРТИКАЛЬНІЙ осі
-      canvas.line(-tickHalfLength, pos, tickHalfLength, pos, color, thickness);
-      if (showLabel) {
-        canvas.text(
-          i.abs().toStringAsFixed(0),
-          -(tickHalfLength + labelOffset),
-          pos + fontSize * 0.35, // компенсація baseline
-          color,
-          fontSize: fontSize,
-          textAnchor: 'end',
-        );
-      }
-    }
+            c.line(-tickHalfLength, pos, tickHalfLength, pos, color, thickness);
+            if (showLabel) {
+              c.text(
+                i.abs().toStringAsFixed(0),
+                -(tickHalfLength + labelOffset),
+                pos + fontSize * 0.35, // компенсація baseline
+                color,
+                fontSize: fontSize,
+                textAnchor: 'end',
+              );
+            }
+          }
+        },
+      )
+      // Обідок кола поверх обрізаного вмісту
+      ..circle(0, 0, 15, "transparent", stroke: color, strokeWidth: thickness);
   }
 }
 

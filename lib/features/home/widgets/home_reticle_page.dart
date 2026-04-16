@@ -41,10 +41,10 @@ class HomeReticlePage extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: Text(
-            vmState.cartridgeInfoLine,
+            vmState.cartridgeInfoLine.replaceAll('; ', '\n'),
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
             textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
+            softWrap: true,
           ),
         ),
         Expanded(
@@ -116,6 +116,8 @@ class _ReticleView extends StatelessWidget {
           windMil: windMil,
           elevMil: elevMil,
           factor: meta.factor,
+          milWidth: meta.milWidth,
+          milHeight: meta.milHeight,
           fillColor: _toHex(
             cs.brightness == Brightness.dark
                 ? Colors.orangeAccent
@@ -163,9 +165,23 @@ class _ReticleView extends StatelessWidget {
     required double windMil,
     required double elevMil,
     required double factor,
+    required double milWidth,
+    required double milHeight,
     required String fillColor,
     required String strokeColor,
   }) {
+    final maxX = milWidth / 2;
+    final maxY = milHeight / 2;
+    final outOfRange = windMil.abs() > maxX || elevMil.abs() > maxY;
+
+    if (outOfRange) {
+      final fs = 1.8 * factor;
+      final dy = fs * 0.35; // baseline compensation
+      final elements = '''
+  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" fill="$fillColor" font-weight="bold">OUT OF RANGE</text>''';
+      return svg.replaceFirst('</svg>', '$elements\n</svg>');
+    }
+
     final x = windMil * factor;
     final y = elevMil * factor;
     final sw = 0.05 * factor;
