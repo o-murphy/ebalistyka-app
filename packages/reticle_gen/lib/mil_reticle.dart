@@ -1,11 +1,17 @@
 import 'package:reticle_gen/reticle_gen.dart';
 import 'package:xml/xml.dart';
 
-/// Відношення cap-height до em-square для типових sans-serif шрифтів.
-/// Дозволяє задавати [fontSize] у реальних мілах (видима висота великих літер),
-/// а не в одиницях em-квадрата SVG.
+/// Correction from em-square to cap-height for typical sans-serif fonts.
+/// Lets callers specify [fontSize] as the visible height of capital letters
+/// rather than the SVG em-square unit.
 const double _capHeightRatio = 0.72;
 
+/// A canvas whose coordinate system is in mils.
+///
+/// The SVG [viewBox] spans [−milWidth/2 .. milWidth/2] × [−milHeight/2 ..
+/// milHeight/2] in mil units, while the physical [width]/[height] attributes
+/// are in pixels ([milWidth] × [factor] and [milHeight] × [factor]).
+/// The SVG renderer handles all scaling — no per-element multiplication needed.
 class MilReticleCanvas extends SVGCanvas {
   final int factor;
   final double milWidth;
@@ -15,11 +21,15 @@ class MilReticleCanvas extends SVGCanvas {
     this.milWidth = 30.0,
     this.milHeight = 30.0,
     this.factor = 100,
-  }) : super(width: milWidth * factor, height: milHeight * factor);
+  }) : super(width: milWidth, height: milHeight);
 
   @override
   XmlElement generate(DrawerInterface drawer) {
     final el = super.generate(drawer);
+    // super.generate() sets width/height to milWidth/milHeight (user-unit values).
+    // Override them with the intended pixel dimensions.
+    el.setAttribute('width', (milWidth * factor).toString());
+    el.setAttribute('height', (milHeight * factor).toString());
     el.setAttribute('data-mil-width', milWidth.toString());
     el.setAttribute('data-mil-height', milHeight.toString());
     el.setAttribute('data-factor', factor.toString());
@@ -27,6 +37,10 @@ class MilReticleCanvas extends SVGCanvas {
     return el;
   }
 
+  // Only text() needs an override: apply cap-height ratio so callers can
+  // specify fontSize in "visible capital-letter height" mils rather than
+  // em-square mils. Coordinates and all other drawing methods work in mils
+  // natively via the viewBox — no factor multiplication required.
   @override
   void text(
     String content,
@@ -37,112 +51,38 @@ class MilReticleCanvas extends SVGCanvas {
     String textAnchor = 'middle',
   }) => super.text(
     content,
-    x * factor,
-    y * factor,
+    x,
+    y,
     fill,
-    fontSize: fontSize / _capHeightRatio * factor,
+    fontSize: fontSize / _capHeightRatio,
     textAnchor: textAnchor,
   );
 
-  @override
-  void line(
-    double x1,
-    double y1,
-    double x2,
-    double y2,
-    String stroke,
-    double strokeWidth,
-  ) => super.line(
-    x1 * factor,
-    y1 * factor,
-    x2 * factor,
-    y2 * factor,
-    stroke,
-    strokeWidth * factor,
-  );
-
-  @override
-  void rect(
-    double x,
-    double y,
-    double w,
-    double h,
-    String fill, {
-    String? stroke,
-    double? strokeWidth,
-  }) => super.rect(
-    x * factor,
-    y * factor,
-    w * factor,
-    h * factor,
-    fill,
-    stroke: stroke,
-    strokeWidth: (strokeWidth ?? 0.0) * factor,
-  );
-
-  @override
-  void circle(
-    double cx,
-    double cy,
-    double r,
-    String fill, {
-    String? stroke,
-    double? strokeWidth,
-  }) => super.circle(
-    cx * factor,
-    cy * factor,
-    r * factor,
-    fill,
-    stroke: stroke,
-    strokeWidth: (strokeWidth ?? 0.0) * factor,
-  );
-
-  @override
-  void path(String d, String fill, {String? stroke, double? strokeWidth}) {
-    // SVG transform="scale(factor)" scales both coordinates AND stroke-width,
-    // so coordinates and strokeWidth stay in mil units — no manual multiplication.
-    // nextId() is inherited from SVGCanvas and honours the hint set by helpers
-    // such as hRuler/cross before they call this.path().
-    target.children.add(XmlElement(XmlName('path'), [
-      XmlAttribute(XmlName('id'), nextId('path')),
-      XmlAttribute(XmlName('d'), d),
-      XmlAttribute(XmlName('fill'), fill),
-      if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-      if (strokeWidth != null)
-        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
-      XmlAttribute(XmlName('transform'), 'scale($factor)'),
-    ]));
-  }
-
   void drawAdjustment(double x, double y) {
     this
-      ..line(x, 0, x, y, "red", 0.05)
-      ..line(0, y, x, y, "red", 0.05)
-      ..circle(x, y, 0.2, "red");
+      ..line(x, 0, x, y, 'red', 0.05)
+      ..line(0, y, x, y, 'red', 0.05)
+      ..circle(x, y, 0.2, 'red');
   }
 }
 
 class MilReticleDrawer implements DrawerInterface {
   @override
   void draw(CanvasInterface canvas) {
-    const String color = "onSurface";
-    const double thickness = 0.05; // Товщина ліній
-    const double tickHalfLength =
-        0.5; // Половина довжини риски (щоб загальна була 1 міл)
-
+    const String color = 'onSurface';
+    const double thickness = 0.05;
+    const double tickHalfLength = 0.5;
     const double fontSize = 0.45; // мілів
-    const double labelOffset = 0.2; // відступ від краю риски
+    const double labelOffset = 0.2;
 
     canvas
       ..clip(
         shape: (c) => c.circle(0, 0, 15, 'white'),
         draw: (c) {
           c
-            // 1. Основні осі
-            ..line(-10, 0, 10, 0, color, thickness) // Горизонтальна
-            ..line(0, -10, 0, 14, color, thickness); // Вертикальна
+            ..line(-10, 0, 10, 0, color, thickness)
+            ..line(0, -10, 0, 14, color, thickness);
 
-          // 2а. Риски на ГОРИЗОНТАЛЬНІЙ осі (-10..10)
           for (int i = -10; i <= 10; i++) {
             if (i == 0) continue;
             final double pos = i.toDouble();
@@ -161,7 +101,6 @@ class MilReticleDrawer implements DrawerInterface {
             }
           }
 
-          // 2б. Риски на ВЕРТИКАЛЬНІЙ осі (-10..14)
           for (int i = -10; i <= 14; i++) {
             if (i == 0) continue;
             final double pos = i.toDouble();
@@ -172,7 +111,7 @@ class MilReticleDrawer implements DrawerInterface {
               c.text(
                 i.abs().toStringAsFixed(0),
                 -(tickHalfLength + labelOffset),
-                pos + fontSize * 0.35, // компенсація baseline
+                pos + fontSize * 0.35,
                 color,
                 fontSize: fontSize,
                 textAnchor: 'end',
@@ -181,16 +120,13 @@ class MilReticleDrawer implements DrawerInterface {
           }
         },
       )
-      // Обідок кола поверх обрізаного вмісту
-      ..circle(0, 0, 15, "transparent", stroke: color, strokeWidth: thickness);
+      ..circle(0, 0, 15, 'transparent', stroke: color, strokeWidth: thickness);
   }
 }
 
 void main(List<String> args) {
   final outputPath = args.isNotEmpty ? args.first : 'default.svg';
-  final drawer = MilReticleDrawer();
   MilReticleCanvas()
-    ..generate(drawer)
-    // ..drawAdjustment(0.53, 4.6)
+    ..generate(MilReticleDrawer())
     ..svg.export(outputPath);
 }
