@@ -67,7 +67,7 @@ class Ammo {
       'Ammo(mv: $mv, powderTemp: $powderTemp, mod: ${tempModifier.toStringAsFixed(4)})';
 }
 
-/// Calculates powder sensitivity coefficient (% velocity change per 15°C)
+/// Calculates powder sensitivity coefficient (fractional velocity change per 15°C)/// from two raw measurement pairs without requiring an [Ammo] object.
 /// from two raw measurement pairs without requiring an [Ammo] object.
 ///
 /// - [v0Mps] / [t0C] — reference muzzle velocity and powder temperature

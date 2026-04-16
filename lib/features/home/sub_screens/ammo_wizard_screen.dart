@@ -342,9 +342,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   }
 
   Future<void> _navigateToPowderSensTable() async {
+    final mvMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : null;
+    final tempC = Temperature(
+      _mvTempRaw,
+      FC.temperature.rawUnit,
+    ).in_(Unit.celsius);
     final result = await context.push<PowderSensTableResult>(
       Routes.ammoEditPowderSensTable,
-      extra: (table: _powderSensTable, mvMps: _mvRaw, tempC: _mvTempRaw),
+      extra: (table: _powderSensTable, mvMps: mvMps, tempC: tempC),
     );
     if (!mounted || result == null) return;
     setState(() {
@@ -365,9 +372,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         ? Routes.ammoEditMultiBcG1
         : Routes.ammoEditMultiBcG7;
 
+    final mvMps = _mvRaw != null
+        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
+        : null;
+
     final result = await context.push<List<({double vMps, double bc})>>(
       route,
-      extra: (table: table, mvMps: _mvRaw, bc: bc),
+      extra: (table: table, mvMps: mvMps, bc: bc),
     );
 
     if (!mounted || result == null) return;
