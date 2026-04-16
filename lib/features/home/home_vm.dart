@@ -55,6 +55,7 @@ class HomeUiReady extends HomeUiState {
 
   // Bottom block — Page 1 (Reticle)
   final String cartridgeInfoLine;
+  final String? reticleId;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
   final double adjustmentElevMil;
@@ -78,6 +79,7 @@ class HomeUiReady extends HomeUiState {
     required this.pressDisplay,
     required this.humidDisplay,
     required this.cartridgeInfoLine,
+    this.reticleId,
     required this.windSpeedDisplay,
     required this.windSpeedMps,
     required this.lookAngleDisplay,
@@ -219,6 +221,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         pressDisplay: current.pressDisplay,
         humidDisplay: current.humidDisplay,
         cartridgeInfoLine: current.cartridgeInfoLine,
+        reticleId: current.reticleId,
         windSpeedDisplay: current.windSpeedDisplay,
         windSpeedMps: current.windSpeedMps,
         lookAngleDisplay: current.lookAngleDisplay,
@@ -324,6 +327,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       pressDisplay: pressStr,
       humidDisplay: humidStr,
       cartridgeInfoLine: cartridgeInfoLine,
+      reticleId: profile.sight.target?.reticleImage,
       windSpeedDisplay: windSpeedDisplay,
       windSpeedMps: windMps,
       lookAngleDisplay: lookAngleDisplay,

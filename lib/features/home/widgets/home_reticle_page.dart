@@ -57,6 +57,7 @@ class HomeReticlePage extends ConsumerWidget {
                     cs: cs,
                     elevMil: vmState.adjustmentElevMil,
                     windMil: vmState.adjustmentWindMil,
+                    reticleId: vmState.reticleId,
                   ),
                 ),
               ),
@@ -124,59 +125,74 @@ class _SemicolonWrappingText extends StatelessWidget {
   );
 }
 
+// ─── Reticle SVG provider ─────────────────────────────────────────────────────
+
+/// Loads an SVG asset by reticle ID; falls back to default if not found.
+final reticleSvgProvider = FutureProvider.family<String, String?>((
+  ref,
+  id,
+) async {
+  const fallback = 'assets/reticles/default.svg';
+  if (id == null) return rootBundle.loadString(fallback);
+  try {
+    return await rootBundle.loadString('assets/reticles/$id.svg');
+  } catch (_) {
+    return rootBundle.loadString(fallback);
+  }
+});
+
 // ─── Reticle view ─────────────────────────────────────────────────────────────
 
-class _ReticleView extends StatelessWidget {
+class _ReticleView extends ConsumerWidget {
   const _ReticleView({
     required this.cs,
     required this.elevMil,
     required this.windMil,
+    this.reticleId,
   });
 
   final ColorScheme cs;
   final double elevMil;
   final double windMil;
-
-  // Loaded once, reused across rebuilds.
-  static final Future<String> _svgString = rootBundle.loadString(
-    'assets/reticles/default.svg',
-  );
+  final String? reticleId;
 
   @override
-  Widget build(BuildContext context) => AspectRatio(
-    aspectRatio: 1,
-    child: FutureBuilder<String>(
-      future: _svgString,
-      builder: (_, snap) {
-        if (!snap.hasData) return const SizedBox.shrink();
-        final meta = _parseSvgMeta(snap.data!);
-        final svg = _resolveRoles(snap.data!, cs);
-        final svgWithAdj = _injectAdjustment(
-          svg,
-          windMil: windMil,
-          elevMil: elevMil,
-          factor: meta.factor,
-          milWidth: meta.milWidth,
-          milHeight: meta.milHeight,
-          fillColor: _toHex(
-            cs.brightness == Brightness.dark
-                ? Colors.orangeAccent
-                : Colors.deepOrangeAccent,
-          ),
-          strokeColor: _toHex(
-            cs.brightness == Brightness.dark
-                ? Colors.orangeAccent
-                : Colors.deepOrangeAccent,
-          ),
-        );
-        return SvgPicture.string(
-          svgWithAdj,
-          fit: BoxFit.contain,
-          allowDrawingOutsideViewBox: true,
-        );
-      },
-    ),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final svgAsync = ref.watch(reticleSvgProvider(reticleId));
+    return AspectRatio(
+      aspectRatio: 1,
+      child: svgAsync.when(
+        loading: () => const SizedBox.shrink(),
+        error: (_, __) => const SizedBox.shrink(),
+        data: (svgString) => _buildSvg(svgString),
+      ),
+    );
+  }
+
+  Widget _buildSvg(String svgString) {
+    final meta = _parseSvgMeta(svgString);
+    final svg = _resolveRoles(svgString, cs);
+    final adjColor = _toHex(
+      cs.brightness == Brightness.dark
+          ? Colors.orangeAccent
+          : Colors.deepOrangeAccent,
+    );
+    final svgWithAdj = _injectAdjustment(
+      svg,
+      windMil: windMil,
+      elevMil: elevMil,
+      factor: meta.factor,
+      milWidth: meta.milWidth,
+      milHeight: meta.milHeight,
+      fillColor: adjColor,
+      strokeColor: adjColor,
+    );
+    return SvgPicture.string(
+      svgWithAdj,
+      fit: BoxFit.contain,
+      allowDrawingOutsideViewBox: true,
+    );
+  }
 
   static String _resolveRoles(String svg, ColorScheme cs) {
     final roles = {
