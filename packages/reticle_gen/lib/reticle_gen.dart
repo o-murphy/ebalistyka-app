@@ -9,6 +9,38 @@ extension SvgExport on XmlElement {
   }
 }
 
+/// Accumulates SVG path commands into a `d` attribute string.
+///
+/// Used with [SVGCanvas.batchLines] and the ruler/dash helpers.
+/// Coordinates must be in the canvas's native coordinate space
+/// (pixels for [SVGCanvas], mils for [MilReticleCanvas]).
+class PathBuilder {
+  final StringBuffer _buffer = StringBuffer();
+
+  void moveTo(double x, double y) => _buffer.write('M ${_n(x)} ${_n(y)} ');
+  void lineTo(double x, double y) => _buffer.write('L ${_n(x)} ${_n(y)} ');
+  void close() => _buffer.write('Z ');
+  void arcTo(
+    double rx,
+    double ry,
+    double rotation,
+    bool largeArc,
+    bool sweep,
+    double x,
+    double y,
+  ) => _buffer.write(
+    'A ${_n(rx)} ${_n(ry)} ${_n(rotation)} '
+    '${largeArc ? 1 : 0} ${sweep ? 1 : 0} ${_n(x)} ${_n(y)} ',
+  );
+
+  bool get isEmpty => _buffer.isEmpty;
+  String get d => _buffer.toString().trimRight();
+  void clear() => _buffer.clear();
+
+  static String _n(double v) =>
+      v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
+}
+
 /// Інтерфейс для малювання на канвасі
 abstract interface class CanvasInterface {
   double get width;
@@ -239,6 +271,231 @@ class SVGCanvas implements CanvasInterface {
     draw(this);
     _target = prevTarget;
     _svgElement.children.add(groupEl);
+  }
+
+  // ── Aliases that delegate to virtual interface methods ──────────────────────
+  // Subclasses (e.g. MilReticleCanvas) override line/circle/path, so all
+  // helpers below pick up coordinate scaling for free via polymorphic dispatch.
+
+  void hLine(double y, double x1, double x2, String stroke, double strokeWidth) =>
+      line(x1, y, x2, y, stroke, strokeWidth);
+
+  void vLine(double x, double y1, double y2, String stroke, double strokeWidth) =>
+      line(x, y1, x, y2, stroke, strokeWidth);
+
+  void dot(
+    double cx,
+    double cy,
+    double r,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+  }) => circle(cx, cy, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+
+  // ── Multi-element helpers that emit a single <path> ─────────────────────────
+  // Each builds a PathBuilder in the canvas's native coordinate space, then
+  // calls this.path() so MilReticleCanvas.path() applies the scale transform.
+
+  /// Tick marks along X, centred at [y], from [start] to [end] with [step]
+  /// spacing. Each tick is [tickLength] tall.
+  void hRuler(
+    double start,
+    double end,
+    double step,
+    double tickLength,
+    String stroke,
+    double strokeWidth, {
+    double y = 0,
+  }) {
+    final pb = PathBuilder();
+    final half = tickLength / 2;
+    double x = start;
+    while (step > 0 ? x <= end + 1e-9 : x >= end - 1e-9) {
+      pb.moveTo(x, y - half);
+      pb.lineTo(x, y + half);
+      x += step;
+    }
+    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+  }
+
+  /// Tick marks along Y, centred at [x], from [start] to [end] with [step]
+  /// spacing. Each tick is [tickLength] wide.
+  void vRuler(
+    double start,
+    double end,
+    double step,
+    double tickLength,
+    String stroke,
+    double strokeWidth, {
+    double x = 0,
+  }) {
+    final pb = PathBuilder();
+    final half = tickLength / 2;
+    double y = start;
+    while (step > 0 ? y <= end + 1e-9 : y >= end - 1e-9) {
+      pb.moveTo(x - half, y);
+      pb.lineTo(x + half, y);
+      y += step;
+    }
+    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+  }
+
+  /// Crosshair centred at ([cx], [cy]) with total arm length [size].
+  void cross(
+    double cx,
+    double cy,
+    double size,
+    String stroke,
+    double strokeWidth,
+  ) {
+    final half = size / 2;
+    final pb = PathBuilder()
+      ..moveTo(cx - half, cy)
+      ..lineTo(cx + half, cy)
+      ..moveTo(cx, cy - half)
+      ..lineTo(cx, cy + half);
+    path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+  }
+
+  /// Dashed line from ([x1],[y1]) to ([x2],[y2]).
+  void dashLine(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double dashLen,
+    double gapLen,
+    String stroke,
+    double strokeWidth,
+  ) {
+    final dx = x2 - x1;
+    final dy = y2 - y1;
+    final length = sqrt(dx * dx + dy * dy);
+    if (length < 1e-9) return;
+    final ux = dx / length;
+    final uy = dy / length;
+    final pb = PathBuilder();
+    bool drawing = true;
+    double t = 0;
+    while (t < length - 1e-9) {
+      final seg = drawing ? dashLen : gapLen;
+      final endT = min(t + seg, length);
+      if (drawing) {
+        pb.moveTo(x1 + ux * t, y1 + uy * t);
+        pb.lineTo(x1 + ux * endT, y1 + uy * endT);
+      }
+      t = endT;
+      drawing = !drawing;
+    }
+    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+  }
+
+  void hDashLine(
+    double y,
+    double x1,
+    double x2,
+    double dashLen,
+    double gapLen,
+    String stroke,
+    double strokeWidth,
+  ) => dashLine(x1, y, x2, y, dashLen, gapLen, stroke, strokeWidth);
+
+  void vDashLine(
+    double x,
+    double y1,
+    double y2,
+    double dashLen,
+    double gapLen,
+    String stroke,
+    double strokeWidth,
+  ) => dashLine(x, y1, x, y2, dashLen, gapLen, stroke, strokeWidth);
+
+  /// Evenly spaced dots along the line from ([x1],[y1]) to ([x2],[y2]).
+  void dotLine(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double spacing,
+    double r,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+  }) {
+    final dx = x2 - x1;
+    final dy = y2 - y1;
+    final length = sqrt(dx * dx + dy * dy);
+    if (length < 1e-9) {
+      dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+      return;
+    }
+    final ux = dx / length;
+    final uy = dy / length;
+    double t = 0;
+    while (t <= length + 1e-9) {
+      dot(x1 + ux * t, y1 + uy * t, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+      t += spacing;
+    }
+  }
+
+  void hDotLine(
+    double y,
+    double x1,
+    double x2,
+    double spacing,
+    double r,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+  }) => dotLine(x1, y, x2, y, spacing, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+
+  void vDotLine(
+    double x,
+    double y1,
+    double y2,
+    double spacing,
+    double r,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+  }) => dotLine(x, y1, x, y2, spacing, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+
+  /// Calls [draw] for every grid point in [x1..x2] × [y1..y2].
+  void repeat(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double xStep,
+    double yStep,
+    void Function(double x, double y) draw,
+  ) {
+    if (xStep == 0 || yStep == 0) return;
+    for (
+      double y = y1;
+      yStep > 0 ? y <= y2 + 1e-9 : y >= y2 - 1e-9;
+      y += yStep
+    ) {
+      for (
+        double x = x1;
+        xStep > 0 ? x <= x2 + 1e-9 : x >= x2 - 1e-9;
+        x += xStep
+      ) {
+        draw(x, y);
+      }
+    }
+  }
+
+  /// Calls [build] with a [PathBuilder] and emits the result as one `<path>`.
+  /// Use this to combine arbitrary line segments with the same style.
+  void batchLines(
+    String stroke,
+    double strokeWidth,
+    void Function(PathBuilder pb) build,
+  ) {
+    final pb = PathBuilder();
+    build(pb);
+    if (!pb.isEmpty) path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
   }
 }
 

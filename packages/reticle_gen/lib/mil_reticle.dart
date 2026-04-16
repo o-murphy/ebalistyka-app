@@ -99,21 +99,16 @@ class MilReticleCanvas extends SVGCanvas {
 
   @override
   void path(String d, String fill, {String? stroke, double? strokeWidth}) {
-    // Створюємо групу <g> навколо шляху, щоб застосувати масштаб
-    final scaledPath = XmlElement(XmlName('path'), [
+    // SVG transform="scale(factor)" scales both coordinates AND stroke-width,
+    // so coordinates and strokeWidth stay in mil units — no manual multiplication.
+    target.children.add(XmlElement(XmlName('path'), [
       XmlAttribute(XmlName('d'), d),
       XmlAttribute(XmlName('fill'), fill),
       if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
       if (strokeWidth != null)
-        XmlAttribute(
-          XmlName('stroke-width'),
-          (strokeWidth * factor).toString(),
-        ),
-      // Масштабуємо координати самого шляху
+        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
       XmlAttribute(XmlName('transform'), 'scale($factor)'),
-    ]);
-
-    target.children.add(scaledPath);
+    ]));
   }
 
   void drawAdjustment(double x, double y) {
