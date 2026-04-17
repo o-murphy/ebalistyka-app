@@ -1,3 +1,4 @@
+dart packages/reticle_gen/lib/ddr_2.dart  assets/reticles/DDR-2.svg
 dart packages/reticle_gen/lib/moar.dart "ATACR 35x"  assets/reticles/MOAR.svg
 dart packages/reticle_gen/lib/mil_r_f1.dart "ATACR 35x F1"  assets/reticles/MIL-R-F1.svg
 dart packages/reticle_gen/lib/moar_t.dart "NXS 22x & 32x"  assets/reticles/MOAR-T.svg

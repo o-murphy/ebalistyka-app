@@ -760,13 +760,14 @@ class SVGCanvas {
   void batchLines(
     String stroke,
     double strokeWidth,
-    void Function(PathBuilder pb) build,
-  ) {
+    void Function(PathBuilder pb) build, {
+    String fill = 'none',
+  }) {
     final pb = PathBuilder();
     build(pb);
     if (!pb.isEmpty) {
       _hint('batch');
-      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 }
