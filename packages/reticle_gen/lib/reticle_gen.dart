@@ -1,5 +1,5 @@
 import 'dart:developer' show log;
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:xml/xml.dart';
 import 'dart:io';
@@ -142,7 +142,9 @@ class SVGCanvas implements CanvasInterface {
   // Sets a one-shot hint consumed by the next [nextId] call.
   // Uses ??= so the first caller wins when helpers delegate to each other
   // (e.g. hDashLine sets 'hdashline' before calling dashLine which also hints).
-  void _hint(String h) { _idHint ??= h; }
+  void _hint(String h) {
+    _idHint ??= h;
+  }
 
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
@@ -311,12 +313,24 @@ class SVGCanvas implements CanvasInterface {
   // Subclasses (e.g. MilReticleCanvas) override line/circle/path, so all
   // helpers below pick up coordinate scaling for free via polymorphic dispatch.
 
-  void hLine(double y, double x1, double x2, String stroke, double strokeWidth) {
+  void hLine(
+    double y,
+    double x1,
+    double x2,
+    String stroke,
+    double strokeWidth,
+  ) {
     _hint('hline');
     line(x1, y, x2, y, stroke, strokeWidth);
   }
 
-  void vLine(double x, double y1, double y2, String stroke, double strokeWidth) {
+  void vLine(
+    double x,
+    double y1,
+    double y2,
+    String stroke,
+    double strokeWidth,
+  ) {
     _hint('vline');
     line(x, y1, x, y2, stroke, strokeWidth);
   }
@@ -348,7 +362,10 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double y = 0,
   }) {
-    if (step == 0) { _warn('hRuler', 'step must not be zero'); return; }
+    if (step == 0) {
+      _warn('hRuler', 'step must not be zero');
+      return;
+    }
     final pb = PathBuilder();
     final half = tickLength / 2;
     double x = start;
@@ -374,7 +391,10 @@ class SVGCanvas implements CanvasInterface {
     double strokeWidth, {
     double x = 0,
   }) {
-    if (step == 0) { _warn('vRuler', 'step must not be zero'); return; }
+    if (step == 0) {
+      _warn('vRuler', 'step must not be zero');
+      return;
+    }
     final pb = PathBuilder();
     final half = tickLength / 2;
     double y = start;
@@ -418,10 +438,13 @@ class SVGCanvas implements CanvasInterface {
     String stroke,
     double strokeWidth,
   ) {
-    if (dashLen <= 0 && gapLen <= 0) { _warn('dashLine', 'dashLen and gapLen are both <= 0'); return; }
+    if (dashLen <= 0 && gapLen <= 0) {
+      _warn('dashLine', 'dashLen and gapLen are both <= 0');
+      return;
+    }
     final dx = x2 - x1;
     final dy = y2 - y1;
-    final length = sqrt(dx * dx + dy * dy);
+    final length = math.sqrt(dx * dx + dy * dy);
     if (length < 1e-9) return;
     final ux = dx / length;
     final uy = dy / length;
@@ -430,7 +453,7 @@ class SVGCanvas implements CanvasInterface {
     double t = 0;
     while (t < length - 1e-9) {
       final seg = drawing ? dashLen : gapLen;
-      final endT = min(t + seg, length);
+      final endT = math.min(t + seg, length);
       if (drawing) {
         pb.moveTo(x1 + ux * t, y1 + uy * t);
         pb.lineTo(x1 + ux * endT, y1 + uy * endT);
@@ -484,7 +507,7 @@ class SVGCanvas implements CanvasInterface {
   }) {
     final dx = x2 - x1;
     final dy = y2 - y1;
-    final length = sqrt(dx * dx + dy * dy);
+    final length = math.sqrt(dx * dx + dy * dy);
     if (length < 1e-9) {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
@@ -498,7 +521,14 @@ class SVGCanvas implements CanvasInterface {
     final uy = dy / length;
     double t = 0;
     while (t <= length + 1e-9) {
-      dot(x1 + ux * t, y1 + uy * t, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+      dot(
+        x1 + ux * t,
+        y1 + uy * t,
+        r,
+        fill,
+        stroke: stroke,
+        strokeWidth: strokeWidth,
+      );
       t += spacing;
     }
   }
@@ -512,7 +542,17 @@ class SVGCanvas implements CanvasInterface {
     String fill, {
     String? stroke,
     double? strokeWidth,
-  }) => dotLine(x1, y, x2, y, spacing, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+  }) => dotLine(
+    x1,
+    y,
+    x2,
+    y,
+    spacing,
+    r,
+    fill,
+    stroke: stroke,
+    strokeWidth: strokeWidth,
+  );
 
   void vDotLine(
     double x,
@@ -523,7 +563,17 @@ class SVGCanvas implements CanvasInterface {
     String fill, {
     String? stroke,
     double? strokeWidth,
-  }) => dotLine(x, y1, x, y2, spacing, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+  }) => dotLine(
+    x,
+    y1,
+    x,
+    y2,
+    spacing,
+    r,
+    fill,
+    stroke: stroke,
+    strokeWidth: strokeWidth,
+  );
 
   /// Calls [draw] for every grid point in [x1..x2] × [y1..y2].
   void repeat(
@@ -631,10 +681,10 @@ class ScopeDrawer extends DrawerInterface {
     // Розмітка (риски на колі)
     for (int i = 0; i < 360; i += 30) {
       final rad = i * 3.14159 / 180;
-      final x1 = radius * cos(rad);
-      final y1 = radius * sin(rad);
-      final x2 = (radius - 10) * cos(rad);
-      final y2 = (radius - 10) * sin(rad);
+      final x1 = radius * math.cos(rad);
+      final y1 = radius * math.sin(rad);
+      final x2 = (radius - 10) * math.cos(rad);
+      final y2 = (radius - 10) * math.sin(rad);
       canvas.line(x1, y1, x2, y2, color, strokeWidth * 0.5);
     }
   }
@@ -658,7 +708,7 @@ class CompositeDrawer extends DrawerInterface {
 class _CustomGalaxyDrawer extends DrawerInterface {
   @override
   void draw(CanvasInterface canvas) {
-    final random = Random();
+    final random = math.Random();
 
     // Малюємо фоновий градієнт (через rect)
     canvas.rect(-400, -400, 800, 800, '#0a0a2a');
@@ -666,14 +716,14 @@ class _CustomGalaxyDrawer extends DrawerInterface {
     // Малюємо спіраль галактики
     for (double r = 20; r <= 300; r += 15) {
       final angle = r * 0.1;
-      final x = r * cos(angle);
-      final y = r * sin(angle);
+      final x = r * math.cos(angle);
+      final y = r * math.sin(angle);
 
       canvas.circle(x, y, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
 
       // Друге плече спіралі
-      final x2 = r * cos(angle + 3.14159);
-      final y2 = r * sin(angle + 3.14159);
+      final x2 = r * math.cos(angle + 3.14159);
+      final y2 = r * math.sin(angle + 3.14159);
       canvas.circle(x2, y2, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
     }
 
@@ -691,8 +741,8 @@ class _CustomGalaxyDrawer extends DrawerInterface {
     for (int i = 0; i < 100; i++) {
       final angle = random.nextDouble() * 2 * 3.14159;
       final r = random.nextDouble() * 30;
-      final x = r * cos(angle);
-      final y = r * sin(angle);
+      final x = r * math.cos(angle);
+      final y = r * math.sin(angle);
       canvas.circle(
         x,
         y,

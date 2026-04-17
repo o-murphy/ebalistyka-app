@@ -1,3 +1,5 @@
+dart packages/reticle_gen/lib/mil_reticle.dart assets/reticles/default.svg
+dart packages/reticle_gen/lib/mil_xt.dart assets/reticles/MIL-XT.svg
 dart packages/reticle_gen/lib/mil_xt.dart "ATACR 7-35"  assets/reticles/mil-xt_atacr_7-35.svg
 dart packages/reticle_gen/lib/mil_xt.dart "ATACR 5-25"  assets/reticles/mil-xt_atacr_5-25.svg
 dart packages/reticle_gen/lib/mil_xt.dart "ATACR 4-20"  assets/reticles/mil-xt_atacr_4-20.svg
