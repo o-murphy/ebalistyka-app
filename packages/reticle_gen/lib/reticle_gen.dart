@@ -238,6 +238,8 @@ class SVGCanvas {
     ]);
     _defsEl = null;
     _dotPatternCache.clear();
+    _idCounters.clear();
+    _clipCounter = 0;
 
     if (unitScale != 1.0) {
       final scaleGroup = XmlElement(XmlName('g'), [
