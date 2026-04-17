@@ -68,12 +68,17 @@ class CollectionSightTileBody extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Reticle
-                    const Row(
+                    Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(IconDef.sight, size: 14),
-                        SizedBox(width: 6),
-                        Text("<reticle>", style: TextStyle(fontSize: 12)),
+                        const Icon(IconDef.sight, size: 14),
+                        const SizedBox(width: 6),
+                        Text(
+                          sight.reticleImage?.isNotEmpty == true
+                              ? sight.reticleImage!
+                              : 'default',
+                          style: const TextStyle(fontSize: 12),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),

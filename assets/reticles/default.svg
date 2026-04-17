@@ -1,76 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="3000.0" height="3000.0" viewBox="-1500.0 -1500.0 3000.0 3000.0" data-mil-width="30.0" data-mil-height="30.0" data-factor="100" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="-15 -15 30 30" data-mil-width="30" data-mil-height="30" data-factor="100" shape-rendering="crispEdges">
   <clipPath id="clip0">
-    <circle cx="0.0" cy="0.0" r="1500.0" fill="white" stroke-width="0.0"/>
+    <circle id="circle-0" cx="0" cy="0" r="15" fill="white"/>
   </clipPath>
-  <g clip-path="url(#clip0)">
-    <line x1="-1000.0" y1="0.0" x2="1000.0" y2="0.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="0.0" y1="-1000.0" x2="0.0" y2="1400.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-1000.0" y1="-50.0" x2="-1000.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-1000.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">10</text>
-    <line x1="-900.0" y1="-50.0" x2="-900.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-800.0" y1="-50.0" x2="-800.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-800.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">8</text>
-    <line x1="-700.0" y1="-50.0" x2="-700.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-600.0" y1="-50.0" x2="-600.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-600.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">6</text>
-    <line x1="-500.0" y1="-50.0" x2="-500.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-400.0" y1="-50.0" x2="-400.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-400.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">4</text>
-    <line x1="-300.0" y1="-50.0" x2="-300.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-200.0" y1="-50.0" x2="-200.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-200.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">2</text>
-    <line x1="-100.0" y1="-50.0" x2="-100.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="100.0" y1="-50.0" x2="100.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="200.0" y1="-50.0" x2="200.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="200.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">2</text>
-    <line x1="300.0" y1="-50.0" x2="300.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="400.0" y1="-50.0" x2="400.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="400.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">4</text>
-    <line x1="500.0" y1="-50.0" x2="500.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="600.0" y1="-50.0" x2="600.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="600.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">6</text>
-    <line x1="700.0" y1="-50.0" x2="700.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="800.0" y1="-50.0" x2="800.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="800.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">8</text>
-    <line x1="900.0" y1="-50.0" x2="900.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="1000.0" y1="-50.0" x2="1000.0" y2="50.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="1000.0" y="-114.99999999999999" fill="onSurface" font-size="45.0" text-anchor="middle">10</text>
-    <line x1="-50.0" y1="-1000.0" x2="50.0" y2="-1000.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="-984.2499999999999" fill="onSurface" font-size="45.0" text-anchor="end">10</text>
-    <line x1="-50.0" y1="-900.0" x2="50.0" y2="-900.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="-800.0" x2="50.0" y2="-800.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="-784.25" fill="onSurface" font-size="45.0" text-anchor="end">8</text>
-    <line x1="-50.0" y1="-700.0" x2="50.0" y2="-700.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="-600.0" x2="50.0" y2="-600.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="-584.25" fill="onSurface" font-size="45.0" text-anchor="end">6</text>
-    <line x1="-50.0" y1="-500.0" x2="50.0" y2="-500.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="-400.0" x2="50.0" y2="-400.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="-384.25" fill="onSurface" font-size="45.0" text-anchor="end">4</text>
-    <line x1="-50.0" y1="-300.0" x2="50.0" y2="-300.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="-200.0" x2="50.0" y2="-200.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="-184.25" fill="onSurface" font-size="45.0" text-anchor="end">2</text>
-    <line x1="-50.0" y1="-100.0" x2="50.0" y2="-100.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="100.0" x2="50.0" y2="100.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="200.0" x2="50.0" y2="200.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="215.75000000000003" fill="onSurface" font-size="45.0" text-anchor="end">2</text>
-    <line x1="-50.0" y1="300.0" x2="50.0" y2="300.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="400.0" x2="50.0" y2="400.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="415.75" fill="onSurface" font-size="45.0" text-anchor="end">4</text>
-    <line x1="-50.0" y1="500.0" x2="50.0" y2="500.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="600.0" x2="50.0" y2="600.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="615.75" fill="onSurface" font-size="45.0" text-anchor="end">6</text>
-    <line x1="-50.0" y1="700.0" x2="50.0" y2="700.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="800.0" x2="50.0" y2="800.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="815.7500000000001" fill="onSurface" font-size="45.0" text-anchor="end">8</text>
-    <line x1="-50.0" y1="900.0" x2="50.0" y2="900.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="1000.0" x2="50.0" y2="1000.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="1015.7500000000001" fill="onSurface" font-size="45.0" text-anchor="end">10</text>
-    <line x1="-50.0" y1="1100.0" x2="50.0" y2="1100.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="1200.0" x2="50.0" y2="1200.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="1215.75" fill="onSurface" font-size="45.0" text-anchor="end">12</text>
-    <line x1="-50.0" y1="1300.0" x2="50.0" y2="1300.0" stroke="onSurface" stroke-width="5.0"/>
-    <line x1="-50.0" y1="1400.0" x2="50.0" y2="1400.0" stroke="onSurface" stroke-width="5.0"/>
-    <text x="-70.0" y="1415.75" fill="onSurface" font-size="45.0" text-anchor="end">14</text>
+  <g id="clipgroup-0" clip-path="url(#clip0)">
+    <line id="line-0" x1="-10" y1="0" x2="10" y2="0" stroke="onSurface" stroke-width="0.05"/>
+    <line id="line-1" x1="0" y1="-10" x2="0" y2="14" stroke="onSurface" stroke-width="0.05"/>
+    <path id="hruler-0" d="M -10 -0.5 L -10 0.5 M -9 -0.5 L -9 0.5 M -8 -0.5 L -8 0.5 M -7 -0.5 L -7 0.5 M -6 -0.5 L -6 0.5 M -5 -0.5 L -5 0.5 M -4 -0.5 L -4 0.5 M -3 -0.5 L -3 0.5 M -2 -0.5 L -2 0.5 M -1 -0.5 L -1 0.5" fill="none" stroke="onSurface" stroke-width="0.05"/>
+    <path id="hruler-1" d="M 10 -0.5 L 10 0.5 M 9 -0.5 L 9 0.5 M 8 -0.5 L 8 0.5 M 7 -0.5 L 7 0.5 M 6 -0.5 L 6 0.5 M 5 -0.5 L 5 0.5 M 4 -0.5 L 4 0.5 M 3 -0.5 L 3 0.5 M 2 -0.5 L 2 0.5 M 1 -0.5 L 1 0.5" fill="none" stroke="onSurface" stroke-width="0.05"/>
+    <path id="vruler-0" d="M -0.5 -10 L 0.5 -10 M -0.5 -9 L 0.5 -9 M -0.5 -8 L 0.5 -8 M -0.5 -7 L 0.5 -7 M -0.5 -6 L 0.5 -6 M -0.5 -5 L 0.5 -5 M -0.5 -4 L 0.5 -4 M -0.5 -3 L 0.5 -3 M -0.5 -2 L 0.5 -2 M -0.5 -1 L 0.5 -1 M -0.5 0 L 0.5 0 M -0.5 1 L 0.5 1" fill="none" stroke="onSurface" stroke-width="0.05"/>
+    <path id="vruler-1" d="M -0.5 14 L 0.5 14 M -0.5 13 L 0.5 13 M -0.5 12 L 0.5 12 M -0.5 11 L 0.5 11 M -0.5 10 L 0.5 10 M -0.5 9 L 0.5 9 M -0.5 8 L 0.5 8 M -0.5 7 L 0.5 7 M -0.5 6 L 0.5 6 M -0.5 5 L 0.5 5 M -0.5 4 L 0.5 4 M -0.5 3 L 0.5 3 M -0.5 2 L 0.5 2 M -0.5 1 L 0.5 1" fill="none" stroke="onSurface" stroke-width="0.05"/>
+    <text id="text-0" x="-10" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">10</text>
+    <text id="text-1" x="-8" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">8</text>
+    <text id="text-2" x="-6" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">6</text>
+    <text id="text-3" x="-4" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">4</text>
+    <text id="text-4" x="-2" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">2</text>
+    <text id="text-5" x="2" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">2</text>
+    <text id="text-6" x="4" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">4</text>
+    <text id="text-7" x="6" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">6</text>
+    <text id="text-8" x="8" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">8</text>
+    <text id="text-9" x="10" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">10</text>
+    <text id="text-10" x="-0.7" y="-9.843" fill="onSurface" font-size="0.625" text-anchor="end">10</text>
+    <text id="text-11" x="-0.7" y="-7.843" fill="onSurface" font-size="0.625" text-anchor="end">8</text>
+    <text id="text-12" x="-0.7" y="-5.843" fill="onSurface" font-size="0.625" text-anchor="end">6</text>
+    <text id="text-13" x="-0.7" y="-3.843" fill="onSurface" font-size="0.625" text-anchor="end">4</text>
+    <text id="text-14" x="-0.7" y="-1.843" fill="onSurface" font-size="0.625" text-anchor="end">2</text>
+    <text id="text-15" x="-0.7" y="2.158" fill="onSurface" font-size="0.625" text-anchor="end">2</text>
+    <text id="text-16" x="-0.7" y="4.158" fill="onSurface" font-size="0.625" text-anchor="end">4</text>
+    <text id="text-17" x="-0.7" y="6.158" fill="onSurface" font-size="0.625" text-anchor="end">6</text>
+    <text id="text-18" x="-0.7" y="8.158" fill="onSurface" font-size="0.625" text-anchor="end">8</text>
+    <text id="text-19" x="-0.7" y="10.158" fill="onSurface" font-size="0.625" text-anchor="end">10</text>
+    <text id="text-20" x="-0.7" y="12.158" fill="onSurface" font-size="0.625" text-anchor="end">12</text>
+    <text id="text-21" x="-0.7" y="14.158" fill="onSurface" font-size="0.625" text-anchor="end">14</text>
   </g>
-  <circle cx="0.0" cy="0.0" r="1500.0" fill="transparent" stroke="onSurface" stroke-width="5.0"/>
+  <circle id="circle-1" cx="0" cy="0" r="15" fill="transparent" stroke="onSurface" stroke-width="0.05"/>
 </svg>

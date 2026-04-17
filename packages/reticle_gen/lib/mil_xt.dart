@@ -1,4 +1,3 @@
-import 'package:reticle_gen/mil_reticle.dart';
 import 'package:reticle_gen/reticle_gen.dart';
 
 const double epsilon = 1e-6;
@@ -74,13 +73,13 @@ class MilXtVariant {
 
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
-class MilXtReticleDrawer extends MilReticleDrawer {
+class MilXtReticleDrawer implements SVGDrawerInterface {
   final MilXtVariant variant;
 
   MilXtReticleDrawer({this.variant = MilXtVariant.defaultVariant});
 
   @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     final A = variant.a;
     final F = variant.f;
     final K = variant.k;
@@ -96,198 +95,173 @@ class MilXtReticleDrawer extends MilReticleDrawer {
     const M = MilXtSizes.M;
     const N = MilXtSizes.N;
 
-    const String color = "onSurface";
+    const String bgColor = "white";
+    const String color = "black"; //"onSurface";
     const String accentColor = "red";
     const double halfI = I / 2;
     const double labelOffset = 0.4;
 
-    canvas
-      ..clip(
-        shape: (c) => c.circle(0, 0, 24, 'white'),
-        draw: (c) {
-          // ── Риска горизонтальної осі для позиції x (±) ──────────────────
-          // s > 0 → риска справа від центру, s < 0 → зліва
-          void hTick(double x) {
-            final s = x.sign;
-            final abs = x.abs();
-            c
-              ..line(
-                x - s * 4 * D,
-                0,
-                x - s * 4 * D,
-                abs > 1 ? H : C,
-                accentColor,
-                A,
-              )
-              ..line(x, -halfI, x, halfI, accentColor, A)
-              ..line(x - s * D, 0, x - s * D, H, accentColor, A)
-              ..line(x - s * 2 * D, 0, x - s * 2 * D, -H, accentColor, A)
-              ..line(x - s * 3 * D, 0, x - s * 3 * D, -H, accentColor, A)
-              ..text(
-                abs.toStringAsFixed(0),
-                x,
-                -(halfI + labelOffset + F / 2),
-                color,
-                fontSize: K,
-                textAnchor: 'middle',
-              );
-          }
+    canvas.clip(
+      shape: (c) => c.circle(0, 0, 24, 'white'),
+      draw: (c) {
+        c.fill(bgColor);
 
-          // ── Лейбли + точкова сітка для одного рядка по j ────────────────
-          void zoneRow(double j, double xOff, double dotRange) {
-            final fontSize = j % 2 == 0 ? F : K;
-            c
-              ..text(
-                j.toStringAsFixed(0),
-                xOff,
-                j + fontSize * 0.35,
-                color,
-                fontSize: fontSize,
-              )
-              ..text(
-                j.toStringAsFixed(0),
-                -xOff,
-                j + fontSize * 0.35,
-                color,
-                fontSize: fontSize,
-              );
-            for (double i = -dotRange; i <= dotRange; i += E) {
-              if (i == 0) continue;
-              c.circle(i, j, M / 2, color);
-            }
-            for (double i = -dotRange; i <= dotRange; i += D) {
-              if (i >= -D - epsilon && i <= D + epsilon) continue;
-              c.circle(i, j, N / 2, color);
-            }
-          }
-
+        // ── Лейбли + точкова сітка для одного рядка по j ────────────────
+        void zoneRow(double j, double xOff, double dotRange) {
+          final fontSize = j.round() % 2 == 0 ? F : K;
           c
-            // ..fill("white")
-            // 1. Основні осі
-            ..line(0.1, 0, 10, 0, accentColor, A)
-            ..line(-0.1, 0, -10, 0, accentColor, A)
-            ..line(0, -0.1, 0, -5, accentColor, A);
+            ..text(
+              j.toStringAsFixed(0),
+              xOff,
+              j + fontSize * 0.35,
+              color,
+              fontSize: fontSize,
+            )
+            ..text(
+              j.toStringAsFixed(0),
+              -xOff,
+              j + fontSize * 0.35,
+              color,
+              fontSize: fontSize,
+            )
+            // Large dots every E, skip center (i==0):
+            ..hDotLine(j, -dotRange, -E, E, M / 2, color)
+            ..hDotLine(j, E, dotRange, E, M / 2, color)
+            // Small dots every D, skip |i|≤D:
+            ..hDotLine(j, -dotRange, -2 * D, D, N / 2, color)
+            ..hDotLine(j, 2 * D, dotRange, D, N / 2, color);
+        }
 
-          // Горизонтальне продовження осі + рамки
-          final double minI = I - 0.2;
-          final double minHalfI = halfI - 0.1;
+        c
+          // ..fill("white")
+          // 1. Основні осі
+          ..hLine(0, 0.1, 10, accentColor, A)
+          ..hLine(0, -0.1, -10, accentColor, A)
+          ..vLine(0, -0.1, -5, accentColor, A);
+
+        // Горизонтальне продовження осі + рамки
+        final double minI = I - 0.2;
+        final double minHalfI = halfI - 0.1;
+        c
+          ..hLine(0, -15, -10.2, color, A)
+          ..hLine(0, 15, 10.2, color, A)
+          ..line(11, -minHalfI, 10.2, 0, color, A)
+          ..line(11, minHalfI, 10.2, 0, color, A)
+          ..line(-11, -minHalfI, -10.2, 0, color, A)
+          ..line(-11, minHalfI, -10.2, 0, color, A)
+          ..rect(
+            -15,
+            -minHalfI,
+            4,
+            minI,
+            "transparent",
+            stroke: color,
+            strokeWidth: A,
+          )
+          ..rect(
+            11,
+            -minHalfI,
+            4,
+            minI,
+            "transparent",
+            stroke: color,
+            strokeWidth: A,
+          )
+          ..rect(-24, -minHalfI, 24 - 15, minI, color)
+          ..rect(15, -minHalfI, 24 - 15, minI, color);
+
+        // Додаткові риски 11..15 (за рамками)
+        c
+          ..hRuler(11, 15, E, I, color, A)
+          ..hRuler(-11, -15, -E, I, color, A);
+
+        // 2а. Риски на горизонтальній осі (±1..10)
+        for (double i = -10; i <= 10; i += E) {
+          if (i == 0) continue;
+          c.text(
+            i.abs().toStringAsFixed(0),
+            i,
+            -(halfI + F),
+            color,
+            fontSize: K,
+            textAnchor: 'middle',
+          );
+        }
+
+        final List<List<double>> horizontalRuler = [
+          [10, 1, I, 0],
+          [10 - D, 1 - D, H, H / 2],
+          [10 - 2 * D, 1 - 2 * D, H, -H / 2],
+          [10 - 3 * D, 1 - 3 * D, H, -H / 2],
+          [10 - 4 * D, 2 - 4 * D, H, H / 2],
+        ];
+
+        for (final [start, end, tickWidth, y] in horizontalRuler) {
           c
-            ..line(-15, 0, -10.2, 0, color, A)
-            ..line(15, 0, 10.2, 0, color, A)
-            ..line(11, -minHalfI, 10.2, 0, color, A)
-            ..line(11, minHalfI, 10.2, 0, color, A)
-            ..line(-11, -minHalfI, -10.2, 0, color, A)
-            ..line(-11, minHalfI, -10.2, 0, color, A)
-            ..rect(
-              -15,
-              -minHalfI,
-              4,
-              minI,
-              "transparent",
-              stroke: color,
-              strokeWidth: A,
-            )
-            ..rect(
-              11,
-              -minHalfI,
-              4,
-              minI,
-              "transparent",
-              stroke: color,
-              strokeWidth: A,
-            )
-            ..rect(-24, -minHalfI, 24 - 15, minI, color)
-            ..rect(15, -minHalfI, 24 - 15, minI, color);
+            ..hRuler(start, end, -E, tickWidth, accentColor, A, y: y)
+            ..hRuler(-start, -end, E, tickWidth, accentColor, A, y: y);
+        }
 
-          // Додаткові риски 11..15 (за рамками)
-          for (double i = 11; i <= 15; i += E) {
-            c
-              ..line(i, -halfI, i, halfI, color, A)
-              ..line(-i, -halfI, -i, halfI, color, A);
-          }
+        c
+          ..vLine(D, 0, C, accentColor, A)
+          ..vLine(-D, 0, C, accentColor, A);
 
-          // 2а. Риски на горизонтальній осі (±1..10) — дзеркально через hTick
-          for (double i = 1; i <= 10; i += E) {
-            hTick(i);
-            hTick(-i);
-          }
+        // 2б. Риски на вертикальній осі (0..24) — позитивна частина + центр
+        // 2в. Риски на вертикальній осі (-5..-1) — негативна частина
 
-          // 2б. Риски на вертикальній осі (0..24) — позитивна частина + центр
-          for (double i = 0; i <= 24; i += E) {
-            c
-              ..circle(0, i, B / 2, accentColor)
-              ..line(-0.1, i, -J, i, accentColor, A)
-              ..line(0.1, i, J, i, accentColor, A)
-              ..line(0, i + C, 0, i + 1 - C, accentColor, A);
+        final List<List<double>> verticalRuler = [
+          [1 + D, 24, H, -H / 2],
+          [2 * D, 24, H, H / 2],
+          [3 * D, 24, H, H / 2],
+          [4 * D, 24, H, -H / 2],
+          [-5, -1, I, 0],
+          [-5 + D, -1 + D, H, -H / 2],
+          [-5 + 2 * D, -1 + 2 * D, H, H / 2],
+          [-5 + 3 * D, -1 + 3 * D, H, H / 2],
+          [-5 + 4 * D, -2 + 4 * D, H, -H / 2],
+          [1, 24, J / 2, J / 2 * 1.5],
+          [1, 24, J / 2, -J / 2 * 1.5],
+        ];
 
-            if (i > 0) {
-              c.line(0, i + D, -H, i + D, accentColor, A);
-            } else {
-              c.line(C, i + D, -C, i + D, accentColor, A);
-            }
-            c
-              ..line(0, i + 4 * D, -H, i + 4 * D, accentColor, A)
-              ..line(0, i + 2 * D, H, i + 2 * D, accentColor, A)
-              ..line(0, i + 3 * D, H, i + 3 * D, accentColor, A);
-          }
+        for (final [start, end, tickWidth, x] in verticalRuler) {
+          c.vRuler(start, end, E, tickWidth, accentColor, A, x: x);
+        }
 
-          // 2в. Риски на вертикальній осі (-5..-1) — негативна частина
-          for (double i = -5; i <= -1; i += E) {
-            c
-              ..line(-halfI, i, halfI, i, accentColor, A)
-              ..line(0, i + D, -H, i + D, accentColor, A)
-              ..line(0, i + 2 * D, H, i + 2 * D, accentColor, A)
-              ..line(0, i + 3 * D, H, i + 3 * D, accentColor, A);
+        c
+          ..hLine(D, C, -C, accentColor, A)
+          ..hLine(-D, C, -C, accentColor, A)
+          ..vDotLine(0, 0, 24, E, B / 2, accentColor)
+          ..vDashLine(0, 0.1, 24, 0.8, 0.2, accentColor, A);
 
-            if (i < -1) {
-              c.line(0, i + 4 * D, -H, i + 4 * D, accentColor, A);
-            } else {
-              c.line(C, i + 4 * D, -C, i + 4 * D, accentColor, A);
-            }
+        for (double i = -5; i <= -2; i += E) {
+          c.text(
+            i.abs().toStringAsFixed(0),
+            -(halfI + labelOffset),
+            i + F * 0.35,
+            color,
+            fontSize: K,
+            textAnchor: 'end',
+          );
+        }
 
-            if (i <= -2) {
-              c.text(
-                i.abs().toStringAsFixed(0),
-                -(halfI + labelOffset),
-                i + F * 0.35,
-                color,
-                fontSize: K,
-                textAnchor: 'end',
-              );
-            }
-          }
+        // 3. Точкова сітка між рисками
+        c
+          ..dotGrid(-(2 + G), G, 2 + G, 4 + G, E, E, L / 2, color)
+          ..dotGrid(-(3 + G), 5 + G, 3 + G, 8 + G, E, E, L / 2, color)
+          ..dotGrid(-(4 + G), 9 + G, 4 + G, 24 + G, E, E, L / 2, color);
 
-          // 3. Точкова сітка між рисками
-          for (double j = G; j <= 4 + G; j++) {
-            for (double i = -(2 + G); i <= 2 + G; i += E) {
-              c.circle(i, j, L / 2, color);
-            }
-          }
-          for (double j = 5 + G; j <= 8 + G; j++) {
-            for (double i = -(3 + G); i <= 3 + G; i += E) {
-              c.circle(i, j, L / 2, color);
-            }
-          }
-          for (double j = 9 + G; j <= 24 + G; j++) {
-            for (double i = -(4 + G); i <= 4 + G; i += E) {
-              c.circle(i, j, L / 2, color);
-            }
-          }
-
-          // 4. Лейбли + сітка точок по зонах (±дзеркально через zoneRow)
-          for (double j = 1; j <= 4; j++) {
-            zoneRow(j, 3 + labelOffset, 3);
-          }
-          for (double j = 5; j <= 8; j++) {
-            zoneRow(j, 4 + labelOffset, 4);
-          }
-          for (double j = 9; j <= 24; j++) {
-            zoneRow(j, 5 + labelOffset, 5);
-          }
-        },
-      )
-      // Обідок кола поверх обрізаного вмісту
-      ..circle(0, 0, 24, "transparent", stroke: color, strokeWidth: A);
+        // 4. Лейбли + сітка точок по зонах (±дзеркально через zoneRow)
+        for (double j = 1; j <= 4; j++) {
+          zoneRow(j, 3 + labelOffset, 3);
+        }
+        for (double j = 5; j <= 8; j++) {
+          zoneRow(j, 4 + labelOffset, 4);
+        }
+        for (double j = 9; j <= 24; j++) {
+          zoneRow(j, 5 + labelOffset, 5);
+        }
+      },
+    );
   }
 }
 
@@ -304,7 +278,7 @@ void main(List<String> args) {
   print('Generating "${variant.name}"  →  $outputPath');
   print('  A=${variant.a}  F=${variant.f}  K=${variant.k}');
 
-  MilReticleCanvas(milWidth: 48, milHeight: 48)
+  MilReticleSVGCanvas(milWidth: 48, milHeight: 48)
     ..generate(MilXtReticleDrawer(variant: variant))
     ..svg.export(outputPath);
 }
