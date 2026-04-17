@@ -15,15 +15,17 @@ class MilReticleDrawer implements SVGDrawerInterface {
         draw: (c) {
           c
             ..line(-10, 0, 10, 0, color, thickness)
-            ..line(0, -10, 0, 14, color, thickness);
-          // ..hRuler(start, end, step, tickLength, stroke, strokeWidth)
+            ..line(0, -10, 0, 14, color, thickness)
+            ..hRuler(-10, -1, 1, 1, color, thickness)
+            ..hRuler(10, 1, -1, 1, color, thickness)
+            ..vRuler(-10, 1, 1, 1, color, thickness)
+            ..vRuler(14, 1, -1, 1, color, thickness);
 
           for (int i = -10; i <= 10; i++) {
             if (i == 0) continue;
             final double pos = i.toDouble();
             final bool showLabel = i.abs() % 2 == 0;
 
-            c.line(pos, -tickHalfLength, pos, tickHalfLength, color, thickness);
             if (showLabel) {
               c.text(
                 i.abs().toStringAsFixed(0),
@@ -41,7 +43,6 @@ class MilReticleDrawer implements SVGDrawerInterface {
             final double pos = i.toDouble();
             final bool showLabel = i.abs() % 2 == 0;
 
-            c.line(-tickHalfLength, pos, tickHalfLength, pos, color, thickness);
             if (showLabel) {
               c.text(
                 i.abs().toStringAsFixed(0),
