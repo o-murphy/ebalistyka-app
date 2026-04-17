@@ -233,12 +233,6 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           ..vDotLine(0, 0, 24, E, B / 2, accentColor)
           ..vDashLine(0, 0.1, 24, 0.8, 0.2, accentColor, A);
 
-        for (double i = 0; i <= 24; i += E) {
-          // c
-          //   ..line(-0.1, i, -J, i, "blue", A)
-          //   ..line(0.1, i, J, i, "blue", A);
-        }
-
         for (double i = -5; i <= -2; i += E) {
           c.text(
             i.abs().toStringAsFixed(0),
