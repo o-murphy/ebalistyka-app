@@ -8,6 +8,7 @@ import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 
 // ── Paging state ──────────────────────────────────────────────────────────────
@@ -84,6 +85,7 @@ class ProfileCardData {
     required this.sightName,
     required this.sightHeight,
     required this.focalPlane,
+    required this.reticleImage,
     required this.magnification,
     required this.verticalClick,
     required this.horizontalClick,
@@ -117,6 +119,7 @@ class ProfileCardData {
   final String sightName;
   final String sightHeight;
   final FocalPlane focalPlane;
+  final String reticleImage;
   final String magnification;
   final String verticalClick;
   final String horizontalClick;
@@ -202,6 +205,9 @@ ProfileCardData _buildCardData(
     sightName: sight?.name ?? 'Not selected',
     sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
     focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
+    reticleImage: sight?.reticleImage?.isNotEmpty == true
+        ? sight!.reticleImage!
+        : defaultReticleId,
     magnification: sight != null
         ? formatter.magnificationRange(
             sight.minMagnification,

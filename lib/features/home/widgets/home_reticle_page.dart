@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
@@ -57,7 +58,6 @@ class HomeReticlePage extends ConsumerWidget {
                     cs: cs,
                     elevMil: vmState.adjustmentElevMil,
                     windMil: vmState.adjustmentWindMil,
-                    reticleId: vmState.reticleId,
                   ),
                 ),
               ),
@@ -132,16 +132,19 @@ class _ReticleView extends ConsumerWidget {
     required this.cs,
     required this.elevMil,
     required this.windMil,
-    this.reticleId,
   });
 
   final ColorScheme cs;
   final double elevMil;
   final double windMil;
-  final String? reticleId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final reticleId = ref
+        .watch(activeProfileProvider)
+        ?.sight
+        .target
+        ?.reticleImage;
     final svgAsync = ref.watch(reticleSvgProvider(reticleId));
     return AspectRatio(
       aspectRatio: 1,

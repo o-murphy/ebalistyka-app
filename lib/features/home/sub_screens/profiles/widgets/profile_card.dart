@@ -257,7 +257,11 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
           value: data.sightHeight,
           icon: IconDef.height,
         ),
-        InfoListTile(label: "Reticle", value: "<reticle>", icon: IconDef.sight),
+        InfoListTile(
+          label: "Reticle",
+          value: data.reticleImage,
+          icon: IconDef.sight,
+        ),
         InfoListTile(
           label: "Focal plane",
           value: data.focalPlane.name.toUpperCase(),
