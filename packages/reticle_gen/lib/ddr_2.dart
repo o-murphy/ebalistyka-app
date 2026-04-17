@@ -31,9 +31,9 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
 
   @override
   void draw(SVGCanvas canvas) {
-    const A = Ddr2Sizes.A;
+    // const A = Ddr2Sizes.A;
     const B = Ddr2Sizes.B;
-    const C = Ddr2Sizes.C;
+    // const C = Ddr2Sizes.C;
     const D = Ddr2Sizes.D;
     const E = Ddr2Sizes.E;
     const F = Ddr2Sizes.F;
