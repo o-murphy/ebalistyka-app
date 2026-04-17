@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="6000" height="6000" viewBox="-30 -30 60 60" data-mil-width="60" data-mil-height="60" data-factor="100" shape-rendering="crispEdges">
+  <clipPath id="clip0">
+    <circle id="circle-0" cx="0" cy="0" r="30" fill="white"/>
+  </clipPath>
+  <g id="clipgroup-0" clip-path="url(#clip0)">
+    <rect id="fill-0" x="-30" y="-30" width="60" height="60" fill="white"/>
+    <path id="cross-0" d="M -1 0 L 1 0 M 0 -1 L 0 1" fill="none" stroke="red" stroke-width="0.063"/>
+    <line id="hline-0" x1="2" y1="0" x2="20" y2="0" stroke="black" stroke-width="0.063"/>
+    <line id="hline-1" x1="-2" y1="0" x2="-20" y2="0" stroke="black" stroke-width="0.063"/>
+    <line id="vline-0" x1="0" y1="-10" x2="0" y2="-2" stroke="black" stroke-width="0.063"/>
+    <line id="vline-1" x1="0" y1="20" x2="0" y2="2" stroke="black" stroke-width="0.063"/>
+    <line id="vline-2" x1="-2" y1="-1" x2="-2" y2="1" stroke="black" stroke-width="0.063"/>
+    <line id="vline-3" x1="2" y1="-1" x2="2" y2="1" stroke="black" stroke-width="0.063"/>
+    <line id="vline-4" x1="-20" y1="-1" x2="-20" y2="1" stroke="black" stroke-width="0.063"/>
+    <line id="vline-5" x1="20" y1="-1" x2="20" y2="1" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-0" d="M 20 0 L 20 1 M 18 0 L 18 1 M 16 0 L 16 1 M 14 0 L 14 1 M 12 0 L 12 1 M 10 0 L 10 1 M 8 0 L 8 1 M 6 0 L 6 1 M 4 0 L 4 1 M 2 0 L 2 1" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-1" d="M -20 0 L -20 1 M -18 0 L -18 1 M -16 0 L -16 1 M -14 0 L -14 1 M -12 0 L -12 1 M -10 0 L -10 1 M -8 0 L -8 1 M -6 0 L -6 1 M -4 0 L -4 1 M -2 0 L -2 1" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-2" d="M 20 0 L 20 0.5 M 19 0 L 19 0.5 M 18 0 L 18 0.5 M 17 0 L 17 0.5 M 16 0 L 16 0.5 M 15 0 L 15 0.5 M 14 0 L 14 0.5 M 13 0 L 13 0.5 M 12 0 L 12 0.5 M 11 0 L 11 0.5 M 10 0 L 10 0.5 M 9 0 L 9 0.5 M 8 0 L 8 0.5 M 7 0 L 7 0.5 M 6 0 L 6 0.5 M 5 0 L 5 0.5 M 4 0 L 4 0.5 M 3 0 L 3 0.5 M 2 0 L 2 0.5" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-3" d="M -20 0 L -20 0.5 M -19 0 L -19 0.5 M -18 0 L -18 0.5 M -17 0 L -17 0.5 M -16 0 L -16 0.5 M -15 0 L -15 0.5 M -14 0 L -14 0.5 M -13 0 L -13 0.5 M -12 0 L -12 0.5 M -11 0 L -11 0.5 M -10 0 L -10 0.5 M -9 0 L -9 0.5 M -8 0 L -8 0.5 M -7 0 L -7 0.5 M -6 0 L -6 0.5 M -5 0 L -5 0.5 M -4 0 L -4 0.5 M -3 0 L -3 0.5 M -2 0 L -2 0.5" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-4" d="M -10 2 L -10 -2" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="hruler-5" d="M 10 -2 L 10 2" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-0" d="M -1 -10 L 1 -10 M -1 -8 L 1 -8 M -1 -6 L 1 -6 M -1 -4 L 1 -4 M -1 -2 L 1 -2" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-1" d="M -1 2 L 1 2 M -1 4 L 1 4 M -1 6 L 1 6 M -1 8 L 1 8 M -1 10 L 1 10 M -1 12 L 1 12 M -1 14 L 1 14 M -1 16 L 1 16 M -1 18 L 1 18 M -1 20 L 1 20" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-2" d="M -0.25 -10 L 0.25 -10 M -0.25 -9 L 0.25 -9 M -0.25 -8 L 0.25 -8 M -0.25 -7 L 0.25 -7 M -0.25 -6 L 0.25 -6 M -0.25 -5 L 0.25 -5 M -0.25 -4 L 0.25 -4 M -0.25 -3 L 0.25 -3 M -0.25 -2 L 0.25 -2" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-3" d="M -0.25 2 L 0.25 2 M -0.25 3 L 0.25 3 M -0.25 4 L 0.25 4 M -0.25 5 L 0.25 5 M -0.25 6 L 0.25 6 M -0.25 7 L 0.25 7 M -0.25 8 L 0.25 8 M -0.25 9 L 0.25 9 M -0.25 10 L 0.25 10 M -0.25 11 L 0.25 11 M -0.25 12 L 0.25 12 M -0.25 13 L 0.25 13 M -0.25 14 L 0.25 14 M -0.25 15 L 0.25 15 M -0.25 16 L 0.25 16 M -0.25 17 L 0.25 17 M -0.25 18 L 0.25 18 M -0.25 19 L 0.25 19 M -0.25 20 L 0.25 20" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-4" d="M -2 10 L 2 10" fill="none" stroke="black" stroke-width="0.063"/>
+    <path id="vruler-5" d="M -2 -10 L 2 -10" fill="none" stroke="black" stroke-width="0.063"/>
+    <text id="text-0" x="-20" y="-2.4" fill="black" font-size="0.833" text-anchor="middle">20</text>
+    <text id="text-1" x="-10" y="-2.4" fill="black" font-size="0.833" text-anchor="middle">10</text>
+    <text id="text-2" x="10" y="-2.4" fill="black" font-size="0.833" text-anchor="middle">10</text>
+    <text id="text-3" x="20" y="-2.4" fill="black" font-size="0.833" text-anchor="middle">20</text>
+    <text id="text-4" x="-3" y="10.263" fill="black" font-size="1.042" text-anchor="middle">10</text>
+    <text id="text-5" x="-3" y="20.263" fill="black" font-size="1.042" text-anchor="middle">20</text>
+    <rect id="rect-0" x="-30" y="-0.86" width="6" height="1.72" fill="black"/>
+    <rect id="rect-1" x="24" y="-0.86" width="14" height="1.72" fill="black"/>
+    <line id="hline-2" x1="30" y1="0" x2="21" y2="0" stroke="black" stroke-width="0.063"/>
+    <line id="hline-3" x1="-30" y1="0" x2="-21" y2="0" stroke="black" stroke-width="0.063"/>
+    <line id="hline-4" x1="30" y1="0.86" x2="23" y2="0.86" stroke="black" stroke-width="0.3"/>
+    <line id="hline-5" x1="30" y1="-0.86" x2="23" y2="-0.86" stroke="black" stroke-width="0.3"/>
+    <line id="hline-6" x1="-30" y1="0.86" x2="-23" y2="0.86" stroke="black" stroke-width="0.3"/>
+    <line id="hline-7" x1="-30" y1="-0.86" x2="-23" y2="-0.86" stroke="black" stroke-width="0.3"/>
+    <line id="line-0" x1="21" y1="0" x2="23" y2="0.86" stroke="black" stroke-width="0.3"/>
+    <line id="line-1" x1="21" y1="0" x2="23" y2="-0.86" stroke="black" stroke-width="0.3"/>
+    <line id="line-2" x1="-21" y1="0" x2="-23" y2="0.86" stroke="black" stroke-width="0.3"/>
+    <line id="line-3" x1="-21" y1="0" x2="-23" y2="-0.86" stroke="black" stroke-width="0.3"/>
+    <line id="vline-6" x1="0" y1="30" x2="0" y2="21" stroke="black" stroke-width="0.063"/>
+    <line id="vline-7" x1="0.86" y1="30" x2="0.86" y2="23" stroke="black" stroke-width="0.3"/>
+    <line id="vline-8" x1="-0.86" y1="30" x2="-0.86" y2="23" stroke="black" stroke-width="0.3"/>
+    <line id="line-4" x1="0" y1="21" x2="0.86" y2="23" stroke="black" stroke-width="0.3"/>
+    <line id="line-5" x1="0" y1="21" x2="-0.86" y2="23" stroke="black" stroke-width="0.3"/>
+    <rect id="rect-2" x="-0.86" y="24" width="1.72" height="14" fill="black"/>
+  </g>
+</svg>

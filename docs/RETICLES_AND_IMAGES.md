@@ -137,7 +137,7 @@ Flutter замінює їх на `#rrggbb` при завантаженні (runt
 ### Генерація SVG
 
 ```bash
-dart run packages/reticle_gen/bin/mil_reticle.dart assets/reticles/default.svg
+dart run packages/reticle_gen/lib/default.dart assets/reticles/default.svg
 ```
 
 ---

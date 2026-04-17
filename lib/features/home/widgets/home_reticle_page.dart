@@ -165,7 +165,6 @@ class _ReticleView extends ConsumerWidget {
       svg,
       windMil: windMil,
       elevMil: elevMil,
-      factor: meta.factor,
       milWidth: meta.milWidth,
       milHeight: meta.milHeight,
       fillColor: adjColor,
@@ -207,13 +206,12 @@ class _ReticleView extends ConsumerWidget {
     return '#${(v & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
   }
 
-  // Injects adjustment indicator into SVG coordinate space (same as
-  // drawAdjustment in MilReticleCanvas): vertical line, horizontal line, dot.
+  // Injects adjustment indicator in mil coordinates (matches the mil viewBox
+  // used by MilReticleCanvas): vertical line, horizontal line, dot.
   static String _injectAdjustment(
     String svg, {
     required double windMil,
     required double elevMil,
-    required double factor,
     required double milWidth,
     required double milHeight,
     required String fillColor,
@@ -224,37 +222,35 @@ class _ReticleView extends ConsumerWidget {
     final outOfRange = windMil.abs() > maxX || elevMil.abs() > maxY;
 
     if (outOfRange) {
-      final fs = 1.8 * factor;
-      final dy = fs * 0.35; // baseline compensation
-      final elements = '''
-  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" fill="$fillColor" font-weight="bold">OUT OF RANGE</text>''';
+      const fs = 1.8; // mils
+      const dy = fs * 0.35; // baseline compensation
+      final elements =
+          '\n  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" fill="$fillColor" font-weight="bold">OUT OF RANGE</text>';
       return svg.replaceFirst('</svg>', '$elements\n</svg>');
     }
 
-    final x = windMil * factor;
-    final y = elevMil * factor;
-    final sw = 0.05 * factor;
-    final r = 0.2 * factor;
+    // All values in mils — the SVG viewBox is already in mils.
+    const sw = 0.05;
+    const r = 0.2;
     final elements =
         '''
-  <line x1="$x" y1="0" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
-  <line x1="0" y1="$y" x2="$x" y2="$y" stroke="$strokeColor" stroke-width="$sw"/>
-  <circle cx="$x" cy="$y" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
+  <line x1="$windMil" y1="0" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
+  <line x1="0" y1="$elevMil" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
+  <circle cx="$windMil" cy="$elevMil" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
     return svg.replaceFirst('</svg>', '$elements\n</svg>');
   }
 
   // Clips the SVG viewBox to [_kViewMils]×[_kViewMils] mils when the reticle
-  // is larger (e.g. mil_xt is 48×48). Replaces only the viewBox attribute so
-  // the existing content and clip-paths inside the SVG are unaffected.
+  // is larger (e.g. mil_xt is 48×48). The viewBox is in mils, so no factor
+  // multiplication is needed.
   static const double _kViewMils = 30.0;
 
   static String _clipViewMils(String svg, _SvgMeta meta) {
     if (meta.milWidth <= _kViewMils && meta.milHeight <= _kViewMils) return svg;
-    final half = _kViewMils / 2 * meta.factor;
-    final size = _kViewMils * meta.factor;
+    // viewBox is in mils — no factor multiplication needed.
     return svg.replaceFirst(
       RegExp(r'viewBox="[^"]+"'),
-      'viewBox="${-half} ${-half} $size $size"',
+      'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
     );
   }
 
