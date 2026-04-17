@@ -47,6 +47,17 @@ class PathBuilder {
     '${largeArc ? 1 : 0} ${sweep ? 1 : 0} ${_n(x)} ${_n(y)} ',
   );
 
+  /// Appends a full circle as four clockwise quarter-arcs.
+  /// Four arcs avoid the 180° ambiguity of two-arc approaches.
+  void dotCircle(double cx, double cy, double r) {
+    moveTo(cx - r, cy);
+    arcTo(r, r, 0, false, true, cx, cy + r);
+    arcTo(r, r, 0, false, true, cx + r, cy);
+    arcTo(r, r, 0, false, true, cx, cy - r);
+    arcTo(r, r, 0, false, true, cx - r, cy);
+    close();
+  }
+
   bool get isEmpty => _buffer.isEmpty;
   String get d => _buffer.toString().trimRight();
   void clear() => _buffer.clear();
@@ -130,15 +141,11 @@ class SVGCanvas {
   /// Use it when the drawer works in a different unit than the SVG viewBox
   /// (e.g. `unitScale = moaToMil` lets the drawer use MOA while the viewBox
   /// stays in MIL).  Implemented as a `<g transform="scale(unitScale)">` so
-  /// every element — including `<path>` d-strings and `<pattern>` tiles — is
-  /// scaled automatically.
+  /// every element — including `<path>` d-strings — is scaled automatically.
   final double unitScale;
 
   final Map<String, int> _idCounters = {};
   String? _idHint;
-
-  XmlElement? _defsEl;
-  final Map<String, String> _dotPatternCache = {};
 
   SVGCanvas({this.width = 640.0, this.height = 640.0, this.unitScale = 1.0});
 
@@ -173,56 +180,6 @@ class SVGCanvas {
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
 
-  XmlElement get _defs {
-    if (_defsEl == null) {
-      _defsEl = XmlElement(XmlName('defs'));
-      _svgElement.children.insert(0, _defsEl!);
-    }
-    return _defsEl!;
-  }
-
-  /// Returns the id of a `<pattern>` in `<defs>` suitable for [dotLine].
-  /// Tiles have [spacing]×[2r] size; the single circle is at (r,r) tile-local
-  /// so the first dot appears at the line's origin (0,0 in local space).
-  /// Results are cached: identical params reuse the same pattern element.
-  String _dotPatternId(
-    double spacing,
-    double r,
-    String fill,
-    String? stroke,
-    double? strokeWidth,
-  ) {
-    final key = '$spacing/$r/$fill/$stroke/$strokeWidth';
-    return _dotPatternCache.putIfAbsent(key, () {
-      final id = nextId('dotpat');
-      _defs.children.add(
-        XmlElement(
-          XmlName('pattern'),
-          [
-            XmlAttribute(XmlName('id'), id),
-            XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
-            XmlAttribute(XmlName('x'), _fmtNum(-r)),
-            XmlAttribute(XmlName('y'), _fmtNum(-r)),
-            XmlAttribute(XmlName('width'), _fmtNum(spacing)),
-            XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
-          ],
-          [
-            XmlElement(XmlName('circle'), [
-              XmlAttribute(XmlName('cx'), _fmtNum(r)),
-              XmlAttribute(XmlName('cy'), _fmtNum(r)),
-              XmlAttribute(XmlName('r'), _fmtNum(r)),
-              XmlAttribute(XmlName('fill'), fill),
-              if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-              if (strokeWidth != null)
-                XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
-            ]),
-          ],
-        ),
-      );
-      return id;
-    });
-  }
-
   XmlElement generate(SVGDrawerInterface drawer) {
     final double minX = -width / 2;
     final double minY = -height / 2;
@@ -236,8 +193,6 @@ class SVGCanvas {
         '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(width)} ${_fmtNum(height)}',
       ),
     ]);
-    _defsEl = null;
-    _dotPatternCache.clear();
     _idCounters.clear();
     _clipCounter = 0;
 
@@ -581,9 +536,7 @@ class SVGCanvas {
 
   /// Evenly spaced dots along the line from ([x1],[y1]) to ([x2],[y2]).
   ///
-  /// Emits a single SVG `<pattern>` + `<rect>` (O(1) elements) regardless of
-  /// how many dots fit. The pattern is cached and reused across calls with the
-  /// same [spacing], [r], [fill], [stroke], and [strokeWidth].
+  /// Emits a single `<path>` with arc sub-paths — flutter_svg compatible.
   void dotLine(
     double x1,
     double y1,
@@ -608,24 +561,15 @@ class SVGCanvas {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
-    final patId = _dotPatternId(spacing, r, fill, stroke, strokeWidth);
-    final angleDeg = math.atan2(dy, dx) * 180 / math.pi;
-    // Rect in line-local space: origin = (x1,y1), x-axis along the line.
-    // Extended by r on all sides so the first and last circles render fully.
-    _target.children.add(
-      XmlElement(XmlName('rect'), [
-        XmlAttribute(XmlName('id'), nextId('dotline')),
-        XmlAttribute(XmlName('x'), _fmtNum(-r)),
-        XmlAttribute(XmlName('y'), _fmtNum(-r)),
-        XmlAttribute(XmlName('width'), _fmtNum(length + 2 * r)),
-        XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
-        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
-        XmlAttribute(
-          XmlName('transform'),
-          'translate(${_fmtNum(x1)},${_fmtNum(y1)}) rotate(${_fmtNum(angleDeg)})',
-        ),
-      ]),
-    );
+    final ux = dx / length;
+    final uy = dy / length;
+    final pb = PathBuilder();
+    for (var t = 0.0; t <= length + 1e-9; t += spacing) {
+      pb.dotCircle(x1 + t * ux, y1 + t * uy, r);
+    }
+    if (!pb.isEmpty) {
+      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   void hDotLine(
@@ -673,8 +617,7 @@ class SVGCanvas {
   /// Fills the axis-aligned rectangle [x1..x2] × [y1..y2] with a uniform
   /// grid of dots at every ([xStep], [yStep]) interval.
   ///
-  /// Unlike [repeat] + [dot], this emits a single SVG `<pattern>` + `<rect>`
-  /// (O(1) elements) regardless of how many dots fit.
+  /// Emits a single `<path>` with arc sub-paths — flutter_svg compatible.
   /// Use [repeat] when the per-point drawing varies; use [dotGrid] when every
   /// point gets an identical dot.
   void dotGrid(
@@ -691,44 +634,15 @@ class SVGCanvas {
   }) {
     if (xStep <= 0 || yStep <= 0) return;
     _hint('dotgrid');
-    // Each pattern tile is xStep × yStep; circle at (r, r) tile-local puts the
-    // first dot exactly at (x1, y1). The pattern x/y anchor is (x1−r, y1−r)
-    // so tile boundaries align with the grid start.
-    final patId = nextId('dotgridpat');
-    _defs.children.add(
-      XmlElement(
-        XmlName('pattern'),
-        [
-          XmlAttribute(XmlName('id'), patId),
-          XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
-          XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
-          XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
-          XmlAttribute(XmlName('width'), _fmtNum(xStep)),
-          XmlAttribute(XmlName('height'), _fmtNum(yStep)),
-        ],
-        [
-          XmlElement(XmlName('circle'), [
-            XmlAttribute(XmlName('cx'), _fmtNum(r)),
-            XmlAttribute(XmlName('cy'), _fmtNum(r)),
-            XmlAttribute(XmlName('r'), _fmtNum(r)),
-            XmlAttribute(XmlName('fill'), fill),
-            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-            if (strokeWidth != null)
-              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
-          ]),
-        ],
-      ),
-    );
-    _target.children.add(
-      XmlElement(XmlName('rect'), [
-        XmlAttribute(XmlName('id'), nextId('dotgrid')),
-        XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
-        XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
-        XmlAttribute(XmlName('width'), _fmtNum(x2 - x1 + 2 * r)),
-        XmlAttribute(XmlName('height'), _fmtNum(y2 - y1 + 2 * r)),
-        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
-      ]),
-    );
+    final pb = PathBuilder();
+    for (double y = y1; y <= y2 + 1e-9; y += yStep) {
+      for (double x = x1; x <= x2 + 1e-9; x += xStep) {
+        pb.dotCircle(x, y, r);
+      }
+    }
+    if (!pb.isEmpty) {
+      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   /// Calls [draw] for every grid point in [x1..x2] × [y1..y2].
