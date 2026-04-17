@@ -10,6 +10,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,14 +28,8 @@ class CollectionAmmoTileBody extends ConsumerWidget {
       borderRadius: BorderRadius.circular(12),
       child: Stack(
         children: [
-          // Background image placeholder
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: const Center(
-              child: Icon(IconDef.ammo, size: 50, color: Colors.grey),
-            ),
-          ),
+          // Background ammo image
+          Positioned.fill(child: AmmoSvgView(imageId: ammo.image)),
           // Content
           Padding(
             padding: const EdgeInsets.all(12),

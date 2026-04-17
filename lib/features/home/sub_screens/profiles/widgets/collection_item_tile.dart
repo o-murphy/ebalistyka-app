@@ -13,6 +13,7 @@ class CollectionItemTile extends StatelessWidget {
     this.onDuplicate,
     this.onExport,
     this.isSelected = false,
+    this.searchText = '',
     super.key,
   });
 
@@ -24,6 +25,7 @@ class CollectionItemTile extends StatelessWidget {
   final VoidCallback? onDuplicate;
   final VoidCallback? onExport;
   final bool isSelected;
+  final String searchText;
 
   bool get _hasActions =>
       onEdit != null ||

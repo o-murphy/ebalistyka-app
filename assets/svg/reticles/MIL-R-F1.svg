@@ -56,16 +56,8 @@
     <line id="vline-4" x1="3.4" y1="3.1" x2="3.4" y2="3" stroke="black" stroke-width="0.029"/>
     <line id="vline-5" x1="3.6" y1="3.1" x2="3.6" y2="3" stroke="black" stroke-width="0.029"/>
     <line id="vline-6" x1="3.7" y1="2.9" x2="3.7" y2="3" stroke="black" stroke-width="0.029"/>
-    <line id="hline-11" x1="30" y1="0" x2="5.2" y2="0" stroke="black" stroke-width="0.036"/>
-    <line id="hline-12" x1="-30" y1="0" x2="-5.2" y2="0" stroke="black" stroke-width="0.036"/>
-    <line id="hline-13" x1="30" y1="0.25" x2="6" y2="0.25" stroke="black" stroke-width="0.1"/>
-    <line id="hline-14" x1="30" y1="-0.25" x2="6" y2="-0.25" stroke="black" stroke-width="0.1"/>
-    <line id="hline-15" x1="-30" y1="0.25" x2="-6" y2="0.25" stroke="black" stroke-width="0.1"/>
-    <line id="hline-16" x1="-30" y1="-0.25" x2="-6" y2="-0.25" stroke="black" stroke-width="0.1"/>
-    <line id="line-0" x1="5.2" y1="0" x2="6" y2="0.25" stroke="black" stroke-width="0.1"/>
-    <line id="line-1" x1="5.2" y1="0" x2="6" y2="-0.25" stroke="black" stroke-width="0.1"/>
-    <line id="line-2" x1="-5.2" y1="0" x2="-6" y2="0.25" stroke="black" stroke-width="0.1"/>
-    <line id="line-3" x1="-5.2" y1="0" x2="-6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+    <path id="path-0" d="M 30 0 L 5.2 0 M -30 0 L -5.2 0" fill="none" stroke="black" stroke-width="0.036"/>
+    <path id="path-1" d="M 30 0.25 L 6 0.25 L 5.2 0 L 6 -0.25 L 30 -0.25 M -30 0.25 L -6 0.25 L -5.2 0 L -6 -0.25 L -30 -0.25" fill="none" stroke="black" stroke-width="0.1"/>
     <text id="text-9" x="4" y="1.098" fill="black" font-size="0.389" text-anchor="middle">2</text>
   </g>
 </svg>

@@ -300,7 +300,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windMil = targetPoint != null
-        ? -(targetPoint.windageAngle.in_(Unit.mil))
+        ? targetPoint.windageAngle.in_(Unit.mil)
         : 0.0;
     final tableData = _buildHomeTable(
       hit,
@@ -403,7 +403,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final windValues = windAngle != null
         ? dispUnits.map((u) {
-            final corr = -(windAngle.in_(u.$1));
+            final corr = windAngle.in_(u.$1);
             return AdjustmentValue(
               absValue: corr.abs(),
               isPositive: corr >= 0,

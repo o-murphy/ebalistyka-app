@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -55,6 +57,12 @@ extension ConditionsExtension on ShootingConditions {
     powderTemperature: useDiffPowderTemp ? powderTemperature : temperature,
   );
 
-  bclibc.Wind toWind() =>
-      bclibc.Wind(velocity: windSpeed, directionFrom: windDirection);
+  bclibc.Wind toWind() => bclibc.Wind(
+    velocity: windSpeed,
+    // The C library's wind formula uses z = vel*sin(dir) where positive z = air
+    // moves right. Our UI stores the "wind FROM" angle (clock convention), so
+    // 90° = wind from right = air moves LEFT = negative z. Adding π converts
+    // "from" direction to "to" direction, matching the C library expectation.
+    directionFrom: Angular.radian(windDirection.in_(Unit.radian) + pi),
+  );
 }

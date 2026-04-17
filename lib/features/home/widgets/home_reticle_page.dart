@@ -6,6 +6,7 @@ import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
+import 'package:ebalistyka/core/utils/svg_color_utils.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -158,8 +159,8 @@ class _ReticleView extends ConsumerWidget {
 
   Widget _buildSvg(String svgString) {
     final meta = _parseSvgMeta(svgString);
-    final svg = _clipViewMils(_resolveRoles(svgString, cs), meta);
-    final adjColor = _toHex(
+    final svg = _clipViewMils(resolveSvgColorRoles(svgString, cs), meta);
+    final adjColor = svgHex(
       cs.brightness == Brightness.dark
           ? Colors.orangeAccent
           : Colors.deepOrangeAccent,
@@ -187,26 +188,6 @@ class _ReticleView extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  static String _resolveRoles(String svg, ColorScheme cs) {
-    final roles = {
-      'onSurface': cs.onSurface,
-      'onBackground': cs.onSurface,
-      'primary': cs.primary,
-      'secondary': cs.secondary,
-      'error': cs.error,
-    };
-    var result = svg;
-    for (final e in roles.entries) {
-      result = result.replaceAll('"${e.key}"', '"${_toHex(e.value)}"');
-    }
-    return result;
-  }
-
-  static String _toHex(Color c) {
-    final v = c.toARGB32();
-    return '#${(v & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
   }
 
   // Injects adjustment indicator in mil coordinates (matches the mil viewBox

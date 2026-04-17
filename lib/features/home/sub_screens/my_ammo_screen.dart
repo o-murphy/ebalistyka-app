@@ -144,6 +144,11 @@ class MyAmmoScreen extends ConsumerWidget {
                   body: CollectionAmmoTileBody(ammo: item),
                   item: CartridgeCollectionItem(ref: item),
                   isSelected: item.id == selectedId,
+                  searchText: [
+                    item.name,
+                    item.vendor ?? '',
+                    item.projectileName ?? '',
+                  ].join(' '),
                   onSelect: () async {
                     final pid = profileId ?? profile?.id.toString();
                     if (pid == null) return;

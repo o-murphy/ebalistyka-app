@@ -81,7 +81,7 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
   MilRF1ReticleDrawer({this.variant = MilRF1Variant.defaultVariant});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     const A = MilRF1Sizes.A;
     final B = variant.b;
     final C = variant.c;
@@ -174,16 +174,34 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
           ..vLine(3.7, 3 - P / 2, 3, color, N);
 
         c
-          ..hLine(0, 30, A / 2 + I, color, B)
-          ..hLine(0, -30, -(A / 2 + I), color, B)
-          ..hLine(D / 2, 30, A / 2 + 1, color, C)
-          ..hLine(-D / 2, 30, A / 2 + 1, color, C)
-          ..hLine(D / 2, -30, -(A / 2 + 1), color, C)
-          ..hLine(-D / 2, -30, -(A / 2 + 1), color, C)
-          ..line(A / 2 + I, 0, A / 2 + 1, D / 2, color, C)
-          ..line(A / 2 + I, 0, A / 2 + 1, -D / 2, color, C)
-          ..line(-(A / 2 + I), 0, -(A / 2 + 1), D / 2, color, C)
-          ..line(-(A / 2 + I), 0, -(A / 2 + 1), -D / 2, color, C)
+          ..path(
+            (PathBuilder()
+                  ..moveTo(30, 0)
+                  ..lineTo(A / 2 + I, 0)
+                  ..moveTo(-30, 0)
+                  ..lineTo(-(A / 2 + I), 0))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: B,
+          )
+          ..path(
+            (PathBuilder()
+                  ..moveTo(30, D / 2)
+                  ..lineTo(A / 2 + 1, D / 2)
+                  ..lineTo(A / 2 + I, 0)
+                  ..lineTo(A / 2 + 1, -D / 2)
+                  ..lineTo(30, -D / 2)
+                  ..moveTo(-30, D / 2)
+                  ..lineTo(-(A / 2 + 1), D / 2)
+                  ..lineTo(-(A / 2 + I), 0)
+                  ..lineTo(-(A / 2 + 1), -D / 2)
+                  ..lineTo(-30, -D / 2))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: C,
+          )
           ..text(
             2.toStringAsFixed(0),
             3.5 + 0.5,

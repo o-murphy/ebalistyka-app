@@ -30,7 +30,7 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
   Ddr2ReticleDrawer();
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     // const A = Ddr2Sizes.A;
     const B = Ddr2Sizes.B;
     // const C = Ddr2Sizes.C;
@@ -78,7 +78,7 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
               ..moveTo(offset, 0)
               ..lineTo(tipOffset, halfP)
               ..lineTo(tipOffset, -halfP)
-              ..close(); // замикає трикутник
+              ..close();
 
             // Верхня ліва стрілка (залитий трикутник)
             pb
@@ -86,11 +86,18 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
               ..lineTo(-tipOffset, halfP)
               ..lineTo(-tipOffset, -halfP)
               ..close();
-          })
-          ..line(D + E + F, 0, D + E + F + H, P / 2, color, M)
-          ..line(D + E + F, 0, D + E + F + H, -P / 2, color, M)
-          ..line(-(D + E + F), 0, -(D + E + F + H), P / 2, color, M)
-          ..line(-(D + E + F), 0, -(D + E + F + H), -P / 2, color, M);
+
+            // Контурні ребра стрілок
+            pb
+              ..moveTo(offset, 0)
+              ..lineTo(tipOffset, halfP)
+              ..moveTo(offset, 0)
+              ..lineTo(tipOffset, -halfP)
+              ..moveTo(-offset, 0)
+              ..lineTo(-tipOffset, halfP)
+              ..moveTo(-offset, 0)
+              ..lineTo(-tipOffset, -halfP);
+          });
       },
     );
   }

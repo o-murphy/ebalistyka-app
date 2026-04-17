@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:ebalistyka/router.dart';
+
 class SightWizardScreen extends ConsumerStatefulWidget {
   const SightWizardScreen({this.initial, super.key});
 
@@ -45,6 +47,8 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   // magnification: dimensionless scalar (FC.magnification, Unit.scalar)
   late double _minMagRaw;
   late double _maxMagRaw;
+
+  late String? _reticleImage;
 
   static const _clickUnits = [
     Unit.mil,
@@ -81,6 +85,8 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
     final storedMax = s?.maxMagnification ?? 0.0;
     _minMagRaw = storedMin > 0 ? storedMin : 1.0;
     _maxMagRaw = storedMax > 0 ? storedMax : 1.0;
+
+    _reticleImage = s?.reticleImage;
   }
 
   @override
@@ -127,6 +133,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
     ).in_(_hClickUnit);
     sight.minMagnification = _minMagRaw;
     sight.maxMagnification = _maxMagRaw;
+    sight.reticleImage = _reticleImage;
     return sight;
   }
 
@@ -207,6 +214,25 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
           // ── Reticle ────────────────────────────────────────────────
           const Divider(height: 1),
           const ListSectionTile('Reticle'),
+          ListTile(
+            leading: const Icon(IconDef.sight),
+            title: const Text('Reticle pattern'),
+            subtitle: Text(_reticleImage ?? 'default'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              final route = widget.initial != null
+                  ? Routes.sightEditReticlePicker
+                  : Routes.sightCreateReticlePicker;
+              final result = await context.push<String?>(
+                route,
+                extra: _reticleImage,
+              );
+              if (result != null && mounted) {
+                setState(() => _reticleImage = result);
+              }
+            },
+          ),
+          const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: SegmentedButton<FocalPlane>(

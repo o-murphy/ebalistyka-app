@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:riverpod/riverpod.dart';
 
-const reticleAssetPrefix = 'assets/reticles/';
+const reticleAssetPrefix = 'assets/svg/reticles/';
 const defaultReticleId = 'default';
 
 /// Lists all available reticle IDs by scanning the asset manifest.

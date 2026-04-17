@@ -47,6 +47,11 @@ class AmmoCollectionScreen extends ConsumerWidget {
                     key: ValueKey(ammo.name),
                     body: CollectionAmmoTileBody(ammo: ammo),
                     item: CartridgeCollectionItem(ref: ammo),
+                    searchText: [
+                      ammo.name,
+                      ammo.vendor ?? '',
+                      ammo.projectileName ?? '',
+                    ].join(' '),
                     onSelect: () => context.pop<Ammo>(ammo.clone()),
                   ),
                 )

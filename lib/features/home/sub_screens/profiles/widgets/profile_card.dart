@@ -1,6 +1,7 @@
 // ── Profile Card ──────────────────────────────────────────────────────────────
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
+import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -98,6 +99,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
                             child: _ProfileControlTile(
                               profileId: data.id,
                               profileName: data.name,
+                              weaponImage: data.weaponImage,
                               hasAmmo: data.ammoId != null,
                               hasSight: data.sightId != null,
                               onDuplicate: widget.onDuplicate,
@@ -122,12 +124,15 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
           ),
           // ── Bottom action ───────────────────────────────────────────────
           if (data.ammoId != null && data.sightId != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: Align(
-                alignment: Alignment.center,
+            ColoredBox(
+              color: colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                 child: FilledButton(
                   onPressed: widget.onSelect,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(40),
+                  ),
                   child: Text(!isActive ? 'Select' : 'Go to calculations'),
                 ),
               ),
@@ -293,6 +298,7 @@ class _ProfileControlTile extends StatelessWidget {
   const _ProfileControlTile({
     required this.profileId,
     required this.profileName,
+    this.weaponImage,
     required this.hasAmmo,
     required this.hasSight,
     required this.onDuplicate,
@@ -304,6 +310,7 @@ class _ProfileControlTile extends StatelessWidget {
 
   final String profileId;
   final String profileName;
+  final String? weaponImage;
   final bool hasAmmo;
   final bool hasSight;
   final VoidCallback onDuplicate;
@@ -355,14 +362,12 @@ class _ProfileControlTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return SizedBox(
-      height: 200,
+      height: 160,
       child: Card(
         child: Stack(
           children: [
-            // Main content
-            const Center(
-              child: Icon(IconDef.weapon, size: 48, color: Colors.grey),
-            ),
+            // Weapon image
+            Positioned.fill(child: WeaponSvgView(imageId: weaponImage)),
 
             // Top right button (edit button)
             Positioned(

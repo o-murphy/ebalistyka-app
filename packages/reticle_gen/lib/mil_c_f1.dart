@@ -67,7 +67,7 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
   MilCf1ReticleDrawer({this.variant = MilCf1Variant.defaultVariant});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     final A = variant.a;
     final B = variant.b;
     const C = MilCf1Sizes.C;
@@ -184,16 +184,33 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
           ..hRuler(-(A / 2 + 5), -(A / 2 + I), F, J, color, C)
           ..rect(A / 2 + 1, -D / 2, 4 - M, D, clipColor)
           ..rect(-(A / 2 + 1 + 4 - M), -D / 2, 4, D, clipColor)
-          ..hLine(0, 30, A / 2 + I, color, C)
-          ..hLine(0, -30, -(A / 2 + I), color, C)
-          ..hLine(D / 2, 30, A / 2 + 1, color, C)
-          ..hLine(-D / 2, 30, A / 2 + 1, color, C)
-          ..hLine(D / 2, -30, -(A / 2 + 1), color, C)
-          ..hLine(-D / 2, -30, -(A / 2 + 1), color, C)
-          ..line(A / 2 + I, 0, A / 2 + 1, D / 2, color, C)
-          ..line(A / 2 + I, 0, A / 2 + 1, -D / 2, color, C)
-          ..line(-(A / 2 + I), 0, -(A / 2 + 1), D / 2, color, C)
-          ..line(-(A / 2 + I), 0, -(A / 2 + 1), -D / 2, color, C)
+          ..path(
+            (PathBuilder()
+                  ..moveTo(30, 0)
+                  ..lineTo(A / 2 + I, 0)
+                  ..moveTo(-30, 0)
+                  ..lineTo(-(A / 2 + I), 0)
+                  ..moveTo(30, D / 2)
+                  ..lineTo(A / 2 + 1, D / 2)
+                  ..moveTo(30, -D / 2)
+                  ..lineTo(A / 2 + 1, -D / 2)
+                  ..moveTo(-30, D / 2)
+                  ..lineTo(-(A / 2 + 1), D / 2)
+                  ..moveTo(-30, -D / 2)
+                  ..lineTo(-(A / 2 + 1), -D / 2)
+                  ..moveTo(A / 2 + I, 0)
+                  ..lineTo(A / 2 + 1, D / 2)
+                  ..moveTo(A / 2 + I, 0)
+                  ..lineTo(A / 2 + 1, -D / 2)
+                  ..moveTo(-(A / 2 + I), 0)
+                  ..lineTo(-(A / 2 + 1), D / 2)
+                  ..moveTo(-(A / 2 + I), 0)
+                  ..lineTo(-(A / 2 + 1), -D / 2))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: C,
+          )
           ..text(
             2.abs().toStringAsFixed(0),
             3.1 + 0.5,

@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -132,7 +133,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
       ),
       body: ListView(
         children: [
-          _RiflePlaceholder(),
+          _RiflePlaceholder(imageId: widget.initial?.image),
           // ── Name ────────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -238,6 +239,10 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
 // ── Widgets ───────────────────────────────────────────────────────────────────
 
 class _RiflePlaceholder extends StatelessWidget {
+  const _RiflePlaceholder({this.imageId});
+
+  final String? imageId;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -245,25 +250,8 @@ class _RiflePlaceholder extends StatelessWidget {
       child: SizedBox(
         height: 160,
         child: Card(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  IconDef.image,
-                  size: 40,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Rifle image',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          clipBehavior: Clip.antiAlias,
+          child: WeaponSvgView(imageId: imageId, fit: BoxFit.contain),
         ),
       ),
     );

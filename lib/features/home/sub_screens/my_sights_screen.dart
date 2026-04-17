@@ -91,6 +91,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
                   body: CollectionSightTileBody(sight: item),
                   item: SightCollectionItem(ref: item),
                   isSelected: item.id == selectedId,
+                  searchText: [item.name, item.vendor ?? ''].join(' '),
                   onSelect: () async {
                     final pid = profileId ?? profile?.id.toString();
                     if (pid == null) return;

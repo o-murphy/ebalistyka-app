@@ -1,6 +1,7 @@
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,14 +24,8 @@ class CollectionWeaponTileBody extends ConsumerWidget {
       borderRadius: BorderRadius.circular(12),
       child: Stack(
         children: [
-          // Background image placeholder
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: const Center(
-              child: Icon(IconDef.image, size: 50, color: Colors.grey),
-            ),
-          ),
+          // Background weapon image
+          Positioned.fill(child: WeaponSvgView(imageId: weapon.image)),
           // Content
           Padding(
             padding: const EdgeInsets.all(12),
