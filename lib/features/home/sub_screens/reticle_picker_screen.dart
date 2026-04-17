@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
+import 'package:ebalistyka/core/utils/svg_color_utils.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 
 class ReticlePickerScreen extends ConsumerWidget {
@@ -101,10 +102,7 @@ class _ReticleTile extends ConsumerWidget {
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (_, _) => const SizedBox.shrink(),
-                    data: (svg) => _buildPreview(
-                      _clipViewMils(_resolveColors(svg, cs)),
-                      cs,
-                    ),
+                    data: (svg) => _buildPreview(_prepareSvg(svg, cs), cs),
                   ),
                 ),
               ],
@@ -130,40 +128,32 @@ class _ReticleTile extends ConsumerWidget {
     ],
   );
 
-  static String _clipViewMils(String svg) {
-    double attr(String name) {
-      final m = RegExp('$name="([^"]+)"').firstMatch(svg);
-      return m != null
-          ? double.tryParse(m.group(1)!) ?? _kViewMils
-          : _kViewMils;
-    }
-
-    final milW = attr('data-mil-width');
-    final milH = attr('data-mil-height');
-    if (milW <= _kViewMils && milH <= _kViewMils) return svg;
-    return svg.replaceFirst(
-      RegExp(r'viewBox="[^"]+"'),
-      'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
+  static String _prepareSvg(String svg, ColorScheme cs) {
+    var result = resolveSvgColorRoles(svg, cs);
+    // Remove pixel width/height — prevents flutter_svg from rasterising at
+    // the full generation size (e.g. 4800×4800 px). viewBox drives layout.
+    result = result.replaceFirst(RegExp(r'\bwidth="[^"]*"\s*'), '');
+    result = result.replaceFirst(RegExp(r'\bheight="[^"]*"\s*'), '');
+    // Strip <metadata> that flutter_svg cannot handle.
+    result = result.replaceAll(RegExp(r'<metadata\b[^/]*/>', dotAll: true), '');
+    result = result.replaceAll(
+      RegExp(r'<metadata\b[^>]*>.*?</metadata>', dotAll: true),
+      '',
     );
-  }
-
-  static String _resolveColors(String svg, ColorScheme cs) {
-    final roles = {
-      'onSurface': cs.onSurface,
-      'onBackground': cs.onSurface,
-      'primary': cs.primary,
-      'secondary': cs.secondary,
-      'error': cs.error,
-    };
-    var result = svg;
-    for (final e in roles.entries) {
-      result = result.replaceAll('"${e.key}"', '"${_hex(e.value)}"');
+    // Crop viewBox to _kViewMils if the reticle canvas is larger.
+    final milW = _attr(result, 'data-mil-width');
+    final milH = _attr(result, 'data-mil-height');
+    if (milW > _kViewMils || milH > _kViewMils) {
+      result = result.replaceFirst(
+        RegExp(r'viewBox="[^"]+"'),
+        'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
+      );
     }
     return result;
   }
 
-  static String _hex(Color c) {
-    final v = c.toARGB32();
-    return '#${(v & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+  static double _attr(String svg, String name) {
+    final m = RegExp('$name="([^"]+)"').firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? _kViewMils : _kViewMils;
   }
 }
