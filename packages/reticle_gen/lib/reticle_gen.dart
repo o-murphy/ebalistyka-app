@@ -97,9 +97,6 @@ class MilReticleSVGCanvas {
   final Map<String, int> _idCounters = {};
   String? _idHint;
 
-  XmlElement? _defsEl;
-  final Map<String, String> _dotPatternCache = {};
-
   /// Correction from em-square to cap-height for typical sans-serif fonts.
   /// Lets callers specify [fontSize] as the visible height of capital letters
   /// rather than the SVG em-square unit.
@@ -134,52 +131,6 @@ class MilReticleSVGCanvas {
 
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
-
-  XmlElement get _defs {
-    if (_defsEl == null) {
-      _defsEl = XmlElement(XmlName('defs'));
-      _svgElement.children.insert(0, _defsEl!);
-    }
-    return _defsEl!;
-  }
-
-  String _dotPatternId(
-    double spacing,
-    double r,
-    String fill,
-    String? stroke,
-    double? strokeWidth,
-  ) {
-    final key = '$spacing/$r/$fill/$stroke/$strokeWidth';
-    return _dotPatternCache.putIfAbsent(key, () {
-      final id = nextId('dotpat');
-      _defs.children.add(
-        XmlElement(
-          XmlName('pattern'),
-          [
-            XmlAttribute(XmlName('id'), id),
-            XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
-            XmlAttribute(XmlName('x'), _fmtNum(-r)),
-            XmlAttribute(XmlName('y'), _fmtNum(-r)),
-            XmlAttribute(XmlName('width'), _fmtNum(spacing)),
-            XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
-          ],
-          [
-            XmlElement(XmlName('circle'), [
-              XmlAttribute(XmlName('cx'), _fmtNum(r)),
-              XmlAttribute(XmlName('cy'), _fmtNum(r)),
-              XmlAttribute(XmlName('r'), _fmtNum(r)),
-              XmlAttribute(XmlName('fill'), fill),
-              if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-              if (strokeWidth != null)
-                XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
-            ]),
-          ],
-        ),
-      );
-      return id;
-    });
-  }
 
   XmlElement generate(SVGDrawerInterface drawer) {
     final double minX = -milWidth / 2;
@@ -552,22 +503,15 @@ class MilReticleSVGCanvas {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
-    final patId = _dotPatternId(spacing, r, fill, stroke, strokeWidth);
-    final angleDeg = math.atan2(dy, dx) * 180 / math.pi;
-    _target.children.add(
-      XmlElement(XmlName('rect'), [
-        XmlAttribute(XmlName('id'), nextId('dotline')),
-        XmlAttribute(XmlName('x'), _fmtNum(-r)),
-        XmlAttribute(XmlName('y'), _fmtNum(-r)),
-        XmlAttribute(XmlName('width'), _fmtNum(length + 2 * r)),
-        XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
-        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
-        XmlAttribute(
-          XmlName('transform'),
-          'translate(${_fmtNum(x1)},${_fmtNum(y1)}) rotate(${_fmtNum(angleDeg)})',
-        ),
-      ]),
-    );
+    final ux = dx / length;
+    final uy = dy / length;
+    final pb = PathBuilder();
+    for (var t = 0.0; t <= length + 1e-9; t += spacing) {
+      pb.dotCircle(x1 + t * ux, y1 + t * uy, r);
+    }
+    if (!pb.isEmpty) {
+      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   void hDotLine(
@@ -626,41 +570,15 @@ class MilReticleSVGCanvas {
   }) {
     if (xStep <= 0 || yStep <= 0) return;
     _hint('dotgrid');
-    final patId = nextId('dotgridpat');
-    _defs.children.add(
-      XmlElement(
-        XmlName('pattern'),
-        [
-          XmlAttribute(XmlName('id'), patId),
-          XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
-          XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
-          XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
-          XmlAttribute(XmlName('width'), _fmtNum(xStep)),
-          XmlAttribute(XmlName('height'), _fmtNum(yStep)),
-        ],
-        [
-          XmlElement(XmlName('circle'), [
-            XmlAttribute(XmlName('cx'), _fmtNum(r)),
-            XmlAttribute(XmlName('cy'), _fmtNum(r)),
-            XmlAttribute(XmlName('r'), _fmtNum(r)),
-            XmlAttribute(XmlName('fill'), fill),
-            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-            if (strokeWidth != null)
-              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
-          ]),
-        ],
-      ),
-    );
-    _target.children.add(
-      XmlElement(XmlName('rect'), [
-        XmlAttribute(XmlName('id'), nextId('dotgrid')),
-        XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
-        XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
-        XmlAttribute(XmlName('width'), _fmtNum(x2 - x1 + 2 * r)),
-        XmlAttribute(XmlName('height'), _fmtNum(y2 - y1 + 2 * r)),
-        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
-      ]),
-    );
+    final pb = PathBuilder();
+    for (double y = y1; y <= y2 + 1e-9; y += yStep) {
+      for (double x = x1; x <= x2 + 1e-9; x += xStep) {
+        pb.dotCircle(x, y, r);
+      }
+    }
+    if (!pb.isEmpty) {
+      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+    }
   }
 
   void repeat(
