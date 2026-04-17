@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="-10 -10 20 20" data-mil-width="20" data-mil-height="20" data-factor="100" shape-rendering="crispEdges">
+  <clipPath id="clip0">
+    <circle id="circle-0" cx="0" cy="0" r="10" fill="white"/>
+  </clipPath>
+  <g id="clipgroup-0" clip-path="url(#clip0)">
+    <rect id="fill-0" x="-10" y="-10" width="20" height="20" fill="white"/>
+    <path id="cross-0" d="M -0.5 0 L 0.5 0 M 0 -0.5 L 0 0.5" fill="none" stroke="red" stroke-width="0.036"/>
+    <line id="hline-0" x1="-0.5" y1="1" x2="0.5" y2="1" stroke="red" stroke-width="0.036"/>
+    <line id="hline-1" x1="-0.5" y1="-1" x2="0.5" y2="-1" stroke="red" stroke-width="0.036"/>
+    <line id="hline-2" x1="-1" y1="5" x2="1" y2="5" stroke="red" stroke-width="0.036"/>
+    <line id="hline-3" x1="-0.5" y1="-5" x2="0.5" y2="-5" stroke="red" stroke-width="0.036"/>
+    <path id="vruler-0" d="M -0.4 -5 L 0.4 -5 M -0.4 -4 L 0.4 -4 M -0.4 -3 L 0.4 -3 M -0.4 -2 L 0.4 -2" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="vruler-1" d="M -0.2 -3.5 L 0.2 -3.5 M -0.2 -2.5 L 0.2 -2.5 M -0.2 -1.5 L 0.2 -1.5" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="vruler-2" d="M -0.4 2 L 0.4 2 M -0.4 3 L 0.4 3 M -0.4 4 L 0.4 4 M -0.4 5 L 0.4 5 M -0.4 6 L 0.4 6 M -0.4 7 L 0.4 7 M -0.4 8 L 0.4 8 M -0.4 9 L 0.4 9 M -0.4 10 L 0.4 10" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="vruler-3" d="M -0.2 1.5 L 0.2 1.5 M -0.2 2.5 L 0.2 2.5 M -0.2 3.5 L 0.2 3.5 M -0.2 4.5 L 0.2 4.5 M -0.2 5.5 L 0.2 5.5 M -0.2 6.5 L 0.2 6.5 M -0.2 7.5 L 0.2 7.5 M -0.2 8.5 L 0.2 8.5 M -0.2 9.5 L 0.2 9.5" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-0" d="M -5 -0.5 L -5 0.5 M 5 -0.5 L 5 0.5" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-1" d="M -1 -0.5 L -1 0.5 M 1 -0.5 L 1 0.5" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-2" d="M -5 0 L -5 0.4 M -4 0 L -4 0.4 M -3 0 L -3 0.4 M -2 0 L -2 0.4 M -1 0 L -1 0.4" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-3" d="M 5 0 L 5 0.4 M 4 0 L 4 0.4 M 3 0 L 3 0.4 M 2 0 L 2 0.4 M 1 0 L 1 0.4" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-4" d="M -4 0 L -4 0.2 M -3.5 0 L -3.5 0.2 M -3 0 L -3 0.2 M -2.5 0 L -2.5 0.2 M -2 0 L -2 0.2 M -1.5 0 L -1.5 0.2 M -1 0 L -1 0.2" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-5" d="M 4 0 L 4 0.2 M 3.5 0 L 3.5 0.2 M 3 0 L 3 0.2 M 2.5 0 L 2.5 0.2 M 2 0 L 2 0.2 M 1.5 0 L 1.5 0.2 M 1 0 L 1 0.2" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-6" d="M -5 0 L -5 0.2 M -4.8 0 L -4.8 0.2 M -4.6 0 L -4.6 0.2 M -4.4 0 L -4.4 0.2 M -4.2 0 L -4.2 0.2 M -4 0 L -4 0.2" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hruler-7" d="M 5 0 L 5 0.2 M 4.8 0 L 4.8 0.2 M 4.6 0 L 4.6 0.2 M 4.4 0 L 4.4 0.2 M 4.2 0 L 4.2 0.2 M 4 0 L 4 0.2" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="vdashline-0" d="M 0 1.3 L 0 1.7 M 0 1.8 L 0 2.2 M 0 2.3 L 0 2.7 M 0 2.8 L 0 3.2 M 0 3.3 L 0 3.7 M 0 3.8 L 0 4.2 M 0 4.3 L 0 4.7 M 0 4.8 L 0 5.2 M 0 5.3 L 0 5.7 M 0 5.8 L 0 6.2 M 0 6.3 L 0 6.7 M 0 6.8 L 0 7.2 M 0 7.3 L 0 7.7 M 0 7.8 L 0 8.2 M 0 8.3 L 0 8.7 M 0 8.8 L 0 9.2 M 0 9.3 L 0 9.7 M 0 9.8 L 0 10" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="vdashline-1" d="M 0 -1.3 L 0 -1.7 M 0 -1.8 L 0 -2.2 M 0 -2.3 L 0 -2.7 M 0 -2.8 L 0 -3.2 M 0 -3.3 L 0 -3.7 M 0 -3.8 L 0 -4.2 M 0 -4.3 L 0 -4.7 M 0 -4.8 L 0 -5" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hdashline-0" d="M 1.3 0 L 1.7 0 M 1.8 0 L 2.2 0 M 2.3 0 L 2.7 0 M 2.8 0 L 3.2 0 M 3.3 0 L 3.7 0 M 3.8 0 L 4 0" fill="none" stroke="red" stroke-width="0.036"/>
+    <path id="hdashline-1" d="M -1.3 0 L -1.7 0 M -1.8 0 L -2.2 0 M -2.3 0 L -2.7 0 M -2.8 0 L -3.2 0 M -3.3 0 L -3.7 0 M -3.8 0 L -4 0" fill="none" stroke="red" stroke-width="0.036"/>
+    <line id="hline-4" x1="-5" y1="0" x2="-4" y2="0" stroke="red" stroke-width="0.036"/>
+    <line id="hline-5" x1="5" y1="0" x2="4" y2="0" stroke="red" stroke-width="0.036"/>
+    <line id="hline-6" x1="0.6" y1="0" x2="1.2" y2="0" stroke="red" stroke-width="0.036"/>
+    <line id="hline-7" x1="-0.6" y1="0" x2="-1.2" y2="0" stroke="red" stroke-width="0.036"/>
+    <line id="vline-0" x1="0" y1="0.6" x2="0" y2="1.2" stroke="red" stroke-width="0.036"/>
+    <line id="vline-1" x1="0" y1="-0.6" x2="0" y2="-1.2" stroke="red" stroke-width="0.036"/>
+    <text id="text-0" x="-4" y="-0.72" fill="black" font-size="0.389" text-anchor="middle">4</text>
+    <text id="text-1" x="-2" y="-0.72" fill="black" font-size="0.389" text-anchor="middle">2</text>
+    <text id="text-2" x="2" y="-0.72" fill="black" font-size="0.389" text-anchor="middle">2</text>
+    <text id="text-3" x="4" y="-0.72" fill="black" font-size="0.389" text-anchor="middle">4</text>
+    <text id="text-4" x="-1" y="2.098" fill="black" font-size="0.389" text-anchor="middle">2</text>
+    <text id="text-5" x="-1" y="4.098" fill="black" font-size="0.389" text-anchor="middle">4</text>
+    <text id="text-6" x="-1" y="6.098" fill="black" font-size="0.389" text-anchor="middle">6</text>
+    <text id="text-7" x="-1" y="8.098" fill="black" font-size="0.389" text-anchor="middle">8</text>
+    <text id="text-8" x="-1" y="10.098" fill="black" font-size="0.389" text-anchor="middle">10</text>
+    <line id="vline-2" x1="3.5" y1="1" x2="3.5" y2="3.3" stroke="black" stroke-width="0.029"/>
+    <line id="hline-8" x1="2.5" y1="3" x2="4.5" y2="3" stroke="black" stroke-width="0.029"/>
+    <path id="vruler-4" d="M 3.1 1 L 3.9 1 M 3.1 2 L 3.9 2" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="vruler-5" d="M 3.3 1 L 3.5 1 M 3.3 1.2 L 3.5 1.2 M 3.3 1.4 L 3.5 1.4 M 3.3 1.6 L 3.5 1.6 M 3.3 1.8 L 3.5 1.8 M 3.3 2 L 3.5 2 M 3.3 2.2 L 3.5 2.2 M 3.3 2.4 L 3.5 2.4 M 3.3 2.6 L 3.5 2.6" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="vruler-6" d="M 3.5 1.1 L 3.7 1.1 M 3.5 1.3 L 3.7 1.3 M 3.5 1.5 L 3.7 1.5 M 3.5 1.7 L 3.7 1.7 M 3.5 1.9 L 3.7 1.9 M 3.5 2.1 L 3.7 2.1 M 3.5 2.3 L 3.7 2.3 M 3.5 2.5 L 3.7 2.5 M 3.5 2.7 L 3.7 2.7" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="hruler-8" d="M 2.5 2.6 L 2.5 3.4 M 4.5 2.6 L 4.5 3.4" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="hruler-9" d="M 2.6 3 L 2.6 3.2 M 2.8 3 L 2.8 3.2 M 3 3 L 3 3.2 M 3.2 3 L 3.2 3.2" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="hruler-10" d="M 3.8 3 L 3.8 3.2 M 4 3 L 4 3.2 M 4.2 3 L 4.2 3.2 M 4.4 3 L 4.4 3.2" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="hruler-11" d="M 2.7 2.8 L 2.7 3 M 2.9 2.8 L 2.9 3 M 3.1 2.8 L 3.1 3" fill="none" stroke="black" stroke-width="0.029"/>
+    <path id="hruler-12" d="M 3.9 2.8 L 3.9 3 M 4.1 2.8 L 4.1 3 M 4.3 2.8 L 4.3 3" fill="none" stroke="black" stroke-width="0.029"/>
+    <line id="hline-9" x1="3.5" y1="2.8" x2="3.4" y2="2.8" stroke="black" stroke-width="0.029"/>
+    <line id="hline-10" x1="3.5" y1="2.9" x2="3.6" y2="2.9" stroke="black" stroke-width="0.029"/>
+    <line id="vline-3" x1="3.3" y1="2.9" x2="3.3" y2="3" stroke="black" stroke-width="0.029"/>
+    <line id="vline-4" x1="3.4" y1="3.1" x2="3.4" y2="3" stroke="black" stroke-width="0.029"/>
+    <line id="vline-5" x1="3.6" y1="3.1" x2="3.6" y2="3" stroke="black" stroke-width="0.029"/>
+    <line id="vline-6" x1="3.7" y1="2.9" x2="3.7" y2="3" stroke="black" stroke-width="0.029"/>
+    <line id="hline-11" x1="30" y1="0" x2="5.2" y2="0" stroke="black" stroke-width="0.036"/>
+    <line id="hline-12" x1="-30" y1="0" x2="-5.2" y2="0" stroke="black" stroke-width="0.036"/>
+    <line id="hline-13" x1="30" y1="0.25" x2="6" y2="0.25" stroke="black" stroke-width="0.1"/>
+    <line id="hline-14" x1="30" y1="-0.25" x2="6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+    <line id="hline-15" x1="-30" y1="0.25" x2="-6" y2="0.25" stroke="black" stroke-width="0.1"/>
+    <line id="hline-16" x1="-30" y1="-0.25" x2="-6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+    <line id="line-0" x1="5.2" y1="0" x2="6" y2="0.25" stroke="black" stroke-width="0.1"/>
+    <line id="line-1" x1="5.2" y1="0" x2="6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+    <line id="line-2" x1="-5.2" y1="0" x2="-6" y2="0.25" stroke="black" stroke-width="0.1"/>
+    <line id="line-3" x1="-5.2" y1="0" x2="-6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+  </g>
+</svg>
