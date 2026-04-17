@@ -143,8 +143,8 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
         final double minI = I - 0.2;
         final double minHalfI = halfI - 0.1;
         c
-          ..line(-15, 0, -10.2, 0, color, A)
-          ..line(15, 0, 10.2, 0, color, A)
+          ..hLine(0, -15, -10.2, color, A)
+          ..hLine(0, 15, 10.2, color, A)
           ..line(11, -minHalfI, 10.2, 0, color, A)
           ..line(11, minHalfI, 10.2, 0, color, A)
           ..line(-11, -minHalfI, -10.2, 0, color, A)

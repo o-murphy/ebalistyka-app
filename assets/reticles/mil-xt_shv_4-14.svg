@@ -27,12 +27,12 @@
     <line id="hline-0" x1="0.1" y1="0" x2="10" y2="0" stroke="red" stroke-width="0.044"/>
     <line id="hline-1" x1="-0.1" y1="0" x2="-10" y2="0" stroke="red" stroke-width="0.044"/>
     <line id="vline-0" x1="0" y1="-0.1" x2="0" y2="-5" stroke="red" stroke-width="0.044"/>
-    <line id="line-0" x1="-15" y1="0" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
-    <line id="line-1" x1="15" y1="0" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
-    <line id="line-2" x1="11" y1="-0.2" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
-    <line id="line-3" x1="11" y1="0.2" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
-    <line id="line-4" x1="-11" y1="-0.2" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
-    <line id="line-5" x1="-11" y1="0.2" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="hline-2" x1="-15" y1="0" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="hline-3" x1="15" y1="0" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="line-0" x1="11" y1="-0.2" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="line-1" x1="11" y1="0.2" x2="10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="line-2" x1="-11" y1="-0.2" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
+    <line id="line-3" x1="-11" y1="0.2" x2="-10.2" y2="0" stroke="black" stroke-width="0.044"/>
     <rect id="rect-0" x="-15" y="-0.2" width="4" height="0.4" fill="transparent" stroke="black" stroke-width="0.044"/>
     <rect id="rect-1" x="11" y="-0.2" width="4" height="0.4" fill="transparent" stroke="black" stroke-width="0.044"/>
     <rect id="rect-2" x="-24" y="-0.2" width="9" height="0.4" fill="black"/>
@@ -82,8 +82,8 @@
     <path id="vruler-8" d="M -0.2 -4.2 L 0 -4.2 M -0.2 -3.2 L 0 -3.2 M -0.2 -2.2 L 0 -2.2 M -0.2 -1.2 L 0 -1.2" fill="none" stroke="red" stroke-width="0.044"/>
     <path id="vruler-9" d="M 0.1 1 L 0.2 1 M 0.1 2 L 0.2 2 M 0.1 3 L 0.2 3 M 0.1 4 L 0.2 4 M 0.1 5 L 0.2 5 M 0.1 6 L 0.2 6 M 0.1 7 L 0.2 7 M 0.1 8 L 0.2 8 M 0.1 9 L 0.2 9 M 0.1 10 L 0.2 10 M 0.1 11 L 0.2 11 M 0.1 12 L 0.2 12 M 0.1 13 L 0.2 13 M 0.1 14 L 0.2 14 M 0.1 15 L 0.2 15 M 0.1 16 L 0.2 16 M 0.1 17 L 0.2 17 M 0.1 18 L 0.2 18 M 0.1 19 L 0.2 19 M 0.1 20 L 0.2 20 M 0.1 21 L 0.2 21 M 0.1 22 L 0.2 22 M 0.1 23 L 0.2 23 M 0.1 24 L 0.2 24" fill="none" stroke="red" stroke-width="0.044"/>
     <path id="vruler-10" d="M -0.2 1 L -0.1 1 M -0.2 2 L -0.1 2 M -0.2 3 L -0.1 3 M -0.2 4 L -0.1 4 M -0.2 5 L -0.1 5 M -0.2 6 L -0.1 6 M -0.2 7 L -0.1 7 M -0.2 8 L -0.1 8 M -0.2 9 L -0.1 9 M -0.2 10 L -0.1 10 M -0.2 11 L -0.1 11 M -0.2 12 L -0.1 12 M -0.2 13 L -0.1 13 M -0.2 14 L -0.1 14 M -0.2 15 L -0.1 15 M -0.2 16 L -0.1 16 M -0.2 17 L -0.1 17 M -0.2 18 L -0.1 18 M -0.2 19 L -0.1 19 M -0.2 20 L -0.1 20 M -0.2 21 L -0.1 21 M -0.2 22 L -0.1 22 M -0.2 23 L -0.1 23 M -0.2 24 L -0.1 24" fill="none" stroke="red" stroke-width="0.044"/>
-    <line id="hline-2" x1="0.1" y1="0.2" x2="-0.1" y2="0.2" stroke="red" stroke-width="0.044"/>
-    <line id="hline-3" x1="0.1" y1="-0.2" x2="-0.1" y2="-0.2" stroke="red" stroke-width="0.044"/>
+    <line id="hline-4" x1="0.1" y1="0.2" x2="-0.1" y2="0.2" stroke="red" stroke-width="0.044"/>
+    <line id="hline-5" x1="0.1" y1="-0.2" x2="-0.1" y2="-0.2" stroke="red" stroke-width="0.044"/>
     <rect id="dotline-1" x="-0.025" y="-0.025" width="24.05" height="0.05" fill="url(#dotline-0)" transform="translate(0,0) rotate(90)"/>
     <path id="vdashline-0" d="M 0 0.1 L 0 0.9 M 0 1.1 L 0 1.9 M 0 2.1 L 0 2.9 M 0 3.1 L 0 3.9 M 0 4.1 L 0 4.9 M 0 5.1 L 0 5.9 M 0 6.1 L 0 6.9 M 0 7.1 L 0 7.9 M 0 8.1 L 0 8.9 M 0 9.1 L 0 9.9 M 0 10.1 L 0 10.9 M 0 11.1 L 0 11.9 M 0 12.1 L 0 12.9 M 0 13.1 L 0 13.9 M 0 14.1 L 0 14.9 M 0 15.1 L 0 15.9 M 0 16.1 L 0 16.9 M 0 17.1 L 0 17.9 M 0 18.1 L 0 18.9 M 0 19.1 L 0 19.9 M 0 20.1 L 0 20.9 M 0 21.1 L 0 21.9 M 0 22.1 L 0 22.9 M 0 23.1 L 0 23.9" fill="none" stroke="red" stroke-width="0.044"/>
     <text id="text-20" x="-0.7" y="-4.86" fill="black" font-size="0.278" text-anchor="end">5</text>
