@@ -88,56 +88,6 @@
     <circle id="dot-23" cx="0.0" cy="23.0" r="0.025" fill="red"/>
     <circle id="dot-24" cx="0.0" cy="24.0" r="0.025" fill="red"/>
     <path id="vdashline-0" d="M 0 0.1 L 0 0.9 M 0 1.1 L 0 1.9000000000000001 M 0 2.1 L 0 2.9 M 0 3.1 L 0 3.9 M 0 4.1 L 0 4.8999999999999995 M 0 5.1 L 0 5.8999999999999995 M 0 6.1 L 0 6.8999999999999995 M 0 7.1 L 0 7.8999999999999995 M 0 8.1 L 0 8.9 M 0 9.1 L 0 9.9 M 0 10.1 L 0 10.9 M 0 11.1 L 0 11.9 M 0 12.1 L 0 12.9 M 0 13.1 L 0 13.9 M 0 14.1 L 0 14.9 M 0 15.1 L 0 15.9 M 0 16.1 L 0 16.900000000000002 M 0 17.1 L 0 17.900000000000002 M 0 18.1 L 0 18.900000000000002 M 0 19.1 L 0 19.900000000000002 M 0 20.1 L 0 20.900000000000002 M 0 21.1 L 0 21.900000000000002 M 0 22.1 L 0 22.900000000000002 M 0 23.1 L 0 23.900000000000002" fill="none" stroke="red" stroke-width="0.041"/>
-    <line id="line-6" x1="-0.1" y1="0.0" x2="-0.2" y2="0.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-7" x1="0.1" y1="0.0" x2="0.2" y2="0.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-8" x1="-0.1" y1="1.0" x2="-0.2" y2="1.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-9" x1="0.1" y1="1.0" x2="0.2" y2="1.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-10" x1="-0.1" y1="2.0" x2="-0.2" y2="2.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-11" x1="0.1" y1="2.0" x2="0.2" y2="2.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-12" x1="-0.1" y1="3.0" x2="-0.2" y2="3.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-13" x1="0.1" y1="3.0" x2="0.2" y2="3.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-14" x1="-0.1" y1="4.0" x2="-0.2" y2="4.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-15" x1="0.1" y1="4.0" x2="0.2" y2="4.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-16" x1="-0.1" y1="5.0" x2="-0.2" y2="5.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-17" x1="0.1" y1="5.0" x2="0.2" y2="5.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-18" x1="-0.1" y1="6.0" x2="-0.2" y2="6.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-19" x1="0.1" y1="6.0" x2="0.2" y2="6.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-20" x1="-0.1" y1="7.0" x2="-0.2" y2="7.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-21" x1="0.1" y1="7.0" x2="0.2" y2="7.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-22" x1="-0.1" y1="8.0" x2="-0.2" y2="8.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-23" x1="0.1" y1="8.0" x2="0.2" y2="8.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-24" x1="-0.1" y1="9.0" x2="-0.2" y2="9.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-25" x1="0.1" y1="9.0" x2="0.2" y2="9.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-26" x1="-0.1" y1="10.0" x2="-0.2" y2="10.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-27" x1="0.1" y1="10.0" x2="0.2" y2="10.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-28" x1="-0.1" y1="11.0" x2="-0.2" y2="11.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-29" x1="0.1" y1="11.0" x2="0.2" y2="11.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-30" x1="-0.1" y1="12.0" x2="-0.2" y2="12.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-31" x1="0.1" y1="12.0" x2="0.2" y2="12.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-32" x1="-0.1" y1="13.0" x2="-0.2" y2="13.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-33" x1="0.1" y1="13.0" x2="0.2" y2="13.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-34" x1="-0.1" y1="14.0" x2="-0.2" y2="14.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-35" x1="0.1" y1="14.0" x2="0.2" y2="14.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-36" x1="-0.1" y1="15.0" x2="-0.2" y2="15.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-37" x1="0.1" y1="15.0" x2="0.2" y2="15.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-38" x1="-0.1" y1="16.0" x2="-0.2" y2="16.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-39" x1="0.1" y1="16.0" x2="0.2" y2="16.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-40" x1="-0.1" y1="17.0" x2="-0.2" y2="17.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-41" x1="0.1" y1="17.0" x2="0.2" y2="17.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-42" x1="-0.1" y1="18.0" x2="-0.2" y2="18.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-43" x1="0.1" y1="18.0" x2="0.2" y2="18.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-44" x1="-0.1" y1="19.0" x2="-0.2" y2="19.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-45" x1="0.1" y1="19.0" x2="0.2" y2="19.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-46" x1="-0.1" y1="20.0" x2="-0.2" y2="20.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-47" x1="0.1" y1="20.0" x2="0.2" y2="20.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-48" x1="-0.1" y1="21.0" x2="-0.2" y2="21.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-49" x1="0.1" y1="21.0" x2="0.2" y2="21.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-50" x1="-0.1" y1="22.0" x2="-0.2" y2="22.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-51" x1="0.1" y1="22.0" x2="0.2" y2="22.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-52" x1="-0.1" y1="23.0" x2="-0.2" y2="23.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-53" x1="0.1" y1="23.0" x2="0.2" y2="23.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-54" x1="-0.1" y1="24.0" x2="-0.2" y2="24.0" stroke="red" stroke-width="0.041"/>
-    <line id="line-55" x1="0.1" y1="24.0" x2="0.2" y2="24.0" stroke="red" stroke-width="0.041"/>
     <text id="text-20" x="-0.7" y="-4.825" fill="black" font-size="0.3472222222222222" text-anchor="end">5</text>
     <text id="text-21" x="-0.7" y="-3.825" fill="black" font-size="0.3472222222222222" text-anchor="end">4</text>
     <text id="text-22" x="-0.7" y="-2.825" fill="black" font-size="0.3472222222222222" text-anchor="end">3</text>
@@ -1637,5 +1587,4 @@
     <circle id="circle-1445" cx="4.600000000000004" cy="24.0" r="0.025" fill="black"/>
     <circle id="circle-1446" cx="4.800000000000004" cy="24.0" r="0.025" fill="black"/>
   </g>
-  <circle id="circle-1447" cx="0.0" cy="0.0" r="24.0" fill="transparent" stroke="black" stroke-width="0.041"/>
 </svg>
