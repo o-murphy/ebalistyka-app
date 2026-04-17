@@ -46,12 +46,6 @@
       <line id="line-1" x1="21" y1="0" x2="23" y2="-0.859" stroke="black" stroke-width="0.34"/>
       <line id="line-2" x1="-21" y1="0" x2="-23" y2="0.859" stroke="black" stroke-width="0.34"/>
       <line id="line-3" x1="-21" y1="0" x2="-23" y2="-0.859" stroke="black" stroke-width="0.34"/>
-      <line id="vline-6" x1="0" y1="35" x2="0" y2="21" stroke="black" stroke-width="1.05"/>
-      <line id="vline-7" x1="0.859" y1="35" x2="0.859" y2="23" stroke="black" stroke-width="0.34"/>
-      <line id="vline-8" x1="-0.859" y1="35" x2="-0.859" y2="23" stroke="black" stroke-width="0.34"/>
-      <line id="line-4" x1="0" y1="21" x2="0.859" y2="23" stroke="black" stroke-width="0.34"/>
-      <line id="line-5" x1="0" y1="21" x2="-0.859" y2="23" stroke="black" stroke-width="0.34"/>
-      <rect id="rect-2" x="-0.859" y="24" width="1.719" height="19" fill="black"/>
     </g>
   </g>
 </svg>
