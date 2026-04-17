@@ -14,7 +14,7 @@ extension SvgExport on XmlElement {
 ///
 /// Used with [SVGCanvas.batchLines] and the ruler/dash helpers.
 /// Coordinates must be in the canvas's native coordinate space
-/// (pixels for [SVGCanvas], mils for [MilReticleCanvas]).
+/// (pixels for [SVGCanvas], mils for [MilReticleSVGCanvas]).
 class PathBuilder {
   final StringBuffer _buffer = StringBuffer();
 
@@ -42,71 +42,71 @@ class PathBuilder {
       v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
 }
 
-/// Інтерфейс для малювання на канвасі
-abstract interface class CanvasInterface {
-  double get width;
-  double get height;
+// /// Інтерфейс для малювання на канвасі
+// abstract interface class CanvasInterface {
+//   double get width;
+//   double get height;
 
-  /// Малює лінію
-  void line(
-    double x1,
-    double y1,
-    double x2,
-    double y2,
-    String stroke,
-    double strokeWidth,
-  );
+//   /// Малює лінію
+//   void line(
+//     double x1,
+//     double y1,
+//     double x2,
+//     double y2,
+//     String stroke,
+//     double strokeWidth,
+//   );
 
-  /// Малює прямокутник
-  void rect(
-    double x,
-    double y,
-    double w,
-    double h,
-    String fill, {
-    String? stroke,
-    double? strokeWidth,
-  });
+//   /// Малює прямокутник
+//   void rect(
+//     double x,
+//     double y,
+//     double w,
+//     double h,
+//     String fill, {
+//     String? stroke,
+//     double? strokeWidth,
+//   });
 
-  /// Заповнює весь канвас кольором
-  void fill(String fill);
+//   /// Заповнює весь канвас кольором
+//   void fill(String fill);
 
-  /// Малює коло
-  void circle(
-    double cx,
-    double cy,
-    double r,
-    String fill, {
-    String? stroke,
-    double? strokeWidth,
-  });
+//   /// Малює коло
+//   void circle(
+//     double cx,
+//     double cy,
+//     double r,
+//     String fill, {
+//     String? stroke,
+//     double? strokeWidth,
+//   });
 
-  /// Малює шлях
-  void path(String d, String fill, {String? stroke, double? strokeWidth});
+//   /// Малює шлях
+//   void path(String d, String fill, {String? stroke, double? strokeWidth});
 
-  /// Додає текст
-  void text(
-    String content,
-    double x,
-    double y,
-    String fill, {
-    double fontSize,
-    String textAnchor,
-  });
+//   /// Додає текст
+//   void text(
+//     String content,
+//     double x,
+//     double y,
+//     String fill, {
+//     double fontSize,
+//     String textAnchor,
+//   });
 
-  /// Малює [draw] з обрізанням по формі [shape].
-  /// Форма описується тими ж методами канвасу; колір fill/stroke ігнорується.
-  void clip({
-    required void Function(CanvasInterface canvas) shape,
-    required void Function(CanvasInterface canvas) draw,
-  });
+//   /// Малює [draw] з обрізанням по формі [shape].
+//   /// Форма описується тими ж методами канвасу; колір fill/stroke ігнорується.
+//   void clip({
+//     required void Function(CanvasInterface canvas) shape,
+//     required void Function(CanvasInterface canvas) draw,
+//   });
+// }
+
+abstract interface class SVGDrawerInterface {
+  void draw(SVGCanvas canvas);
 }
 
-abstract interface class DrawerInterface {
-  void draw(CanvasInterface canvas);
-}
-
-class SVGCanvas implements CanvasInterface {
+class SVGCanvas {
   final double width;
   final double height;
   late final XmlElement _svgElement;
@@ -149,7 +149,7 @@ class SVGCanvas implements CanvasInterface {
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
 
-  XmlElement generate(DrawerInterface drawer) {
+  XmlElement generate(SVGDrawerInterface drawer) {
     final double minX = -width / 2;
     final double minY = -height / 2;
 
@@ -166,7 +166,6 @@ class SVGCanvas implements CanvasInterface {
     return _svgElement;
   }
 
-  @override
   void line(
     double x1,
     double y1,
@@ -188,7 +187,6 @@ class SVGCanvas implements CanvasInterface {
     );
   }
 
-  @override
   void rect(
     double x,
     double y,
@@ -213,13 +211,11 @@ class SVGCanvas implements CanvasInterface {
     );
   }
 
-  @override
   void fill(String fill) {
     _hint('fill');
     rect(-width / 2, -height / 2, width, height, fill);
   }
 
-  @override
   void circle(
     double cx,
     double cy,
@@ -242,7 +238,6 @@ class SVGCanvas implements CanvasInterface {
     );
   }
 
-  @override
   void path(String d, String fill, {String? stroke, double? strokeWidth}) {
     _target.children.add(
       XmlElement(XmlName('path'), [
@@ -256,7 +251,6 @@ class SVGCanvas implements CanvasInterface {
     );
   }
 
-  @override
   void text(
     String content,
     double x,
@@ -283,10 +277,9 @@ class SVGCanvas implements CanvasInterface {
 
   /// Обрізає вміст [draw] по формі [shape].
   /// Генерує `<clipPath>` та `<g clip-path="url(#...)">` без використання `<defs>`.
-  @override
   void clip({
-    required void Function(CanvasInterface canvas) shape,
-    required void Function(CanvasInterface canvas) draw,
+    required void Function(SVGCanvas canvas) shape,
+    required void Function(SVGCanvas canvas) draw,
   }) {
     final clipId = 'clip${_clipCounter++}';
 
@@ -617,7 +610,7 @@ class SVGCanvas implements CanvasInterface {
   }
 }
 
-class CrossDrawer implements DrawerInterface {
+class CrossDrawer implements SVGDrawerInterface {
   final double size;
   final double strokeWidth;
   final String color;
@@ -625,7 +618,7 @@ class CrossDrawer implements DrawerInterface {
   CrossDrawer({this.size = 200, this.strokeWidth = 2, this.color = 'red'});
 
   @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     canvas
       // Горизонтальна лінія через центр
       ..line(-size / 2, 0, size / 2, 0, color, strokeWidth)
@@ -635,7 +628,7 @@ class CrossDrawer implements DrawerInterface {
 }
 
 // Хрест з колом (як приціл)
-class ScopeDrawer extends DrawerInterface {
+class ScopeDrawer extends SVGDrawerInterface {
   final double radius;
   final double lineLength;
   final double strokeWidth;
@@ -648,8 +641,7 @@ class ScopeDrawer extends DrawerInterface {
     this.color = '#00FF00',
   });
 
-  @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     final diagLength = radius * 0.7;
 
     canvas
@@ -691,13 +683,13 @@ class ScopeDrawer extends DrawerInterface {
 }
 
 // Комбінований drawer (можна комбінувати кілька)
-class CompositeDrawer extends DrawerInterface {
-  final List<DrawerInterface> drawers;
+class CompositeSVGDrawer extends SVGDrawerInterface {
+  final List<SVGDrawerInterface> drawers;
 
-  CompositeDrawer(this.drawers);
+  CompositeSVGDrawer(this.drawers);
 
   @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     for (var drawer in drawers) {
       drawer.draw(canvas);
     }
@@ -705,9 +697,9 @@ class CompositeDrawer extends DrawerInterface {
 }
 
 // Приклад кастомного drawer для малювання галактики
-class _CustomGalaxyDrawer extends DrawerInterface {
+class _CustomGalaxyDrawer extends SVGDrawerInterface {
   @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     final random = math.Random();
 
     // Малюємо фоновий градієнт (через rect)
@@ -753,6 +745,71 @@ class _CustomGalaxyDrawer extends DrawerInterface {
   }
 }
 
+/// A canvas whose coordinate system is in mils.
+///
+/// The SVG [viewBox] spans [−milWidth/2 .. milWidth/2] × [−milHeight/2 ..
+/// milHeight/2] in mil units, while the physical [width]/[height] attributes
+/// are in pixels ([milWidth] × [factor] and [milHeight] × [factor]).
+/// The SVG renderer handles all scaling — no per-element multiplication needed.
+class MilReticleSVGCanvas extends SVGCanvas {
+  final int factor;
+  final double milWidth;
+  final double milHeight;
+
+  /// Correction from em-square to cap-height for typical sans-serif fonts.
+  /// Lets callers specify [fontSize] as the visible height of capital letters
+  /// rather than the SVG em-square unit.
+  static const double _capHeightRatio = 0.72;
+
+  MilReticleSVGCanvas({
+    this.milWidth = 30.0,
+    this.milHeight = 30.0,
+    this.factor = 100,
+  }) : super(width: milWidth, height: milHeight);
+
+  @override
+  XmlElement generate(SVGDrawerInterface drawer) {
+    final el = super.generate(drawer);
+    // super.generate() sets width/height to milWidth/milHeight (user-unit values).
+    // Override them with the intended pixel dimensions.
+    el.setAttribute('width', (milWidth * factor).toString());
+    el.setAttribute('height', (milHeight * factor).toString());
+    el.setAttribute('data-mil-width', milWidth.toString());
+    el.setAttribute('data-mil-height', milHeight.toString());
+    el.setAttribute('data-factor', factor.toString());
+    el.setAttribute('shape-rendering', 'crispEdges');
+    return el;
+  }
+
+  // Only text() needs an override: apply cap-height ratio so callers can
+  // specify fontSize in "visible capital-letter height" mils rather than
+  // em-square mils. Coordinates and all other drawing methods work in mils
+  // natively via the viewBox — no factor multiplication required.
+  @override
+  void text(
+    String content,
+    double x,
+    double y,
+    String fill, {
+    double fontSize = 12,
+    String textAnchor = 'middle',
+  }) => super.text(
+    content,
+    x,
+    y,
+    fill,
+    fontSize: fontSize / _capHeightRatio,
+    textAnchor: textAnchor,
+  );
+
+  void drawAdjustment(double x, double y) {
+    this
+      ..line(x, 0, x, y, 'red', 0.05)
+      ..line(0, y, x, y, 'red', 0.05)
+      ..circle(x, y, 0.2, 'red');
+  }
+}
+
 void main() {
   // Приклад 1: Простий хрест
   print('Створюємо SVG з простим хрестом...');
@@ -771,7 +828,7 @@ void main() {
 
   // Приклад 3: Комбінований малюнок
   print('Створюємо SVG з комбінованим малюнком...');
-  final combinedDrawer = CompositeDrawer([
+  final combinedDrawer = CompositeSVGDrawer([
     ScopeDrawer(
       radius: 250,
       lineLength: 450,

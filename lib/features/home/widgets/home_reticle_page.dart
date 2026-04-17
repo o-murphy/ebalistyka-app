@@ -232,7 +232,8 @@ class _ReticleView extends ConsumerWidget {
     // All values in mils — the SVG viewBox is already in mils.
     const sw = 0.05;
     const r = 0.2;
-    final elements = '''
+    final elements =
+        '''
   <line x1="$windMil" y1="0" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
   <line x1="0" y1="$elevMil" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
   <circle cx="$windMil" cy="$elevMil" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';

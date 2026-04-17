@@ -1,4 +1,3 @@
-import 'package:reticle_gen/mil_reticle.dart';
 import 'package:reticle_gen/reticle_gen.dart';
 
 const double epsilon = 1e-6;
@@ -74,13 +73,13 @@ class MilXtVariant {
 
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
-class MilXtReticleDrawer extends MilReticleDrawer {
+class MilXtReticleDrawer implements SVGDrawerInterface {
   final MilXtVariant variant;
 
   MilXtReticleDrawer({this.variant = MilXtVariant.defaultVariant});
 
   @override
-  void draw(CanvasInterface canvas) {
+  void draw(SVGCanvas canvas) {
     final A = variant.a;
     final F = variant.f;
     final K = variant.k;
@@ -304,7 +303,7 @@ void main(List<String> args) {
   print('Generating "${variant.name}"  →  $outputPath');
   print('  A=${variant.a}  F=${variant.f}  K=${variant.k}');
 
-  MilReticleCanvas(milWidth: 48, milHeight: 48)
+  MilReticleSVGCanvas(milWidth: 48, milHeight: 48)
     ..generate(MilXtReticleDrawer(variant: variant))
     ..svg.export(outputPath);
 }
