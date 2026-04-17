@@ -123,15 +123,13 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
               j + fontSize * 0.35,
               color,
               fontSize: fontSize,
-            );
-          for (double i = -dotRange; i <= dotRange; i += E) {
-            if (i == 0) continue;
-            c.circle(i, j, M / 2, color);
-          }
-          for (double i = -dotRange; i <= dotRange; i += D) {
-            if (i >= -D - epsilon && i <= D + epsilon) continue;
-            c.circle(i, j, N / 2, color);
-          }
+            )
+            // Large dots every E, skip center (i==0):
+            ..hDotLine(j, -dotRange, -E, E, M / 2, color)
+            ..hDotLine(j, E, dotRange, E, M / 2, color)
+            // Small dots every D, skip |i|≤D:
+            ..hDotLine(j, -dotRange, -2 * D, D, N / 2, color)
+            ..hDotLine(j, 2 * D, dotRange, D, N / 2, color);
         }
 
         c
@@ -221,6 +219,8 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           [-5 + 2 * D, -1 + 2 * D, H, H / 2],
           [-5 + 3 * D, -1 + 3 * D, H, H / 2],
           [-5 + 4 * D, -2 + 4 * D, H, -H / 2],
+          [1, 24, J / 2, J / 2 * 1.5],
+          [1, 24, J / 2, -J / 2 * 1.5],
         ];
 
         for (final [start, end, tickWidth, x] in verticalRuler) {
@@ -234,9 +234,9 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           ..vDashLine(0, 0.1, 24, 0.8, 0.2, accentColor, A);
 
         for (double i = 0; i <= 24; i += E) {
-          c
-            ..line(-0.1, i, -J, i, accentColor, A)
-            ..line(0.1, i, J, i, accentColor, A);
+          // c
+          //   ..line(-0.1, i, -J, i, "blue", A)
+          //   ..line(0.1, i, J, i, "blue", A);
         }
 
         for (double i = -5; i <= -2; i += E) {
@@ -251,21 +251,10 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
         }
 
         // 3. Точкова сітка між рисками
-        for (double j = G; j <= 4 + G; j++) {
-          for (double i = -(2 + G); i <= 2 + G; i += E) {
-            c.circle(i, j, L / 2, color);
-          }
-        }
-        for (double j = 5 + G; j <= 8 + G; j++) {
-          for (double i = -(3 + G); i <= 3 + G; i += E) {
-            c.circle(i, j, L / 2, color);
-          }
-        }
-        for (double j = 9 + G; j <= 24 + G; j++) {
-          for (double i = -(4 + G); i <= 4 + G; i += E) {
-            c.circle(i, j, L / 2, color);
-          }
-        }
+        c
+          ..dotGrid(-(2 + G), G, 2 + G, 4 + G, E, E, L / 2, color)
+          ..dotGrid(-(3 + G), 5 + G, 3 + G, 8 + G, E, E, L / 2, color)
+          ..dotGrid(-(4 + G), 9 + G, 4 + G, 24 + G, E, E, L / 2, color);
 
         // 4. Лейбли + сітка точок по зонах (±дзеркально через zoneRow)
         for (double j = 1; j <= 4; j++) {

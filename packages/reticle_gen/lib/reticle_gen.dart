@@ -10,6 +10,19 @@ extension SvgExport on XmlElement {
   }
 }
 
+/// Formats [v] as a compact SVG number, rounded to 3 decimal places.
+/// Trailing zeros after the decimal point are stripped (e.g. 1.500 → "1.5").
+String _fmtNum(double v) {
+  final rounded = (v * 1000).roundToDouble() / 1000;
+  if (rounded == rounded.truncateToDouble()) {
+    return rounded.toInt().toString();
+  }
+  return rounded
+      .toStringAsFixed(3)
+      .replaceAll(RegExp(r'0+$'), '')
+      .replaceAll(RegExp(r'\.$'), '');
+}
+
 /// Accumulates SVG path commands into a `d` attribute string.
 ///
 /// Used with [SVGCanvas.batchLines] and the ruler/dash helpers.
@@ -38,8 +51,7 @@ class PathBuilder {
   String get d => _buffer.toString().trimRight();
   void clear() => _buffer.clear();
 
-  static String _n(double v) =>
-      v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
+  static String _n(double v) => _fmtNum(v);
 }
 
 // /// Інтерфейс для малювання на канвасі
@@ -116,6 +128,9 @@ class SVGCanvas {
   final Map<String, int> _idCounters = {};
   String? _idHint;
 
+  XmlElement? _defsEl;
+  final Map<String, String> _dotPatternCache = {};
+
   SVGCanvas({this.width = 640.0, this.height = 640.0});
 
   XmlElement get svg => _svgElement;
@@ -149,17 +164,72 @@ class SVGCanvas {
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
 
+  XmlElement get _defs {
+    if (_defsEl == null) {
+      _defsEl = XmlElement(XmlName('defs'));
+      _svgElement.children.insert(0, _defsEl!);
+    }
+    return _defsEl!;
+  }
+
+  /// Returns the id of a `<pattern>` in `<defs>` suitable for [dotLine].
+  /// Tiles have [spacing]×[2r] size; the single circle is at (r,r) tile-local
+  /// so the first dot appears at the line's origin (0,0 in local space).
+  /// Results are cached: identical params reuse the same pattern element.
+  String _dotPatternId(
+    double spacing,
+    double r,
+    String fill,
+    String? stroke,
+    double? strokeWidth,
+  ) {
+    final key = '$spacing/$r/$fill/$stroke/$strokeWidth';
+    return _dotPatternCache.putIfAbsent(key, () {
+      final id = nextId('dotpat');
+      _defs.children.add(
+        XmlElement(
+          XmlName('pattern'),
+          [
+            XmlAttribute(XmlName('id'), id),
+            XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
+            XmlAttribute(XmlName('x'), _fmtNum(-r)),
+            XmlAttribute(XmlName('y'), _fmtNum(-r)),
+            XmlAttribute(XmlName('width'), _fmtNum(spacing)),
+            XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
+          ],
+          [
+            XmlElement(XmlName('circle'), [
+              XmlAttribute(XmlName('cx'), _fmtNum(r)),
+              XmlAttribute(XmlName('cy'), _fmtNum(r)),
+              XmlAttribute(XmlName('r'), _fmtNum(r)),
+              XmlAttribute(XmlName('fill'), fill),
+              if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+              if (strokeWidth != null)
+                XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+            ]),
+          ],
+        ),
+      );
+      return id;
+    });
+  }
+
   XmlElement generate(SVGDrawerInterface drawer) {
     final double minX = -width / 2;
     final double minY = -height / 2;
 
     _svgElement = XmlElement(XmlName('svg'), [
       XmlAttribute(XmlName('xmlns'), 'http://www.w3.org/2000/svg'),
-      XmlAttribute(XmlName('width'), width.toString()),
-      XmlAttribute(XmlName('height'), height.toString()),
-      XmlAttribute(XmlName('viewBox'), '$minX $minY $width $height'),
+      XmlAttribute(XmlName('width'), _fmtNum(width)),
+      XmlAttribute(XmlName('height'), _fmtNum(height)),
+      XmlAttribute(
+        XmlName('viewBox'),
+        '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(width)} ${_fmtNum(height)}',
+      ),
     ]);
     _target = _svgElement;
+    _defsEl = null;
+    _dotPatternCache.clear();
 
     drawer.draw(this);
 
@@ -177,12 +247,12 @@ class SVGCanvas {
     _target.children.add(
       XmlElement(XmlName('line'), [
         XmlAttribute(XmlName('id'), nextId('line')),
-        XmlAttribute(XmlName('x1'), x1.toString()),
-        XmlAttribute(XmlName('y1'), y1.toString()),
-        XmlAttribute(XmlName('x2'), x2.toString()),
-        XmlAttribute(XmlName('y2'), y2.toString()),
+        XmlAttribute(XmlName('x1'), _fmtNum(x1)),
+        XmlAttribute(XmlName('y1'), _fmtNum(y1)),
+        XmlAttribute(XmlName('x2'), _fmtNum(x2)),
+        XmlAttribute(XmlName('y2'), _fmtNum(y2)),
         XmlAttribute(XmlName('stroke'), stroke),
-        XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+        XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
       ]),
     );
   }
@@ -199,14 +269,14 @@ class SVGCanvas {
     _target.children.add(
       XmlElement(XmlName('rect'), [
         XmlAttribute(XmlName('id'), nextId('rect')),
-        XmlAttribute(XmlName('x'), x.toString()),
-        XmlAttribute(XmlName('y'), y.toString()),
-        XmlAttribute(XmlName('width'), w.toString()),
-        XmlAttribute(XmlName('height'), h.toString()),
+        XmlAttribute(XmlName('x'), _fmtNum(x)),
+        XmlAttribute(XmlName('y'), _fmtNum(y)),
+        XmlAttribute(XmlName('width'), _fmtNum(w)),
+        XmlAttribute(XmlName('height'), _fmtNum(h)),
         XmlAttribute(XmlName('fill'), fill),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
       ]),
     );
   }
@@ -227,13 +297,13 @@ class SVGCanvas {
     _target.children.add(
       XmlElement(XmlName('circle'), [
         XmlAttribute(XmlName('id'), nextId('circle')),
-        XmlAttribute(XmlName('cx'), cx.toString()),
-        XmlAttribute(XmlName('cy'), cy.toString()),
-        XmlAttribute(XmlName('r'), r.toString()),
+        XmlAttribute(XmlName('cx'), _fmtNum(cx)),
+        XmlAttribute(XmlName('cy'), _fmtNum(cy)),
+        XmlAttribute(XmlName('r'), _fmtNum(r)),
         XmlAttribute(XmlName('fill'), fill),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
       ]),
     );
   }
@@ -246,7 +316,7 @@ class SVGCanvas {
         XmlAttribute(XmlName('fill'), fill),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), strokeWidth.toString()),
+          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
       ]),
     );
   }
@@ -264,10 +334,10 @@ class SVGCanvas {
         XmlName('text'),
         [
           XmlAttribute(XmlName('id'), nextId('text')),
-          XmlAttribute(XmlName('x'), x.toString()),
-          XmlAttribute(XmlName('y'), y.toString()),
+          XmlAttribute(XmlName('x'), _fmtNum(x)),
+          XmlAttribute(XmlName('y'), _fmtNum(y)),
           XmlAttribute(XmlName('fill'), fill),
-          XmlAttribute(XmlName('font-size'), fontSize.toString()),
+          XmlAttribute(XmlName('font-size'), _fmtNum(fontSize)),
           XmlAttribute(XmlName('text-anchor'), textAnchor),
         ],
         [XmlText(content)],
@@ -487,6 +557,10 @@ class SVGCanvas {
   }
 
   /// Evenly spaced dots along the line from ([x1],[y1]) to ([x2],[y2]).
+  ///
+  /// Emits a single SVG `<pattern>` + `<rect>` (O(1) elements) regardless of
+  /// how many dots fit. The pattern is cached and reused across calls with the
+  /// same [spacing], [r], [fill], [stroke], and [strokeWidth].
   void dotLine(
     double x1,
     double y1,
@@ -498,6 +572,7 @@ class SVGCanvas {
     String? stroke,
     double? strokeWidth,
   }) {
+    _hint('dotline');
     final dx = x2 - x1;
     final dy = y2 - y1;
     final length = math.sqrt(dx * dx + dy * dy);
@@ -510,20 +585,24 @@ class SVGCanvas {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
-    final ux = dx / length;
-    final uy = dy / length;
-    double t = 0;
-    while (t <= length + 1e-9) {
-      dot(
-        x1 + ux * t,
-        y1 + uy * t,
-        r,
-        fill,
-        stroke: stroke,
-        strokeWidth: strokeWidth,
-      );
-      t += spacing;
-    }
+    final patId = _dotPatternId(spacing, r, fill, stroke, strokeWidth);
+    final angleDeg = math.atan2(dy, dx) * 180 / math.pi;
+    // Rect in line-local space: origin = (x1,y1), x-axis along the line.
+    // Extended by r on all sides so the first and last circles render fully.
+    _target.children.add(
+      XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('id'), nextId('dotline')),
+        XmlAttribute(XmlName('x'), _fmtNum(-r)),
+        XmlAttribute(XmlName('y'), _fmtNum(-r)),
+        XmlAttribute(XmlName('width'), _fmtNum(length + 2 * r)),
+        XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
+        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
+        XmlAttribute(
+          XmlName('transform'),
+          'translate(${_fmtNum(x1)},${_fmtNum(y1)}) rotate(${_fmtNum(angleDeg)})',
+        ),
+      ]),
+    );
   }
 
   void hDotLine(
@@ -567,6 +646,67 @@ class SVGCanvas {
     stroke: stroke,
     strokeWidth: strokeWidth,
   );
+
+  /// Fills the axis-aligned rectangle [x1..x2] × [y1..y2] with a uniform
+  /// grid of dots at every ([xStep], [yStep]) interval.
+  ///
+  /// Unlike [repeat] + [dot], this emits a single SVG `<pattern>` + `<rect>`
+  /// (O(1) elements) regardless of how many dots fit.
+  /// Use [repeat] when the per-point drawing varies; use [dotGrid] when every
+  /// point gets an identical dot.
+  void dotGrid(
+    double x1,
+    double y1,
+    double x2,
+    double y2,
+    double xStep,
+    double yStep,
+    double r,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+  }) {
+    if (xStep <= 0 || yStep <= 0) return;
+    _hint('dotgrid');
+    // Each pattern tile is xStep × yStep; circle at (r, r) tile-local puts the
+    // first dot exactly at (x1, y1). The pattern x/y anchor is (x1−r, y1−r)
+    // so tile boundaries align with the grid start.
+    final patId = nextId('dotgridpat');
+    _defs.children.add(
+      XmlElement(
+        XmlName('pattern'),
+        [
+          XmlAttribute(XmlName('id'), patId),
+          XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
+          XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
+          XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
+          XmlAttribute(XmlName('width'), _fmtNum(xStep)),
+          XmlAttribute(XmlName('height'), _fmtNum(yStep)),
+        ],
+        [
+          XmlElement(XmlName('circle'), [
+            XmlAttribute(XmlName('cx'), _fmtNum(r)),
+            XmlAttribute(XmlName('cy'), _fmtNum(r)),
+            XmlAttribute(XmlName('r'), _fmtNum(r)),
+            XmlAttribute(XmlName('fill'), fill),
+            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+            if (strokeWidth != null)
+              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+          ]),
+        ],
+      ),
+    );
+    _target.children.add(
+      XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('id'), nextId('dotgrid')),
+        XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
+        XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
+        XmlAttribute(XmlName('width'), _fmtNum(x2 - x1 + 2 * r)),
+        XmlAttribute(XmlName('height'), _fmtNum(y2 - y1 + 2 * r)),
+        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
+      ]),
+    );
+  }
 
   /// Calls [draw] for every grid point in [x1..x2] × [y1..y2].
   void repeat(
@@ -772,10 +912,10 @@ class MilReticleSVGCanvas extends SVGCanvas {
     final el = super.generate(drawer);
     // super.generate() sets width/height to milWidth/milHeight (user-unit values).
     // Override them with the intended pixel dimensions.
-    el.setAttribute('width', (milWidth * factor).toString());
-    el.setAttribute('height', (milHeight * factor).toString());
-    el.setAttribute('data-mil-width', milWidth.toString());
-    el.setAttribute('data-mil-height', milHeight.toString());
+    el.setAttribute('width', _fmtNum(milWidth * factor));
+    el.setAttribute('height', _fmtNum(milHeight * factor));
+    el.setAttribute('data-mil-width', _fmtNum(milWidth));
+    el.setAttribute('data-mil-height', _fmtNum(milHeight));
     el.setAttribute('data-factor', factor.toString());
     el.setAttribute('shape-rendering', 'crispEdges');
     return el;
