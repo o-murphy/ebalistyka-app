@@ -108,7 +108,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
 
         // ── Лейбли + точкова сітка для одного рядка по j ────────────────
         void zoneRow(double j, double xOff, double dotRange) {
-          final fontSize = j % 2 == 0 ? F : K;
+          final fontSize = j.round() % 2 == 0 ? F : K;
           c
             ..text(
               j.toStringAsFixed(0),

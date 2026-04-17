@@ -150,7 +150,7 @@ class _ReticleView extends ConsumerWidget {
       aspectRatio: 1,
       child: svgAsync.when(
         loading: () => const SizedBox.shrink(),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (err, st) => const SizedBox.shrink(),
         data: (svgString) => _buildSvg(svgString),
       ),
     );

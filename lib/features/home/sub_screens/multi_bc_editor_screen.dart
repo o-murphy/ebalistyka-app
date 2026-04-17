@@ -55,7 +55,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
       final vDisplay = Velocity.mps(mvMps).in_(velocityUnit);
       initialRows = [(vDisplay.toStringAsFixed(vAcc), bc.toStringAsFixed(3))];
     } else if (!isEmpty) {
-      initialRows = table!.map((r) {
+      initialRows = table.map((r) {
         final vDisplay = Velocity.mps(r.vMps).in_(velocityUnit);
         return (vDisplay.toStringAsFixed(vAcc), r.bc.toStringAsFixed(3));
       }).toList();

@@ -805,6 +805,7 @@ class ScopeDrawer extends SVGDrawerInterface {
     this.color = '#00FF00',
   });
 
+  @override
   void draw(SVGCanvas canvas) {
     final diagLength = radius * 0.7;
 
