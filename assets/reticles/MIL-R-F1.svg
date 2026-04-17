@@ -66,5 +66,6 @@
     <line id="line-1" x1="5.2" y1="0" x2="6" y2="-0.25" stroke="black" stroke-width="0.1"/>
     <line id="line-2" x1="-5.2" y1="0" x2="-6" y2="0.25" stroke="black" stroke-width="0.1"/>
     <line id="line-3" x1="-5.2" y1="0" x2="-6" y2="-0.25" stroke="black" stroke-width="0.1"/>
+    <text id="text-9" x="4" y="1.098" fill="black" font-size="0.389" text-anchor="middle">2</text>
   </g>
 </svg>

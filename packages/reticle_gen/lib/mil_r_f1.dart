@@ -173,28 +173,6 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
           ..vLine(3.6, 3 + P / 2, 3, color, N)
           ..vLine(3.7, 3 - P / 2, 3, color, N);
 
-        // for (double i = -N / 2; i <= N / 2; i += F) {
-        //   c.text(
-        //     i.abs().toStringAsFixed(0),
-        //     3.5 + i,
-        //     3 + 0.5 + H,
-        //     color,
-        //     fontSize: H,
-        //     textAnchor: "middle",
-        //   );
-        // }
-
-        // for (double i = 1; i <= 2; i += F) {
-        //   c.text(
-        //     i.abs().toStringAsFixed(0),
-        //     3.5 + 0.5,
-        //     i + H * 0.35,
-        //     color,
-        //     fontSize: H,
-        //     textAnchor: "middle",
-        //   );
-        // }
-
         c
           ..hLine(0, 30, A / 2 + I, color, B)
           ..hLine(0, -30, -(A / 2 + I), color, B)
@@ -205,7 +183,15 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
           ..line(A / 2 + I, 0, A / 2 + 1, D / 2, color, C)
           ..line(A / 2 + I, 0, A / 2 + 1, -D / 2, color, C)
           ..line(-(A / 2 + I), 0, -(A / 2 + 1), D / 2, color, C)
-          ..line(-(A / 2 + I), 0, -(A / 2 + 1), -D / 2, color, C);
+          ..line(-(A / 2 + I), 0, -(A / 2 + 1), -D / 2, color, C)
+          ..text(
+            2.toStringAsFixed(0),
+            3.5 + 0.5,
+            1 + H * 0.35,
+            color,
+            fontSize: H,
+            textAnchor: "middle",
+          );
       },
     );
   }

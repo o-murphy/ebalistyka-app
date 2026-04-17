@@ -94,8 +94,6 @@
     <text id="text-50" x="2.1" y="3.85" fill="black" font-size="0.486" text-anchor="middle">1</text>
     <text id="text-51" x="3.1" y="3.85" fill="black" font-size="0.486" text-anchor="middle">0</text>
     <text id="text-52" x="4.1" y="3.85" fill="black" font-size="0.486" text-anchor="middle">1</text>
-    <text id="text-53" x="3.6" y="1.123" fill="black" font-size="0.486" text-anchor="middle">1</text>
-    <text id="text-54" x="3.6" y="2.123" fill="black" font-size="0.486" text-anchor="middle">2</text>
     <path id="hruler-13" d="M 15 -0.3 L 15 0.3 M 14 -0.3 L 14 0.3 M 13 -0.3 L 13 0.3 M 12 -0.3 L 12 0.3 M 11 -0.3 L 11 0.3" fill="none" stroke="black" stroke-width="0.04"/>
     <path id="hruler-14" d="M -15 -0.3 L -15 0.3 M -14 -0.3 L -14 0.3 M -13 -0.3 L -13 0.3 M -12 -0.3 L -12 0.3 M -11 -0.3 L -11 0.3" fill="none" stroke="black" stroke-width="0.04"/>
     <rect id="rect-0" x="11" y="-0.2" width="3.97" height="0.4" fill="white"/>
@@ -110,5 +108,7 @@
     <line id="line-1" x1="10.2" y1="0" x2="11" y2="-0.2" stroke="black" stroke-width="0.04"/>
     <line id="line-2" x1="-10.2" y1="0" x2="-11" y2="0.2" stroke="black" stroke-width="0.04"/>
     <line id="line-3" x1="-10.2" y1="0" x2="-11" y2="-0.2" stroke="black" stroke-width="0.04"/>
+    <text id="text-53" x="3.6" y="1.123" fill="black" font-size="0.486" text-anchor="middle">2</text>
+    <text id="text-54" x="3.6" y="2.123" fill="black" font-size="0.486" text-anchor="middle">1</text>
   </g>
 </svg>
