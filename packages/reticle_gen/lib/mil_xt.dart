@@ -95,7 +95,8 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
     const M = MilXtSizes.M;
     const N = MilXtSizes.N;
 
-    const String color = "onSurface";
+    const String bgColor = "white";
+    const String color = "black"; //"onSurface";
     const String accentColor = "red";
     const double halfI = I / 2;
     const double labelOffset = 0.4;
@@ -104,33 +105,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
       ..clip(
         shape: (c) => c.circle(0, 0, 24, 'white'),
         draw: (c) {
-          // ── Риска горизонтальної осі для позиції x (±) ──────────────────
-          // s > 0 → риска справа від центру, s < 0 → зліва
-          void hTick(double x) {
-            final s = x.sign;
-            final abs = x.abs();
-            c
-              ..line(
-                x - s * 4 * D,
-                0,
-                x - s * 4 * D,
-                abs > 1 ? H : C,
-                accentColor,
-                A,
-              )
-              ..line(x, -halfI, x, halfI, accentColor, A)
-              ..line(x - s * D, 0, x - s * D, H, accentColor, A)
-              ..line(x - s * 2 * D, 0, x - s * 2 * D, -H, accentColor, A)
-              ..line(x - s * 3 * D, 0, x - s * 3 * D, -H, accentColor, A)
-              ..text(
-                abs.toStringAsFixed(0),
-                x,
-                -(halfI + labelOffset + F / 2),
-                color,
-                fontSize: K,
-                textAnchor: 'middle',
-              );
-          }
+          c.fill(bgColor);
 
           // ── Лейбли + точкова сітка для одного рядка по j ────────────────
           void zoneRow(double j, double xOff, double dotRange) {
@@ -163,9 +138,9 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           c
             // ..fill("white")
             // 1. Основні осі
-            ..line(0.1, 0, 10, 0, accentColor, A)
-            ..line(-0.1, 0, -10, 0, accentColor, A)
-            ..line(0, -0.1, 0, -5, accentColor, A);
+            ..hLine(0, 0.1, 10, accentColor, A)
+            ..hLine(0, -0.1, -10, accentColor, A)
+            ..vLine(0, -0.1, -5, accentColor, A);
 
           // Горизонтальне продовження осі + рамки
           final double minI = I - 0.2;
@@ -199,61 +174,81 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
             ..rect(15, -minHalfI, 24 - 15, minI, color);
 
           // Додаткові риски 11..15 (за рамками)
-          for (double i = 11; i <= 15; i += E) {
-            c
-              ..line(i, -halfI, i, halfI, color, A)
-              ..line(-i, -halfI, -i, halfI, color, A);
+          c
+            ..hRuler(11, 15, E, I, color, A)
+            ..hRuler(-11, -15, -E, I, color, A);
+
+          // 2а. Риски на горизонтальній осі (±1..10)
+          for (double i = -10; i <= 10; i += E) {
+            if (i == 0) continue;
+            c.text(
+              i.abs().toStringAsFixed(0),
+              i,
+              -(halfI + labelOffset + F / 2),
+              color,
+              fontSize: K,
+              textAnchor: 'middle',
+            );
           }
 
-          // 2а. Риски на горизонтальній осі (±1..10) — дзеркально через hTick
-          for (double i = 1; i <= 10; i += E) {
-            hTick(i);
-            hTick(-i);
+          final List<List<double>> horizontalRuler = [
+            [10, 1, I, 0],
+            [10 - D, 1 - D, H, H / 2],
+            [10 - 2 * D, 1 - 2 * D, H, -H / 2],
+            [10 - 3 * D, 1 - 3 * D, H, -H / 2],
+            [10 - 4 * D, 2 - 4 * D, H, H / 2],
+          ];
+
+          for (final [start, end, tickWidth, y] in horizontalRuler) {
+            c
+              ..hRuler(start, end, -E, tickWidth, accentColor, A, y: y)
+              ..hRuler(-start, -end, E, tickWidth, accentColor, A, y: y);
           }
+
+          c
+            ..vLine(D, 0, C, accentColor, A)
+            ..vLine(-D, 0, C, accentColor, A);
 
           // 2б. Риски на вертикальній осі (0..24) — позитивна частина + центр
-          for (double i = 0; i <= 24; i += E) {
-            c
-              ..circle(0, i, B / 2, accentColor)
-              ..line(-0.1, i, -J, i, accentColor, A)
-              ..line(0.1, i, J, i, accentColor, A)
-              ..line(0, i + C, 0, i + 1 - C, accentColor, A);
+          // 2в. Риски на вертикальній осі (-5..-1) — негативна частина
 
-            if (i > 0) {
-              c.line(0, i + D, -H, i + D, accentColor, A);
-            } else {
-              c.line(C, i + D, -C, i + D, accentColor, A);
-            }
-            c
-              ..line(0, i + 4 * D, -H, i + 4 * D, accentColor, A)
-              ..line(0, i + 2 * D, H, i + 2 * D, accentColor, A)
-              ..line(0, i + 3 * D, H, i + 3 * D, accentColor, A);
+          final List<List<double>> verticalRuler = [
+            [1 + D, 24, H, -H / 2],
+            [2 * D, 24, H, H / 2],
+            [3 * D, 24, H, H / 2],
+            [4 * D, 24, H, -H / 2],
+            [-5, -1, I, 0],
+            [-5 + D, -1 + D, H, -H / 2],
+            [-5 + 2 * D, -1 + 2 * D, H, H / 2],
+            [-5 + 3 * D, -1 + 3 * D, H, H / 2],
+            [-5 + 4 * D, -2 + 4 * D, H, -H / 2],
+          ];
+
+          for (final [start, end, tickWidth, x] in verticalRuler) {
+            c.vRuler(start, end, E, tickWidth, accentColor, A, x: x);
           }
 
-          // 2в. Риски на вертикальній осі (-5..-1) — негативна частина
-          for (double i = -5; i <= -1; i += E) {
+          c
+            ..hLine(D, C, -C, accentColor, A)
+            ..hLine(-D, C, -C, accentColor, A)
+            ..vDotLine(0, 0, 24, E, B / 2, accentColor)
+            ..vDashLine(0, 0.1, 24, 0.8, 0.2, accentColor, A);
+
+          for (double i = 0; i <= 24; i += E) {
             c
-              ..line(-halfI, i, halfI, i, accentColor, A)
-              ..line(0, i + D, -H, i + D, accentColor, A)
-              ..line(0, i + 2 * D, H, i + 2 * D, accentColor, A)
-              ..line(0, i + 3 * D, H, i + 3 * D, accentColor, A);
+              ..line(-0.1, i, -J, i, accentColor, A)
+              ..line(0.1, i, J, i, accentColor, A);
+          }
 
-            if (i < -1) {
-              c.line(0, i + 4 * D, -H, i + 4 * D, accentColor, A);
-            } else {
-              c.line(C, i + 4 * D, -C, i + 4 * D, accentColor, A);
-            }
-
-            if (i <= -2) {
-              c.text(
-                i.abs().toStringAsFixed(0),
-                -(halfI + labelOffset),
-                i + F * 0.35,
-                color,
-                fontSize: K,
-                textAnchor: 'end',
-              );
-            }
+          for (double i = -5; i <= -2; i += E) {
+            c.text(
+              i.abs().toStringAsFixed(0),
+              -(halfI + labelOffset),
+              i + F * 0.35,
+              color,
+              fontSize: K,
+              textAnchor: 'end',
+            );
           }
 
           // 3. Точкова сітка між рисками
