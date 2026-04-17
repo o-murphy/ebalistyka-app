@@ -123,7 +123,16 @@ class SVGCanvas {
   final double height;
   late final XmlElement _svgElement;
   late XmlElement _target;
+  late XmlElement _contentRoot;
   int _clipCounter = 0;
+
+  /// Scale factor applied to all drawing coordinates.
+  /// Use it when the drawer works in a different unit than the SVG viewBox
+  /// (e.g. `unitScale = moaToMil` lets the drawer use MOA while the viewBox
+  /// stays in MIL).  Implemented as a `<g transform="scale(unitScale)">` so
+  /// every element — including `<path>` d-strings and `<pattern>` tiles — is
+  /// scaled automatically.
+  final double unitScale;
 
   final Map<String, int> _idCounters = {};
   String? _idHint;
@@ -131,7 +140,7 @@ class SVGCanvas {
   XmlElement? _defsEl;
   final Map<String, String> _dotPatternCache = {};
 
-  SVGCanvas({this.width = 640.0, this.height = 640.0});
+  SVGCanvas({this.width = 640.0, this.height = 640.0, this.unitScale = 1.0});
 
   XmlElement get svg => _svgElement;
 
@@ -227,9 +236,19 @@ class SVGCanvas {
         '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(width)} ${_fmtNum(height)}',
       ),
     ]);
-    _target = _svgElement;
     _defsEl = null;
     _dotPatternCache.clear();
+
+    if (unitScale != 1.0) {
+      final scaleGroup = XmlElement(XmlName('g'), [
+        XmlAttribute(XmlName('transform'), 'scale(${_fmtNum(unitScale)})'),
+      ]);
+      _svgElement.children.add(scaleGroup);
+      _contentRoot = scaleGroup;
+    } else {
+      _contentRoot = _svgElement;
+    }
+    _target = _contentRoot;
 
     drawer.draw(this);
 
@@ -283,7 +302,9 @@ class SVGCanvas {
 
   void fill(String fill) {
     _hint('fill');
-    rect(-width / 2, -height / 2, width, height, fill);
+    final w = width / unitScale;
+    final h = height / unitScale;
+    rect(-w / 2, -h / 2, w, h, fill);
   }
 
   void circle(
@@ -360,7 +381,7 @@ class SVGCanvas {
     _target = clipPathEl;
     shape(this);
     _target = prevTarget;
-    _svgElement.children.add(clipPathEl);
+    _contentRoot.children.add(clipPathEl);
 
     final groupEl = XmlElement(XmlName('g'), [
       XmlAttribute(XmlName('id'), nextId('clipgroup')),
@@ -369,7 +390,7 @@ class SVGCanvas {
     _target = groupEl;
     draw(this);
     _target = prevTarget;
-    _svgElement.children.add(groupEl);
+    _contentRoot.children.add(groupEl);
   }
 
   // ── Aliases that delegate to virtual interface methods ──────────────────────
@@ -905,6 +926,7 @@ class MilReticleSVGCanvas extends SVGCanvas {
     this.milWidth = 30.0,
     this.milHeight = 30.0,
     this.factor = 100,
+    super.unitScale = 1.0,
   }) : super(width: milWidth, height: milHeight);
 
   @override

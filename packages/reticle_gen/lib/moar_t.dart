@@ -2,6 +2,9 @@ import 'package:reticle_gen/reticle_gen.dart';
 
 const double epsilon = 1e-6;
 
+/// 1 MOA expressed in MIL: (π/10800) / (π/3200) = 3200/10800 = 8/27
+const double moaToMil = 8.0 / 27.0;
+
 // ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
 class MoarTSizes {
   static const double A = 40;
@@ -144,26 +147,26 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
         }
 
         c
-          ..rect(-30, -B / 2, 30 - A / 2 - 4, B, color)
-          ..rect(A / 2 + 4, -B / 2, 30 - A / 2 + 4, B, color)
-          ..hLine(0, 30, A / 2 + M, color, J)
-          ..hLine(0, -30, -(A / 2 + M), color, J)
-          ..hLine(B / 2, 30, A / 2 + 3, color, I)
-          ..hLine(-B / 2, 30, A / 2 + 3, color, I)
-          ..hLine(B / 2, -30, -(A / 2 + 3), color, I)
-          ..hLine(-B / 2, -30, -(A / 2 + 3), color, I)
+          ..rect(-35, -B / 2, 35 - A / 2 - 4, B, color)
+          ..rect(A / 2 + 4, -B / 2, 35 - A / 2 + 4, B, color)
+          ..hLine(0, 35, A / 2 + M, color, J)
+          ..hLine(0, -35, -(A / 2 + M), color, J)
+          ..hLine(B / 2, 35, A / 2 + 3, color, I)
+          ..hLine(-B / 2, 35, A / 2 + 3, color, I)
+          ..hLine(B / 2, -35, -(A / 2 + 3), color, I)
+          ..hLine(-B / 2, -35, -(A / 2 + 3), color, I)
           ..line(A / 2 + M, 0, A / 2 + 3, B / 2, color, I)
           ..line(A / 2 + M, 0, A / 2 + 3, -B / 2, color, I)
           ..line(-(A / 2 + M), 0, -(A / 2 + 3), B / 2, color, I)
           ..line(-(A / 2 + M), 0, -(A / 2 + 3), -B / 2, color, I);
 
         c
-          ..vLine(0, 30, A / 2 + M, color, J)
-          ..vLine(B / 2, 30, A / 2 + 3, color, I)
-          ..vLine(-B / 2, 30, A / 2 + 3, color, I)
+          ..vLine(0, 35, A / 2 + M, color, J)
+          ..vLine(B / 2, 35, A / 2 + 3, color, I)
+          ..vLine(-B / 2, 35, A / 2 + 3, color, I)
           ..line(0, A / 2 + M, B / 2, A / 2 + 3, color, I)
           ..line(0, A / 2 + M, -B / 2, A / 2 + 3, color, I)
-          ..rect(-B / 2, A / 2 + 4, B, 30 - A / 2 + 4, color);
+          ..rect(-B / 2, A / 2 + 4, B, 35 - A / 2 + 4, color);
       },
     );
   }
@@ -182,7 +185,11 @@ void main(List<String> args) {
   print('Generating "${variant.name}"  →  $outputPath');
   print('  F=${variant.f}  I=${variant.i} J=${variant.j} N=${variant.n}');
 
-  MilReticleSVGCanvas(milWidth: 60, milHeight: 60)
+  MilReticleSVGCanvas(
+      milWidth: 60 * moaToMil,
+      milHeight: 60 * moaToMil,
+      unitScale: moaToMil,
+    )
     ..generate(MoarTReticleDrawer(variant: variant))
     ..svg.export(outputPath);
 }
