@@ -81,7 +81,7 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
   MoarTReticleDrawer({this.variant = MoarTVariant.defaultVariant});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     const A = MoarTSizes.A;
     const B = MoarTSizes.B;
     const C = MoarTSizes.C;
@@ -149,23 +149,57 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
         c
           ..rect(-35, -B / 2, 35 - A / 2 - 4, B, color)
           ..rect(A / 2 + 4, -B / 2, 35 - A / 2 + 4, B, color)
-          ..hLine(0, 35, A / 2 + M, color, J)
-          ..hLine(0, -35, -(A / 2 + M), color, J)
-          ..hLine(B / 2, 35, A / 2 + 3, color, I)
-          ..hLine(-B / 2, 35, A / 2 + 3, color, I)
-          ..hLine(B / 2, -35, -(A / 2 + 3), color, I)
-          ..hLine(-B / 2, -35, -(A / 2 + 3), color, I)
-          ..line(A / 2 + M, 0, A / 2 + 3, B / 2, color, I)
-          ..line(A / 2 + M, 0, A / 2 + 3, -B / 2, color, I)
-          ..line(-(A / 2 + M), 0, -(A / 2 + 3), B / 2, color, I)
-          ..line(-(A / 2 + M), 0, -(A / 2 + 3), -B / 2, color, I);
+          ..path(
+            (PathBuilder()
+                  ..moveTo(35, 0)
+                  ..lineTo(A / 2 + M, 0)
+                  ..moveTo(-35, 0)
+                  ..lineTo(-(A / 2 + M), 0))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: J,
+          )
+          ..path(
+            (PathBuilder()
+                  ..moveTo(35, B / 2)
+                  ..lineTo(A / 2 + 3, B / 2)
+                  ..lineTo(A / 2 + M, 0)
+                  ..lineTo(A / 2 + 3, -B / 2)
+                  ..lineTo(35, -B / 2)
+                  ..moveTo(-35, B / 2)
+                  ..lineTo(-(A / 2 + 3), B / 2)
+                  ..lineTo(-(A / 2 + M), 0)
+                  ..lineTo(-(A / 2 + 3), -B / 2)
+                  ..lineTo(-35, -B / 2))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: I,
+          );
 
         c
-          ..vLine(0, 35, A / 2 + M, color, J)
-          ..vLine(B / 2, 35, A / 2 + 3, color, I)
-          ..vLine(-B / 2, 35, A / 2 + 3, color, I)
-          ..line(0, A / 2 + M, B / 2, A / 2 + 3, color, I)
-          ..line(0, A / 2 + M, -B / 2, A / 2 + 3, color, I)
+          ..path(
+            (PathBuilder()
+                  ..moveTo(0, 35)
+                  ..lineTo(0, A / 2 + M))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: J,
+          )
+          ..path(
+            (PathBuilder()
+                  ..moveTo(B / 2, 35)
+                  ..lineTo(B / 2, A / 2 + 3)
+                  ..lineTo(0, A / 2 + M)
+                  ..lineTo(-B / 2, A / 2 + 3)
+                  ..lineTo(-B / 2, 35))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: I,
+          )
           ..rect(-B / 2, A / 2 + 4, B, 35 - A / 2 + 4, color);
       },
     );

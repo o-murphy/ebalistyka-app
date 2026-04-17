@@ -79,7 +79,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
   MilXtReticleDrawer({this.variant = MilXtVariant.defaultVariant});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     final A = variant.a;
     final F = variant.f;
     final K = variant.k;
@@ -143,12 +143,25 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
         final double minI = I - 0.2;
         final double minHalfI = halfI - 0.1;
         c
-          ..hLine(0, -15, -10.2, color, A)
-          ..hLine(0, 15, 10.2, color, A)
-          ..line(11, -minHalfI, 10.2, 0, color, A)
-          ..line(11, minHalfI, 10.2, 0, color, A)
-          ..line(-11, -minHalfI, -10.2, 0, color, A)
-          ..line(-11, minHalfI, -10.2, 0, color, A)
+          ..path(
+            (PathBuilder()
+                  ..moveTo(-15, 0)
+                  ..lineTo(-10.2, 0)
+                  ..moveTo(15, 0)
+                  ..lineTo(10.2, 0)
+                  ..moveTo(11, -minHalfI)
+                  ..lineTo(10.2, 0)
+                  ..moveTo(11, minHalfI)
+                  ..lineTo(10.2, 0)
+                  ..moveTo(-11, -minHalfI)
+                  ..lineTo(-10.2, 0)
+                  ..moveTo(-11, minHalfI)
+                  ..lineTo(-10.2, 0))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: A,
+          )
           ..rect(
             -15,
             -minHalfI,

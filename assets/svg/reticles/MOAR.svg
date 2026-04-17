@@ -36,16 +36,8 @@
       <text id="text-7" x="-3" y="40.368" fill="black" font-size="1.458" text-anchor="middle">40</text>
       <rect id="rect-0" x="-40" y="-0.859" width="5" height="1.719" fill="black"/>
       <rect id="rect-1" x="35" y="-0.859" width="35" height="1.719" fill="black"/>
-      <line id="hline-2" x1="40" y1="0" x2="21" y2="0" stroke="black" stroke-width="0.125"/>
-      <line id="hline-3" x1="-40" y1="0" x2="-21" y2="0" stroke="black" stroke-width="0.125"/>
-      <line id="hline-4" x1="40" y1="0.859" x2="23" y2="0.859" stroke="black" stroke-width="0.34"/>
-      <line id="hline-5" x1="40" y1="-0.859" x2="23" y2="-0.859" stroke="black" stroke-width="0.34"/>
-      <line id="hline-6" x1="-40" y1="0.859" x2="-23" y2="0.859" stroke="black" stroke-width="0.34"/>
-      <line id="hline-7" x1="-40" y1="-0.859" x2="-23" y2="-0.859" stroke="black" stroke-width="0.34"/>
-      <line id="line-0" x1="21" y1="0" x2="23" y2="0.859" stroke="black" stroke-width="0.34"/>
-      <line id="line-1" x1="21" y1="0" x2="23" y2="-0.859" stroke="black" stroke-width="0.34"/>
-      <line id="line-2" x1="-21" y1="0" x2="-23" y2="0.859" stroke="black" stroke-width="0.34"/>
-      <line id="line-3" x1="-21" y1="0" x2="-23" y2="-0.859" stroke="black" stroke-width="0.34"/>
+      <path id="path-0" d="M 40 0 L 21 0 M -40 0 L -21 0" fill="none" stroke="black" stroke-width="0.125"/>
+      <path id="path-1" d="M 40 0.859 L 23 0.859 L 21 0 L 23 -0.859 L 40 -0.859 Z M -40 0.859 L -23 0.859 L -21 0 L -23 -0.859 L -40 -0.859 Z" fill="none" stroke="black" stroke-width="0.34"/>
     </g>
   </g>
 </svg>

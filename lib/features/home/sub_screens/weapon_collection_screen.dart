@@ -29,6 +29,7 @@ class WeaponCollectionScreen extends ConsumerWidget {
                   key: ValueKey(weapon.name),
                   body: CollectionWeaponTileBody(weapon: weapon),
                   item: WeaponCollectionItem(ref: weapon),
+                  searchText: [weapon.name, weapon.vendor ?? ''].join(' '),
                   onSelect: () {
                     context.pop<Weapon>(weapon.clone());
                   },

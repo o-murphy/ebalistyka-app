@@ -25,9 +25,8 @@ String _fmtNum(double v) {
 
 /// Accumulates SVG path commands into a `d` attribute string.
 ///
-/// Used with [SVGCanvas.batchLines] and the ruler/dash helpers.
-/// Coordinates must be in the canvas's native coordinate space
-/// (pixels for [SVGCanvas], mils for [MilReticleSVGCanvas]).
+/// Used with [MilReticleSVGCanvas.batchLines] and the ruler/dash helpers.
+/// Coordinates must be in the canvas's native coordinate space (mils).
 class PathBuilder {
   final StringBuffer _buffer = StringBuffer();
 
@@ -65,103 +64,62 @@ class PathBuilder {
   static String _n(double v) => _fmtNum(v);
 }
 
-// /// Інтерфейс для малювання на канвасі
-// abstract interface class CanvasInterface {
-//   double get width;
-//   double get height;
-
-//   /// Малює лінію
-//   void line(
-//     double x1,
-//     double y1,
-//     double x2,
-//     double y2,
-//     String stroke,
-//     double strokeWidth,
-//   );
-
-//   /// Малює прямокутник
-//   void rect(
-//     double x,
-//     double y,
-//     double w,
-//     double h,
-//     String fill, {
-//     String? stroke,
-//     double? strokeWidth,
-//   });
-
-//   /// Заповнює весь канвас кольором
-//   void fill(String fill);
-
-//   /// Малює коло
-//   void circle(
-//     double cx,
-//     double cy,
-//     double r,
-//     String fill, {
-//     String? stroke,
-//     double? strokeWidth,
-//   });
-
-//   /// Малює шлях
-//   void path(String d, String fill, {String? stroke, double? strokeWidth});
-
-//   /// Додає текст
-//   void text(
-//     String content,
-//     double x,
-//     double y,
-//     String fill, {
-//     double fontSize,
-//     String textAnchor,
-//   });
-
-//   /// Малює [draw] з обрізанням по формі [shape].
-//   /// Форма описується тими ж методами канвасу; колір fill/stroke ігнорується.
-//   void clip({
-//     required void Function(CanvasInterface canvas) shape,
-//     required void Function(CanvasInterface canvas) draw,
-//   });
-// }
-
 abstract interface class SVGDrawerInterface {
-  void draw(SVGCanvas canvas);
+  void draw(MilReticleSVGCanvas canvas);
 }
 
-class SVGCanvas {
-  final double width;
-  final double height;
+/// A canvas whose coordinate system is in mils.
+///
+/// The SVG [viewBox] spans [−milWidth/2 .. milWidth/2] × [−milHeight/2 ..
+/// milHeight/2] in mil units, while the physical pixel dimensions are
+/// [milWidth × factor] × [milHeight × factor].
+/// The SVG renderer handles all scaling — no per-element multiplication needed.
+///
+/// When [unitScale] ≠ 1.0, all drawing coordinates are wrapped in a
+/// `<g transform="scale(unitScale)">` so callers can work in a different unit
+/// (e.g. `unitScale = moaToMil` lets the drawer use MOA while the viewBox
+/// stays in MIL).
+class MilReticleSVGCanvas {
+  final double milWidth;
+  final double milHeight;
+  final int factor;
+  final double unitScale;
+
+  /// Convenience aliases so helpers can reference [width]/[height] uniformly.
+  double get width => milWidth;
+  double get height => milHeight;
+
   late final XmlElement _svgElement;
   late XmlElement _target;
   late XmlElement _contentRoot;
   int _clipCounter = 0;
 
-  /// Scale factor applied to all drawing coordinates.
-  /// Use it when the drawer works in a different unit than the SVG viewBox
-  /// (e.g. `unitScale = moaToMil` lets the drawer use MOA while the viewBox
-  /// stays in MIL).  Implemented as a `<g transform="scale(unitScale)">` so
-  /// every element — including `<path>` d-strings — is scaled automatically.
-  final double unitScale;
-
   final Map<String, int> _idCounters = {};
   String? _idHint;
 
-  SVGCanvas({this.width = 640.0, this.height = 640.0, this.unitScale = 1.0});
+  XmlElement? _defsEl;
+  final Map<String, String> _dotPatternCache = {};
+
+  /// Correction from em-square to cap-height for typical sans-serif fonts.
+  /// Lets callers specify [fontSize] as the visible height of capital letters
+  /// rather than the SVG em-square unit.
+  static const double _capHeightRatio = 0.72;
+
+  MilReticleSVGCanvas({
+    this.milWidth = 30.0,
+    this.milHeight = 30.0,
+    this.factor = 100,
+    this.unitScale = 1.0,
+  });
 
   XmlElement get svg => _svgElement;
 
-  /// Поточний контейнер для запису елементів.
-  /// Підкласи, що додають елементи напряму, мають використовувати його.
+  /// Current container for writing elements.
+  /// Subclasses that add elements directly must use this.
   XmlElement get target => _target;
 
   /// Returns the next auto-generated element id for [prefix] and increments
   /// the internal counter for that prefix.
-  ///
-  /// If a hint was set by a higher-level helper (e.g. [hRuler] sets `'hruler'`
-  /// before calling [path]), the hint is used as the prefix instead, so the
-  /// emitted element gets a semantically meaningful id like `hruler-0`.
-  /// Subclasses may call this method directly.
   String nextId(String prefix) {
     final p = _idHint ?? prefix;
     _idHint = null;
@@ -170,9 +128,6 @@ class SVGCanvas {
     return '$p-$n';
   }
 
-  // Sets a one-shot hint consumed by the next [nextId] call.
-  // Uses ??= so the first caller wins when helpers delegate to each other
-  // (e.g. hDashLine sets 'hdashline' before calling dashLine which also hints).
   void _hint(String h) {
     _idHint ??= h;
   }
@@ -180,18 +135,68 @@ class SVGCanvas {
   static void _warn(String method, String reason) =>
       log('$method: $reason', name: 'reticle_gen', level: 900);
 
+  XmlElement get _defs {
+    if (_defsEl == null) {
+      _defsEl = XmlElement(XmlName('defs'));
+      _svgElement.children.insert(0, _defsEl!);
+    }
+    return _defsEl!;
+  }
+
+  String _dotPatternId(
+    double spacing,
+    double r,
+    String fill,
+    String? stroke,
+    double? strokeWidth,
+  ) {
+    final key = '$spacing/$r/$fill/$stroke/$strokeWidth';
+    return _dotPatternCache.putIfAbsent(key, () {
+      final id = nextId('dotpat');
+      _defs.children.add(
+        XmlElement(
+          XmlName('pattern'),
+          [
+            XmlAttribute(XmlName('id'), id),
+            XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
+            XmlAttribute(XmlName('x'), _fmtNum(-r)),
+            XmlAttribute(XmlName('y'), _fmtNum(-r)),
+            XmlAttribute(XmlName('width'), _fmtNum(spacing)),
+            XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
+          ],
+          [
+            XmlElement(XmlName('circle'), [
+              XmlAttribute(XmlName('cx'), _fmtNum(r)),
+              XmlAttribute(XmlName('cy'), _fmtNum(r)),
+              XmlAttribute(XmlName('r'), _fmtNum(r)),
+              XmlAttribute(XmlName('fill'), fill),
+              if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+              if (strokeWidth != null)
+                XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+            ]),
+          ],
+        ),
+      );
+      return id;
+    });
+  }
+
   XmlElement generate(SVGDrawerInterface drawer) {
-    final double minX = -width / 2;
-    final double minY = -height / 2;
+    final double minX = -milWidth / 2;
+    final double minY = -milHeight / 2;
 
     _svgElement = XmlElement(XmlName('svg'), [
       XmlAttribute(XmlName('xmlns'), 'http://www.w3.org/2000/svg'),
-      XmlAttribute(XmlName('width'), _fmtNum(width)),
-      XmlAttribute(XmlName('height'), _fmtNum(height)),
+      XmlAttribute(XmlName('width'), _fmtNum(milWidth * factor)),
+      XmlAttribute(XmlName('height'), _fmtNum(milHeight * factor)),
       XmlAttribute(
         XmlName('viewBox'),
-        '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(width)} ${_fmtNum(height)}',
+        '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(milWidth)} ${_fmtNum(milHeight)}',
       ),
+      XmlAttribute(XmlName('data-mil-width'), _fmtNum(milWidth)),
+      XmlAttribute(XmlName('data-mil-height'), _fmtNum(milHeight)),
+      XmlAttribute(XmlName('data-factor'), factor.toString()),
+      XmlAttribute(XmlName('shape-rendering'), 'crispEdges'),
     ]);
     _idCounters.clear();
     _clipCounter = 0;
@@ -259,8 +264,8 @@ class SVGCanvas {
 
   void fill(String fill) {
     _hint('fill');
-    final w = width / unitScale;
-    final h = height / unitScale;
+    final w = milWidth / unitScale;
+    final h = milHeight / unitScale;
     rect(-w / 2, -h / 2, w, h, fill);
   }
 
@@ -315,7 +320,10 @@ class SVGCanvas {
           XmlAttribute(XmlName('x'), _fmtNum(x)),
           XmlAttribute(XmlName('y'), _fmtNum(y)),
           XmlAttribute(XmlName('fill'), fill),
-          XmlAttribute(XmlName('font-size'), _fmtNum(fontSize)),
+          XmlAttribute(
+            XmlName('font-size'),
+            _fmtNum(fontSize / _capHeightRatio),
+          ),
           XmlAttribute(XmlName('text-anchor'), textAnchor),
         ],
         [XmlText(content)],
@@ -323,11 +331,11 @@ class SVGCanvas {
     );
   }
 
-  /// Обрізає вміст [draw] по формі [shape].
-  /// Генерує `<clipPath>` та `<g clip-path="url(#...)">` без використання `<defs>`.
+  /// Clips [draw] to the shape defined by [shape].
+  /// Generates `<clipPath>` + `<g clip-path="url(#...)">` directly in SVG (no `<defs>`).
   void clip({
-    required void Function(SVGCanvas canvas) shape,
-    required void Function(SVGCanvas canvas) draw,
+    required void Function(MilReticleSVGCanvas canvas) shape,
+    required void Function(MilReticleSVGCanvas canvas) draw,
   }) {
     final clipId = 'clip${_clipCounter++}';
 
@@ -349,10 +357,6 @@ class SVGCanvas {
     _target = prevTarget;
     _contentRoot.children.add(groupEl);
   }
-
-  // ── Aliases that delegate to virtual interface methods ──────────────────────
-  // Subclasses (e.g. MilReticleCanvas) override line/circle/path, so all
-  // helpers below pick up coordinate scaling for free via polymorphic dispatch.
 
   void hLine(
     double y,
@@ -388,12 +392,6 @@ class SVGCanvas {
     circle(cx, cy, r, fill, stroke: stroke, strokeWidth: strokeWidth);
   }
 
-  // ── Multi-element helpers that emit a single <path> ─────────────────────────
-  // Each builds a PathBuilder in the canvas's native coordinate space, then
-  // calls this.path() so MilReticleCanvas.path() applies the scale transform.
-
-  /// Tick marks along X, centred at [y], from [start] to [end] with [step]
-  /// spacing. Each tick is [tickLength] tall.
   void hRuler(
     double start,
     double end,
@@ -421,8 +419,6 @@ class SVGCanvas {
     }
   }
 
-  /// Tick marks along Y, centred at [x], from [start] to [end] with [step]
-  /// spacing. Each tick is [tickLength] wide.
   void vRuler(
     double start,
     double end,
@@ -450,7 +446,6 @@ class SVGCanvas {
     }
   }
 
-  /// Crosshair centred at ([cx], [cy]) with total arm length [size].
   void cross(
     double cx,
     double cy,
@@ -468,7 +463,6 @@ class SVGCanvas {
     path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
   }
 
-  /// Dashed line from ([x1],[y1]) to ([x2],[y2]).
   void dashLine(
     double x1,
     double y1,
@@ -534,9 +528,6 @@ class SVGCanvas {
     dashLine(x, y1, x, y2, dashLen, gapLen, stroke, strokeWidth);
   }
 
-  /// Evenly spaced dots along the line from ([x1],[y1]) to ([x2],[y2]).
-  ///
-  /// Emits a single `<path>` with arc sub-paths — flutter_svg compatible.
   void dotLine(
     double x1,
     double y1,
@@ -561,15 +552,22 @@ class SVGCanvas {
       dot(x1, y1, r, fill, stroke: stroke, strokeWidth: strokeWidth);
       return;
     }
-    final ux = dx / length;
-    final uy = dy / length;
-    final pb = PathBuilder();
-    for (var t = 0.0; t <= length + 1e-9; t += spacing) {
-      pb.dotCircle(x1 + t * ux, y1 + t * uy, r);
-    }
-    if (!pb.isEmpty) {
-      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
-    }
+    final patId = _dotPatternId(spacing, r, fill, stroke, strokeWidth);
+    final angleDeg = math.atan2(dy, dx) * 180 / math.pi;
+    _target.children.add(
+      XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('id'), nextId('dotline')),
+        XmlAttribute(XmlName('x'), _fmtNum(-r)),
+        XmlAttribute(XmlName('y'), _fmtNum(-r)),
+        XmlAttribute(XmlName('width'), _fmtNum(length + 2 * r)),
+        XmlAttribute(XmlName('height'), _fmtNum(2 * r)),
+        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
+        XmlAttribute(
+          XmlName('transform'),
+          'translate(${_fmtNum(x1)},${_fmtNum(y1)}) rotate(${_fmtNum(angleDeg)})',
+        ),
+      ]),
+    );
   }
 
   void hDotLine(
@@ -614,12 +612,6 @@ class SVGCanvas {
     strokeWidth: strokeWidth,
   );
 
-  /// Fills the axis-aligned rectangle [x1..x2] × [y1..y2] with a uniform
-  /// grid of dots at every ([xStep], [yStep]) interval.
-  ///
-  /// Emits a single `<path>` with arc sub-paths — flutter_svg compatible.
-  /// Use [repeat] when the per-point drawing varies; use [dotGrid] when every
-  /// point gets an identical dot.
   void dotGrid(
     double x1,
     double y1,
@@ -634,18 +626,43 @@ class SVGCanvas {
   }) {
     if (xStep <= 0 || yStep <= 0) return;
     _hint('dotgrid');
-    final pb = PathBuilder();
-    for (double y = y1; y <= y2 + 1e-9; y += yStep) {
-      for (double x = x1; x <= x2 + 1e-9; x += xStep) {
-        pb.dotCircle(x, y, r);
-      }
-    }
-    if (!pb.isEmpty) {
-      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
-    }
+    final patId = nextId('dotgridpat');
+    _defs.children.add(
+      XmlElement(
+        XmlName('pattern'),
+        [
+          XmlAttribute(XmlName('id'), patId),
+          XmlAttribute(XmlName('patternUnits'), 'userSpaceOnUse'),
+          XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
+          XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
+          XmlAttribute(XmlName('width'), _fmtNum(xStep)),
+          XmlAttribute(XmlName('height'), _fmtNum(yStep)),
+        ],
+        [
+          XmlElement(XmlName('circle'), [
+            XmlAttribute(XmlName('cx'), _fmtNum(r)),
+            XmlAttribute(XmlName('cy'), _fmtNum(r)),
+            XmlAttribute(XmlName('r'), _fmtNum(r)),
+            XmlAttribute(XmlName('fill'), fill),
+            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+            if (strokeWidth != null)
+              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+          ]),
+        ],
+      ),
+    );
+    _target.children.add(
+      XmlElement(XmlName('rect'), [
+        XmlAttribute(XmlName('id'), nextId('dotgrid')),
+        XmlAttribute(XmlName('x'), _fmtNum(x1 - r)),
+        XmlAttribute(XmlName('y'), _fmtNum(y1 - r)),
+        XmlAttribute(XmlName('width'), _fmtNum(x2 - x1 + 2 * r)),
+        XmlAttribute(XmlName('height'), _fmtNum(y2 - y1 + 2 * r)),
+        XmlAttribute(XmlName('fill'), 'url(#$patId)'),
+      ]),
+    );
   }
 
-  /// Calls [draw] for every grid point in [x1..x2] × [y1..y2].
   void repeat(
     double x1,
     double y1,
@@ -671,8 +688,6 @@ class SVGCanvas {
     }
   }
 
-  /// Calls [build] with a [PathBuilder] and emits the result as one `<path>`.
-  /// Use this to combine arbitrary line segments with the same style.
   void batchLines(
     String stroke,
     double strokeWidth,
@@ -686,6 +701,13 @@ class SVGCanvas {
       path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
+
+  void drawAdjustment(double x, double y) {
+    this
+      ..line(x, 0, x, y, 'red', 0.05)
+      ..line(0, y, x, y, 'red', 0.05)
+      ..circle(x, y, 0.2, 'red');
+  }
 }
 
 class CrossDrawer implements SVGDrawerInterface {
@@ -696,16 +718,13 @@ class CrossDrawer implements SVGDrawerInterface {
   CrossDrawer({this.size = 200, this.strokeWidth = 2, this.color = 'red'});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     canvas
-      // Горизонтальна лінія через центр
       ..line(-size / 2, 0, size / 2, 0, color, strokeWidth)
-      // Вертикальна лінія через центр
       ..line(0, -size / 2, 0, size / 2, color, strokeWidth);
   }
 }
 
-// Хрест з колом (як приціл)
 class ScopeDrawer extends SVGDrawerInterface {
   final double radius;
   final double lineLength;
@@ -720,16 +739,13 @@ class ScopeDrawer extends SVGDrawerInterface {
   });
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     final diagLength = radius * 0.7;
 
     canvas
-      // Зовнішнє коло
       ..circle(0, 0, radius, 'none', stroke: color, strokeWidth: strokeWidth)
-      // Хрест
       ..line(-lineLength / 2, 0, lineLength / 2, 0, color, strokeWidth)
       ..line(0, -lineLength / 2, 0, lineLength / 2, color, strokeWidth)
-      // Діагональні лінії (опційно)
       ..line(
         -diagLength,
         -diagLength,
@@ -746,10 +762,8 @@ class ScopeDrawer extends SVGDrawerInterface {
         color,
         strokeWidth * 0.7,
       )
-      // Центральна точка
       ..circle(0, 0, strokeWidth * 2, color);
 
-    // Розмітка (риски на колі)
     for (int i = 0; i < 360; i += 30) {
       final rad = i * 3.14159 / 180;
       final x1 = radius * math.cos(rad);
@@ -761,30 +775,26 @@ class ScopeDrawer extends SVGDrawerInterface {
   }
 }
 
-// Комбінований drawer (можна комбінувати кілька)
 class CompositeSVGDrawer extends SVGDrawerInterface {
   final List<SVGDrawerInterface> drawers;
 
   CompositeSVGDrawer(this.drawers);
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     for (var drawer in drawers) {
       drawer.draw(canvas);
     }
   }
 }
 
-// Приклад кастомного drawer для малювання галактики
 class _CustomGalaxyDrawer extends SVGDrawerInterface {
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     final random = math.Random();
 
-    // Малюємо фоновий градієнт (через rect)
     canvas.rect(-400, -400, 800, 800, '#0a0a2a');
 
-    // Малюємо спіраль галактики
     for (double r = 20; r <= 300; r += 15) {
       final angle = r * 0.1;
       final x = r * math.cos(angle);
@@ -792,13 +802,11 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
 
       canvas.circle(x, y, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
 
-      // Друге плече спіралі
       final x2 = r * math.cos(angle + 3.14159);
       final y2 = r * math.sin(angle + 3.14159);
       canvas.circle(x2, y2, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
     }
 
-    // Додаємо зірки випадково
     for (int i = 0; i < 500; i++) {
       final x = random.nextDouble() * 700 - 350;
       final y = random.nextDouble() * 700 - 350;
@@ -808,7 +816,6 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
       canvas.circle(x, y, size, 'rgba(255,255,255,$brightness)');
     }
 
-    // Ядро галактики
     for (int i = 0; i < 100; i++) {
       final angle = random.nextDouble() * 2 * 3.14159;
       final r = random.nextDouble() * 30;
@@ -824,79 +831,13 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
   }
 }
 
-/// A canvas whose coordinate system is in mils.
-///
-/// The SVG [viewBox] spans [−milWidth/2 .. milWidth/2] × [−milHeight/2 ..
-/// milHeight/2] in mil units, while the physical [width]/[height] attributes
-/// are in pixels ([milWidth] × [factor] and [milHeight] × [factor]).
-/// The SVG renderer handles all scaling — no per-element multiplication needed.
-class MilReticleSVGCanvas extends SVGCanvas {
-  final int factor;
-  final double milWidth;
-  final double milHeight;
-
-  /// Correction from em-square to cap-height for typical sans-serif fonts.
-  /// Lets callers specify [fontSize] as the visible height of capital letters
-  /// rather than the SVG em-square unit.
-  static const double _capHeightRatio = 0.72;
-
-  MilReticleSVGCanvas({
-    this.milWidth = 30.0,
-    this.milHeight = 30.0,
-    this.factor = 100,
-    super.unitScale = 1.0,
-  }) : super(width: milWidth, height: milHeight);
-
-  @override
-  XmlElement generate(SVGDrawerInterface drawer) {
-    final el = super.generate(drawer);
-    // super.generate() sets width/height to milWidth/milHeight (user-unit values).
-    // Override them with the intended pixel dimensions.
-    el.setAttribute('width', _fmtNum(milWidth * factor));
-    el.setAttribute('height', _fmtNum(milHeight * factor));
-    el.setAttribute('data-mil-width', _fmtNum(milWidth));
-    el.setAttribute('data-mil-height', _fmtNum(milHeight));
-    el.setAttribute('data-factor', factor.toString());
-    el.setAttribute('shape-rendering', 'crispEdges');
-    return el;
-  }
-
-  // Only text() needs an override: apply cap-height ratio so callers can
-  // specify fontSize in "visible capital-letter height" mils rather than
-  // em-square mils. Coordinates and all other drawing methods work in mils
-  // natively via the viewBox — no factor multiplication required.
-  @override
-  void text(
-    String content,
-    double x,
-    double y,
-    String fill, {
-    double fontSize = 12,
-    String textAnchor = 'middle',
-  }) => super.text(
-    content,
-    x,
-    y,
-    fill,
-    fontSize: fontSize / _capHeightRatio,
-    textAnchor: textAnchor,
-  );
-
-  void drawAdjustment(double x, double y) {
-    this
-      ..line(x, 0, x, y, 'red', 0.05)
-      ..line(0, y, x, y, 'red', 0.05)
-      ..circle(x, y, 0.2, 'red');
-  }
-}
-
 void main() {
-  // Приклад 1: Простий хрест
   print('Створюємо SVG з простим хрестом...');
   final crossDrawer = CrossDrawer(size: 300, strokeWidth: 3, color: '#FF0000');
-  SVGCanvas().generate(crossDrawer).export('cross.svg');
+  MilReticleSVGCanvas(milWidth: 640, milHeight: 640, factor: 1)
+    ..generate(crossDrawer)
+    ..svg.export('cross.svg');
 
-  // Приклад 2: Приціл з колом
   print('Створюємо SVG з прицілом...');
   final scopeDrawer = ScopeDrawer(
     radius: 200,
@@ -904,9 +845,10 @@ void main() {
     strokeWidth: 2,
     color: '#00FF00',
   );
-  SVGCanvas().generate(scopeDrawer).export('scope.svg');
+  MilReticleSVGCanvas(milWidth: 640, milHeight: 640, factor: 1)
+    ..generate(scopeDrawer)
+    ..svg.export('scope.svg');
 
-  // Приклад 3: Комбінований малюнок
   print('Створюємо SVG з комбінованим малюнком...');
   final combinedDrawer = CompositeSVGDrawer([
     ScopeDrawer(
@@ -917,12 +859,15 @@ void main() {
     ),
     CrossDrawer(size: 100, strokeWidth: 1, color: '#FFFFFF'),
   ]);
-  SVGCanvas().generate(combinedDrawer).export('combined.svg');
+  MilReticleSVGCanvas(milWidth: 640, milHeight: 640, factor: 1)
+    ..generate(combinedDrawer)
+    ..svg.export('combined.svg');
 
-  // Приклад 4: Кастомний малюнок (галактика)
   print('Створюємо SVG з кастомним малюнком...');
   final customDrawer = _CustomGalaxyDrawer();
-  SVGCanvas().generate(customDrawer).export('galaxy.svg');
+  MilReticleSVGCanvas(milWidth: 800, milHeight: 800, factor: 1)
+    ..generate(customDrawer)
+    ..svg.export('galaxy.svg');
 
   print('Всі SVG файли успішно створено!');
   print('- cross.svg');

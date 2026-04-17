@@ -24,7 +24,11 @@ class A7pParser {
   static Profile _parseProfile(proto.Profile p) {
     final weapon = Weapon()
       ..name = p.profileName
-      ..twist = Distance.inch(p.rTwist / 100.0);
+      ..twist = Distance.inch(
+        p.twistDir == proto.TwistDir.LEFT
+            ? -(p.rTwist / 100.0)
+            : p.rTwist / 100.0,
+      );
 
     final sight = Sight()
       ..name = p.profileName

@@ -29,6 +29,7 @@ class SightCollectionScreen extends ConsumerWidget {
                   key: ValueKey(sight.name),
                   body: CollectionSightTileBody(sight: sight),
                   item: SightCollectionItem(ref: sight),
+                  searchText: [sight.name, sight.vendor ?? ''].join(' '),
                   onSelect: () async {
                     await ref
                         .read(appStateProvider.notifier)

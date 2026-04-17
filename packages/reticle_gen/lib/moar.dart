@@ -124,7 +124,7 @@ class MoarReticleDrawer implements SVGDrawerInterface {
   MoarReticleDrawer({this.variant = MoarVariant.defaultVariant});
 
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     final A = variant.a; // береться з варіанту (раніше було MoarSizes.A)
     const B = MoarSizes.B;
     const C = MoarSizes.C;
@@ -192,16 +192,36 @@ class MoarReticleDrawer implements SVGDrawerInterface {
         c
           ..rect(-40, -B / 2, 40 - A / 2 - 15, B, color)
           ..rect(A / 2 + 15, -B / 2, 40 - A / 2 + 15, B, color)
-          ..hLine(0, 40, A / 2 + M, color, H)
-          ..hLine(0, -40, -(A / 2 + M), color, H)
-          ..hLine(B / 2, 40, A / 2 + 3, color, I)
-          ..hLine(-B / 2, 40, A / 2 + 3, color, I)
-          ..hLine(B / 2, -40, -(A / 2 + 3), color, I)
-          ..hLine(-B / 2, -40, -(A / 2 + 3), color, I)
-          ..line(A / 2 + M, 0, A / 2 + 3, B / 2, color, I)
-          ..line(A / 2 + M, 0, A / 2 + 3, -B / 2, color, I)
-          ..line(-(A / 2 + M), 0, -(A / 2 + 3), B / 2, color, I)
-          ..line(-(A / 2 + M), 0, -(A / 2 + 3), -B / 2, color, I);
+          ..path(
+            (PathBuilder()
+                  ..moveTo(40, 0)
+                  ..lineTo(A / 2 + M, 0)
+                  ..moveTo(-40, 0)
+                  ..lineTo(-(A / 2 + M), 0))
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: H,
+          )
+          ..path(
+            (PathBuilder()
+                  ..moveTo(40, B / 2)
+                  ..lineTo(A / 2 + 3, B / 2)
+                  ..lineTo(A / 2 + M, 0)
+                  ..lineTo(A / 2 + 3, -B / 2)
+                  ..lineTo(40, -B / 2)
+                  ..close()
+                  ..moveTo(-40, B / 2)
+                  ..lineTo(-(A / 2 + 3), B / 2)
+                  ..lineTo(-(A / 2 + M), 0)
+                  ..lineTo(-(A / 2 + 3), -B / 2)
+                  ..lineTo(-40, -B / 2)
+                  ..close())
+                .d,
+            'none',
+            stroke: color,
+            strokeWidth: I,
+          );
       },
     );
   }

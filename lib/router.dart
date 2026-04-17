@@ -50,11 +50,15 @@ abstract final class Routes {
   static const sightSelect = '/home/profiles/sight-select';
   static const sightCreate = '/home/profiles/sight-select/create';
   static const sightCollection = '/home/profiles/sight-select/collection';
+  static const sightCreateReticlePicker =
+      '/home/profiles/sight-select/create/reticle-picker';
 
   // Profile inline edits (from profile card)
   static const profileEditWeapon = '/home/profiles/weapon-edit';
   static const profileEditAmmo = '/home/profiles/ammo-edit';
   static const profileEditSight = '/home/profiles/sight-edit';
+  static const sightEditReticlePicker =
+      '/home/profiles/sight-edit/reticle-picker';
 
   // Ammo wizard sub-screens
   static const ammoEditMultiBcG1 = '/home/profiles/ammo-edit/multi-bc-g1';
@@ -148,6 +152,14 @@ final appRouter = GoRouter(
                         GoRoute(
                           path: 'create',
                           builder: (_, _) => const SightWizardScreen(),
+                          routes: [
+                            GoRoute(
+                              path: 'reticle-picker',
+                              builder: (_, state) => ReticlePickerScreen(
+                                currentReticleId: state.extra as String?,
+                              ),
+                            ),
+                          ],
                         ),
                         GoRoute(
                           path: 'collection',
@@ -239,6 +251,14 @@ final appRouter = GoRouter(
                       path: 'sight-edit',
                       builder: (_, state) =>
                           SightWizardScreen(initial: state.extra as Sight?),
+                      routes: [
+                        GoRoute(
+                          path: 'reticle-picker',
+                          builder: (_, state) => ReticlePickerScreen(
+                            currentReticleId: state.extra as String?,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

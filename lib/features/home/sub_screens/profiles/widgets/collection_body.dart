@@ -12,23 +12,47 @@ class BaseCollectionBody extends StatefulWidget {
 
 class _BaseCollectionBodyState extends State<BaseCollectionBody> {
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  String _query = '';
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _query.isEmpty
+        ? widget.tiles
+        : widget.tiles
+              .where(
+                (t) =>
+                    t.searchText.toLowerCase().contains(_query.toLowerCase()),
+              )
+              .toList();
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: ListTile(
             title: TextField(
-              decoration: InputDecoration(labelText: 'Search'),
-              textCapitalization: TextCapitalization.words,
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search',
+                suffixIcon: _query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _query = '');
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (v) => setState(() => _query = v),
             ),
           ),
         ),
@@ -41,8 +65,8 @@ class _BaseCollectionBodyState extends State<BaseCollectionBody> {
               child: ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.only(right: 12, bottom: 88),
-                itemCount: widget.tiles.length,
-                itemBuilder: (context, index) => widget.tiles[index],
+                itemCount: filtered.length,
+                itemBuilder: (context, index) => filtered[index],
               ),
             ),
           ),

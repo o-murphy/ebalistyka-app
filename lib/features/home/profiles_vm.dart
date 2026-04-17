@@ -69,6 +69,7 @@ class ProfileCardData {
     required this.name,
     required this.weaponFingerprint,
     required this.weaponName,
+    this.weaponImage,
     required this.weaponCaliber,
     required this.twist,
     required this.rightHanded,
@@ -97,6 +98,7 @@ class ProfileCardData {
   /// Hash of all weapon entity fields. Triggers card rebuild on any weapon edit.
   final int weaponFingerprint;
   final String weaponName;
+  final String? weaponImage;
   final String weaponCaliber;
   final String twist;
   final bool rightHanded;
@@ -185,6 +187,7 @@ ProfileCardData _buildCardData(
     name: profile.name,
     weaponFingerprint: _weaponFingerprint(weapon),
     weaponName: weapon?.name ?? '—',
+    weaponImage: weapon?.image,
     weaponCaliber: weapon != null ? formatter.diameter(weapon.caliber) : '—',
     twist: weapon != null && weapon.twistInch.abs() > 0
         ? formatter.twist(weapon.twist)

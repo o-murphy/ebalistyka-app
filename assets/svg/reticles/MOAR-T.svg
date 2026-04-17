@@ -34,21 +34,10 @@
       <text id="text-5" x="-3" y="20.263" fill="black" font-size="1.042" text-anchor="middle">20</text>
       <rect id="rect-0" x="-35" y="-0.86" width="11" height="1.72" fill="black"/>
       <rect id="rect-1" x="24" y="-0.86" width="19" height="1.72" fill="black"/>
-      <line id="hline-2" x1="35" y1="0" x2="21" y2="0" stroke="black" stroke-width="0.063"/>
-      <line id="hline-3" x1="-35" y1="0" x2="-21" y2="0" stroke="black" stroke-width="0.063"/>
-      <line id="hline-4" x1="35" y1="0.86" x2="23" y2="0.86" stroke="black" stroke-width="0.3"/>
-      <line id="hline-5" x1="35" y1="-0.86" x2="23" y2="-0.86" stroke="black" stroke-width="0.3"/>
-      <line id="hline-6" x1="-35" y1="0.86" x2="-23" y2="0.86" stroke="black" stroke-width="0.3"/>
-      <line id="hline-7" x1="-35" y1="-0.86" x2="-23" y2="-0.86" stroke="black" stroke-width="0.3"/>
-      <line id="line-0" x1="21" y1="0" x2="23" y2="0.86" stroke="black" stroke-width="0.3"/>
-      <line id="line-1" x1="21" y1="0" x2="23" y2="-0.86" stroke="black" stroke-width="0.3"/>
-      <line id="line-2" x1="-21" y1="0" x2="-23" y2="0.86" stroke="black" stroke-width="0.3"/>
-      <line id="line-3" x1="-21" y1="0" x2="-23" y2="-0.86" stroke="black" stroke-width="0.3"/>
-      <line id="vline-6" x1="0" y1="35" x2="0" y2="21" stroke="black" stroke-width="0.063"/>
-      <line id="vline-7" x1="0.86" y1="35" x2="0.86" y2="23" stroke="black" stroke-width="0.3"/>
-      <line id="vline-8" x1="-0.86" y1="35" x2="-0.86" y2="23" stroke="black" stroke-width="0.3"/>
-      <line id="line-4" x1="0" y1="21" x2="0.86" y2="23" stroke="black" stroke-width="0.3"/>
-      <line id="line-5" x1="0" y1="21" x2="-0.86" y2="23" stroke="black" stroke-width="0.3"/>
+      <path id="path-0" d="M 35 0 L 21 0 M -35 0 L -21 0" fill="none" stroke="black" stroke-width="0.063"/>
+      <path id="path-1" d="M 35 0.86 L 23 0.86 L 21 0 L 23 -0.86 L 35 -0.86 M -35 0.86 L -23 0.86 L -21 0 L -23 -0.86 L -35 -0.86" fill="none" stroke="black" stroke-width="0.3"/>
+      <path id="path-2" d="M 0 35 L 0 21" fill="none" stroke="black" stroke-width="0.063"/>
+      <path id="path-3" d="M 0.86 35 L 0.86 23 L 0 21 L -0.86 23 L -0.86 35" fill="none" stroke="black" stroke-width="0.3"/>
       <rect id="rect-2" x="-0.86" y="24" width="1.72" height="19" fill="black"/>
     </g>
   </g>

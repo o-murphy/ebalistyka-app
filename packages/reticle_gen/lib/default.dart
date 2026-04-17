@@ -2,7 +2,7 @@ import 'package:reticle_gen/reticle_gen.dart';
 
 class MilReticleDrawer implements SVGDrawerInterface {
   @override
-  void draw(SVGCanvas canvas) {
+  void draw(MilReticleSVGCanvas canvas) {
     const String color = 'onSurface';
     const double thickness = 0.05;
     const double tickHalfLength = 0.5;
