@@ -181,7 +181,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           c.text(
             i.abs().toStringAsFixed(0),
             i,
-            -(halfI + labelOffset + F / 2),
+            -(halfI + F),
             color,
             fontSize: K,
             textAnchor: 'middle',

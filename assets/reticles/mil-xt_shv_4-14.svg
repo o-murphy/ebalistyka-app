@@ -39,26 +39,26 @@
     <rect id="rect-3" x="15" y="-0.2" width="9" height="0.4" fill="black"/>
     <path id="hruler-0" d="M 11 -0.3 L 11 0.3 M 12 -0.3 L 12 0.3 M 13 -0.3 L 13 0.3 M 14 -0.3 L 14 0.3 M 15 -0.3 L 15 0.3" fill="none" stroke="black" stroke-width="0.044"/>
     <path id="hruler-1" d="M -11 -0.3 L -11 0.3 M -12 -0.3 L -12 0.3 M -13 -0.3 L -13 0.3 M -14 -0.3 L -14 0.3 M -15 -0.3 L -15 0.3" fill="none" stroke="black" stroke-width="0.044"/>
-    <text id="text-0" x="-10" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">10</text>
-    <text id="text-1" x="-9" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">9</text>
-    <text id="text-2" x="-8" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">8</text>
-    <text id="text-3" x="-7" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">7</text>
-    <text id="text-4" x="-6" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">6</text>
-    <text id="text-5" x="-5" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">5</text>
-    <text id="text-6" x="-4" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">4</text>
-    <text id="text-7" x="-3" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">3</text>
-    <text id="text-8" x="-2" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">2</text>
-    <text id="text-9" x="-1" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">1</text>
-    <text id="text-10" x="1" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">1</text>
-    <text id="text-11" x="2" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">2</text>
-    <text id="text-12" x="3" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">3</text>
-    <text id="text-13" x="4" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">4</text>
-    <text id="text-14" x="5" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">5</text>
-    <text id="text-15" x="6" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">6</text>
-    <text id="text-16" x="7" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">7</text>
-    <text id="text-17" x="8" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">8</text>
-    <text id="text-18" x="9" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">9</text>
-    <text id="text-19" x="10" y="-0.9" fill="black" font-size="0.278" text-anchor="middle">10</text>
+    <text id="text-0" x="-10" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">10</text>
+    <text id="text-1" x="-9" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">9</text>
+    <text id="text-2" x="-8" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">8</text>
+    <text id="text-3" x="-7" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">7</text>
+    <text id="text-4" x="-6" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">6</text>
+    <text id="text-5" x="-5" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">5</text>
+    <text id="text-6" x="-4" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">4</text>
+    <text id="text-7" x="-3" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">3</text>
+    <text id="text-8" x="-2" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">2</text>
+    <text id="text-9" x="-1" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">1</text>
+    <text id="text-10" x="1" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">1</text>
+    <text id="text-11" x="2" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">2</text>
+    <text id="text-12" x="3" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">3</text>
+    <text id="text-13" x="4" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">4</text>
+    <text id="text-14" x="5" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">5</text>
+    <text id="text-15" x="6" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">6</text>
+    <text id="text-16" x="7" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">7</text>
+    <text id="text-17" x="8" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">8</text>
+    <text id="text-18" x="9" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">9</text>
+    <text id="text-19" x="10" y="-0.7" fill="black" font-size="0.278" text-anchor="middle">10</text>
     <path id="hruler-2" d="M 10 -0.3 L 10 0.3 M 9 -0.3 L 9 0.3 M 8 -0.3 L 8 0.3 M 7 -0.3 L 7 0.3 M 6 -0.3 L 6 0.3 M 5 -0.3 L 5 0.3 M 4 -0.3 L 4 0.3 M 3 -0.3 L 3 0.3 M 2 -0.3 L 2 0.3 M 1 -0.3 L 1 0.3" fill="none" stroke="red" stroke-width="0.044"/>
     <path id="hruler-3" d="M -10 -0.3 L -10 0.3 M -9 -0.3 L -9 0.3 M -8 -0.3 L -8 0.3 M -7 -0.3 L -7 0.3 M -6 -0.3 L -6 0.3 M -5 -0.3 L -5 0.3 M -4 -0.3 L -4 0.3 M -3 -0.3 L -3 0.3 M -2 -0.3 L -2 0.3 M -1 -0.3 L -1 0.3" fill="none" stroke="red" stroke-width="0.044"/>
     <path id="hruler-4" d="M 9.8 0 L 9.8 0.2 M 8.8 0 L 8.8 0.2 M 7.8 0 L 7.8 0.2 M 6.8 0 L 6.8 0.2 M 5.8 0 L 5.8 0.2 M 4.8 0 L 4.8 0.2 M 3.8 0 L 3.8 0.2 M 2.8 0 L 2.8 0.2 M 1.8 0 L 1.8 0.2 M 0.8 0 L 0.8 0.2" fill="none" stroke="red" stroke-width="0.044"/>
