@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/export/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -13,6 +14,7 @@ import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfilesScreen extends ConsumerStatefulWidget {
   const ProfilesScreen({super.key});
@@ -111,7 +113,21 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       ActionSheetItem(
         icon: IconDef.import,
         title: 'Import from file',
-        onTap: () async => showNotAvailableSnackBar(context, 'Import'),
+        onTap: () async {
+          final ebcp = await EbcpService.pickAndParse();
+          if (ebcp == null || !mounted) return;
+          final profiles = ebcp.items
+              .map((i) => i.asProfile())
+              .whereType<ProfileExport>()
+              .toList();
+          if (profiles.isEmpty) {
+            showNotAvailableSnackBar(context, 'No profiles found in file');
+            return;
+          }
+          for (final p in profiles) {
+            await ref.read(appStateProvider.notifier).importProfile(p);
+          }
+        },
       ),
     ],
   );
@@ -144,7 +160,34 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   }
 
   Future<void> _onExport(String profileId) async {
-    // TODO: serialize profile and share (Phase 5+)
+    final appState = ref.read(appStateProvider).value;
+    if (appState == null) return;
+    final profile = appState.profiles
+        .where((p) => p.id.toString() == profileId)
+        .firstOrNull;
+    if (profile == null) return;
+    final weapon = appState.weapons
+        .where((w) => w.id == profile.weapon.targetId)
+        .firstOrNull;
+    if (weapon == null) return;
+    final ammo = appState.cartridges
+        .where((a) => a.id == profile.ammo.targetId)
+        .firstOrNull;
+    final sight = appState.sights
+        .where((s) => s.id == profile.sight.targetId)
+        .firstOrNull;
+
+    final info = await PackageInfo.fromPlatform();
+    final ebcp = EbcpFile(
+      version: info.version,
+      items: [
+        EbcpItem.fromProfile(
+          ProfileExport.fromEntities(profile, weapon, ammo, sight),
+        ),
+      ],
+    );
+    if (!mounted) return;
+    await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(profile.name));
   }
 
   Future<void> _onEditRifle(String profileId) async {

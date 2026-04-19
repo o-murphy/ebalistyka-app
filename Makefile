@@ -1,4 +1,4 @@
-.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean run run-clean unit
+.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean run run-clean unit gen
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -38,6 +38,9 @@ objectbox-setup:
 
 objectbox:
 	cd packages/ebalistyka_db && dart run build_runner build
+
+gen:
+	cd packages/ebalistyka_db && dart run build_runner build --delete-conflicting-outputs
 
 objectbox-clean:
 	cd packages/ebalistyka_db && dart run build_runner clean

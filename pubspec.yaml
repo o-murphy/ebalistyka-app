@@ -55,6 +55,7 @@ dependencies:
   riverpod: ^3.2.1
   objectbox_flutter_libs: any
   flutter_svg: ^2.0.0
+  file_picker: ^8.0.0
 
 dev_dependencies:
   flutter_test:
