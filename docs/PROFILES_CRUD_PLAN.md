@@ -469,7 +469,51 @@ ProfilesScreen  (/home/profiles)
 
 ## Export / Import
 
-Формат TBD (json або кастомний). Буде реалізовано пізніше.
+### .ebcp (eBalistyka native format)
+
+JSON-based архів з CBOR-упаковкою. Визначений у `packages/ebalistyka_db`:
+
+```
+EbcpFile
+  version: String        ← kEbcpFormatVersion = '1.0.0'
+  items: List<EbcpItem>  ← oneOf: profile / ammo / sight / settings
+```
+
+`ProfileExport` — плоска DTO з усіма полями Profile + Weapon + Ammo? + Sight? (без ObjectBox ID).
+JSON-серіалізація через `json_serializable` (`.g.dart`).
+
+Сервіс: `EbcpService` (`lib/core/services/ebcp_service.dart`):
+- `shareFile(EbcpFile, name)` — Android/iOS: share_plus; Desktop: FilePicker.saveFile
+- `pickAndParse()` — FilePicker → `EbcpFile.fromEbcp(bytes)`
+- `buildFullExport(WidgetRef)` — повний бекап: всі профілі + standalone ammo/sight + settings
+- `restoreFromExport(EbcpFile, WidgetRef)` — відновлення через `appStateProvider.notifier`
+
+### .a7p (Archer Ballistic Profile)
+
+Binary протобуф формат, сумісний з A-TACS / Kestrel:
+
+```
+[32 bytes ASCII hex MD5][protobuf bytes → proto.Payload]
+```
+
+Бібліотека: `packages/a7p` (окремий Dart-пакет, без Flutter-залежностей):
+- `A7pFile` — `encode(Payload) → Uint8List` / `decode(Uint8List) → Payload`
+- `A7pConverter` — `fromPayload(Payload) → ProfileExport` / `toPayload(ProfileExport) → Payload`
+- `A7pValidator` — перевірка полів за специфікацією (діапазони, обов'язкові поля)
+- Proto-схема: `packages/a7p/proto/profedit.proto` (генерація: `make proto-a7p`)
+
+Сервіс: `A7pService` (`lib/core/services/a7p_service.dart`):
+- `shareFile(ProfileExport)` — Android/iOS: share_plus; Desktop: FilePicker.saveFile
+- `pickAndParse()` → `ProfileExport?` — одиночний .a7p picker
+- `pickAndParseProfiles()` → `List<ProfileExport>?` — picker з обома розширеннями (.ebcp + .a7p), auto-detect за розширенням файлу
+
+### UI (ProfilesScreen)
+
+Per-profile **Export** (⋮ menu → "Export"): bottom sheet з вибором формату (.ebcp / .a7p).
+
+**Import from file** (FAB → "Add" → "Import from file"): єдиний FilePicker приймає `.ebcp` і `.a7p`, формат визначається автоматично за розширенням.
+
+**Settings → Backup**: повний backup через `EbcpService.buildFullExport` / `restoreFromExport` (тільки .ebcp).
 
 ---
 
@@ -478,6 +522,10 @@ ProfilesScreen  (/home/profiles)
 | Файл                                                                              | Стан | Опис                                                                                                                                                                                                                                                                                                    |
 | --------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `packages/ebalistyka_db/lib/src/entities.dart`                                    | ✅    | ObjectBox entities                                                                                                                                                                                                                                                                                      |
+| `packages/ebalistyka_db/lib/src/export/`                                          | ✅    | Export DTOs: `ProfileExport`, `WeaponExport`, `AmmoExport`, `SightExport`, `SettingsExport`, `EbcpFile`, `EbcpItem` — JSON-серіалізовані через `json_serializable`; `kEbcpFormatVersion = '1.0.0'`                                                                                                       |
+| `packages/a7p/`                                                                   | ✅    | Окремий Dart-пакет (без Flutter): `A7pFile` (encode/decode), `A7pConverter` (proto↔ProfileExport), `A7pValidator`; proto-схема: `proto/profedit.proto`; генерація: `make proto-a7p`                                                                                                                     |
+| `lib/core/services/ebcp_service.dart`                                             | ✅    | `EbcpService`: shareFile, pickAndParse, buildFullExport(WidgetRef), restoreFromExport(WidgetRef)                                                                                                                                                                                                        |
+| `lib/core/services/a7p_service.dart`                                              | ✅    | `A7pService`: shareFile, pickAndParse, pickAndParseProfiles (єдиний picker .ebcp+.a7p, auto-detect за розширенням)                                                                                                                                                                                      |
 | `lib/core/providers/app_state_provider.dart`                                      | ✅    | Single source of truth, OB streams                                                                                                                                                                                                                                                                      |
 | `lib/core/providers/shot_context_provider.dart`                                   | ✅    | ShotContext (profile + conditions)                                                                                                                                                                                                                                                                      |
 | `lib/core/providers/recalc_coordinator.dart`                                      | ✅    | Централізований trigger розрахунків                                                                                                                                                                                                                                                                     |
@@ -491,11 +539,10 @@ ProfilesScreen  (/home/profiles)
 | `lib/core/extensions/profile_extensions.dart`                                     | ✅    | isReadyForCalculation, toShot                                                                                                                                                                                                                                                                           |
 | `lib/core/extensions/conditions_extensions.dart`                                  | ✅    | typed getters/setters                                                                                                                                                                                                                                                                                   |
 | `lib/core/extensions/settings_extensions.dart`                                    | ✅    | enum getters (ThemeMode, Unit)                                                                                                                                                                                                                                                                          |
-| `lib/core/a7p/a7p_parser.dart`                                                    | ✅    | proto → OB entities                                                                                                                                                                                                                                                                                     |
 | `lib/core/collection/collection_parser.dart`                                      | ✅    | JSON → OB entities                                                                                                                                                                                                                                                                                      |
 | `lib/core/models/collection_item.dart`                                            | ✅    | `CollectionItem<T>` abstraction; `CartridgeCollectionItem`, `SightCollectionItem`, `WeaponCollectionItem`                                                                                                                                                                                               |
 | `lib/features/home/profiles_vm.dart`                                              | ✅    | `profilesPagingProvider` (sync Provider), `profileCardProvider` (family), `profilesActionsProvider` (Notifier<void>); `ProfileCardData.==` — 7 полів: id + name + `weaponFingerprint` + ammoId + `ammoFingerprint` + sightId + `sightFingerprint`; кожен fingerprint хешує всі поля відповідного entity |
-| `lib/features/home/sub_screens/my_profiles_screen.dart`                           | ✅    | ProfilesScreen: PageView, paging listener, FAB, per-profile callbacks                                                                                                                                                                                                                                   |
+| `lib/features/home/sub_screens/my_profiles_screen.dart`                           | ✅    | ProfilesScreen: PageView, paging listener, FAB, per-profile callbacks; export (.ebcp/.a7p sheet), import (auto-detect)                                                                                                                                                                                  |
 | `lib/features/home/sub_screens/profiles/widgets/profile_card.dart`                | ✅    | ConsumerStatefulWidget; watchає profileCardProvider(id); _ProfileControlTile з ammo/sight FABs + hints                                                                                                                                                                                                  |
 | `lib/features/home/sub_screens/my_ammo_screen.dart`                               | ✅    | Вибір/створення ammo для профілю; FAB → sheet (Create / From cartridge collection / From bullet collection)                                                                                                                                                                                             |
 | `lib/features/home/sub_screens/my_sights_screen.dart`                             | ✅    | Вибір sight для профілю                                                                                                                                                                                                                                                                                 |
@@ -537,7 +584,8 @@ ProfilesScreen  (/home/profiles)
 - [x] Duplicate sight — реалізовано
 - [x] Remove ammo / sight — реалізовано з confirm dialog
 - [x] Caliber mismatch detection в AmmoWizardScreen (edit mode) — SnackBar з "Update"
-- [ ] Export / Import profile / ammo / sight — формат TBD (наразі `showNotAvailableSnackBar`)
+- [x] Export / Import profile — .ebcp та .a7p формати; auto-detect на імпорті; format picker на експорті
+- [x] Full backup export/import — Settings → "Export/Import backup" (.ebcp, всі дані)
 
 ---
 
@@ -561,8 +609,7 @@ ProfilesScreen  (/home/profiles)
 
 ## Post-Alpha TODO
 
-- [ ] A7P import UI — `file_picker` → `a7p_parser.dart` → завантажити в профіль
-- [ ] A7P export UI — серіалізація → `share_plus`
-- [ ] Profile / ammo / sight Export/Import — формат TBD
+- [x] A7P import/export — `packages/a7p` + `A7pService` + UI
+- [x] Profile Export/Import — .ebcp + .a7p
 - [ ] Reticles, corrections display, entity images — див. [RETICLES_AND_IMAGES.md](RETICLES_AND_IMAGES.md)
 - [ ] UX: Localization, RulerSelector, Help overlay, Tools screen, Legal links — див. [POST_ALPHA_UX.md](POST_ALPHA_UX.md)

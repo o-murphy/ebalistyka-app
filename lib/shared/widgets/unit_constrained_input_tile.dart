@@ -7,7 +7,7 @@ import 'package:bclibc_ffi/unit.dart';
 
 // ── Shared tile logic ───────────────────────────────────────────────────────
 
-/// Базовий клас для тайлів з підтримкою generic типу
+/// Base class for tiles with generic type support
 abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
   const UnitValueFieldTileBase({
     required this.rawValue,
@@ -32,10 +32,10 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
 
   String get _sym => symbol ?? displayUnit.symbol;
 
-  /// Отримати display значення для показу (у випадку null повертає '—')
+  /// Get display value to display (in case of null returns '—')
   String _getDisplayText() {
-    // Для nullable варіанту rawValue може бути null, але ми не можемо це перевірити в базовому класі
-    // Тому цей метод має бути перевизначений в нащадках
+    // For nullable, rawValue can be null, but we can't check for it in the base class
+    // Therefore, this method must be overridden in descendants
     throw UnimplementedError();
   }
 
@@ -66,7 +66,7 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
   void _showDialog(BuildContext context);
 }
 
-/// Тайл для обов'язкового значення (не може бути null)
+/// Tile for required value (cannot be null)
 class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
   const UnitValueFieldTile({
     super.key,
@@ -101,11 +101,11 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
   );
 }
 
-/// Тайл для опціонального значення (може бути null).
+/// Tile for optional value (can be null).
 ///
-/// [isRequired] — якщо `true` і значення `null`, тайл підсвічується кольором
-/// помилки (червоний icon + текст "Required"). Використовується для полів,
-/// які блокують збереження коли порожні.
+/// [isRequired] — if `true` and value `null`, tile is highlighted in
+/// error color (red icon + text "Required"). Used for fields
+/// that block saving when empty.
 class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
   const NullableUnitValueFieldTile({
     super.key,

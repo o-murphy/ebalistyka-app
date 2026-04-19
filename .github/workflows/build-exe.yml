@@ -90,5 +90,5 @@ jobs:
               }
             } catch (error) {
               console.log('Error posting comment:', error.message);
-              // Не провалюємо workflow через помилку коментаря
+              // Don't fail the workflow due to a comment error
             }

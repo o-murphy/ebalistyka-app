@@ -5,7 +5,7 @@ const double epsilon = 1e-6;
 /// 1 MOA expressed in MIL: (π/10800) / (π/3200) = 3200/10800 = 8/27
 const double moaToMil = 8.0 / 27.0;
 
-// ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
+// ─── Geometric constants (common to all variants) ───────────────────────
 class MoarTSizes {
   static const double A = 40;
   static const double B = 1.72;
@@ -20,9 +20,9 @@ class MoarTSizes {
   static const double O = 2;
 }
 
-// ─── Варіант сітки (subtension chart) ────────────────────────────────────────
+// ─── Reticle option (subtension chart) ─
 
-/// Параметри subtension для конкретної моделі прицілу.
+/// Subtension parameters for a specific scope model.
 /// [f]
 /// [i]
 /// [j]
@@ -42,13 +42,13 @@ class MoarTVariant {
     required this.n,
   });
 
-  /// Ідентифікатор для імені файлу: «ATACR 7-35» → «atacr_7-35»
+  /// Identifier for the file name: "ATACR 7-35" → "atacr_7-35"
   String get fileId =>
       name.toLowerCase().replaceAll(' ', '_').replaceAll('/', '-');
 
-  // ── Предефайнені варіанти ─────────────────────────────────────────────────
+  // ── Predefined options ─────────────────────────────────────────────────
 
-  // defaultVariant — окремий const, бо використовується як default-значення параметра
+  // defaultVariant is a separate const because it is used as the default value of the parameter
   static const defaultVariant = MoarTVariant(
     name: 'NXS 22x & 32x',
     f: 0.75,
@@ -62,8 +62,8 @@ class MoarTVariant {
     MoarTVariant(name: 'ATACR 25x', f: 0.65, i: 0.25, j: 0.05, n: 0.5),
   ];
 
-  /// Знаходить варіант за назвою (регістр не важливий).
-  /// Повертає [defaultVariant] якщо не знайдено.
+  /// Finds a variant by name (case insensitive).
+  /// Returns [defaultVariant] if not found.
   static MoarTVariant byName(String name) {
     final lower = name.toLowerCase();
     return all.firstWhere(
@@ -208,9 +208,9 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   // Usage: dart mil_xt.dart [variant] [output.svg]
-  //   variant — назва або fileId (напр. "ATACR 7-35" або "atacr_7-35")
-  //             якщо не вказано або не знайдено — використовується defaultVariant
-  //   output  — шлях до файлу; якщо не вказано — "<fileId>.svg"
+  // variant — name or fileId (e.g. "ATACR 7-35" or "atacr_7-35")
+  // if not specified or not found — defaultVariant is used
+  // output — path to file; if not specified — "<fileId>.svg"
   final variant = args.isNotEmpty
       ? MoarTVariant.byName(args[0])
       : MoarTVariant.defaultVariant;

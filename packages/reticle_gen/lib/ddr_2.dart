@@ -5,7 +5,7 @@ const double epsilon = 1e-6;
 /// 1 MOA expressed in MIL: (π/10800) / (π/3200) = 3200/10800 = 8/27
 const double moaToMil = 8.0 / 27.0;
 
-// ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
+// ─── Geometric constants (common to all variants) ─────────────────────
 class Ddr2Sizes {
   static const double A = 28.8; // MOA
   static const double B = 12.9; // MOA
@@ -73,21 +73,21 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
             final tipOffset = offset + H;
             final halfP = P / 2;
 
-            // Верхня права стрілка (залитий трикутник)
+            // Top right arrow (filled triangle)
             pb
               ..moveTo(offset, 0)
               ..lineTo(tipOffset, halfP)
               ..lineTo(tipOffset, -halfP)
               ..close();
 
-            // Верхня ліва стрілка (залитий трикутник)
+            // Top left arrow (filled triangle)
             pb
               ..moveTo(-offset, 0)
               ..lineTo(-tipOffset, halfP)
               ..lineTo(-tipOffset, -halfP)
               ..close();
 
-            // Контурні ребра стрілок
+            // Contoured arrow edges
             pb
               ..moveTo(offset, 0)
               ..lineTo(tipOffset, halfP)
@@ -105,7 +105,7 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   // Usage: dart ddr_2.dart [output.svg]
-  //   output — шлях до файлу; якщо не вказано — "DDR-2.svg"
+  // output — path to file; if not specified — "DDR-2.svg"
 
   final outputPath = args.isNotEmpty ? args[0] : 'DDR-2.svg';
 

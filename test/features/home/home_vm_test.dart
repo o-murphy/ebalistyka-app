@@ -454,7 +454,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // build() повертає HomeUiNoData поки не викликано recalculate
+      // build() returns HomeUiNoData until recalculate is called
       final state = await container.read(homeVmProvider.future);
       expect(state, isA<HomeUiNoData>());
     });

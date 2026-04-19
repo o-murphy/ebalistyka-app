@@ -13,19 +13,19 @@ echo "   DB: ${DB_DIR}"
 echo "========================================="
 
 if [ -f "${DB_DIR}/data.mdb" ]; then
-    echo -e "${GREEN}✅ База даних знайдена!${NC}"
-    echo "   Розмір: $(du -sh "${DB_DIR}" | cut -f1)"
+    echo -e "${GREEN}✅ Database found!${NC}"
+    echo "Size: $(du -sh "${DB_DIR}" | cut -f1)"
 else
-    echo -e "${YELLOW}⚠️  База даних не знайдена за шляхом ${DB_DIR}${NC}"
-    echo "   Запустіть застосунок хоча б раз, щоб створити базу."
+    echo -e "${YELLOW}⚠️ Database not found at path ${DB_DIR}${NC}"
+    echo " Run the application at least once to create the database."
     exit 1
 fi
 
 echo ""
-echo "Запускаємо ObjectBox Admin..."
+echo "Launching ObjectBox Admin..."
 echo "========================================="
-echo "🌐 Відкрийте в браузері: http://localhost:8081"
-echo "🔒 Для зупинки натисніть Ctrl+C"
+echo "🌐 Open in browser: http://localhost:8081"
+echo "🔒 To stop, press Ctrl+C"
 echo "========================================="
 echo ""
 

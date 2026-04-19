@@ -2,7 +2,7 @@ import 'package:reticle_gen/reticle_gen.dart';
 
 const double epsilon = 1e-6;
 
-// ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
+// ─── Geometric constants (common to all variants) ───────────────────────
 class MilRF1Sizes {
   static const double A = 10;
   static const double D = 0.5;
@@ -19,13 +19,13 @@ class MilRF1Sizes {
   static const double Q = 0.1;
 }
 
-// ─── Варіант сітки (subtension chart) ────────────────────────────────────────
+// ─── Reticle option (subtension chart) ─
 
-/// Параметри subtension для конкретної моделі прицілу.
-/// [b]  — товщина тонких ліній (мілів)
-/// [c]  — товщина товстих ліній (мілів)
-/// [h]  — висота тексту/шрифту (мілів)
-/// [n]  — крок підписів (мілів)
+/// Subtension parameters for a specific scope model.
+/// [b] — thickness of thin lines (mils)
+/// [c] — thickness of thick lines (mils)
+/// [h] — height of text/font (mils)
+/// [n] — pitch of captions (mils)
 class MilRF1Variant {
   final String name;
   final double b;
@@ -41,13 +41,13 @@ class MilRF1Variant {
     required this.n,
   });
 
-  /// Ідентифікатор для імені файлу: «ATACR 16x F1» → «atacr_16x_f1»
+  /// Identifier for the file name: "ATACR 16x F1" → "atacr_16x_f1"
   String get fileId =>
       name.toLowerCase().replaceAll(' ', '_').replaceAll('/', '-');
 
-  // ── Предефайнені варіанти ─────────────────────────────────────────────────
+  // ── Predefined options ─────────────────────────────────────────────────
 
-  // defaultVariant — окремий const, бо використовується як default-значення параметра
+  // defaultVariant is a separate const because it is used as the default value of the parameter
   static const defaultVariant = MilRF1Variant(
     name: 'ATACR 16x F1',
     b: 0.05,
@@ -62,8 +62,8 @@ class MilRF1Variant {
     MilRF1Variant(name: 'ATACR 35x F1', b: 0.036, c: 0.1, h: 0.28, n: 0.029),
   ];
 
-  /// Знаходить варіант за назвою (регістр не важливий).
-  /// Повертає [defaultVariant] якщо не знайдено.
+  /// Finds a variant by name (case insensitive).
+  /// Returns [defaultVariant] if not found.
   static MilRF1Variant byName(String name) {
     final lower = name.toLowerCase();
     return all.firstWhere(
@@ -217,9 +217,9 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   // Usage: dart mil_xt.dart [variant] [output.svg]
-  //   variant — назва або fileId (напр. "ATACR 7-35" або "atacr_7-35")
-  //             якщо не вказано або не знайдено — використовується defaultVariant
-  //   output  — шлях до файлу; якщо не вказано — "<fileId>.svg"
+  // variant — name or fileId (e.g. "ATACR 7-35" or "atacr_7-35")
+  // if not specified or not found — defaultVariant is used
+  // output — path to file; if not specified — "<fileId>.svg"
   final variant = args.isNotEmpty
       ? MilRF1Variant.byName(args[0])
       : MilRF1Variant.defaultVariant;

@@ -1,44 +1,44 @@
 # Post-Alpha UX Features
 
-Функції, які не є блокерами альфа-релізу. Архітектура і підхід для кожної — TBD.
+Features that are not alpha release blockers. Architecture and approach for each is TBD.
 
 ---
 
 ## Localization uk/en
 
-- ARB + `flutter_localizations`
-- Мови: Ukrainian (основна) + English
-- Охоплює всі UI-рядки, включно з назвами одиниць, помилками валідації, label-ами
+- ARB + ​​`flutter_localizations`
+- Languages: Ukrainian (main) + English
+- Covers all UI lines, including unit names, validation errors, labels
 
 ---
 
 ## RulerSelector
 
-Touch-drag ruler для `QuickActionsPanel` на HomeScreen.
-Замінює або доповнює поточні кнопки швидкого доступу.
-Деталі взаємодії — TBD.
+Touch-drag ruler for `QuickActionsPanel` on HomeScreen.
+Replaces or complements current quick access buttons.
+Interaction details TBD.
 
 ---
 
 ## Reticle Fullscreen
 
-Відкривається з Home Page 1 (HomeReticlePage).
-Повноекранний вигляд сітки прицілу з поправками.
-Залежить від реалізації відображення ретіклів — див. [RETICLES_AND_IMAGES.md](RETICLES_AND_IMAGES.md).
+Opens from Home Page 1 (HomeReticlePage).
+Full-screen view of the reticle with corrections.
+Depends on the reticle display implementation - see [RETICLES_AND_IMAGES.md](RETICLES_AND_IMAGES.md).
 
 ---
 
 ## Help Overlay / Coach Marks
 
-Підказки при першому запуску або за запитом користувача.
-Бібліотека TBD (наприклад `tutorial_coach_mark`).
+Hints on first run or upon user request.
+TBD library (e.g. `tutorial_coach_mark`).
 
 ---
 
 ## Tools Screen
 
-Відкривається з кнопки "More" на HomeScreen (наразі `showNotAvailableSnackBar`).
-Набір утиліт — склад TBD.
+Opened from the "More" button on the HomeScreen (currently `showNotAvailableSnackBar`).
+Utility set — composition TBD.
 
 ---
 
@@ -47,4 +47,13 @@ Touch-drag ruler для `QuickActionsPanel` на HomeScreen.
 - Privacy Policy
 - Terms of Use
 - Changelog
-- GitHub посилання (мінімум для альфи — може переїхати в Alpha TODO)
+- GitHub link (minimum for alpha — may move to Alpha TODO)
+
+---
+
+## Implemented (carried over from Post-Alpha)
+
+- [x] **.a7p import/export** — `packages/a7p` (A7pFile, A7pConverter, A7pValidator, proto-scheme); `A7pService` у `lib/core/services/`
+- [x] **Profile export** — bottom sheet with format selection: .ebcp / .a7p
+- [x] **Profile import** — single FilePicker (.ebcp + .a7p), auto-detect by extension
+- [x] **Full backup** — Settings → "Export backup" / "Import backup" (.ebcp)

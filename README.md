@@ -41,6 +41,7 @@ A cross-platform ballistic trajectory calculator built with Flutter. Powered by 
 - **Powder sensitivity** — temperature-based MV correction tables
 - **Configurable units** — choose your preferred measurement system per quantity in settings
 - **Adjustment display** — arrows / signs / letters format, configurable in settings
+- **Import / Export** — profiles in `.ebcp` (native) and `.a7p` (Archer Ballistic Profile) formats; full backup via Settings
 
 ---
 
@@ -55,11 +56,13 @@ ebalistyka-app/
 │   │   ├── tables/        # Trajectory tables & export
 │   │   ├── convertors/    # Unit converters
 │   │   └── settings/      # App settings
-│   ├── core/              # Providers, coordinators
+│   ├── core/              # Providers, services, coordinators
 │   └── shared/            # Icons, shared widgets
 ├── packages/
 │   ├── bclibc_ffi/        # Dart FFI bindings for the C++ solver
-│   └── ebalistyka_db/     # ObjectBox data layer
+│   ├── ebalistyka_db/     # ObjectBox data layer + export DTOs (.ebcp)
+│   ├── a7p/               # .a7p format: protobuf encode/decode + ProfileExport converter
+│   └── reticle_gen/       # SVG reticle generator
 └── external/
     └── bclibc/            # C++ ballistic solver engine (LGPL-3, git submodule)
 ```
@@ -143,7 +146,9 @@ GitHub Actions workflows are provided for automated builds:
 | [flutter_riverpod](https://pub.dev/packages/flutter_riverpod) | State management |
 | [go_router](https://pub.dev/packages/go_router) | Navigation |
 | [objectbox](https://pub.dev/packages/objectbox_flutter_libs) | Local database |
-| [protobuf](https://pub.dev/packages/protobuf) | Data serialisation |
+| [protobuf](https://pub.dev/packages/protobuf) | .a7p protobuf serialisation |
+| [file_picker](https://pub.dev/packages/file_picker) | Import file picker |
+| [share_plus](https://pub.dev/packages/share_plus) | Export / share files |
 
 ---
 

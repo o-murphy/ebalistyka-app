@@ -57,7 +57,7 @@ class TemperatureConvertorViewModel
   }
 
   FieldConstraints getConstraintsForUnit(Unit unit) {
-    final minInFahrenheit = -459.67; // Абсолютний нуль
+    final minInFahrenheit = -459.67; // Absolute zero
     final maxInFahrenheit = 10000.0;
 
     return FieldConstraints(
