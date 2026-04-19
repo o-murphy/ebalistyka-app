@@ -34,6 +34,9 @@ dependencies:
   ebalistyka_db:
     path: ./packages/ebalistyka_db
 
+  a7p:
+    path: ./packages/a7p
+
   bclibc_ffi:
     path: ./packages/bclibc_ffi
 
@@ -42,8 +45,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   window_manager: ^0.5.1
   flutter_riverpod: ^3.3.1
-  crypto: ^3.0.3
-  protobuf: ^6.0.0
   uuid: ^4.0.0
   package_info_plus: ^8.0.0
   path_provider: ^2.1.0

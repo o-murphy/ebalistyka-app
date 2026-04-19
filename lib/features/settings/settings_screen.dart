@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/export/ebcp_service.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';

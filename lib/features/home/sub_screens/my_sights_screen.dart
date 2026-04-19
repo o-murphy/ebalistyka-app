@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/export/ebcp_service.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_sight_tile_body.dart';
 import 'package:ebalistyka/router.dart';

@@ -1,4 +1,5 @@
-import 'package:ebalistyka/core/export/ebcp_service.dart';
+import 'package:ebalistyka/core/services/a7p_service.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -9,12 +10,10 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
-import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class ProfilesScreen extends ConsumerStatefulWidget {
   const ProfilesScreen({super.key});
@@ -113,24 +112,25 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       ActionSheetItem(
         icon: IconDef.import,
         title: 'Import from file',
-        onTap: () async {
-          final ebcp = await EbcpService.pickAndParse();
-          if (ebcp == null || !mounted) return;
-          final profiles = ebcp.items
-              .map((i) => i.asProfile())
-              .whereType<ProfileExport>()
-              .toList();
-          if (profiles.isEmpty) {
-            showNotAvailableSnackBar(context, 'No profiles found in file');
-            return;
-          }
-          for (final p in profiles) {
-            await ref.read(appStateProvider.notifier).importProfile(p);
-          }
-        },
+        onTap: _importFromFile,
       ),
     ],
   );
+
+  Future<void> _importFromFile() async {
+    try {
+      final profiles = await A7pService.pickAndParseProfiles();
+      if (profiles == null || !mounted) return;
+      for (final p in profiles) {
+        await ref.read(appStateProvider.notifier).importProfile(p);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+    }
+  }
 
   // ── Actions (by profile ID) ───────────────────────────────────────────────
 
@@ -176,18 +176,36 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     final sight = appState.sights
         .where((s) => s.id == profile.sight.targetId)
         .firstOrNull;
+    final profileExport = ProfileExport.fromEntities(
+      profile,
+      weapon,
+      ammo,
+      sight,
+    );
 
-    final info = await PackageInfo.fromPlatform();
-    final ebcp = EbcpFile(
-      version: info.version,
-      items: [
-        EbcpItem.fromProfile(
-          ProfileExport.fromEntities(profile, weapon, ammo, sight),
+    if (!mounted) return;
+    await showActionSheet(
+      context,
+      title: 'Export format',
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.export,
+          title: '.ebcp (eBalistyka)',
+          onTap: () async {
+            final ebcp = EbcpFile(items: [EbcpItem.fromProfile(profileExport)]);
+            await EbcpService.shareFile(
+              ebcp,
+              EbcpService.sanitizeName(profile.name),
+            );
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.export,
+          title: '.a7p (Archer Ballistic Profile)',
+          onTap: () => A7pService.shareFile(profileExport),
         ),
       ],
     );
-    if (!mounted) return;
-    await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(profile.name));
   }
 
   Future<void> _onEditRifle(String profileId) async {

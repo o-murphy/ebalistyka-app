@@ -1,6 +1,5 @@
-import '../proto/profedit.pb.dart';
+import 'proto/profedit.pb.dart';
 
-/// Validation error for a single field.
 class A7pFieldError {
   final String field;
   final String message;
@@ -10,7 +9,6 @@ class A7pFieldError {
   String toString() => '$field: $message';
 }
 
-/// Thrown when [A7pValidator.validate] finds errors.
 class A7pValidationException implements Exception {
   final List<A7pFieldError> errors;
   const A7pValidationException(this.errors);
@@ -20,7 +18,6 @@ class A7pValidationException implements Exception {
 }
 
 class A7pValidator {
-  /// Validates [payload] and throws [A7pValidationException] if invalid.
   static void validate(Payload payload) {
     final errors = <A7pFieldError>[];
     if (!payload.hasProfile()) {
@@ -32,7 +29,6 @@ class A7pValidator {
   }
 
   static void _validateProfile(Profile p, List<A7pFieldError> errors) {
-    // ── String fields ─────────────────────────────────────────────────────────
     _requireString(errors, 'profile_name', p.profileName, maxLen: 50);
     _requireString(errors, 'cartridge_name', p.cartridgeName, maxLen: 50);
     _requireString(errors, 'bullet_name', p.bulletName, maxLen: 50);
@@ -40,61 +36,29 @@ class A7pValidator {
     _requireString(errors, 'short_name_top', p.shortNameTop, maxLen: 8);
     _requireString(errors, 'short_name_bot', p.shortNameBot, maxLen: 8);
 
-    // user_note and device_uuid are optional strings — no range check needed.
-
-    // ── Weapon / sight ────────────────────────────────────────────────────────
-    _checkRange(errors, 'sc_height', p.scHeight, -5000, 5000); // mm ×1
-    _checkRange(errors, 'r_twist', p.rTwist, 0, 10000); // inch ×100
+    _checkRange(errors, 'sc_height', p.scHeight, -5000, 5000);
+    _checkRange(errors, 'r_twist', p.rTwist, 0, 10000);
     _checkRange(errors, 'zero_x', p.zeroX, -200000, 200000);
     _checkRange(errors, 'zero_y', p.zeroY, -200000, 200000);
 
-    // ── Cartridge ─────────────────────────────────────────────────────────────
-    _checkRange(
-      errors,
-      'c_muzzle_velocity',
-      p.cMuzzleVelocity,
-      10,
-      30000,
-    ); // m/s ×10
-    _checkRange(
-      errors,
-      'c_zero_temperature',
-      p.cZeroTemperature,
-      -100,
-      100,
-    ); // °C
-    _checkRange(errors, 'c_t_coeff', p.cTCoeff, 0, 5000); // %/15°C ×1000
-    _checkRange(
-      errors,
-      'c_zero_p_temperature',
-      p.cZeroPTemperature,
-      -100,
-      100,
-    ); // °C
-
-    // ── Zero conditions ───────────────────────────────────────────────────────
+    _checkRange(errors, 'c_muzzle_velocity', p.cMuzzleVelocity, 10, 30000);
+    _checkRange(errors, 'c_zero_temperature', p.cZeroTemperature, -100, 100);
+    _checkRange(errors, 'c_t_coeff', p.cTCoeff, 0, 5000);
+    _checkRange(errors, 'c_zero_p_temperature', p.cZeroPTemperature, -100, 100);
     _checkRange(
       errors,
       'c_zero_air_temperature',
       p.cZeroAirTemperature,
       -100,
       100,
-    ); // °C
-    _checkRange(
-      errors,
-      'c_zero_air_pressure',
-      p.cZeroAirPressure,
-      3000,
-      15000,
-    ); // hPa ×10
-    _checkRange(errors, 'c_zero_air_humidity', p.cZeroAirHumidity, 0, 100); // %
+    );
+    _checkRange(errors, 'c_zero_air_pressure', p.cZeroAirPressure, 3000, 15000);
+    _checkRange(errors, 'c_zero_air_humidity', p.cZeroAirHumidity, 0, 100);
 
-    // ── Bullet ────────────────────────────────────────────────────────────────
-    _checkRange(errors, 'b_diameter', p.bDiameter, 1, 50000); // inch ×1000
-    _checkRange(errors, 'b_weight', p.bWeight, 1, 65535); // grain ×10
-    _checkRange(errors, 'b_length', p.bLength, 0, 200000); // inch ×1000
+    _checkRange(errors, 'b_diameter', p.bDiameter, 1, 50000);
+    _checkRange(errors, 'b_weight', p.bWeight, 1, 65535);
+    _checkRange(errors, 'b_length', p.bLength, 0, 200000);
 
-    // ── Distances ─────────────────────────────────────────────────────────────
     final dists = p.distances;
     if (dists.isEmpty || dists.length > 200) {
       errors.add(
@@ -107,7 +71,6 @@ class A7pValidator {
       for (var i = 0; i < dists.length; i++) {
         _checkRange(errors, 'distances[$i]', dists[i], 100, 300000);
       }
-      // zero_distance_idx must be a valid index
       _checkRange(
         errors,
         'c_zero_distance_idx',
@@ -117,7 +80,6 @@ class A7pValidator {
       );
     }
 
-    // ── Switches ──────────────────────────────────────────────────────────────
     if (p.switches.length < 4) {
       errors.add(
         A7pFieldError(
@@ -131,7 +93,6 @@ class A7pValidator {
       }
     }
 
-    // ── coef_rows (drag model) ────────────────────────────────────────────────
     _validateCoefRows(p.coefRows, p.bcType, errors);
   }
 
@@ -141,7 +102,6 @@ class A7pValidator {
     if (sw.distanceFrom == DType.VALUE) {
       _checkRange(errors, 'switches[$idx].distance', sw.distance, 100, 300000);
     } else {
-      // INDEX type: distance is an index (0–255)
       _checkRange(errors, 'switches[$idx].distance', sw.distance, 0, 255);
     }
     _checkRange(errors, 'switches[$idx].c_idx', sw.cIdx, 0, 255);
@@ -171,21 +131,13 @@ class A7pValidator {
       final r = rows[i];
       _checkRange(errors, 'coef_rows[$i].bc_cd', r.bcCd, 0, 10000);
       _checkRange(errors, 'coef_rows[$i].mv', r.mv, 0, maxMv);
-
-      // mv == 0 is the "single-BC" sentinel — allowed to repeat (only one row
-      // should have mv == 0, but multi-BC tables use non-zero mv values that
-      // must be unique)
-      if (r.mv != 0) {
-        if (!seenMv.add(r.mv)) {
-          errors.add(
-            A7pFieldError('coef_rows[$i].mv', 'duplicate mv value ${r.mv}'),
-          );
-        }
+      if (r.mv != 0 && !seenMv.add(r.mv)) {
+        errors.add(
+          A7pFieldError('coef_rows[$i].mv', 'duplicate mv value ${r.mv}'),
+        );
       }
     }
   }
-
-  // ── helpers ─────────────────────────────────────────────────────────────────
 
   static void _requireString(
     List<A7pFieldError> errors,

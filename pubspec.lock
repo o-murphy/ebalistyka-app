@@ -9,6 +9,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "93.0.0"
+  a7p:
+    dependency: "direct main"
+    description:
+      path: "packages/a7p"
+      relative: true
+    source: path
+    version: "0.1.0"
   analyzer:
     dependency: transitive
     description:
@@ -121,7 +128,7 @@ packages:
     source: hosted
     version: "0.3.5+2"
   crypto:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: crypto
       sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
@@ -567,7 +574,7 @@ packages:
     source: hosted
     version: "1.5.2"
   protobuf:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: protobuf
       sha256: "75ec242d22e950bdcc79ee38dd520ce4ee0bc491d7fadc4ea47694604d22bf06"

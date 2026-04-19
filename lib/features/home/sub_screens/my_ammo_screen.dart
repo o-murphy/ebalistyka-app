@@ -1,4 +1,4 @@
-import 'package:ebalistyka/core/export/ebcp_service.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
