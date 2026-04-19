@@ -750,13 +750,13 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
 }
 
 void main() {
-  print('Створюємо SVG з простим хрестом...');
+  print('Creating an SVG with a simple cross...');
   final crossDrawer = CrossDrawer(size: 300, strokeWidth: 3, color: '#FF0000');
   MilReticleSVGCanvas(milWidth: 640, milHeight: 640, factor: 1)
     ..generate(crossDrawer)
     ..svg.export('cross.svg');
 
-  print('Створюємо SVG з прицілом...');
+  print('Creating an SVG with a scope...');
   final scopeDrawer = ScopeDrawer(
     radius: 200,
     lineLength: 350,
@@ -767,7 +767,7 @@ void main() {
     ..generate(scopeDrawer)
     ..svg.export('scope.svg');
 
-  print('Створюємо SVG з комбінованим малюнком...');
+  print('Creating an SVG with a combined image...');
   final combinedDrawer = CompositeSVGDrawer([
     ScopeDrawer(
       radius: 250,
@@ -781,13 +781,13 @@ void main() {
     ..generate(combinedDrawer)
     ..svg.export('combined.svg');
 
-  print('Створюємо SVG з кастомним малюнком...');
+  print('Creating an SVG with a custom image...');
   final customDrawer = _CustomGalaxyDrawer();
   MilReticleSVGCanvas(milWidth: 800, milHeight: 800, factor: 1)
     ..generate(customDrawer)
     ..svg.export('galaxy.svg');
 
-  print('Всі SVG файли успішно створено!');
+  print('All SVG files created successfully!');
   print('- cross.svg');
   print('- scope.svg');
   print('- combined.svg');

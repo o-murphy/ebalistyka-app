@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -111,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Profiles ───────────────────────────────────────────────────
-          ListSectionTile('Profiles'),
+          ListSectionTile('Backup'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Row(
@@ -119,16 +120,23 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: FilledButton.icon(
                     icon: const Icon(IconDef.export),
-                    label: const Text('Export profiles'),
-                    onPressed: () {},
+                    label: const Text('Export backup'),
+                    onPressed: () async {
+                      final file = EbcpService.buildFullExport(ref);
+                      await EbcpService.shareFile(file, 'ebalistyka_backup');
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton.icon(
                     icon: const Icon(IconDef.import),
-                    label: const Text('Import profiles'),
-                    onPressed: () {},
+                    label: const Text('Import backup'),
+                    onPressed: () async {
+                      final file = await EbcpService.pickAndParse();
+                      if (file == null) return;
+                      await EbcpService.restoreFromExport(file, ref);
+                    },
                   ),
                 ),
               ],
@@ -274,7 +282,7 @@ Future<void> _launchUrl(String url) async {
   final Uri uri = Uri.parse(url);
   if (!await launchUrl(
     uri,
-    mode: LaunchMode.externalApplication, // Відкриває в зовнішньому браузері
+    mode: LaunchMode.externalApplication, // Opens in an external browser
   )) {
     throw Exception('Could not launch $url');
   }

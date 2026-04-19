@@ -55,7 +55,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             icon: IconDef.angleConvertor,
           ),
           const SizedBox(height: 8),
-          // Тільки вибір одиниці, без поля вводу
+          // Only unit selection, no input field
           UnitPickerListTile(
             current: state.distanceOutputUnit,
             onChanged: notifier.changeOutputUnit,

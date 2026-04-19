@@ -5,7 +5,7 @@ import 'package:bclibc_ffi/unit.dart';
 
 // ── Core conversion & validation logic ──────────────────────────────────────
 
-/// Утиліта для роботи з конвертацією одиниць та валідацією
+/// Utility for working with unit conversion and validation
 class UnitConversionHelper {
   final FieldConstraints constraints;
   final Unit displayUnit;
@@ -43,7 +43,7 @@ class UnitConversionHelper {
     return value.toStringAsFixed(accuracy);
   }
 
-  /// Валідує display значення та повертає raw значення
+  /// Validates display value and returns raw value
   double? validateDisplayValue(double displayValue) {
     if (displayValue < displayMin - 1e-10 ||
         displayValue > displayMax + 1e-10) {
@@ -52,7 +52,7 @@ class UnitConversionHelper {
     return toRaw(displayValue).clamp(constraints.minRaw, constraints.maxRaw);
   }
 
-  /// Парсить рядок. Повертає (rawValue, errorText)
+  /// Parses string. Returns (rawValue, errorText)
   (double?, String?) parseAndValidate(String text) {
     final trimmed = text.trim();
 

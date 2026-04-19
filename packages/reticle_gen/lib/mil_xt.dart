@@ -2,7 +2,7 @@ import 'package:reticle_gen/reticle_gen.dart';
 
 const double epsilon = 1e-6;
 
-// ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
+// ─── Geometric constants (common to all variants) ───────────────────────
 class MilXtSizes {
   static const double B = 0.05;
   static const double C = 0.1;
@@ -17,12 +17,12 @@ class MilXtSizes {
   static const double N = 0.05;
 }
 
-// ─── Варіант сітки (subtension chart) ────────────────────────────────────────
+// ─── Reticle Variant (subtension chart) ─
 
-/// Параметри subtension для конкретної моделі прицілу.
-/// [a]  — товщина ліній (мілів)
-/// [f]  — розмір великого шрифту (мілів)
-/// [k]  — розмір малого шрифту (мілів)
+/// Subtension parameters for a specific scope model.
+/// [a] — line thickness (mils)
+/// [f] — large font size (mils)
+/// [k] — small font size (mils)
 class MilXtVariant {
   final String name;
   final double a;
@@ -36,13 +36,13 @@ class MilXtVariant {
     required this.k,
   });
 
-  /// Ідентифікатор для імені файлу: «ATACR 7-35» → «atacr_7-35»
+  /// Identifier for the file name: "ATACR 7-35" → "atacr_7-35"
   String get fileId =>
       name.toLowerCase().replaceAll(' ', '_').replaceAll('/', '-');
 
-  // ── Предефайнені варіанти ─────────────────────────────────────────────────
+  // ── Predefined options ─────────────────────────────────────────────────
 
-  // defaultVariant — окремий const, бо використовується як default-значення параметра
+  // defaultVariant is a separate const because it is used as the default value of the parameter
   static const defaultVariant = MilXtVariant(
     name: 'ATACR 7-35',
     a: 0.033,
@@ -60,8 +60,8 @@ class MilXtVariant {
     MilXtVariant(name: 'SHV 4-14', a: 0.044, f: 0.40, k: 0.20),
   ];
 
-  /// Знаходить варіант за назвою (регістр не важливий).
-  /// Повертає [defaultVariant] якщо не знайдено.
+  /// Finds a variant by name (case insensitive).
+  /// Returns [defaultVariant] if not found.
   static MilXtVariant byName(String name) {
     final lower = name.toLowerCase();
     return all.firstWhere(
@@ -106,7 +106,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
       draw: (c) {
         c.fill(bgColor);
 
-        // ── Лейбли + точкова сітка для одного рядка по j ────────────────
+        // ── Labels + dot grid for one row by j ─
         void zoneRow(double j, double xOff, double dotRange) {
           final fontSize = j.round() % 2 == 0 ? F : K;
           c
@@ -134,12 +134,12 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
 
         c
           // ..fill("white")
-          // 1. Основні осі
+          // 1. Main axes
           ..hLine(0, 0.1, 10, accentColor, A)
           ..hLine(0, -0.1, -10, accentColor, A)
           ..vLine(0, -0.1, -5, accentColor, A);
 
-        // Горизонтальне продовження осі + рамки
+        // Horizontal extension of axis + frame
         final double minI = I - 0.2;
         final double minHalfI = halfI - 0.1;
         c
@@ -183,12 +183,12 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           ..rect(-24, -minHalfI, 24 - 15, minI, color)
           ..rect(15, -minHalfI, 24 - 15, minI, color);
 
-        // Додаткові риски 11..15 (за рамками)
+        // Additional lines 11..15 (outside the frame)
         c
           ..hRuler(11, 15, E, I, color, A)
           ..hRuler(-11, -15, -E, I, color, A);
 
-        // 2а. Риски на горизонтальній осі (±1..10)
+        // 2a. Horizontal axis marks (±1..10)
         for (double i = -10; i <= 10; i += E) {
           if (i == 0) continue;
           c.text(
@@ -219,8 +219,8 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           ..vLine(D, 0, C, accentColor, A)
           ..vLine(-D, 0, C, accentColor, A);
 
-        // 2б. Риски на вертикальній осі (0..24) — позитивна частина + центр
-        // 2в. Риски на вертикальній осі (-5..-1) — негативна частина
+        // 2b. Vertical axis lines (0..24) — positive part + center
+        // 2c. Vertical axis lines (-5..-1) — negative part
 
         final List<List<double>> verticalRuler = [
           [1 + D, 24, H, -H / 2],
@@ -257,13 +257,13 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           );
         }
 
-        // 3. Точкова сітка між рисками
+        // 3. Dot grid between lines
         c
           ..dotGrid(-(2 + G), G, 2 + G, 4 + G, E, E, L / 2, color)
           ..dotGrid(-(3 + G), 5 + G, 3 + G, 8 + G, E, E, L / 2, color)
           ..dotGrid(-(4 + G), 9 + G, 4 + G, 24 + G, E, E, L / 2, color);
 
-        // 4. Лейбли + сітка точок по зонах (±дзеркально через zoneRow)
+        // 4. Labels + grid of points by zones (±mirrored via zoneRow)
         for (double j = 1; j <= 4; j++) {
           zoneRow(j, 3 + labelOffset, 3);
         }
@@ -280,9 +280,9 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   // Usage: dart mil_xt.dart [variant] [output.svg]
-  //   variant — назва або fileId (напр. "ATACR 7-35" або "atacr_7-35")
-  //             якщо не вказано або не знайдено — використовується defaultVariant
-  //   output  — шлях до файлу; якщо не вказано — "<fileId>.svg"
+  // variant — name or fileId (e.g. "ATACR 7-35" or "atacr_7-35")
+  // if not specified or not found — defaultVariant is used
+  // output — path to file; if not specified — "<fileId>.svg"
   final variant = args.isNotEmpty
       ? MilXtVariant.byName(args[0])
       : MilXtVariant.defaultVariant;

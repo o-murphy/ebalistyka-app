@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
@@ -16,6 +17,7 @@ import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class MyAmmoScreen extends ConsumerWidget {
   const MyAmmoScreen({this.profileId, super.key});
@@ -88,8 +90,37 @@ class MyAmmoScreen extends ConsumerWidget {
           }
         },
       ),
+      ActionSheetItem(
+        icon: IconDef.import,
+        title: 'Import from file',
+        onTap: () async {
+          final ebcp = await EbcpService.pickAndParse();
+          if (ebcp == null || !context.mounted) return;
+          final ammos = ebcp.items
+              .map((i) => i.asAmmo())
+              .whereType<AmmoExport>()
+              .toList();
+          if (ammos.isEmpty) {
+            showNotAvailableSnackBar(context, 'No ammo found in file');
+            return;
+          }
+          for (final a in ammos) {
+            await ref.read(appStateProvider.notifier).importAmmo(a);
+          }
+        },
+      ),
     ],
   );
+
+  Future<void> _onExport(BuildContext context, WidgetRef ref, Ammo item) async {
+    final info = await PackageInfo.fromPlatform();
+    final ebcp = EbcpFile(
+      version: info.version,
+      items: [EbcpItem.fromAmmo(AmmoExport.fromEntity(item))],
+    );
+    if (!context.mounted) return;
+    await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(item.name));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -184,7 +215,7 @@ class MyAmmoScreen extends ConsumerWidget {
                         .read(appStateProvider.notifier)
                         .duplicateAmmo(item.id, name);
                   },
-                  onExport: () => showNotAvailableSnackBar(context, 'Export'),
+                  onExport: () => _onExport(context, ref, item),
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,

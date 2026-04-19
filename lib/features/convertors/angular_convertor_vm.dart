@@ -21,7 +21,7 @@ class AnglesConvertorField {
 }
 
 class AnglesConvertorUiState {
-  // Всі можливі одиниці кута
+  // All possible angle units
   final AnglesConvertorField mil;
   final AnglesConvertorField moa;
   final AnglesConvertorField cmPer100m;
@@ -29,11 +29,11 @@ class AnglesConvertorUiState {
   final AnglesConvertorField mrad;
   final AnglesConvertorField degrees;
 
-  // Дистанція
+  // Distance
   final AnglesConvertorField meters;
   final AnglesConvertorField yards;
 
-  // Розрахунки на дистанції в обраній одиниці
+  // Distance calculations in the selected unit
   final String oneMilAtDistance;
   final String angleInMoaAtDistance;
   final String oneMoaAtDistance;
@@ -43,7 +43,7 @@ class AnglesConvertorUiState {
   final double? rawAngularValue;
   final Unit distanceInputUnit;
   final Unit angularInputUnit;
-  final Unit distanceOutputUnit; // Нова одиниця для виводу
+  final Unit distanceOutputUnit;
 
   const AnglesConvertorUiState({
     required this.mil,
@@ -185,42 +185,42 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     Unit angularUnit,
     Unit outputUnit,
   ) {
-    // Дистанція
+    // Distance
     final metersRaw = rawMeters;
     final yardsRaw = metersRaw.convert(Unit.meter, Unit.yard);
 
-    // Конвертація кута в різні одиниці
+    // Convert angle to different units
     final milRaw = rawMil;
     final moaRaw = milRaw.convert(Unit.mil, Unit.moa);
     final mradRaw = milRaw.convert(Unit.mil, Unit.mRad);
     final degreesRaw = milRaw.convert(Unit.mil, Unit.degree);
 
-    // cm/100m та inch/100yd для кута
+    // cm/100m and inch/100yd for angle
     final cmPer100mRaw = milRaw * 10;
     final inchPer100YdRaw = milRaw * 3.6;
 
-    // Розрахунки на дистанції в обраній одиниці виводу
+    // Distance calculations in the selected output unit
     final distanceInMeters = rawMeters;
 
-    // 1 MIL на дистанції
+    // 1 MIL on distance
     final oneMilValue = (0.1 * distanceInMeters).convert(
       Unit.meter,
       outputUnit,
     );
 
-    // Кут в MOA на дистанції
+    // Angle in MOA at distance
     final angleMoaValue = (moaRaw * 0.0291 * distanceInMeters).convert(
       Unit.meter,
       outputUnit,
     );
 
-    // 1 MOA на дистанції
+    // 1 MOA at range
     final oneMoaValue = (0.0291 * distanceInMeters).convert(
       Unit.meter,
       outputUnit,
     );
 
-    // Кут в MIL на дистанції
+    // Angle in MIL at distance
     final angleMilValue = (rawMil * 0.1 * distanceInMeters).convert(
       Unit.meter,
       outputUnit,
@@ -233,7 +233,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       angularInputUnit: angularUnit,
       distanceOutputUnit: outputUnit,
 
-      // Дистанція
+      // Distance
       meters: AnglesConvertorField(
         label: 'Meters',
         formattedValue: _formatValue(metersRaw, 0, Unit.meter.symbol),
@@ -249,7 +249,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
         decimals: 0,
       ),
 
-      // Конвертація кута
+      // Angle conversion
       mil: AnglesConvertorField(
         label: 'MIL',
         formattedValue: _formatValue(milRaw, 1, Unit.mil.symbol),
@@ -293,7 +293,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
         decimals: 2,
       ),
 
-      // Розрахунки на дистанції в обраній одиниці
+      // Distance calculations in the selected unit
       oneMilAtDistance: _formatValue(oneMilValue, 1, outputUnit.symbol),
       angleInMoaAtDistance: _formatValue(angleMoaValue, 1, outputUnit.symbol),
       oneMoaAtDistance: _formatValue(oneMoaValue, 1, outputUnit.symbol),

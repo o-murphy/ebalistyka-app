@@ -2,7 +2,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/widgets/unit_picker_button.dart';
 import 'package:flutter/material.dart';
 
-/// Обгортка на базі ListTile для використання в налаштуваннях
+/// ListTile-based wrapper for use in settings
 class UnitPickerListTile extends StatelessWidget {
   const UnitPickerListTile({
     required this.current,

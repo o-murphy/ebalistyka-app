@@ -5,7 +5,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:flutter/material.dart';
 
-/// Поле вводу з валідацією за констрейнтами
+/// Input field with constraint validation
 class ConstrainedUnitInputField extends StatefulWidget {
   const ConstrainedUnitInputField({
     super.key,
@@ -67,7 +67,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
       if (errorText == null) {
         _currentRawValue = rawValue;
       }
-      // Не викликаємо onChanged поки що, тільки при submit
+      // Don't call onChanged yet, only on submit
     });
   }
 
@@ -156,7 +156,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
           vertical: 12,
         ),
       ),
-      onChanged: (_) => _validateAndUpdate(), // Валідація при кожній зміні
+      onChanged: (_) => _validateAndUpdate(), // Validate on every change
       onSubmitted: (_) => _submit(),
     );
   }

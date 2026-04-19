@@ -1,4 +1,4 @@
-.PHONY: native ffigen test format clean objectbox objectbox-setup objectbox-clean run run-clean unit
+.PHONY: native ffigen proto-a7p proto-setup test format clean objectbox objectbox-setup objectbox-clean run run-clean unit objectbox
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -33,11 +33,33 @@ native:
 ffigen:
 	cd packages/bclibc_ffi && dart run ffigen --config ffigen.yaml
 
+# Install protoc + Dart plugin (run once per machine)
+proto-setup:
+ifeq ($(OS),Windows_NT)
+	@echo "Install protoc manually: https://github.com/protocolbuffers/protobuf/releases"
+	dart pub global activate protoc_plugin
+else ifeq ($(UNAME_S),Darwin)
+	brew install protobuf
+	dart pub global activate protoc_plugin
+else
+	sudo apt-get install -y protobuf-compiler
+	dart pub global activate protoc_plugin
+endif
+
+# Re-generate Dart protobuf bindings for packages/a7p
+proto-a7p:
+	cd packages/a7p && protoc \
+		--dart_out=lib/src/proto \
+		-I proto \
+		proto/profedit.proto \
+		--plugin=protoc-gen-dart=$$HOME/.pub-cache/bin/protoc-gen-dart
+	@echo "Done. Files written to packages/a7p/lib/src/proto/"
+
 objectbox-setup:
 	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
 
 objectbox:
-	cd packages/ebalistyka_db && dart run build_runner build
+	cd packages/ebalistyka_db && dart run build_runner build --delete-conflicting-outputs
 
 objectbox-clean:
 	cd packages/ebalistyka_db && dart run build_runner clean
@@ -53,6 +75,7 @@ format:
 	dart format lib test \
 		packages/bclibc_ffi/lib \
 		packages/ebalistyka_db/lib \
+		packages/a7p/lib \
 		packages/reticle_gen/lib \
 		packages/reticle_gen/bin
 

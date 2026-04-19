@@ -47,6 +47,15 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
     // Stream triggers state update.
   }
 
+  Future<void> restore(ConditionsExport export) async {
+    final current = state.value ?? _load();
+    await _save(
+      export.toEntity()
+        ..id = current.id
+        ..owner.target = _owner,
+    );
+  }
+
   // ── Distance / geometry ───────────────────────────────────────────────────────
 
   Future<void> updateDistance(double meters) async {

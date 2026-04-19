@@ -5,10 +5,10 @@ const double epsilon = 1e-6;
 /// 1 MOA expressed in MIL: (π/10800) / (π/3200) = 3200/10800 = 8/27
 const double moaToMil = 8.0 / 27.0;
 
-// ─── Геометричні константи (спільні для всіх варіантів) ───────────────────────
+// ─── Geometric constants (common to all variants) ───────────────────────
 class MoarSizes {
   static const double A =
-      40; // MOA (базова, але може змінюватись в залежності від варіанту)
+      40; // MOA (basic, but may vary depending on the variant)
   static const double B = 1.7188; // MOA
   static const double C = 0.5; // MOA
   static const double D = 2.0; // MOA
@@ -16,7 +16,7 @@ class MoarSizes {
   static const double F = 1.0; // MOA
   static const double G = 2.0; // MOA
   static const double H =
-      2.0; // MOA (типове значення, для конкретних моделей див. subtension chart)
+      2.0; // MOA (typical value, for specific models see subtension chart)
   static const double K = 0.5; // MOA
   static const double L = 1.0; // MOA
   static const double M = 1.0; // MOA
@@ -24,19 +24,19 @@ class MoarSizes {
   static const double O = 0.8; // MOA
 }
 
-// ─── Варіант сітки (subtension chart) ────────────────────────────────────────
+// ─── Reticle option (subtension chart) ─
 
-/// Параметри subtension для конкретної моделі прицілу.
-/// [a] - значення A (MOA)
-/// [h] - значення H (MOA)
-/// [i] - значення I (MOA)
-/// [j] - значення J (MOA)
+/// Subtension parameters for a specific scope model.
+/// [a] - A value (MOA)
+/// [h] - H value (MOA)
+/// [i] - I value (MOA)
+/// [j] - J value (MOA)
 class MoarVariant {
   final String name;
-  final double a; // A (раніше f)
-  final double h; // H (раніше i)
-  final double i; // I (раніше j)
-  final double j; // J (раніше n)
+  final double a; // A
+  final double h; // H
+  final double i; // I
+  final double j; // J
 
   const MoarVariant({
     required this.name,
@@ -46,11 +46,11 @@ class MoarVariant {
     required this.j,
   });
 
-  /// Ідентифікатор для імені файлу: «ATACR 7-35» → «atacr_7-35»
+  /// Identifier for the file name: "ATACR 7-35" → "atacr_7-35"
   String get fileId =>
       name.toLowerCase().replaceAll(' ', '_').replaceAll('/', '-');
 
-  // ── Предефайнені варіанти (згідно з таблицею) ─────────────────────────────
+  // ── Predefined options (according to the table) ─
 
   static const atacr16x = MoarVariant(
     name: 'ATACR 16x',
@@ -100,13 +100,13 @@ class MoarVariant {
     j: 1.14,
   );
 
-  // defaultVariant — для зворотної сумісності
+  // defaultVariant — for backward compatibility
   static const defaultVariant = atacr25x;
 
   static const all = [atacr16x, atacr20x, atacr25x, atacr35x, nx8_20x, nx8_32x];
 
-  /// Знаходить варіант за назвою (регістр не важливий).
-  /// Повертає [defaultVariant] якщо не знайдено.
+  /// Finds a variant by name (case insensitive).
+  /// Returns [defaultVariant] if not found.
   static MoarVariant byName(String name) {
     final lower = name.toLowerCase();
     return all.firstWhere(
@@ -125,20 +125,20 @@ class MoarReticleDrawer implements SVGDrawerInterface {
 
   @override
   void draw(MilReticleSVGCanvas canvas) {
-    final A = variant.a; // береться з варіанту (раніше було MoarSizes.A)
+    final A = variant.a; // taken from variant (previously it was MoarSizes.A)
     const B = MoarSizes.B;
     const C = MoarSizes.C;
     const D = MoarSizes.D;
     const E = MoarSizes.E;
-    const F = MoarSizes.F; // тепер з MoarSizes (1.0 MOA)
+    const F = MoarSizes.F; // now with MoarSizes (1.0 MOA)
     const G = MoarSizes.G;
-    final H = variant.h; // H з варіанту
-    final I = variant.i; // I з варіанту
-    final J = variant.j; // J з варіанту
+    final H = variant.h; // H from variant
+    final I = variant.i; // I from variant
+    final J = variant.j; // J from variant
     const K = MoarSizes.K;
     const L = MoarSizes.L;
     const M = MoarSizes.M;
-    const N = MoarSizes.N; // тепер з MoarSizes (2.0 MOA)
+    const N = MoarSizes.N; // now with MoarSizes (2.0 MOA)
     const O = MoarSizes.O; // 0.8 MOA
 
     const String bgColor = "white";
@@ -229,9 +229,9 @@ class MoarReticleDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   // Usage: dart mil_xt.dart [variant] [output.svg]
-  //   variant — назва або fileId (напр. "ATACR 7-35" або "atacr_7-35")
-  //             якщо не вказано або не знайдено — використовується defaultVariant
-  //   output  — шлях до файлу; якщо не вказано — "<fileId>.svg"
+  // variant — name or fileId (e.g. "ATACR 7-35" or "atacr_7-35")
+  // if not specified or not found — defaultVariant is used
+  // output — path to file; if not specified — "<fileId>.svg"
   final variant = args.isNotEmpty
       ? MoarVariant.byName(args[0])
       : MoarVariant.defaultVariant;
