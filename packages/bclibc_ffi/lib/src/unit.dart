@@ -132,7 +132,7 @@ abstract class Dimension<T extends Dimension<T>> {
     if (id >= 60 && id < 70) return Velocity(val, units);
     if (id >= 70 && id < 80) return Weight(val, units);
     if (id >= 80 && id < 90) return Time(val, units);
-    if (id >= 90 && id < 100) return Torque(val, units); // Додаємо Torque
+    if (id >= 90 && id < 100) return Torque(val, units);
 
     throw Exception('Unit ID $id is not supported for casting');
   }

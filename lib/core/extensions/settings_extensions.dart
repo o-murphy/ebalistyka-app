@@ -18,7 +18,7 @@ extension GeneralSettingsExtension on GeneralSettings {
   ThemeMode get flutterThemeMode => switch (themeMode) {
     'light' => ThemeMode.light,
     'dark' => ThemeMode.dark,
-    _ => ThemeMode.system, // '_' замінює 'default'
+    _ => ThemeMode.system, // '_' replaces 'default'
   };
 
   set flutterThemeMode(ThemeMode v) => themeMode = switch (v) {

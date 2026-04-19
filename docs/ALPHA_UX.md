@@ -1,10 +1,11 @@
 # Alpha UX — TODO
 
-Функції, необхідні до або одразу після першого alpha-релізу.
+Features needed before or immediately after the first alpha release.
 
 ---
 
-- [ ] `DistanceConvertorScreen` — реалізувати (наразі stub)
-- [ ] `VelocityConvertorScreen` — реалізувати (наразі stub)
-- [ ] Settings → About — додати GitHub посилання як мінімум
-- [ ] Export / Import profile / ammo / sight — формат TBD (наразі `showNotAvailableSnackBar`)
+- [ ] `DistanceConvertorScreen` — implement (currently stub)
+- [ ] `VelocityConvertorScreen` — implement (currently stub)
+- [ ] Settings → About — add GitHub link at least
+- [x] Export / Import profile — .ebcp (eBalistyka) and .a7p (Archer); auto-detect format on import
+- [x] Export / Import backup — Settings → "Export backup" / "Import backup" (.ebcp, full data)

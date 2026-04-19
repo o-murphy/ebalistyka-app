@@ -58,7 +58,7 @@ class TablesScreen extends ConsumerWidget {
     if (vmState is! TrajectoryTablesUiReady) return;
     final details = ref.read(detailsTableMvProvider);
 
-    // Визначаємо, чи використовується темна тема в додатку
+    // Determine whether the application uses a dark theme
     final brightness = Theme.of(context).brightness;
     final isDarkMode = brightness == Brightness.dark;
 

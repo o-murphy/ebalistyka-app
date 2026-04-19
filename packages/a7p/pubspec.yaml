@@ -1,0 +1,13 @@
+name: a7p
+description: A7P ballistic profile format — encode/decode and conversion to/from ProfileExport.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  protobuf: ^6.0.0
+  crypto: ^3.0.3
+  ebalistyka_db:
+    path: ../ebalistyka_db

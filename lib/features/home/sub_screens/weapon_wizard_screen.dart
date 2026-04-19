@@ -60,10 +60,10 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
     _twistRaw = twistAbs > 0 ? twistAbs : FC.twist.minRaw;
     _rightHand = w != null ? w.isRightHandTwist : true;
 
-    // Ініціалізуємо barrel length з існуючого значення, якщо воно є
+    // Initialize barrel length from an existing value, if any
     _barrelLengthRaw = w?.barrelLength?.in_(FC.barrelLength.rawUnit);
 
-    // Показуємо секцію, якщо є значення в базі
+    // Show the section if there is a value in the database
     _showExtraFields = _barrelLengthRaw != null;
   }
 
@@ -228,7 +228,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
               icon: IconDef.length,
               onChanged: (v) => setState(() => _barrelLengthRaw = v),
             ),
-            // Тут можна додати інші додаткові поля в майбутньому
+            // You can add other additional fields here in the future
           ],
         ],
       ),

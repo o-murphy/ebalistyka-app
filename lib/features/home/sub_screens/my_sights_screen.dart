@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_sight_tile_body.dart';
 import 'package:ebalistyka/router.dart';
@@ -14,6 +15,7 @@ import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class MySightsCollectionScreen extends ConsumerWidget {
   const MySightsCollectionScreen({this.profileId, super.key});
@@ -43,8 +45,41 @@ class MySightsCollectionScreen extends ConsumerWidget {
             title: 'Select from collection',
             onTap: () async => context.push(Routes.sightCollection),
           ),
+          ActionSheetItem(
+            icon: IconDef.import,
+            title: 'Import from file',
+            onTap: () async {
+              final ebcp = await EbcpService.pickAndParse();
+              if (ebcp == null || !context.mounted) return;
+              final sights = ebcp.items
+                  .map((i) => i.asSight())
+                  .whereType<SightExport>()
+                  .toList();
+              if (sights.isEmpty) {
+                showNotAvailableSnackBar(context, 'No sights found in file');
+                return;
+              }
+              for (final s in sights) {
+                await ref.read(appStateProvider.notifier).importSight(s);
+              }
+            },
+          ),
         ],
       );
+
+  Future<void> _onExport(
+    BuildContext context,
+    WidgetRef ref,
+    Sight item,
+  ) async {
+    final info = await PackageInfo.fromPlatform();
+    final ebcp = EbcpFile(
+      version: info.version,
+      items: [EbcpItem.fromSight(SightExport.fromEntity(item))],
+    );
+    if (!context.mounted) return;
+    await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(item.name));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -124,7 +159,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
                         .read(appStateProvider.notifier)
                         .duplicateSight(item.id, name);
                   },
-                  onExport: () => showNotAvailableSnackBar(context, 'Export'),
+                  onExport: () => _onExport(context, ref, item),
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,

@@ -51,6 +51,15 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
     // Stream triggers state update.
   }
 
+  Future<void> restore(GeneralSettingsExport export) async {
+    final current = state.value ?? _loadOrCreate(_owner);
+    await _save(
+      export.toEntity()
+        ..id = current.id
+        ..owner.target = _owner,
+    );
+  }
+
   Future<void> setThemeMode(ThemeMode mode) async {
     final s = state.value ?? _loadOrCreate(_owner);
     s.flutterThemeMode = mode;
@@ -142,6 +151,15 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
     // Stream triggers state update.
   }
 
+  Future<void> restore(UnitSettingsExport export) async {
+    final current = state.value ?? _loadOrCreate(_owner);
+    await _save(
+      export.toEntity()
+        ..id = current.id
+        ..owner.target = _owner,
+    );
+  }
+
   Future<void> setUnit(String key, Unit unit) async {
     final s = state.value ?? _loadOrCreate(_owner);
     switch (key) {
@@ -212,6 +230,15 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
   Future<void> save(TablesSettings s) async {
     _store.box<TablesSettings>().put(s);
     // Stream triggers state update.
+  }
+
+  Future<void> restore(TablesSettingsExport export) async {
+    final current = state.value ?? _loadOrCreate(_owner);
+    await save(
+      export.toEntity()
+        ..id = current.id
+        ..owner.target = _owner,
+    );
   }
 }
 

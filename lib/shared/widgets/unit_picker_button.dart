@@ -2,14 +2,14 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
-/// Віджет для вибору одиниці виміру з BottomSheet
+/// Widget for selecting a unit of measurement from BottomSheet
 class UnitPickerButton extends StatelessWidget {
   const UnitPickerButton({
     required this.current,
     required this.onChanged,
     required this.options,
     this.label = 'Select Unit',
-    this.width = 60, // додаємо параметр ширини
+    this.width = 60,
     super.key,
   });
 
@@ -17,7 +17,7 @@ class UnitPickerButton extends StatelessWidget {
   final ValueChanged<Unit> onChanged;
   final List<Unit> options;
   final String label;
-  final double width; // фіксована ширина
+  final double width;
 
   @override
   Widget build(BuildContext context) {

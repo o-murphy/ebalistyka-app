@@ -12,17 +12,17 @@ project(${PROJECT_NAME} LANGUAGES C CXX)
 # bclibc_ffi – thin C wrapper over the embedded bclibc ballistics engine
 # ============================================================================
 
-# Знаходимо корінь проекту для Windows
-# Поточний шлях: windows/flutter/ephemeral/.plugin_symlinks/bclibc_ffi/windows/
-# Піднімаємось на 6 рівнів до кореня проекту
+# Find the root of the Windows project
+# Current path: windows/flutter/ephemeral/.plugin_symlinks/bclibc_ffi/windows/
+# Go up 6 levels to the root of the project
 get_filename_component(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../.." ABSOLUTE)
 set(BCLIBC_ROOT "${PROJECT_ROOT}/external/bclibc")
 
-# Діагностика (можна вимкнути після налагодження)
+# Diagnostics (can be disabled after debugging)
 message(STATUS "Project root: ${PROJECT_ROOT}")
 message(STATUS "bclibc path: ${BCLIBC_ROOT}")
 
-# Перевірка існування
+# Existence check
 if(NOT EXISTS "${BCLIBC_ROOT}")
     message(FATAL_ERROR "bclibc not found at ${BCLIBC_ROOT}")
 endif()
@@ -31,7 +31,7 @@ if(NOT EXISTS "${BCLIBC_ROOT}/CMakeLists.txt")
     message(FATAL_ERROR "bclibc CMakeLists.txt not found at ${BCLIBC_ROOT}")
 endif()
 
-# Додаємо піддиректорію bclibc
+# Add the bclibc subdirectory
 add_subdirectory(
     "${BCLIBC_ROOT}"
     "${CMAKE_CURRENT_BINARY_DIR}/bclibc_ffi_build"

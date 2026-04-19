@@ -31,8 +31,12 @@ class CollectionSightTileBody extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: const Center(
-              child: Icon(IconDef.sight, size: 50, color: Colors.grey),
+            child: Center(
+              child: Icon(
+                IconDef.sight,
+                size: 50,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
           ),
           // Content

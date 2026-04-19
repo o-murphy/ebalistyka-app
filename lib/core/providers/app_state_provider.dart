@@ -461,6 +461,43 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     // Profile stream triggers reload.
   }
 
+  Future<int> importProfile(ProfileExport export) async {
+    int profileId = 0;
+    final owner = _owner;
+    final (profileData, weaponData, ammoData, sightData) = export.toEntities();
+    _store.runInTransaction(TxMode.write, () {
+      weaponData.owner.target = owner;
+      _store.box<Weapon>().put(weaponData);
+
+      if (ammoData != null) {
+        ammoData.owner.target = owner;
+        _store.box<Ammo>().put(ammoData);
+      }
+      if (sightData != null) {
+        sightData.owner.target = owner;
+        _store.box<Sight>().put(sightData);
+      }
+
+      profileData
+        ..weapon.target = weaponData
+        ..ammo.target = ammoData
+        ..sight.target = sightData
+        ..owner.target = owner;
+      profileId = _store.box<Profile>().put(profileData);
+    });
+    return profileId;
+  }
+
+  Future<int> importAmmo(AmmoExport export) async {
+    final ammo = export.toEntity()..owner.target = _owner;
+    return _store.box<Ammo>().put(ammo);
+  }
+
+  Future<int> importSight(SightExport export) async {
+    final sight = export.toEntity()..owner.target = _owner;
+    return _store.box<Sight>().put(sight);
+  }
+
   Future<void> deleteProfile(int id) async {
     final wasActive = state.value?.activeProfile?.id == id;
     _store.runInTransaction(TxMode.write, () {
