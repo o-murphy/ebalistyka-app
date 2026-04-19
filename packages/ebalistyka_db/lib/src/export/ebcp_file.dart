@@ -10,11 +10,13 @@ part 'ebcp_file.g.dart';
 
 const _kEntryName = 'ebalistyka.json';
 
+/// Bump this when the .ebcp schema changes in a breaking way.
+const kEbcpFormatVersion = '1.0.0';
+
 @JsonSerializable()
 class EbcpFile {
-  const EbcpFile({required this.version, required this.items});
+  const EbcpFile({this.version = kEbcpFormatVersion, required this.items});
 
-  /// App/schema version string, populated by the caller (e.g. from package_info_plus).
   final String version;
   final List<EbcpItem> items;
 
