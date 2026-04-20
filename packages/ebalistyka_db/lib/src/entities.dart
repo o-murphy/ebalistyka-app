@@ -662,7 +662,6 @@ class ReticleSettings with Cloneable<ReticleSettings> {
   double verticalAdjustmentRad = 0.0;
   double horizontalAdjustmentRad = 0.0;
   String? targetImage;
-  double targetSizeMm = 200.0;
 
   final owner = ToOne<Owner>();
 
@@ -672,7 +671,6 @@ class ReticleSettings with Cloneable<ReticleSettings> {
     double? verticalAdjustmentRad,
     double? horizontalAdjustmentRad,
     String? targetImage,
-    double? targetSizeMm,
   }) {
     return ReticleSettings()
       ..id = id ?? this.id
@@ -680,7 +678,6 @@ class ReticleSettings with Cloneable<ReticleSettings> {
           verticalAdjustmentRad ?? this.verticalAdjustmentRad
       ..horizontalAdjustmentRad =
           horizontalAdjustmentRad ?? this.horizontalAdjustmentRad
-      ..targetImage = targetImage ?? this.targetImage
-      ..targetSizeMm = targetSizeMm ?? this.targetSizeMm;
+      ..targetImage = targetImage ?? this.targetImage;
   }
 }

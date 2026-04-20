@@ -10,13 +10,11 @@ class ReticleSettingsExport {
     required this.verticalAdjustmentRad,
     required this.horizontalAdjustmentRad,
     required this.targetImage,
-    required this.targetSizeMm,
   });
 
   final double verticalAdjustmentRad;
   final double horizontalAdjustmentRad;
   final String? targetImage;
-  final double targetSizeMm;
 
   factory ReticleSettingsExport.fromJson(Map<String, dynamic> json) =>
       _$ReticleSettingsExportFromJson(json);
@@ -28,12 +26,10 @@ class ReticleSettingsExport {
         verticalAdjustmentRad: s.verticalAdjustmentRad,
         horizontalAdjustmentRad: s.horizontalAdjustmentRad,
         targetImage: s.targetImage,
-        targetSizeMm: s.targetSizeMm,
       );
 
   ReticleSettings toEntity() => ReticleSettings()
     ..verticalAdjustmentRad = verticalAdjustmentRad
     ..horizontalAdjustmentRad = horizontalAdjustmentRad
-    ..targetImage = targetImage
-    ..targetSizeMm = targetSizeMm;
+    ..targetImage = targetImage;
 }

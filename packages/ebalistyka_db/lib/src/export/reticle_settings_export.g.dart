@@ -12,7 +12,6 @@ ReticleSettingsExport _$ReticleSettingsExportFromJson(
   verticalAdjustmentRad: (json['verticalAdjustmentRad'] as num).toDouble(),
   horizontalAdjustmentRad: (json['horizontalAdjustmentRad'] as num).toDouble(),
   targetImage: json['targetImage'] as String?,
-  targetSizeMm: (json['targetSizeMm'] as num).toDouble(),
 );
 
 Map<String, dynamic> _$ReticleSettingsExportToJson(
@@ -21,5 +20,4 @@ Map<String, dynamic> _$ReticleSettingsExportToJson(
   'verticalAdjustmentRad': instance.verticalAdjustmentRad,
   'horizontalAdjustmentRad': instance.horizontalAdjustmentRad,
   'targetImage': instance.targetImage,
-  'targetSizeMm': instance.targetSizeMm,
 };

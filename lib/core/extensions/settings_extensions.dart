@@ -137,13 +137,4 @@ extension ReticleSettingsExtension on ReticleSettings {
   set horizontalAdjustment(Angular v) {
     horizontalAdjustmentRad = v.in_(Unit.radian);
   }
-
-  /// Target size using typed Distance.
-  Distance get targetSize {
-    return Distance.millimeter(targetSizeMm);
-  }
-
-  set targetSize(Distance v) {
-    targetSizeMm = v.in_(Unit.millimeter);
-  }
 }

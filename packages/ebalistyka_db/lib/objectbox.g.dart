@@ -1192,12 +1192,6 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(5, 486479794952929440),
-        name: 'targetSizeMm',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(6, 6576419286705648195),
         name: 'ownerId',
         type: 11,
@@ -1335,6 +1329,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
       824601022869745530,
       6275749238367959778,
       3085806308739651023,
+      486479794952929440,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -2675,7 +2670,6 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(1, object.verticalAdjustmentRad);
         fbb.addFloat64(2, object.horizontalAdjustmentRad);
         fbb.addOffset(3, targetImageOffset);
-        fbb.addFloat64(4, object.targetSizeMm);
         fbb.addInt64(5, object.owner.targetId);
         fbb.finish(fbb.endTable());
         return object.id;
@@ -2700,13 +2694,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           )
           ..targetImage = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGetNullable(buffer, rootOffset, 10)
-          ..targetSizeMm = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            12,
-            0,
-          );
+          ).vTableGetNullable(buffer, rootOffset, 10);
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -3572,13 +3560,8 @@ class ReticleSettings_ {
     _entities[10].properties[3],
   );
 
-  /// See [ReticleSettings.targetSizeMm].
-  static final targetSizeMm = obx.QueryDoubleProperty<ReticleSettings>(
-    _entities[10].properties[4],
-  );
-
   /// See [ReticleSettings.owner].
   static final owner = obx.QueryRelationToOne<ReticleSettings, Owner>(
-    _entities[10].properties[5],
+    _entities[10].properties[4],
   );
 }
