@@ -51,7 +51,7 @@ abstract final class Routes {
   static const sightSelect = '/home/profiles/sight-select';
   static const sightCreate = '/home/profiles/sight-select/create';
   static const sightCollection = '/home/profiles/sight-select/collection';
-  static const sightCreateReticlePicker =
+  static const sightReticlePicker =
       '/home/profiles/sight-select/create/reticle-picker';
 
   // Profile inline edits (from profile card)
@@ -105,6 +105,20 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'reticle-view',
                   builder: (_, _) => const ReticleViewScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'reticle-picker',
+                      builder: (_, state) => ReticlePickerScreen(
+                        currentReticleId: state.extra as String?,
+                      ),
+                    ),
+                    // GoRoute(
+                    //   path: 'reticle-picker',
+                    //   builder: (_, state) => TargetPickerScreen(
+                    //     currentTargetId: state.extra as String?,
+                    //   ),
+                    // ),
+                  ],
                 ),
                 GoRoute(
                   path: 'profiles',

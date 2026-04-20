@@ -152,8 +152,9 @@ abstract final class A7pConverter {
       zeroPowderTemperatureC: p.cZeroPTemperature.toDouble(),
       zeroLatitudeDeg: 0.0,
       zeroAzimuthDeg: 0.0,
-      zeroOffsetXRad: 0.0,
-      zeroOffsetYRad: 0.0,
+      zeroOffsetX: 0.0,
+      zeroOffsetY: 0.0,
+      zeroOffsetUnit: "mil",
     );
   }
 

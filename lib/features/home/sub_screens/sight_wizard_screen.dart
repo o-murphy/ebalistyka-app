@@ -222,7 +222,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
             onTap: () async {
               final route = widget.initial != null
                   ? Routes.sightEditReticlePicker
-                  : Routes.sightCreateReticlePicker;
+                  : Routes.sightReticlePicker;
               final result = await context.push<String?>(
                 route,
                 extra: _reticleImage,
@@ -231,6 +231,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
                 setState(() => _reticleImage = result);
               }
             },
+            dense: true,
           ),
           const Divider(height: 1),
           Padding(

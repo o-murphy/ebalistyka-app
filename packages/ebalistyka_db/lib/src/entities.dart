@@ -202,8 +202,9 @@ class Ammo with Cloneable<Ammo> {
   double zeroLatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;
 
-  double zeroOffsetXRad = 0.0;
-  double zeroOffsetYRad = 0.0;
+  double zeroOffsetX = 0.0;
+  double zeroOffsetY = 0.0;
+  String zeroOffsetUnit = "mil";
 
   String? projectileName;
   String? vendor;
@@ -249,8 +250,9 @@ class Ammo with Cloneable<Ammo> {
     double? zeroPowderTemperatureC,
     double? zeroLatitudeDeg,
     double? zeroAzimuthDeg,
-    double? zeroOffsetXRad,
-    double? zeroOffsetYRad,
+    double? zeroOffsetX,
+    double? zeroOffsetY,
+    String? zeroOffsetUnit,
     String? projectileName,
     String? vendor,
     String? image,
@@ -294,8 +296,9 @@ class Ammo with Cloneable<Ammo> {
           zeroPowderTemperatureC ?? this.zeroPowderTemperatureC
       ..zeroLatitudeDeg = zeroLatitudeDeg ?? this.zeroLatitudeDeg
       ..zeroAzimuthDeg = zeroAzimuthDeg ?? this.zeroAzimuthDeg
-      ..zeroOffsetXRad = zeroOffsetXRad ?? this.zeroOffsetXRad
-      ..zeroOffsetYRad = zeroOffsetYRad ?? this.zeroOffsetYRad
+      ..zeroOffsetX = zeroOffsetX ?? this.zeroOffsetX
+      ..zeroOffsetY = zeroOffsetY ?? this.zeroOffsetY
+      ..zeroOffsetUnit = zeroOffsetUnit ?? this.zeroOffsetUnit
       ..projectileName = projectileName ?? this.projectileName
       ..vendor = vendor ?? this.vendor
       ..image = image ?? this.image;

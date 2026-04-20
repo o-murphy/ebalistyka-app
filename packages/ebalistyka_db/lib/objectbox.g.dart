@@ -21,7 +21,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(1, 481047032094263803),
     name: 'Ammo',
-    lastPropertyId: const obx_int.IdUid(61, 6275749238367959778),
+    lastPropertyId: const obx_int.IdUid(64, 8581311930876680754),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -245,21 +245,27 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(58, 2449350094904024515),
-        name: 'zeroOffsetXRad',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(59, 3182962183369396844),
-        name: 'zeroOffsetYRad',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(60, 7509424573994252574),
         name: 'zeroAltitudeMeter',
         type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(62, 799128093389168803),
+        name: 'zeroOffsetX',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(63, 5715363799047104994),
+        name: 'zeroOffsetY',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(64, 8581311930876680754),
+        name: 'zeroOffsetUnit',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -1344,6 +1350,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
       486479794952929440,
       968810543137024596,
       4141946973460114136,
+      2449350094904024515,
+      3182962183369396844,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1402,7 +1410,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final customDragTableMachOffset = object.customDragTableMach == null
             ? null
             : fbb.writeListFloat64(object.customDragTableMach!);
-        fbb.startTable(62);
+        final zeroOffsetUnitOffset = fbb.writeString(object.zeroOffsetUnit);
+        fbb.startTable(65);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(5, dragTypeValueOffset);
@@ -1439,9 +1448,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(54, object.zeroPressurehPa);
         fbb.addFloat64(55, object.zeroHumidityFrac);
         fbb.addFloat64(56, object.zeroPowderTemperatureC);
-        fbb.addFloat64(57, object.zeroOffsetXRad);
-        fbb.addFloat64(58, object.zeroOffsetYRad);
         fbb.addFloat64(59, object.zeroAltitudeMeter);
+        fbb.addFloat64(61, object.zeroOffsetX);
+        fbb.addFloat64(62, object.zeroOffsetY);
+        fbb.addOffset(63, zeroOffsetUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1598,24 +1608,27 @@ obx_int.ModelDefinition getObjectBoxModel() {
             116,
             0,
           )
-          ..zeroOffsetXRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            118,
-            0,
-          )
-          ..zeroOffsetYRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            120,
-            0,
-          )
           ..zeroAltitudeMeter = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             122,
             0,
-          );
+          )
+          ..zeroOffsetX = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            126,
+            0,
+          )
+          ..zeroOffsetY = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            128,
+            0,
+          )
+          ..zeroOffsetUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 130, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2912,19 +2925,24 @@ class Ammo_ {
     _entities[0].properties[35],
   );
 
-  /// See [Ammo.zeroOffsetXRad].
-  static final zeroOffsetXRad = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroAltitudeMeter].
+  static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[36],
   );
 
-  /// See [Ammo.zeroOffsetYRad].
-  static final zeroOffsetYRad = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroOffsetX].
+  static final zeroOffsetX = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[37],
   );
 
-  /// See [Ammo.zeroAltitudeMeter].
-  static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroOffsetY].
+  static final zeroOffsetY = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[38],
+  );
+
+  /// See [Ammo.zeroOffsetUnit].
+  static final zeroOffsetUnit = obx.QueryStringProperty<Ammo>(
+    _entities[0].properties[39],
   );
 
   /// see [Ammo.profiles]

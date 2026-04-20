@@ -1,13 +1,13 @@
 import 'dart:math' as math;
 
-import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
-import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,12 +78,8 @@ class ReticleViewScreen extends ConsumerWidget {
                             maxScale: 10.0, // Тепер підтримується зум до 10x
                             initialScale: 1.0,
                             child: ReticleView(
-                              reticleImageId: ref
-                                  .watch(activeProfileProvider)
-                                  ?.sight
-                                  .target
-                                  ?.reticleImage,
-                              targetImageId: null,
+                              reticleImageId: vmState.reticleId,
+                              targetImageId: vmState.targetId,
                               targetSizeMil: 0.5,
                               offsetXMil: vmState.adjustmentWindMil,
                               offsetYMil: vmState.adjustmentElevMil,
@@ -125,18 +121,94 @@ class ReticleViewScreen extends ConsumerWidget {
                       ),
                       SizedBox(height: 8),
                       Divider(height: 1),
-                      InfoListTile(
-                        label: "Vertical adjustment",
-                        value: "<none>",
+                      _clickLabel(context, 'Vertical adjustment'),
+                      // UnitInputWithPicker(
+                      //   value: _vAdjRaw,
+                      //   constraints: FC.adjustment,
+                      //   displayUnit: _vAdjUnit,
+                      //   options: _clickUnits,
+                      //   unitLabel: 'Adjustment unit',
+                      //   onChanged: (v) {
+                      //     if (v != null) setState(() => _vAdjRaw = v);
+                      //   },
+                      //   onUnitChanged: (u) => setState(() => _vAdjUnit = u),
+                      // ),
+                      _clickLabel(context, 'Horizontal adjustment'),
+                      // UnitInputWithPicker(
+                      //   value: _hAdjRaw,
+                      //   constraints: FC.adjustment,
+                      //   displayUnit: _hAdjUnit,
+                      //   options: _clickUnits,
+                      //   unitLabel: 'Adjustment unit',
+                      //   onChanged: (v) {
+                      //     if (v != null) setState(() => _hAdjRaw = v);
+                      //   },
+                      //   onUnitChanged: (u) => setState(() => _hAdjUnit = u),
+                      // ),
+                      // ── Reticle ────────────────────────────────────────────────
+                      const Divider(height: 1),
+                      const ListSectionTile('Reticle'),
+                      ListTile(
+                        leading: const Icon(IconDef.sight),
+                        title: const Text('Reticle pattern'),
+                        subtitle: Text(vmState.reticleId ?? 'default'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () async {
+                          // final route = widget.initial != null
+                          //     ? Routes.sightEditReticlePicker
+                          //     : Routes.sightReticlePicker;
+                          // final result = await context.push<String?>(
+                          //   route,
+                          //   extra: _reticleImage,
+                          // );
+                          // if (result != null && mounted) {
+                          //   setState(() => _reticleImage = result);
+                          // }
+                        },
+                        dense: true,
                       ),
-                      InfoListTile(
-                        label: "Horizontal adjustment",
-                        value: "<none>",
+                      ListTile(
+                        leading: const Icon(IconDef.sight),
+                        title: const Text('Target pattern'),
+                        subtitle: Text(vmState.targetId ?? 'default'),
+                        trailing: const Icon(Icons.chevron_right),
+                        // onTap: () async {
+                        //   final route = Routes.reticleTargetPicker;
+                        //   final result = await context.push<String?>(
+                        //     route,
+                        //     extra: _targetImage,
+                        //   );
+                        //   if (result != null && mounted) {
+                        //     setState(() => _targetImage = result);
+                        //   }
+                        // },
+                        dense: true,
                       ),
-                      InfoListTile(label: "Target", value: "<none>"),
-                      InfoListTile(label: "Reticle pattern", value: "<none>"),
-                      InfoListTile(label: "Vertical click", value: "<none>"),
-                      InfoListTile(label: "Horizontal click", value: "<none>"),
+                      ListSectionTile("Clicks"),
+                      _clickLabel(context, 'Vertical click'),
+                      // UnitInputWithPicker(
+                      //   value: _vClickRaw,
+                      //   constraints: FC.adjustment,
+                      //   displayUnit: _vClickUnit,
+                      //   options: _clickUnits,
+                      //   unitLabel: 'Click unit',
+                      //   onChanged: (v) {
+                      //     if (v != null) setState(() => _vClickRaw = v);
+                      //   },
+                      //   onUnitChanged: (u) => setState(() => _vClickUnit = u),
+                      // ),
+                      _clickLabel(context, 'Horizontal click'),
+                      // UnitInputWithPicker(
+                      //   value: _hClickRaw,
+                      //   constraints: FC.adjustment,
+                      //   displayUnit: _hClickUnit,
+                      //   options: _clickUnits,
+                      //   unitLabel: 'Click unit',
+                      //   onChanged: (v) {
+                      //     if (v != null) setState(() => _hClickRaw = v);
+                      //   },
+                      //   onUnitChanged: (u) => setState(() => _hClickUnit = u),
+                      // ),
                     ],
                   ),
                 ),
@@ -145,6 +217,18 @@ class ReticleViewScreen extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _clickLabel(BuildContext context, String label) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }

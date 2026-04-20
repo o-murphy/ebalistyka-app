@@ -322,7 +322,14 @@ class MilReticleSVGCanvas {
     );
   }
 
-  void path(String d, String fill, {String? stroke, double? strokeWidth}) {
+  void path(
+    String d,
+    String fill, {
+    String? stroke,
+    double? strokeWidth,
+    String? strokeLineJoin = 'miter', // Додайте цей параметр
+    String? strokeLineCap = 'miter', // І цей для кінців ліній
+  }) {
     _target.children.add(
       XmlElement(XmlName('path'), [
         XmlAttribute(XmlName('id'), nextId('path')),
@@ -331,6 +338,10 @@ class MilReticleSVGCanvas {
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
           XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+        if (strokeLineJoin != null)
+          XmlAttribute(XmlName('stroke-linejoin'), strokeLineJoin),
+        if (strokeLineCap != null)
+          XmlAttribute(XmlName('stroke-linecap'), strokeLineCap),
       ]),
     );
   }
@@ -395,18 +406,25 @@ class MilReticleSVGCanvas {
     };
 
     _hint('label');
-    batchLines(stroke, effectiveSw, (pb) {
-      for (var i = 0; i < chars.length; i++) {
-        _StrokeFont.drawGlyph(
-          chars[i],
-          startX + i * step,
-          cy - h / 2,
-          w,
-          h,
-          pb,
-        );
-      }
-    });
+    batchLines(
+      stroke, // 1й аргумент: stroke
+      effectiveSw, // 2й аргумент: strokeWidth
+      (pb) {
+        // 3й аргумент: build функція
+        for (var i = 0; i < chars.length; i++) {
+          _StrokeFont.drawGlyph(
+            chars[i],
+            startX + i * step,
+            cy - h / 2,
+            w,
+            h,
+            pb,
+          );
+        }
+      },
+      strokeLineJoin: 'round',
+      strokeLineCap: 'round',
+    );
   }
 
   /// Clips [draw] to the shape defined by [shape].
@@ -738,12 +756,21 @@ class MilReticleSVGCanvas {
     double strokeWidth,
     void Function(PathBuilder pb) build, {
     String fill = 'none',
+    String? strokeLineJoin = 'miter', // Додайте цей параметр
+    String? strokeLineCap = 'miter', // І цей для кінців ліній
   }) {
     final pb = PathBuilder();
     build(pb);
     if (!pb.isEmpty) {
       _hint('batch');
-      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+      path(
+        pb.d,
+        fill,
+        stroke: stroke,
+        strokeWidth: strokeWidth,
+        strokeLineJoin: strokeLineJoin,
+        strokeLineCap: strokeLineCap,
+      );
     }
   }
 

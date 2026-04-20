@@ -14,7 +14,7 @@
       <line id="hline-3" x1="-0.25" y1="2" x2="0.25" y2="2" stroke="onSurface" stroke-width="0.016"/>
       <line id="hline-4" x1="12.9" y1="0" x2="1.75" y2="0" stroke="onSurface" stroke-width="0.25"/>
       <line id="hline-5" x1="-12.9" y1="0" x2="-1.75" y2="0" stroke="onSurface" stroke-width="0.25"/>
-      <path id="batch-0" d="M 1.5 0 L 1.75 0.125 L 1.75 -0.125 Z M -1.5 0 L -1.75 0.125 L -1.75 -0.125 Z M 1.5 0 L 1.75 0.125 M 1.5 0 L 1.75 -0.125 M -1.5 0 L -1.75 0.125 M -1.5 0 L -1.75 -0.125" fill="onSurface" stroke="onSurface" stroke-width="0.016"/>
+      <path id="batch-0" d="M 1.5 0 L 1.75 0.125 L 1.75 -0.125 Z M -1.5 0 L -1.75 0.125 L -1.75 -0.125 Z M 1.5 0 L 1.75 0.125 M 1.5 0 L 1.75 -0.125 M -1.5 0 L -1.75 0.125 M -1.5 0 L -1.75 -0.125" fill="onSurface" stroke="onSurface" stroke-width="0.016" stroke-linejoin="miter" stroke-linecap="miter"/>
     </g>
   </g>
 </svg>

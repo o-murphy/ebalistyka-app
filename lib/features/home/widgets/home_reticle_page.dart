@@ -57,12 +57,8 @@ class HomeReticlePage extends ConsumerWidget {
                     behavior: HitTestBehavior.opaque,
                     onTap: () => context.push(Routes.reticleView),
                     child: ReticleView(
-                      reticleImageId: ref
-                          .watch(activeProfileProvider)
-                          ?.sight
-                          .target
-                          ?.reticleImage,
-                      targetImageId: null,
+                      reticleImageId: vmState.reticleId,
+                      targetImageId: vmState.targetId,
                       targetSizeMil: 0.5,
                       offsetXMil: vmState.adjustmentWindMil,
                       offsetYMil: vmState.adjustmentElevMil,
