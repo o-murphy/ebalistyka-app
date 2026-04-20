@@ -112,7 +112,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   Widget build(BuildContext context) {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
-
     final fmt = ref.watch(unitFormatterProvider);
 
     if (vmState is HomeUiNoData) {
@@ -156,7 +155,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
                   child: ListView(
                     children: [
-                      // ── Ballistic adjustments ────────────────────────────
                       ListSectionTile('Adjustments'),
                       Center(
                         child: AdjPanel(
@@ -168,7 +166,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ),
                       const SizedBox(height: 8),
                       const Divider(height: 1),
-                      // ── Barrel drums ─────────────────────────────────────
                       const ListSectionTile('Barrel drums'),
                       _clickLabel(context, 'Vertical adjustment'),
                       UnitInputWithPicker(
@@ -206,7 +203,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           _saveAdj();
                         },
                       ),
-                      // ── Target ───────────────────────────────────────────
                       const Divider(height: 1),
                       const ListSectionTile('Target'),
                       ListTile(
@@ -233,7 +229,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         value: targetSizeDisplay,
                         icon: Icons.crop_free,
                       ),
-                      // ── Reticle ──────────────────────────────────────────
                       const Divider(height: 1),
                       const ListSectionTile('Reticle'),
                       ListTile(
@@ -255,7 +250,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         },
                         dense: true,
                       ),
-                      // ── Clicks ───────────────────────────────────────────
                       const Divider(height: 1),
                       const ListSectionTile('Clicks'),
                       _clickLabel(context, 'Vertical click'),
@@ -406,38 +400,77 @@ class ZoomableView extends StatefulWidget {
   State<ZoomableView> createState() => _ZoomableViewState();
 }
 
-class _ZoomableViewState extends State<ZoomableView> {
+class _ZoomableViewState extends State<ZoomableView>
+    with SingleTickerProviderStateMixin {
   late TransformationController _transformationController;
+  late AnimationController _animationController;
+  Animation<Matrix4>? _animation;
+  TapDownDetails? _doubleTapDetails;
 
   @override
   void initState() {
     super.initState();
     _transformationController = TransformationController();
+    _animationController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        )..addListener(() {
+          if (_animation != null) {
+            _transformationController.value = _animation!.value;
+          }
+        });
   }
 
   @override
   void dispose() {
     _transformationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   void resetZoom() {
-    _transformationController.value = Matrix4.identity();
+    _animateTransformation(Matrix4.identity());
+  }
+
+  void _animateTransformation(Matrix4 target) {
+    _animation =
+        Matrix4Tween(
+          begin: _transformationController.value,
+          end: target,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+    _animationController.forward(from: 0);
   }
 
   void _handleDoubleTap() {
     final currentScale = _transformationController.value.getMaxScaleOnAxis();
-    if (currentScale > 1.0) {
+
+    if (currentScale > 1.1) {
       resetZoom();
     } else {
-      _transformationController.value = Matrix4.identity()
-        ..scaleByDouble(2.0, 2.0, 1.0, 1.0);
+      if (_doubleTapDetails == null) return;
+
+      final tapPos = _doubleTapDetails!.localPosition;
+      const targetScale = 3.0; // Рівень масштабу
+
+      final targetMatrix = Matrix4.identity()
+        ..translate(tapPos.dx, tapPos.dy)
+        ..scale(targetScale)
+        ..translate(-tapPos.dx, -tapPos.dy);
+
+      _animateTransformation(targetMatrix);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onDoubleTapDown: (details) => _doubleTapDetails = details,
       onDoubleTap: _handleDoubleTap,
       child: InteractiveViewer(
         transformationController: _transformationController,
@@ -447,6 +480,7 @@ class _ZoomableViewState extends State<ZoomableView> {
         panEnabled: true,
         constrained: true,
         boundaryMargin: EdgeInsets.zero,
+        onInteractionStart: (_) => _animationController.stop(),
         child: widget.child,
       ),
     );
