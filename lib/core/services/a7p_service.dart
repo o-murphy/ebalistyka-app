@@ -10,8 +10,11 @@ import 'package:share_plus/share_plus.dart';
 import 'ebcp_service.dart';
 
 abstract final class A7pService {
-  static Future<void> shareFile(ProfileExport profile) async {
-    final payload = A7pConverter.toPayload(profile);
+  static Future<void> shareFile(
+    ProfileExport profile, [
+    A7pRange? range,
+  ]) async {
+    final payload = A7pConverter.toPayload(profile, range);
     final bytes = A7pFile.encode(payload);
     final name =
         '${EbcpService.sanitizeName(profile.name).replaceFirst(RegExp(r'^\.'), '')}.a7p';

@@ -1,3 +1,4 @@
+import 'package:a7p/a7p.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
@@ -183,6 +184,9 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       sight,
     );
 
+    final bool a7pExportable =
+        (profileExport.ammo != null && profileExport.sight != null);
+
     if (!mounted) return;
     await showActionSheet(
       context,
@@ -202,7 +206,49 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         ActionSheetItem(
           icon: IconDef.export,
           title: '.a7p (Archer Ballistic Profile)',
-          onTap: () => A7pService.shareFile(profileExport),
+          subtitle: !a7pExportable ? "Select ammo and sight first" : null,
+          onTap: !a7pExportable
+              ? null
+              : () => showActionSheet(
+                  context,
+                  title: "Select range",
+                  entries: [
+                    ActionSheetItem(
+                      title: "Subsonic",
+                      subtitle: "25-400m",
+                      onTap: () => A7pService.shareFile(
+                        profileExport,
+                        A7pRange.subsonic,
+                      ),
+                    ),
+                    ActionSheetItem(
+                      title: "Low",
+                      subtitle: "100-700m",
+                      onTap: () => A7pService.shareFile(
+                        profileExport,
+                        A7pRange.subsonic,
+                      ),
+                    ),
+                    ActionSheetItem(
+                      title: "Middle",
+                      subtitle: "100-1000m",
+                      onTap: () =>
+                          A7pService.shareFile(profileExport, A7pRange.medium),
+                    ),
+                    ActionSheetItem(
+                      title: "Long",
+                      subtitle: "100-1700m",
+                      onTap: () =>
+                          A7pService.shareFile(profileExport, A7pRange.long),
+                    ),
+                    ActionSheetItem(
+                      title: "Ultra long",
+                      subtitle: "100-2000m",
+                      onTap: () =>
+                          A7pService.shareFile(profileExport, A7pRange.ultra),
+                    ),
+                  ],
+                ),
         ),
       ],
     );
