@@ -946,10 +946,52 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "12:6849051147696960557",
+      "lastPropertyId": "6:6576419286705648195",
+      "name": "ReticleSettings",
+      "properties": [
+        {
+          "id": "1:5243600524700089722",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:968810543137024596",
+          "name": "verticalAdjustmentRad",
+          "type": 8
+        },
+        {
+          "id": "3:4141946973460114136",
+          "name": "horizontalAdjustmentRad",
+          "type": 8
+        },
+        {
+          "id": "4:5234752950815003840",
+          "name": "targetImage",
+          "type": 9
+        },
+        {
+          "id": "5:486479794952929440",
+          "name": "targetSizeMm",
+          "type": 8
+        },
+        {
+          "id": "6:6576419286705648195",
+          "name": "ownerId",
+          "indexId": "23:6800428834975185432",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "11:7626615768518305721",
-  "lastIndexId": "22:5656087516355577029",
+  "lastEntityId": "12:6849051147696960557",
+  "lastIndexId": "23:6800428834975185432",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

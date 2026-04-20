@@ -1161,6 +1161,55 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(12, 6849051147696960557),
+    name: 'ReticleSettings',
+    lastPropertyId: const obx_int.IdUid(6, 6576419286705648195),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 5243600524700089722),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 968810543137024596),
+        name: 'verticalAdjustmentRad',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 4141946973460114136),
+        name: 'horizontalAdjustmentRad',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 5234752950815003840),
+        name: 'targetImage',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 486479794952929440),
+        name: 'targetSizeMm',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 6576419286705648195),
+        name: 'ownerId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(23, 6800428834975185432),
+        relationField: 'owner',
+        relationTarget: 'Owner',
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -1205,8 +1254,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(11, 7626615768518305721),
-    lastIndexId: const obx_int.IdUid(22, 5656087516355577029),
+    lastEntityId: const obx_int.IdUid(12, 6849051147696960557),
+    lastIndexId: const obx_int.IdUid(23, 6800428834975185432),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [6584000130387526342],
@@ -2609,6 +2658,65 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    ReticleSettings: obx_int.EntityDefinition<ReticleSettings>(
+      model: _entities[10],
+      toOneRelations: (ReticleSettings object) => [object.owner],
+      toManyRelations: (ReticleSettings object) => {},
+      getId: (ReticleSettings object) => object.id,
+      setId: (ReticleSettings object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ReticleSettings object, fb.Builder fbb) {
+        final targetImageOffset = object.targetImage == null
+            ? null
+            : fbb.writeString(object.targetImage!);
+        fbb.startTable(7);
+        fbb.addInt64(0, object.id);
+        fbb.addFloat64(1, object.verticalAdjustmentRad);
+        fbb.addFloat64(2, object.horizontalAdjustmentRad);
+        fbb.addOffset(3, targetImageOffset);
+        fbb.addFloat64(4, object.targetSizeMm);
+        fbb.addInt64(5, object.owner.targetId);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+
+        final object = ReticleSettings()
+          ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
+          ..verticalAdjustmentRad = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            6,
+            0,
+          )
+          ..horizontalAdjustmentRad = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            8,
+            0,
+          )
+          ..targetImage = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGetNullable(buffer, rootOffset, 10)
+          ..targetSizeMm = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            12,
+            0,
+          );
+        object.owner.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        object.owner.attach(store);
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -3440,5 +3548,37 @@ class ShootingConditions_ {
   /// See [ShootingConditions.owner].
   static final owner = obx.QueryRelationToOne<ShootingConditions, Owner>(
     _entities[9].properties[15],
+  );
+}
+
+/// [ReticleSettings] entity fields to define ObjectBox queries.
+class ReticleSettings_ {
+  /// See [ReticleSettings.id].
+  static final id = obx.QueryIntegerProperty<ReticleSettings>(
+    _entities[10].properties[0],
+  );
+
+  /// See [ReticleSettings.verticalAdjustmentRad].
+  static final verticalAdjustmentRad = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[1],
+  );
+
+  /// See [ReticleSettings.horizontalAdjustmentRad].
+  static final horizontalAdjustmentRad =
+      obx.QueryDoubleProperty<ReticleSettings>(_entities[10].properties[2]);
+
+  /// See [ReticleSettings.targetImage].
+  static final targetImage = obx.QueryStringProperty<ReticleSettings>(
+    _entities[10].properties[3],
+  );
+
+  /// See [ReticleSettings.targetSizeMm].
+  static final targetSizeMm = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[4],
+  );
+
+  /// See [ReticleSettings.owner].
+  static final owner = obx.QueryRelationToOne<ReticleSettings, Owner>(
+    _entities[10].properties[5],
   );
 }

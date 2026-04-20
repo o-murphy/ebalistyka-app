@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import '../entities.dart';
 import 'conditions_export.dart';
 import 'general_settings_export.dart';
+import 'reticle_settings_export.dart';
 import 'tables_settings_export.dart';
 import 'unit_settings_export.dart';
 
@@ -15,12 +16,14 @@ class SettingsExport {
     required this.units,
     required this.tables,
     required this.conditions,
+    required this.reticle,
   });
 
   final GeneralSettingsExport general;
   final UnitSettingsExport units;
   final TablesSettingsExport tables;
   final ConditionsExport conditions;
+  final ReticleSettingsExport reticle;
 
   factory SettingsExport.fromJson(Map<String, dynamic> json) =>
       _$SettingsExportFromJson(json);
@@ -32,10 +35,12 @@ class SettingsExport {
     UnitSettings u,
     TablesSettings t,
     ShootingConditions c,
+    ReticleSettings r,
   ) => SettingsExport(
     general: GeneralSettingsExport.fromEntity(g),
     units: UnitSettingsExport.fromEntity(u),
     tables: TablesSettingsExport.fromEntity(t),
     conditions: ConditionsExport.fromEntity(c),
+    reticle: ReticleSettingsExport.fromEntity(r),
   );
 }

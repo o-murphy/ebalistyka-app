@@ -1,3 +1,4 @@
+import 'package:bclibc_ffi/bclibc.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
@@ -242,6 +243,81 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
   }
 }
 
+// ── ReticleSettings notifier ──────────────────────────────────────────────────
+
+class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
+  Store get _store => ref.read(dbProvider);
+  Owner get _owner => ref.read(ownerProvider);
+
+  @override
+  Future<ReticleSettings> build() async {
+    final owner = _owner;
+    final settings = _loadOrCreate(owner);
+
+    final subscription = _store
+        .box<ReticleSettings>()
+        .query(ReticleSettings_.owner.equals(owner.id))
+        .watch(triggerImmediately: false)
+        .listen((query) {
+          final updated = query.findFirst();
+          if (updated != null) state = AsyncData(updated);
+        });
+    ref.onDispose(subscription.cancel);
+
+    return settings;
+  }
+
+  ReticleSettings _loadOrCreate(Owner owner) {
+    final existing = _store
+        .box<ReticleSettings>()
+        .query(ReticleSettings_.owner.equals(owner.id))
+        .build()
+        .findFirst();
+    if (existing != null) return existing;
+    final s = ReticleSettings()..owner.target = owner;
+    _store.box<ReticleSettings>().put(s);
+    return s;
+  }
+
+  Future<void> save(ReticleSettings s) async {
+    _store.box<ReticleSettings>().put(s);
+    // Stream triggers state update.
+  }
+
+  Future<void> restore(ReticleSettingsExport export) async {
+    final current = state.value ?? _loadOrCreate(_owner);
+    await save(
+      export.toEntity()
+        ..id = current.id
+        ..owner.target = _owner,
+    );
+  }
+
+  Future<void> setVerticalAdjustment(Angular value) async {
+    final s = state.value ?? _loadOrCreate(_owner);
+    s.verticalAdjustment = value;
+    await save(s);
+  }
+
+  Future<void> setHorizontalAdjustment(Angular value) async {
+    final s = state.value ?? _loadOrCreate(_owner);
+    s.horizontalAdjustment = value;
+    await save(s);
+  }
+
+  Future<void> setTargetImage(String? imageId) async {
+    final s = state.value ?? _loadOrCreate(_owner);
+    s.targetImage = imageId;
+    await save(s);
+  }
+
+  Future<void> setTargetSize(Distance value) async {
+    final s = state.value ?? _loadOrCreate(_owner);
+    s.targetSize = value;
+    await save(s);
+  }
+}
+
 // ── Providers ─────────────────────────────────────────────────────────────────
 
 final settingsProvider =
@@ -267,6 +343,16 @@ final tablesSettingsNotifierProvider =
 /// Synchronous access to TablesSettings — returns defaults while loading.
 final tablesSettingsProvider = Provider<TablesSettings>((ref) {
   return ref.watch(tablesSettingsNotifierProvider).value ?? TablesSettings();
+});
+
+final reticleSettingsNotifierProvider =
+    AsyncNotifierProvider<ReticleSettingsNotifier, ReticleSettings>(
+      ReticleSettingsNotifier.new,
+    );
+
+/// Synchronous access to ReticleSettings — returns defaults while loading.
+final reticleSettingsProvider = Provider<ReticleSettings>((ref) {
+  return ref.watch(reticleSettingsNotifierProvider).value ?? ReticleSettings();
 });
 
 final themeModeProvider = Provider<ThemeMode>((ref) {

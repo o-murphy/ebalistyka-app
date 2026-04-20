@@ -653,3 +653,34 @@ class ConvertorsState with Cloneable<ConvertorsState> {
           velocityAtmoAltitudeMeter ?? this.velocityAtmoAltitudeMeter;
   }
 }
+
+@Entity()
+class ReticleSettings with Cloneable<ReticleSettings> {
+  @Id()
+  int id = 0;
+
+  double verticalAdjustmentRad = 0.0;
+  double horizontalAdjustmentRad = 0.0;
+  String? targetImage;
+  double targetSizeMm = 200.0;
+
+  final owner = ToOne<Owner>();
+
+  @override
+  ReticleSettings copyWith({
+    int? id,
+    double? verticalAdjustmentRad,
+    double? horizontalAdjustmentRad,
+    String? targetImage,
+    double? targetSizeMm,
+  }) {
+    return ReticleSettings()
+      ..id = id ?? this.id
+      ..verticalAdjustmentRad =
+          verticalAdjustmentRad ?? this.verticalAdjustmentRad
+      ..horizontalAdjustmentRad =
+          horizontalAdjustmentRad ?? this.horizontalAdjustmentRad
+      ..targetImage = targetImage ?? this.targetImage
+      ..targetSizeMm = targetSizeMm ?? this.targetSizeMm;
+  }
+}

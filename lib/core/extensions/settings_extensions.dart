@@ -117,3 +117,33 @@ extension UnitSettingsFullExtension on UnitSettings {
   );
   set torqueUnit(Unit v) => torque = v.name;
 }
+
+extension ReticleSettingsExtension on ReticleSettings {
+  /// Vertical adjustment using typed Angular from the user's preferred adjustment unit.
+  Angular get verticalAdjustment {
+    // Store as radians internally; convert to user's preference through Angular.
+    return Angular.radian(verticalAdjustmentRad);
+  }
+
+  set verticalAdjustment(Angular v) {
+    verticalAdjustmentRad = v.in_(Unit.radian);
+  }
+
+  /// Horizontal adjustment using typed Angular from the user's preferred adjustment unit.
+  Angular get horizontalAdjustment {
+    return Angular.radian(horizontalAdjustmentRad);
+  }
+
+  set horizontalAdjustment(Angular v) {
+    horizontalAdjustmentRad = v.in_(Unit.radian);
+  }
+
+  /// Target size using typed Distance.
+  Distance get targetSize {
+    return Distance.millimeter(targetSizeMm);
+  }
+
+  set targetSize(Distance v) {
+    targetSizeMm = v.in_(Unit.millimeter);
+  }
+}
