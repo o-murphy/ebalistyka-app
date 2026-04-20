@@ -121,6 +121,21 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(s);
   }
 
+  // ── Velocity ──────────────────────────────────────────────────────────────────
+
+  Future<void> updateVelocityValue(double? valueInMps) async {
+    if (valueInMps == null || valueInMps < 0) return;
+    final s = state.value ?? _load();
+    s.velocityValueMps = valueInMps;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.velocityUnit = unit;
+    await _save(s);
+  }
+
   // ── Angles convertor ──────────────────────────────────────────────────────────
 
   Future<void> updateAnglesConvDistanceValue(double? valueInMeters) async {

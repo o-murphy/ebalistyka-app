@@ -275,7 +275,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 3319446897955563326),
     name: 'ConvertorsState',
-    lastPropertyId: const obx_int.IdUid(35, 570052440190756322),
+    lastPropertyId: const obx_int.IdUid(37, 2717354904851346876),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -380,6 +380,18 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(35, 570052440190756322),
         name: 'anglesConvOutputLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(36, 7495548274965250269),
+        name: 'velocityValueMps',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(37, 2717354904851346876),
+        name: 'velocityLastUnit',
         type: 9,
         flags: 0,
       ),
@@ -1554,7 +1566,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final anglesConvOutputLastUnitOffset = fbb.writeString(
           object.anglesConvOutputLastUnit,
         );
-        fbb.startTable(36);
+        final velocityLastUnitOffset = fbb.writeString(object.velocityLastUnit);
+        fbb.startTable(38);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.lengthValueInch);
         fbb.addFloat64(3, object.weightValueGrain);
@@ -1572,6 +1585,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(32, object.anglesConvAngularValueMil);
         fbb.addOffset(33, anglesConvAngularLastUnitOffset);
         fbb.addOffset(34, anglesConvOutputLastUnitOffset);
+        fbb.addFloat64(35, object.velocityValueMps);
+        fbb.addOffset(36, velocityLastUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1646,7 +1661,16 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ).vTableGet(buffer, rootOffset, 70, '')
           ..anglesConvOutputLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 72, '');
+          ).vTableGet(buffer, rootOffset, 72, '')
+          ..velocityValueMps = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            74,
+            0,
+          )
+          ..velocityLastUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 76, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2785,6 +2809,16 @@ class ConvertorsState_ {
   /// See [ConvertorsState.anglesConvOutputLastUnit].
   static final anglesConvOutputLastUnit =
       obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[16]);
+
+  /// See [ConvertorsState.velocityValueMps].
+  static final velocityValueMps = obx.QueryDoubleProperty<ConvertorsState>(
+    _entities[1].properties[17],
+  );
+
+  /// See [ConvertorsState.velocityLastUnit].
+  static final velocityLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[18],
+  );
 }
 
 /// [GeneralSettings] entity fields to define ObjectBox queries.

@@ -308,6 +308,14 @@ abstract final class FC {
     stepRaw: 1.0,
     accuracy: 0,
   );
+  static const convertorVelocity = FieldConstraints(
+    rawUnit: Unit.mps,
+    minRaw: 0.0,
+    maxRaw: 3000.0,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
   static const convertorTorque = torque;
   static const convertorAngular = FieldConstraints(
     rawUnit: Unit.mil,

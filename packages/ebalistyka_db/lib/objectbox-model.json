@@ -214,7 +214,7 @@
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "35:570052440190756322",
+      "lastPropertyId": "37:2717354904851346876",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -304,6 +304,16 @@
         {
           "id": "35:570052440190756322",
           "name": "anglesConvOutputLastUnit",
+          "type": 9
+        },
+        {
+          "id": "36:7495548274965250269",
+          "name": "velocityValueMps",
+          "type": 8
+        },
+        {
+          "id": "37:2717354904851346876",
+          "name": "velocityLastUnit",
           "type": 9
         }
       ],

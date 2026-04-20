@@ -4,6 +4,7 @@ export 'package:ebalistyka/features/convertors/sub_screens/pressure_convertor_sc
 export 'package:ebalistyka/features/convertors/sub_screens/temperature_convertor_screen.dart';
 export 'package:ebalistyka/features/convertors/sub_screens/torque_convertor_screen.dart';
 export 'package:ebalistyka/features/convertors/sub_screens/angular_convertor_screen.dart';
+export 'package:ebalistyka/features/convertors/sub_screens/velocity_convertor_screen.dart';
 
 import 'package:ebalistyka/shared/widgets/_stub_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +14,4 @@ class DistanceConvertorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const StubScreen(title: 'Distance Convertor');
-}
-
-class VelocityConvertorScreen extends StatelessWidget {
-  const VelocityConvertorScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const StubScreen(title: 'Velocity Convertor');
 }

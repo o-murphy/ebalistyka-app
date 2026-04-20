@@ -74,4 +74,13 @@ extension ConvertorsStateExtension on ConvertorsState {
     orElse: () => Unit.centimeter,
   );
   set anglesConvOutputUnit(Unit v) => anglesConvOutputLastUnit = v.name;
+
+  Velocity get velocityValue => Velocity.mps(velocityValueMps);
+  set velocityValue(Velocity v) => velocityValueMps = v.in_(Unit.mps);
+
+  Unit get velocityUnit => Unit.values.firstWhere(
+    (u) => u.name == velocityLastUnit,
+    orElse: () => Unit.mps,
+  );
+  set velocityUnit(Unit v) => velocityLastUnit = v.name;
 }

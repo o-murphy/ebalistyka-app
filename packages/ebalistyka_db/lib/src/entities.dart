@@ -576,6 +576,8 @@ class ConvertorsState with Cloneable<ConvertorsState> {
   double anglesConvAngularValueMil = 1.0;
   String anglesConvAngularLastUnit = "mil";
   String anglesConvOutputLastUnit = "centimeter";
+  double velocityValueMps = 300.0;
+  String velocityLastUnit = "mps";
 
   final owner = ToOne<Owner>();
 
@@ -597,6 +599,8 @@ class ConvertorsState with Cloneable<ConvertorsState> {
     double? anglesConvAngularValueMil,
     String? anglesConvAngularLastUnit,
     String? anglesConvOutputLastUnit,
+    double? velocityValueMps,
+    String? velocityLastUnit,
   }) {
     return ConvertorsState()
       ..id = id ?? this.id
@@ -620,6 +624,8 @@ class ConvertorsState with Cloneable<ConvertorsState> {
       ..anglesConvAngularLastUnit =
           anglesConvAngularLastUnit ?? this.anglesConvAngularLastUnit
       ..anglesConvOutputLastUnit =
-          anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit;
+          anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit
+      ..velocityValueMps = velocityValueMps ?? this.velocityValueMps
+      ..velocityLastUnit = velocityLastUnit ?? this.velocityLastUnit;
   }
 }
