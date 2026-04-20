@@ -659,8 +659,10 @@ class ReticleSettings with Cloneable<ReticleSettings> {
   @Id()
   int id = 0;
 
-  double verticalAdjustmentRad = 0.0;
-  double horizontalAdjustmentRad = 0.0;
+  double verticalAdjustment = 0.0;
+  String verticalAdjustmentUnit = 'mil';
+  double horizontalAdjustment = 0.0;
+  String horizontalAdjustmentUnit = 'mil';
   String? targetImage;
 
   final owner = ToOne<Owner>();
@@ -668,16 +670,20 @@ class ReticleSettings with Cloneable<ReticleSettings> {
   @override
   ReticleSettings copyWith({
     int? id,
-    double? verticalAdjustmentRad,
-    double? horizontalAdjustmentRad,
+    double? verticalAdjustment,
+    String? verticalAdjustmentUnit,
+    double? horizontalAdjustment,
+    String? horizontalAdjustmentUnit,
     String? targetImage,
   }) {
     return ReticleSettings()
       ..id = id ?? this.id
-      ..verticalAdjustmentRad =
-          verticalAdjustmentRad ?? this.verticalAdjustmentRad
-      ..horizontalAdjustmentRad =
-          horizontalAdjustmentRad ?? this.horizontalAdjustmentRad
+      ..verticalAdjustment = verticalAdjustment ?? this.verticalAdjustment
+      ..verticalAdjustmentUnit =
+          verticalAdjustmentUnit ?? this.verticalAdjustmentUnit
+      ..horizontalAdjustment = horizontalAdjustment ?? this.horizontalAdjustment
+      ..horizontalAdjustmentUnit =
+          horizontalAdjustmentUnit ?? this.horizontalAdjustmentUnit
       ..targetImage = targetImage ?? this.targetImage;
   }
 }

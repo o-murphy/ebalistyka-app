@@ -7,13 +7,17 @@ part 'reticle_settings_export.g.dart';
 @JsonSerializable()
 class ReticleSettingsExport {
   const ReticleSettingsExport({
-    required this.verticalAdjustmentRad,
-    required this.horizontalAdjustmentRad,
+    required this.verticalAdjustment,
+    this.verticalAdjustmentUnit = 'mil',
+    required this.horizontalAdjustment,
+    this.horizontalAdjustmentUnit = 'mil',
     required this.targetImage,
   });
 
-  final double verticalAdjustmentRad;
-  final double horizontalAdjustmentRad;
+  final double verticalAdjustment;
+  final String verticalAdjustmentUnit;
+  final double horizontalAdjustment;
+  final String horizontalAdjustmentUnit;
   final String? targetImage;
 
   factory ReticleSettingsExport.fromJson(Map<String, dynamic> json) =>
@@ -23,13 +27,17 @@ class ReticleSettingsExport {
 
   factory ReticleSettingsExport.fromEntity(ReticleSettings s) =>
       ReticleSettingsExport(
-        verticalAdjustmentRad: s.verticalAdjustmentRad,
-        horizontalAdjustmentRad: s.horizontalAdjustmentRad,
+        verticalAdjustment: s.verticalAdjustment,
+        verticalAdjustmentUnit: s.verticalAdjustmentUnit,
+        horizontalAdjustment: s.horizontalAdjustment,
+        horizontalAdjustmentUnit: s.horizontalAdjustmentUnit,
         targetImage: s.targetImage,
       );
 
   ReticleSettings toEntity() => ReticleSettings()
-    ..verticalAdjustmentRad = verticalAdjustmentRad
-    ..horizontalAdjustmentRad = horizontalAdjustmentRad
+    ..verticalAdjustment = verticalAdjustment
+    ..verticalAdjustmentUnit = verticalAdjustmentUnit
+    ..horizontalAdjustment = horizontalAdjustment
+    ..horizontalAdjustmentUnit = horizontalAdjustmentUnit
     ..targetImage = targetImage;
 }

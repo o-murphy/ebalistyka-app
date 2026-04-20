@@ -293,17 +293,17 @@ class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
     );
   }
 
-  Future<void> setVerticalAdjustment(Angular value) async {
-    final s = state.value ?? _loadOrCreate(_owner);
-    s.verticalAdjustment = value;
-    await save(s);
-  }
+  // Future<void> setVerticalAdjustment(Angular value) async {
+  //   final s = state.value ?? _loadOrCreate(_owner);
+  //   s.verticalAdjustment = value;
+  //   await save(s);
+  // }
 
-  Future<void> setHorizontalAdjustment(Angular value) async {
-    final s = state.value ?? _loadOrCreate(_owner);
-    s.horizontalAdjustment = value;
-    await save(s);
-  }
+  // Future<void> setHorizontalAdjustment(Angular value) async {
+  //   final s = state.value ?? _loadOrCreate(_owner);
+  //   s.horizontalAdjustment = value;
+  //   await save(s);
+  // }
 
   Future<void> setTargetImage(String? imageId) async {
     final s = state.value ?? _loadOrCreate(_owner);
