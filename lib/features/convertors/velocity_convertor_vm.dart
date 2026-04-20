@@ -50,13 +50,39 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       ref.read(convertorsProvider.notifier).updateVelocityValue(null);
       return;
     }
-    final mpsValue = rawValueInInputUnit.convert(s.velocityUnit, Unit.mps);
-    if (mpsValue >= 0) {
-      ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
+    if (s.velocityUnit == Unit.mach) {
+      // Store the mach number; mps is derived on the fly from mach + atmo.
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityMachInputValue(rawValueInInputUnit);
+    } else {
+      final mpsValue = rawValueInInputUnit.convert(s.velocityUnit, Unit.mps);
+      if (mpsValue >= 0) {
+        ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
+      }
     }
   }
 
+  /// Switches the input unit, converting the stored value so the displayed
+  /// number stays consistent after the switch.
   void changeInputUnit(Unit newUnit) {
+    final s = ref.read(convertorStateProvider);
+    final atmo = _buildAtmo(s);
+
+    if (newUnit == Unit.mach && s.velocityUnit != Unit.mach) {
+      // Switching TO mach: sync mach from current stored mps.
+      final machValue = s.velocityValue.inMach(atmo);
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityMachInputValue(machValue);
+    } else if (newUnit != Unit.mach && s.velocityUnit == Unit.mach) {
+      // Switching FROM mach: sync mps from stored mach + current atmo.
+      final mpsValue = s.velocityMachInputValue
+          .toVelocityFromMach(atmo)
+          .in_(Unit.mps);
+      ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
+    }
+
     ref.read(convertorsProvider.notifier).updateVelocityUnit(newUnit);
   }
 
@@ -90,10 +116,14 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
         .updateVelocityAtmoAltitude(Distance.meter(rawMeter));
   }
 
-  double? _getDisplayValue(double? rawMps, Unit inputUnit) {
-    if (rawMps == null) return null;
-    return rawMps.convert(Unit.mps, inputUnit);
-  }
+  Atmo _buildAtmo(ConvertorsState s) => s.velocityMachUseCustomAtmo
+      ? Atmo(
+          temperature: s.velocityAtmoTemperature,
+          pressure: s.velocityAtmoPressure,
+          humidity: s.velocityAtmoHumidityFrac,
+          altitude: s.velocityAtmoAltitude,
+        )
+      : Atmo.icao();
 
   FieldConstraints getConstraintsForUnit(Unit unit) {
     return FieldConstraints(
@@ -111,34 +141,38 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
   }
 
   VelocityConvertorUiState _buildState(ConvertorsState s) {
-    final rawMps = s.velocityValue.in_(Unit.mps);
     final inputUnit = s.velocityUnit;
+    final useCustom = s.velocityMachUseCustomAtmo;
+    final atmo = _buildAtmo(s);
+    final speedOfSoundMps = atmo.mach.in_(Unit.mps);
+
+    // When mach is the input unit, the stored mach number is source of truth;
+    // all other units are derived from mach × speed-of-sound.
+    final double rawMps;
+    final double machRaw;
+    if (inputUnit == Unit.mach) {
+      machRaw = s.velocityMachInputValue;
+      rawMps = machRaw * speedOfSoundMps;
+    } else {
+      rawMps = s.velocityValue.in_(Unit.mps);
+      machRaw = speedOfSoundMps > 0 ? rawMps / speedOfSoundMps : 0.0;
+    }
 
     final kmhRaw = rawMps.convert(Unit.mps, Unit.kmh);
     final fpsRaw = rawMps.convert(Unit.mps, Unit.fps);
     final mphRaw = rawMps.convert(Unit.mps, Unit.mph);
-
-    final useCustom = s.velocityMachUseCustomAtmo;
-
-    final atmo = useCustom
-        ? Atmo(
-            temperature: s.velocityAtmoTemperature,
-            pressure: s.velocityAtmoPressure,
-            humidity: s.velocityAtmoHumidityFrac,
-            altitude: s.velocityAtmoAltitude,
-          )
-        : Atmo.icao();
-
-    final speedOfSoundMps = atmo.mach.in_(Unit.mps);
-    final machRaw = speedOfSoundMps > 0 ? rawMps / speedOfSoundMps : 0.0;
 
     final mpsAccuracy = FC.convertorVelocity.accuracyFor(Unit.mps);
     final kmhAccuracy = FC.convertorVelocity.accuracyFor(Unit.kmh);
     final fpsAccuracy = FC.convertorVelocity.accuracyFor(Unit.fps);
     final mphAccuracy = FC.convertorVelocity.accuracyFor(Unit.mph);
 
+    final double displayRawValue = inputUnit == Unit.mach
+        ? machRaw
+        : rawMps.convert(Unit.mps, inputUnit);
+
     return VelocityConvertorUiState(
-      rawValue: _getDisplayValue(rawMps, inputUnit),
+      rawValue: displayRawValue,
       inputUnit: inputUnit,
       useCustomAtmo: useCustom,
       atmoTemperatureC: s.velocityAtmoTemperature.in_(Unit.celsius),
@@ -175,9 +209,9 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       ),
       mach: GenericConvertorField(
         label: useCustom ? 'Mach (custom atmo)' : 'Mach (ICAO)',
-        formattedValue: _formatValue(machRaw, 3, 'Ma'),
+        formattedValue: _formatValue(machRaw, 3, Unit.mach.symbol),
         value: machRaw,
-        symbol: 'Ma',
+        symbol: Unit.mach.symbol,
         decimals: 3,
       ),
     );

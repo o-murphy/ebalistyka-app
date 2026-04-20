@@ -275,7 +275,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 3319446897955563326),
     name: 'ConvertorsState',
-    lastPropertyId: const obx_int.IdUid(42, 3813538830418793542),
+    lastPropertyId: const obx_int.IdUid(43, 8438901470766944339),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -422,6 +422,12 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(42, 3813538830418793542),
         name: 'velocityAtmoAltitudeMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(43, 8438901470766944339),
+        name: 'velocityMachInputValue',
         type: 8,
         flags: 0,
       ),
@@ -1597,7 +1603,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           object.anglesConvOutputLastUnit,
         );
         final velocityLastUnitOffset = fbb.writeString(object.velocityLastUnit);
-        fbb.startTable(43);
+        fbb.startTable(44);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.lengthValueInch);
         fbb.addFloat64(3, object.weightValueGrain);
@@ -1622,6 +1628,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(39, object.velocityAtmoPressureHPa);
         fbb.addFloat64(40, object.velocityAtmoHumidityFrac);
         fbb.addFloat64(41, object.velocityAtmoAltitudeMeter);
+        fbb.addFloat64(42, object.velocityMachInputValue);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1734,6 +1741,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             86,
+            0,
+          )
+          ..velocityMachInputValue = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            88,
             0,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -2904,6 +2917,10 @@ class ConvertorsState_ {
   /// See [ConvertorsState.velocityAtmoAltitudeMeter].
   static final velocityAtmoAltitudeMeter =
       obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[23]);
+
+  /// See [ConvertorsState.velocityMachInputValue].
+  static final velocityMachInputValue =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[24]);
 }
 
 /// [GeneralSettings] entity fields to define ObjectBox queries.

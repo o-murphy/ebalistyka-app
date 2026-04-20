@@ -33,7 +33,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
             displayUnit: state.inputUnit,
             onChanged: notifier.updateRawValue,
             onUnitChanged: notifier.changeInputUnit,
-            options: const [Unit.mps, Unit.kmh, Unit.fps, Unit.mph],
+            options: const [Unit.mps, Unit.kmh, Unit.fps, Unit.mph, Unit.mach],
             hintText: 'Enter velocity',
           ),
           const Divider(height: 24),

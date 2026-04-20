@@ -214,7 +214,7 @@
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "42:3813538830418793542",
+      "lastPropertyId": "43:8438901470766944339",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -339,6 +339,11 @@
         {
           "id": "42:3813538830418793542",
           "name": "velocityAtmoAltitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "43:8438901470766944339",
+          "name": "velocityMachInputValue",
           "type": 8
         }
       ],

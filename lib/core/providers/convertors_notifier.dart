@@ -136,6 +136,12 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(s);
   }
 
+  Future<void> updateVelocityMachInputValue(double mach) async {
+    final s = state.value ?? _load();
+    s.velocityMachInputValue = mach;
+    await _save(s);
+  }
+
   Future<void> updateVelocityMachUseCustomAtmo(bool value) async {
     final s = state.value ?? _load();
     s.velocityMachUseCustomAtmo = value;

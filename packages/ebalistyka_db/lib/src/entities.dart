@@ -578,6 +578,7 @@ class ConvertorsState with Cloneable<ConvertorsState> {
   String anglesConvOutputLastUnit = "centimeter";
   double velocityValueMps = 300.0;
   String velocityLastUnit = "mps";
+  double velocityMachInputValue = 0.881;
   bool velocityMachUseCustomAtmo = false;
   double velocityAtmoTemperatureC = 15.0;
   double velocityAtmoPressureHPa = 1013.25;
@@ -606,6 +607,7 @@ class ConvertorsState with Cloneable<ConvertorsState> {
     String? anglesConvOutputLastUnit,
     double? velocityValueMps,
     String? velocityLastUnit,
+    double? velocityMachInputValue,
     bool? velocityMachUseCustomAtmo,
     double? velocityAtmoTemperatureC,
     double? velocityAtmoPressureHPa,
@@ -637,6 +639,8 @@ class ConvertorsState with Cloneable<ConvertorsState> {
           anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit
       ..velocityValueMps = velocityValueMps ?? this.velocityValueMps
       ..velocityLastUnit = velocityLastUnit ?? this.velocityLastUnit
+      ..velocityMachInputValue =
+          velocityMachInputValue ?? this.velocityMachInputValue
       ..velocityMachUseCustomAtmo =
           velocityMachUseCustomAtmo ?? this.velocityMachUseCustomAtmo
       ..velocityAtmoTemperatureC =
