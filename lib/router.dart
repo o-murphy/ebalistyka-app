@@ -51,6 +51,9 @@ abstract final class Routes {
   static const sightSelect = '/home/profiles/sight-select';
   static const sightCreate = '/home/profiles/sight-select/create';
   static const sightCollection = '/home/profiles/sight-select/collection';
+  static const reticleViewReticlePicker = '/home/reticle-view/reticle-picker';
+  static const reticleViewTargetPicker = '/home/reticle-view/target-picker';
+
   static const sightReticlePicker =
       '/home/profiles/sight-select/create/reticle-picker';
 
@@ -112,12 +115,12 @@ final appRouter = GoRouter(
                         currentReticleId: state.extra as String?,
                       ),
                     ),
-                    // GoRoute(
-                    //   path: 'reticle-picker',
-                    //   builder: (_, state) => TargetPickerScreen(
-                    //     currentTargetId: state.extra as String?,
-                    //   ),
-                    // ),
+                    GoRoute(
+                      path: 'target-picker',
+                      builder: (_, state) => TargetPickerScreen(
+                        currentTargetId: state.extra as String?,
+                      ),
+                    ),
                   ],
                 ),
                 GoRoute(

@@ -303,8 +303,8 @@ class MilReticleSVGCanvas {
   void circle(
     double cx,
     double cy,
-    double r,
-    String fill, {
+    double r, {
+    String? fill,
     String? stroke,
     double? strokeWidth,
   }) {
@@ -314,7 +314,7 @@ class MilReticleSVGCanvas {
         XmlAttribute(XmlName('cx'), _fmtNum(cx)),
         XmlAttribute(XmlName('cy'), _fmtNum(cy)),
         XmlAttribute(XmlName('r'), _fmtNum(r)),
-        XmlAttribute(XmlName('fill'), fill),
+        XmlAttribute(XmlName('fill'), fill ?? "none"),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
           XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
@@ -485,7 +485,7 @@ class MilReticleSVGCanvas {
     double? strokeWidth,
   }) {
     _hint('dot');
-    circle(cx, cy, r, fill, stroke: stroke, strokeWidth: strokeWidth);
+    circle(cx, cy, r, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
   }
 
   void hRuler(
@@ -778,7 +778,7 @@ class MilReticleSVGCanvas {
     this
       ..line(x, 0, x, y, 'red', 0.05)
       ..line(0, y, x, y, 'red', 0.05)
-      ..circle(x, y, 0.2, 'red');
+      ..circle(x, y, 0.2, fill: 'red');
   }
 }
 
@@ -815,7 +815,7 @@ class ScopeDrawer extends SVGDrawerInterface {
     final diagLength = radius * 0.7;
 
     canvas
-      ..circle(0, 0, radius, 'none', stroke: color, strokeWidth: strokeWidth)
+      ..circle(0, 0, radius, stroke: color, strokeWidth: strokeWidth)
       ..line(-lineLength / 2, 0, lineLength / 2, 0, color, strokeWidth)
       ..line(0, -lineLength / 2, 0, lineLength / 2, color, strokeWidth)
       ..line(
@@ -834,7 +834,7 @@ class ScopeDrawer extends SVGDrawerInterface {
         color,
         strokeWidth * 0.7,
       )
-      ..circle(0, 0, strokeWidth * 2, color);
+      ..circle(0, 0, strokeWidth * 2, fill: color);
 
     for (int i = 0; i < 360; i += 30) {
       final rad = i * 3.14159 / 180;
@@ -872,11 +872,11 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
       final x = r * math.cos(angle);
       final y = r * math.sin(angle);
 
-      canvas.circle(x, y, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
+      canvas.circle(x, y, 2, fill: 'white', stroke: 'cyan', strokeWidth: 0.5);
 
       final x2 = r * math.cos(angle + 3.14159);
       final y2 = r * math.sin(angle + 3.14159);
-      canvas.circle(x2, y2, 2, 'white', stroke: 'cyan', strokeWidth: 0.5);
+      canvas.circle(x2, y2, 2, fill: 'white', stroke: 'cyan', strokeWidth: 0.5);
     }
 
     for (int i = 0; i < 500; i++) {
@@ -885,7 +885,7 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
       final brightness = random.nextDouble() * 0.5 + 0.5;
       final size = random.nextDouble() * 2 + 0.5;
 
-      canvas.circle(x, y, size, 'rgba(255,255,255,$brightness)');
+      canvas.circle(x, y, size, fill: 'rgba(255,255,255,$brightness)');
     }
 
     for (int i = 0; i < 100; i++) {
@@ -897,7 +897,7 @@ class _CustomGalaxyDrawer extends SVGDrawerInterface {
         x,
         y,
         random.nextDouble() * 3 + 1,
-        'rgba(255,200,100,${random.nextDouble() * 0.8 + 0.2})',
+        fill: 'rgba(255,200,100, ${random.nextDouble() * 0.8 + 0.2})',
       );
     }
   }

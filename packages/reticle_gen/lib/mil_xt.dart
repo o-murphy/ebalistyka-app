@@ -102,7 +102,7 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
     const double labelOffset = 0.4;
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 24, bgColor),
+      shape: (c) => c.circle(0, 0, 24, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 

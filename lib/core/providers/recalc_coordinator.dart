@@ -8,9 +8,9 @@ import 'package:riverpod/riverpod.dart';
 
 /// Centralises all recalculation triggers.
 ///
-/// Listens to [shotContextProvider], [settingsProvider], and
-/// [unitSettingsNotifierProvider] and triggers the ViewModels for the active
-/// features.
+/// Listens to [shotContextProvider], [settingsProvider],
+/// [unitSettingsNotifierProvider], and [reticleSettingsNotifierProvider]
+/// and triggers the ViewModels for the active features.
 class RecalcCoordinator extends Notifier<void> {
   @override
   void build() {
@@ -30,6 +30,14 @@ class RecalcCoordinator extends Notifier<void> {
       if (!next.hasValue) return;
       if (prev?.value != null) _triggerAll(); // any unit change → recalc
     });
+
+    ref.listen<AsyncValue<ReticleSettings>>(
+      reticleSettingsNotifierProvider,
+      (prev, next) {
+        if (!next.hasValue) return;
+        if (prev?.value != null) _triggerAll();
+      },
+    );
   }
 
   /// Called from router/shell when a tab is activated.

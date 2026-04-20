@@ -12,3 +12,5 @@ export 'weapon_collection_screen.dart';
 export 'ammo_collection_screen.dart';
 export 'reticle_view_screen.dart';
 export 'reticle_picker_screen.dart';
+export 'target_picker_screen.dart';
+export 'svg_asset_picker_screen.dart';

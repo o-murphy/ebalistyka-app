@@ -1,5 +1,5 @@
 dart packages/reticle_gen/lib/target_default.dart  assets/svg/targets/default.svg
-dart packages/reticle_gen/lib/target_plate20cm.dart  assets/svg/targets/plate20cm.svg
+dart packages/reticle_gen/lib/target_plate20sm.dart  assets/svg/targets/plate20sm.svg
 
 dart packages/reticle_gen/lib/ddr_2.dart  assets/svg/reticles/DDR-2.svg
 dart packages/reticle_gen/lib/moar.dart "ATACR 35x"  assets/svg/reticles/MOAR.svg

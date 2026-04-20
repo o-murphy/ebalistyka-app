@@ -12,7 +12,7 @@ class MilReticleDrawer implements SVGDrawerInterface {
 
     canvas
       ..clip(
-        shape: (c) => c.circle(0, 0, 15, bgColor),
+        shape: (c) => c.circle(0, 0, 15, fill: bgColor),
         draw: (c) {
           c
             ..line(-10, 0, 10, 0, color, thickness)
@@ -56,7 +56,7 @@ class MilReticleDrawer implements SVGDrawerInterface {
           }
         },
       )
-      ..circle(0, 0, 15, 'transparent', stroke: color, strokeWidth: thickness);
+      ..circle(0, 0, 15, stroke: color, strokeWidth: thickness);
   }
 }
 

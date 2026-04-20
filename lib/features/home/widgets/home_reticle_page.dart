@@ -38,6 +38,14 @@ class HomeReticlePage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (vmState.adjustedMessageLine != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              vmState.adjustedMessageLine!,
+              style: tt.labelMedium?.copyWith(color: cs.tertiary),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: _SemicolonWrappingText(

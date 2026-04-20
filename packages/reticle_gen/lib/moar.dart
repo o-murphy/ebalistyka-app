@@ -146,7 +146,7 @@ class MoarReticleDrawer implements SVGDrawerInterface {
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 40, bgColor),
+      shape: (c) => c.circle(0, 0, 40, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 

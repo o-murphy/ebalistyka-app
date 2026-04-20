@@ -89,7 +89,7 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 30, bgColor),
+      shape: (c) => c.circle(0, 0, 30, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 

@@ -52,7 +52,7 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
     const String color = "onSurface"; //"onSurface";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, B, bgColor),
+      shape: (c) => c.circle(0, 0, B, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 
