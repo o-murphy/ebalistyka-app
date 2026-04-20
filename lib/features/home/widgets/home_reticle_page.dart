@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka/core/providers/reticle_provider.dart';
-import 'package:ebalistyka/core/utils/svg_color_utils.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 
 // ─── Page 1 — Reticle & Adjustments ──────────────────────────────────────────
 
@@ -55,10 +53,16 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: _ReticleView(
-                    cs: cs,
-                    elevMil: vmState.adjustmentElevMil,
-                    windMil: vmState.adjustmentWindMil,
+                  child: ReticleView(
+                    reticleImageId: ref
+                        .watch(activeProfileProvider)
+                        ?.sight
+                        .target
+                        ?.reticleImage,
+                    targetImageId: null,
+                    targetSizeMil: 0.5,
+                    offsetXMil: vmState.adjustmentWindMil,
+                    offsetYMil: vmState.adjustmentElevMil,
                   ),
                 ),
               ),
@@ -124,146 +128,6 @@ class _SemicolonWrappingText extends StatelessWidget {
       return Text(lines.join('\n'), style: style, textAlign: TextAlign.center);
     },
   );
-}
-
-// ─── Reticle view ─────────────────────────────────────────────────────────────
-
-class _ReticleView extends ConsumerWidget {
-  const _ReticleView({
-    required this.cs,
-    required this.elevMil,
-    required this.windMil,
-  });
-
-  final ColorScheme cs;
-  final double elevMil;
-  final double windMil;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final reticleId = ref
-        .watch(activeProfileProvider)
-        ?.sight
-        .target
-        ?.reticleImage;
-    final svgAsync = ref.watch(reticleSvgProvider(reticleId));
-    return AspectRatio(
-      aspectRatio: 1,
-      child: svgAsync.when(
-        loading: () => const SizedBox.shrink(),
-        error: (err, st) => const SizedBox.shrink(),
-        data: (svgString) => _buildSvg(svgString),
-      ),
-    );
-  }
-
-  Widget _buildSvg(String svgString) {
-    final meta = _parseSvgMeta(svgString);
-    final svg = _clipViewMils(resolveSvgColorRoles(svgString, cs), meta);
-    final adjColor = svgHex(
-      cs.brightness == Brightness.dark
-          ? Colors.orangeAccent
-          : Colors.deepOrangeAccent,
-    );
-    final svgWithAdj = _injectAdjustment(
-      svg,
-      windMil: windMil,
-      elevMil: elevMil,
-      milWidth: meta.milWidth,
-      milHeight: meta.milHeight,
-      fillColor: adjColor,
-      strokeColor: adjColor,
-    );
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        ClipOval(child: SvgPicture.string(svgWithAdj, fit: BoxFit.contain)),
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: cs.onSurface),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Injects adjustment indicator in mil coordinates (matches the mil viewBox
-  // used by MilReticleCanvas): vertical line, horizontal line, dot.
-  static String _injectAdjustment(
-    String svg, {
-    required double windMil,
-    required double elevMil,
-    required double milWidth,
-    required double milHeight,
-    required String fillColor,
-    required String strokeColor,
-  }) {
-    final maxX = milWidth / 2;
-    final maxY = milHeight / 2;
-    final outOfRange = windMil.abs() > maxX || elevMil.abs() > maxY;
-
-    if (outOfRange) {
-      const fs = 1.8; // mils
-      const dy = fs * 0.35; // baseline compensation
-      final elements =
-          '\n  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" fill="$fillColor" font-weight="bold">OUT OF RANGE</text>';
-      return svg.replaceFirst('</svg>', '$elements\n</svg>');
-    }
-
-    // All values in mils — the SVG viewBox is already in mils.
-    const sw = 0.05;
-    const r = 0.2;
-    final elements =
-        '''
-  <line x1="$windMil" y1="0" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
-  <line x1="0" y1="$elevMil" x2="$windMil" y2="$elevMil" stroke="$strokeColor" stroke-width="$sw"/>
-  <circle cx="$windMil" cy="$elevMil" r="$r" fill="$fillColor" stroke="$strokeColor" stroke-width="$sw"/>''';
-    return svg.replaceFirst('</svg>', '$elements\n</svg>');
-  }
-
-  // Clips the SVG viewBox to [_kViewMils]×[_kViewMils] mils when the reticle
-  // is larger (e.g. mil_xt is 48×48). The viewBox is in mils, so no factor
-  // multiplication is needed.
-  static const double _kViewMils = 30.0;
-
-  static String _clipViewMils(String svg, _SvgMeta meta) {
-    if (meta.milWidth <= _kViewMils && meta.milHeight <= _kViewMils) return svg;
-    // viewBox is in mils — no factor multiplication needed.
-    return svg.replaceFirst(
-      RegExp(r'viewBox="[^"]+"'),
-      'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
-    );
-  }
-
-  // Reads data-mil-width / data-factor from the SVG root element written by
-  // MilReticleCanvas.
-  static _SvgMeta _parseSvgMeta(String svg) {
-    double attr(String name, double fallback) {
-      final m = RegExp('$name="([^"]+)"').firstMatch(svg);
-      return m != null ? (double.tryParse(m.group(1)!) ?? fallback) : fallback;
-    }
-
-    return _SvgMeta(
-      milWidth: attr('data-mil-width', 30.0),
-      milHeight: attr('data-mil-height', 30.0),
-      factor: attr('data-factor', 100.0),
-    );
-  }
-}
-
-class _SvgMeta {
-  const _SvgMeta({
-    required this.milWidth,
-    required this.milHeight,
-    required this.factor,
-  });
-
-  final double milWidth;
-  final double milHeight;
-  final double factor;
 }
 
 // ─── Adjustment panel ─────────────────────────────────────────────────────────

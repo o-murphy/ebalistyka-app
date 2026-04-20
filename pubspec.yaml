@@ -84,6 +84,7 @@ flutter:
   assets:
     - assets/json/
     - assets/svg/reticles/
+    - assets/svg/targets/
     - assets/svg/weapon/
     - assets/svg/ammo/
 
