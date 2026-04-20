@@ -949,7 +949,7 @@
     },
     {
       "id": "12:6849051147696960557",
-      "lastPropertyId": "6:6576419286705648195",
+      "lastPropertyId": "10:8494963848536132259",
       "name": "ReticleSettings",
       "properties": [
         {
@@ -957,16 +957,6 @@
           "name": "id",
           "type": 6,
           "flags": 1
-        },
-        {
-          "id": "2:968810543137024596",
-          "name": "verticalAdjustmentRad",
-          "type": 8
-        },
-        {
-          "id": "3:4141946973460114136",
-          "name": "horizontalAdjustmentRad",
-          "type": 8
         },
         {
           "id": "4:5234752950815003840",
@@ -980,6 +970,26 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "7:1142594723297985528",
+          "name": "verticalAdjustment",
+          "type": 8
+        },
+        {
+          "id": "8:7310246849331811761",
+          "name": "verticalAdjustmentUnit",
+          "type": 9
+        },
+        {
+          "id": "9:257814256636269169",
+          "name": "horizontalAdjustment",
+          "type": 8
+        },
+        {
+          "id": "10:8494963848536132259",
+          "name": "horizontalAdjustmentUnit",
+          "type": 9
         }
       ],
       "relations": []
@@ -1070,7 +1080,9 @@
     824601022869745530,
     6275749238367959778,
     3085806308739651023,
-    486479794952929440
+    486479794952929440,
+    968810543137024596,
+    4141946973460114136
   ],
   "retiredRelationUids": [],
   "version": 1

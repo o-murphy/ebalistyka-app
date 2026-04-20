@@ -9,15 +9,20 @@ part of 'reticle_settings_export.dart';
 ReticleSettingsExport _$ReticleSettingsExportFromJson(
   Map<String, dynamic> json,
 ) => ReticleSettingsExport(
-  verticalAdjustmentRad: (json['verticalAdjustmentRad'] as num).toDouble(),
-  horizontalAdjustmentRad: (json['horizontalAdjustmentRad'] as num).toDouble(),
+  verticalAdjustment: (json['verticalAdjustment'] as num).toDouble(),
+  verticalAdjustmentUnit: json['verticalAdjustmentUnit'] as String? ?? 'mil',
+  horizontalAdjustment: (json['horizontalAdjustment'] as num).toDouble(),
+  horizontalAdjustmentUnit:
+      json['horizontalAdjustmentUnit'] as String? ?? 'mil',
   targetImage: json['targetImage'] as String?,
 );
 
 Map<String, dynamic> _$ReticleSettingsExportToJson(
   ReticleSettingsExport instance,
 ) => <String, dynamic>{
-  'verticalAdjustmentRad': instance.verticalAdjustmentRad,
-  'horizontalAdjustmentRad': instance.horizontalAdjustmentRad,
+  'verticalAdjustment': instance.verticalAdjustment,
+  'verticalAdjustmentUnit': instance.verticalAdjustmentUnit,
+  'horizontalAdjustment': instance.horizontalAdjustment,
+  'horizontalAdjustmentUnit': instance.horizontalAdjustmentUnit,
   'targetImage': instance.targetImage,
 };

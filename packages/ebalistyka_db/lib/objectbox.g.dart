@@ -1164,7 +1164,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(12, 6849051147696960557),
     name: 'ReticleSettings',
-    lastPropertyId: const obx_int.IdUid(6, 6576419286705648195),
+    lastPropertyId: const obx_int.IdUid(10, 8494963848536132259),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -1172,18 +1172,6 @@ final _entities = <obx_int.ModelEntity>[
         name: 'id',
         type: 6,
         flags: 1,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(2, 968810543137024596),
-        name: 'verticalAdjustmentRad',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(3, 4141946973460114136),
-        name: 'horizontalAdjustmentRad',
-        type: 8,
-        flags: 0,
       ),
       obx_int.ModelProperty(
         id: const obx_int.IdUid(4, 5234752950815003840),
@@ -1199,6 +1187,30 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(23, 6800428834975185432),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 1142594723297985528),
+        name: 'verticalAdjustment',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 7310246849331811761),
+        name: 'verticalAdjustmentUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(9, 257814256636269169),
+        name: 'horizontalAdjustment',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(10, 8494963848536132259),
+        name: 'horizontalAdjustmentUnit',
+        type: 9,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -1330,6 +1342,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
       6275749238367959778,
       3085806308739651023,
       486479794952929440,
+      968810543137024596,
+      4141946973460114136,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -2665,12 +2679,20 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final targetImageOffset = object.targetImage == null
             ? null
             : fbb.writeString(object.targetImage!);
-        fbb.startTable(7);
+        final verticalAdjustmentUnitOffset = fbb.writeString(
+          object.verticalAdjustmentUnit,
+        );
+        final horizontalAdjustmentUnitOffset = fbb.writeString(
+          object.horizontalAdjustmentUnit,
+        );
+        fbb.startTable(11);
         fbb.addInt64(0, object.id);
-        fbb.addFloat64(1, object.verticalAdjustmentRad);
-        fbb.addFloat64(2, object.horizontalAdjustmentRad);
         fbb.addOffset(3, targetImageOffset);
         fbb.addInt64(5, object.owner.targetId);
+        fbb.addFloat64(6, object.verticalAdjustment);
+        fbb.addOffset(7, verticalAdjustmentUnitOffset);
+        fbb.addFloat64(8, object.horizontalAdjustment);
+        fbb.addOffset(9, horizontalAdjustmentUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2680,21 +2702,27 @@ obx_int.ModelDefinition getObjectBoxModel() {
 
         final object = ReticleSettings()
           ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
-          ..verticalAdjustmentRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            6,
-            0,
-          )
-          ..horizontalAdjustmentRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            8,
-            0,
-          )
           ..targetImage = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGetNullable(buffer, rootOffset, 10);
+          ).vTableGetNullable(buffer, rootOffset, 10)
+          ..verticalAdjustment = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            16,
+            0,
+          )
+          ..verticalAdjustmentUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 18, '')
+          ..horizontalAdjustment = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            20,
+            0,
+          )
+          ..horizontalAdjustmentUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 22, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -3546,22 +3574,31 @@ class ReticleSettings_ {
     _entities[10].properties[0],
   );
 
-  /// See [ReticleSettings.verticalAdjustmentRad].
-  static final verticalAdjustmentRad = obx.QueryDoubleProperty<ReticleSettings>(
-    _entities[10].properties[1],
-  );
-
-  /// See [ReticleSettings.horizontalAdjustmentRad].
-  static final horizontalAdjustmentRad =
-      obx.QueryDoubleProperty<ReticleSettings>(_entities[10].properties[2]);
-
   /// See [ReticleSettings.targetImage].
   static final targetImage = obx.QueryStringProperty<ReticleSettings>(
-    _entities[10].properties[3],
+    _entities[10].properties[1],
   );
 
   /// See [ReticleSettings.owner].
   static final owner = obx.QueryRelationToOne<ReticleSettings, Owner>(
-    _entities[10].properties[4],
+    _entities[10].properties[2],
   );
+
+  /// See [ReticleSettings.verticalAdjustment].
+  static final verticalAdjustment = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[3],
+  );
+
+  /// See [ReticleSettings.verticalAdjustmentUnit].
+  static final verticalAdjustmentUnit =
+      obx.QueryStringProperty<ReticleSettings>(_entities[10].properties[4]);
+
+  /// See [ReticleSettings.horizontalAdjustment].
+  static final horizontalAdjustment = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[5],
+  );
+
+  /// See [ReticleSettings.horizontalAdjustmentUnit].
+  static final horizontalAdjustmentUnit =
+      obx.QueryStringProperty<ReticleSettings>(_entities[10].properties[6]);
 }
