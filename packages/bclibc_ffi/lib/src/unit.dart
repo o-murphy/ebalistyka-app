@@ -41,6 +41,9 @@ enum Unit {
   fps(62, "fps", "ft/s"),
   mph(63, "mph", "mph"),
   kt(64, "knot", "kt"),
+  // Standard conversion uses ICAO sea-level constant (340.294 m/s).
+  // For atmosphere-dependent conversion use VelocityMachExtension.inMach([Atmo]).
+  mach(65, "mach", "Mach"),
   grain(70, "grain", "gr"),
   ounce(71, "ounce", "oz"),
   gram(72, "gram", "g"),
@@ -352,12 +355,16 @@ class Velocity extends Dimension<Velocity> {
   static const rawUnit = Unit.mps;
   static bool accepts(Unit u) => u.id >= 60 && u.id < 70;
 
+  // sqrt(59°F + 459.67°R) * 49.0223 fps/√°R / 3.2808399 fps/mps
+  static const _icaoSpeedOfSoundMps = 340.29393584671357;
+
   static final _conversionFactors = <Unit, double>{
     Unit.mps: 1.0,
     Unit.kmh: 1.0 / 3.6,
     Unit.fps: 1.0 / 3.2808399,
     Unit.mph: 1.0 / 2.23693629,
     Unit.kt: 1.0 / 1.94384449,
+    Unit.mach: _icaoSpeedOfSoundMps,
   };
 
   @override
