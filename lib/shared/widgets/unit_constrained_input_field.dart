@@ -67,7 +67,6 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
       if (errorText == null) {
         _currentRawValue = rawValue;
       }
-      // Don't call onChanged yet, only on submit
     });
   }
 
@@ -79,7 +78,9 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
         _currentRawValue = rawValue;
         _updateControllerFromValue();
         _errorText = null;
+
         widget.onChanged(_currentRawValue);
+
         _focusNode.unfocus();
       } else {
         _errorText = errorText;
@@ -100,7 +101,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
     _updateControllerFromValue();
 
     _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
+      if (!_focusNode.hasFocus && mounted) {
         _submit();
       }
     });
@@ -143,6 +144,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
         decimal: true,
         signed: true,
       ),
+      textInputAction: TextInputAction.done,
       style: theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
       decoration: InputDecoration(
         labelText: widget.label,
@@ -156,8 +158,131 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
           vertical: 12,
         ),
       ),
-      onChanged: (_) => _validateAndUpdate(), // Validate on every change
+      onChanged: (_) => _validateAndUpdate(),
       onSubmitted: (_) => _submit(),
     );
   }
 }
+
+// class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
+//   late final TextEditingController _controller;
+//   late final FocusNode _focusNode;
+//   late UnitConversionHelper _helper;
+
+//   double? _currentRawValue;
+//   String? _errorText;
+
+//   String get _sym => widget.symbol ?? widget.displayUnit.symbol;
+
+//   void _updateControllerFromValue() {
+//     if (_currentRawValue != null) {
+//       _controller.text = _helper.formatDisplayValue(
+//         _helper.toDisplay(_currentRawValue!),
+//       );
+//     } else {
+//       _controller.clear();
+//     }
+//   }
+
+//   void _validateAndUpdate() {
+//     final (rawValue, errorText) = _helper.parseAndValidate(_controller.text);
+
+//     setState(() {
+//       _errorText = errorText;
+//       if (errorText == null) {
+//         _currentRawValue = rawValue;
+//       }
+//       // Don't call onChanged yet, only on submit
+//     });
+//   }
+
+//   void _submit() {
+//     final (rawValue, errorText) = _helper.parseAndValidate(_controller.text);
+
+//     setState(() {
+//       if (errorText == null) {
+//         _currentRawValue = rawValue;
+//         _updateControllerFromValue();
+//         _errorText = null;
+//         widget.onChanged(_currentRawValue);
+//         _focusNode.unfocus();
+//       } else {
+//         _errorText = errorText;
+//       }
+//     });
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _helper = UnitConversionHelper(
+//       constraints: widget.constraints,
+//       displayUnit: widget.displayUnit,
+//     );
+//     _currentRawValue = widget.rawValue;
+//     _controller = TextEditingController();
+//     _focusNode = FocusNode();
+//     _updateControllerFromValue();
+
+//     _focusNode.addListener(() {
+//       if (!_focusNode.hasFocus) {
+//         _submit();
+//       }
+//     });
+//   }
+
+//   @override
+//   void didUpdateWidget(ConstrainedUnitInputField oldWidget) {
+//     super.didUpdateWidget(oldWidget);
+//     if (widget.constraints != oldWidget.constraints ||
+//         widget.displayUnit != oldWidget.displayUnit) {
+//       _helper = UnitConversionHelper(
+//         constraints: widget.constraints,
+//         displayUnit: widget.displayUnit,
+//       );
+//     }
+//     if (widget.rawValue != oldWidget.rawValue) {
+//       _currentRawValue = widget.rawValue;
+//       _updateControllerFromValue();
+//       _errorText = null;
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     _focusNode.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+
+//     return TextField(
+//       controller: _controller,
+//       focusNode: _focusNode,
+//       autofocus: widget.autofocus,
+//       enabled: widget.enabled,
+//       keyboardType: const TextInputType.numberWithOptions(
+//         decimal: true,
+//         signed: true,
+//       ),
+//       style: theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
+//       decoration: InputDecoration(
+//         labelText: widget.label,
+//         hintText: widget.hintText,
+//         prefixIcon: widget.prefixIcon,
+//         suffixText: widget.hideSymbol ? null : _sym,
+//         errorText: _errorText,
+//         border: const OutlineInputBorder(),
+//         contentPadding: const EdgeInsets.symmetric(
+//           horizontal: 12,
+//           vertical: 12,
+//         ),
+//       ),
+//       onChanged: (_) => _validateAndUpdate(), // Validate on every change
+//       onSubmitted: (_) => _submit(),
+//     );
+//   }
+// }

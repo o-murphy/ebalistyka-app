@@ -327,8 +327,8 @@ class MilReticleSVGCanvas {
     String fill, {
     String? stroke,
     double? strokeWidth,
-    String? strokeLineJoin = 'miter', // Додайте цей параметр
-    String? strokeLineCap = 'miter', // І цей для кінців ліній
+    String? strokeLineJoin = 'miter',
+    String? strokeLineCap = 'miter',
   }) {
     _target.children.add(
       XmlElement(XmlName('path'), [
@@ -407,10 +407,9 @@ class MilReticleSVGCanvas {
 
     _hint('label');
     batchLines(
-      stroke, // 1й аргумент: stroke
-      effectiveSw, // 2й аргумент: strokeWidth
+      stroke,
+      effectiveSw,
       (pb) {
-        // 3й аргумент: build функція
         for (var i = 0; i < chars.length; i++) {
           _StrokeFont.drawGlyph(
             chars[i],
@@ -756,8 +755,8 @@ class MilReticleSVGCanvas {
     double strokeWidth,
     void Function(PathBuilder pb) build, {
     String fill = 'none',
-    String? strokeLineJoin = 'miter', // Додайте цей параметр
-    String? strokeLineCap = 'miter', // І цей для кінців ліній
+    String? strokeLineJoin = 'miter',
+    String? strokeLineCap = 'miter',
   }) {
     final pb = PathBuilder();
     build(pb);

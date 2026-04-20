@@ -60,48 +60,50 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     super.initState();
     final reticle = ref.read(reticleSettingsProvider);
     _vAdjUnit = reticle.verticalAdjustmentUnitValue;
-    _vAdjRaw =
-        Angular(reticle.verticalAdjustment, _vAdjUnit).in_(
-          FC.adjustment.rawUnit,
-        );
+    _vAdjRaw = Angular(
+      reticle.verticalAdjustment,
+      _vAdjUnit,
+    ).in_(FC.adjustment.rawUnit);
     _hAdjUnit = reticle.horizontalAdjustmentUnitValue;
-    _hAdjRaw =
-        Angular(reticle.horizontalAdjustment, _hAdjUnit).in_(
-          FC.adjustment.rawUnit,
-        );
+    _hAdjRaw = Angular(
+      reticle.horizontalAdjustment,
+      _hAdjUnit,
+    ).in_(FC.adjustment.rawUnit);
     _targetImage = reticle.targetImage;
 
     final ctx = ref.read(shotContextProvider).value;
     final s = ctx?.profile.sight.target;
     _reticleImage = s?.reticleImage;
     _vClickUnit = s?.verticalClickUnitValue ?? Unit.mil;
-    _vClickRaw =
-        s != null
-            ? Angular(s.verticalClick, _vClickUnit).in_(FC.adjustment.rawUnit)
-            : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+    _vClickRaw = s != null
+        ? Angular(s.verticalClick, _vClickUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
     _hClickUnit = s?.horizontalClickUnitValue ?? Unit.mil;
-    _hClickRaw =
-        s != null
-            ? Angular(s.horizontalClick, _hClickUnit).in_(FC.adjustment.rawUnit)
-            : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+    _hClickRaw = s != null
+        ? Angular(s.horizontalClick, _hClickUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
   }
 
   Future<void> _saveAdj() async {
-    await ref.read(homeVmProvider.notifier).updateReticleAdjustments(
-      vRaw: _vAdjRaw,
-      vUnit: _vAdjUnit,
-      hRaw: _hAdjRaw,
-      hUnit: _hAdjUnit,
-    );
+    await ref
+        .read(homeVmProvider.notifier)
+        .updateReticleAdjustments(
+          vRaw: _vAdjRaw,
+          vUnit: _vAdjUnit,
+          hRaw: _hAdjRaw,
+          hUnit: _hAdjUnit,
+        );
   }
 
   Future<void> _saveSight() async {
-    await ref.read(homeVmProvider.notifier).updateSightClicks(
-      vRaw: _vClickRaw,
-      vUnit: _vClickUnit,
-      hRaw: _hClickRaw,
-      hUnit: _hClickUnit,
-    );
+    await ref
+        .read(homeVmProvider.notifier)
+        .updateSightClicks(
+          vRaw: _vClickRaw,
+          vUnit: _vClickUnit,
+          hRaw: _hClickRaw,
+          hUnit: _hClickUnit,
+        );
   }
 
   @override
@@ -411,8 +413,8 @@ class _ZoomableViewState extends State<ZoomableView> {
     if (currentScale > 1.0) {
       resetZoom();
     } else {
-      _transformationController.value =
-          Matrix4.identity()..scaleByDouble(2.0, 2.0, 1.0, 1.0);
+      _transformationController.value = Matrix4.identity()
+        ..scaleByDouble(2.0, 2.0, 1.0, 1.0);
     }
   }
 

@@ -1,9 +1,9 @@
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -13,6 +13,11 @@ import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 
 class HomeReticlePage extends ConsumerWidget {
   const HomeReticlePage({super.key});
+
+  static double _parseMilWidth(String svg) {
+    final m = RegExp(r'data-mil-width="([^"]+)"').firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.5;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,6 +39,9 @@ class HomeReticlePage extends ConsumerWidget {
 
     final tt = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
+
+    final targetSvgAsync = ref.watch(targetSvgProvider(vmState.targetId));
+    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.5;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -67,7 +75,7 @@ class HomeReticlePage extends ConsumerWidget {
                     child: ReticleView(
                       reticleImageId: vmState.reticleId,
                       targetImageId: vmState.targetId,
-                      targetSizeMil: 0.5,
+                      targetSizeMil: targetSizeMil,
                       offsetXMil: vmState.adjustmentWindMil,
                       offsetYMil: vmState.adjustmentElevMil,
                     ),

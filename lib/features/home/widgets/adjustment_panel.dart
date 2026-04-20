@@ -107,7 +107,6 @@ class AdjPanel extends StatelessWidget {
       ],
     );
 
-    // Створюємо вертикальний блок для Drop або Windage
     Widget buildSection(
       String label,
       String dir,
@@ -124,7 +123,6 @@ class AdjPanel extends StatelessWidget {
       );
     }
 
-    // Якщо вертикальне відображення
     if (displayVertical) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -142,7 +140,6 @@ class AdjPanel extends StatelessWidget {
       );
     }
 
-    // Горизонтальне відображення
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(

@@ -284,7 +284,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   Future<void> updateTargetImage(String? imageId) async {
-    await ref.read(reticleSettingsNotifierProvider.notifier).setTargetImage(imageId);
+    await ref
+        .read(reticleSettingsNotifierProvider.notifier)
+        .setTargetImage(imageId);
   }
 
   Future<void> updateSightReticleImage(String? imageId) async {
@@ -429,11 +431,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     if (vAdj != 0.0) {
       final acc = FC.adjustment.accuracyFor(vUnit);
-      parts.add('${vAdj > 0 ? '+' : ''}${vAdj.toFixedSafe(acc)} ${_unitLabel(vUnit)} vertical');
+      parts.add(
+        '${vAdj > 0 ? '+' : ''}${vAdj.toFixedSafe(acc)} ${_unitLabel(vUnit)} vertical',
+      );
     }
     if (hAdj != 0.0) {
       final acc = FC.adjustment.accuracyFor(hUnit);
-      parts.add('${hAdj > 0 ? '+' : ''}${hAdj.toFixedSafe(acc)} ${_unitLabel(hUnit)} horizontal');
+      parts.add(
+        '${hAdj > 0 ? '+' : ''}${hAdj.toFixedSafe(acc)} ${_unitLabel(hUnit)} horizontal',
+      );
     }
     return 'Drum adjustment: ${parts.join(' / ')}';
   }

@@ -28,6 +28,7 @@ class SvgAssetPickerScreen extends ConsumerWidget {
     required this.watchList,
     required this.watchSvg,
     this.currentId,
+    this.miniTiles = false,
     super.key,
   });
 
@@ -36,6 +37,7 @@ class SvgAssetPickerScreen extends ConsumerWidget {
   final String? currentId;
   final AsyncValue<List<String>> Function(WidgetRef) watchList;
   final AsyncValue<String> Function(WidgetRef, String) watchSvg;
+  final bool miniTiles;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,6 +63,7 @@ class SvgAssetPickerScreen extends ConsumerWidget {
               isSelected: sorted[i] == selected,
               watchSvg: watchSvg,
               onTap: () => context.pop(sorted[i]),
+              mini: miniTiles,
             ),
           );
         },
@@ -75,14 +78,17 @@ class _SvgAssetTile extends ConsumerWidget {
     required this.isSelected,
     required this.watchSvg,
     required this.onTap,
+    this.mini = false,
   });
 
   final String assetId;
   final bool isSelected;
   final AsyncValue<String> Function(WidgetRef, String) watchSvg;
   final VoidCallback onTap;
+  final bool mini;
 
   static const double _kViewMils = 30.0;
+  static const double _kViewMilsMini = 20.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,19 +97,24 @@ class _SvgAssetTile extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: mini ? 8 : 12),
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: isSelected
             ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: cs.primary, width: 2),
+                borderRadius: BorderRadius.circular(mini ? 8 : 12),
+                side: BorderSide(color: cs.primary, width: mini ? 1.5 : 2),
               )
             : null,
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            padding: EdgeInsets.fromLTRB(
+              mini ? 8 : 12,
+              mini ? 6 : 10,
+              mini ? 8 : 12,
+              mini ? 8 : 12,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -111,25 +122,38 @@ class _SvgAssetTile extends ConsumerWidget {
                   children: [
                     Text(
                       assetId,
-                      style: tt.titleMedium?.copyWith(
+                      style: (mini ? tt.bodyMedium : tt.titleMedium)?.copyWith(
                         color: isSelected ? cs.primary : null,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        fontSize: mini ? 12 : null,
                       ),
                     ),
                     const Spacer(),
                     if (isSelected)
-                      Icon(Icons.check_circle, color: cs.primary, size: 20),
+                      Icon(
+                        Icons.check_circle,
+                        color: cs.primary,
+                        size: mini ? 16 : 20,
+                      ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: mini ? 6 : 10),
                 AspectRatio(
                   aspectRatio: 1,
                   child: svgAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (_, _) => const SizedBox.shrink(),
-                    data: (svg) => _buildPreview(_prepareSvg(svg, cs), cs),
+                    data: (svg) => Transform.scale(
+                      scale: mini ? 0.25 : 1.0,
+                      child: _buildPreview(
+                        _prepareSvg(svg, cs, mini: mini),
+                        cs,
+                        mini: mini,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -140,7 +164,11 @@ class _SvgAssetTile extends ConsumerWidget {
     );
   }
 
-  static Widget _buildPreview(String svg, ColorScheme cs) => Stack(
+  static Widget _buildPreview(
+    String svg,
+    ColorScheme cs, {
+    bool mini = false,
+  }) => Stack(
     fit: StackFit.expand,
     children: [
       ClipOval(child: SvgPicture.string(svg, fit: BoxFit.contain)),
@@ -148,31 +176,35 @@ class _SvgAssetTile extends ConsumerWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: cs.onSurface.withAlpha(80)),
+            border: Border.all(
+              color: cs.onSurface.withAlpha(80),
+              width: mini ? 1 : 1.5,
+            ),
           ),
         ),
       ),
     ],
   );
 
-  static String _prepareSvg(String svg, ColorScheme cs) {
+  static String _prepareSvg(String svg, ColorScheme cs, {bool mini = false}) {
     var result = resolveSvgColorRoles(svg, cs);
     result = result.replaceFirst(RegExp(r'\bwidth="[^"]*"\s*'), '');
     result = result.replaceFirst(RegExp(r'\bheight="[^"]*"\s*'), '');
-    result = result.replaceAll(
-      RegExp(r'<metadata\b[^/]*/>', dotAll: true),
-      '',
-    );
+    result = result.replaceAll(RegExp(r'<metadata\b[^/]*/>', dotAll: true), '');
     result = result.replaceAll(
       RegExp(r'<metadata\b[^>]*>.*?</metadata>', dotAll: true),
       '',
     );
+
+    final viewSize = mini ? _kViewMilsMini : _kViewMils;
+    final halfSize = viewSize / 2;
+
     final milW = _attr(result, 'data-mil-width');
     final milH = _attr(result, 'data-mil-height');
-    if (milW > _kViewMils || milH > _kViewMils) {
+    if (milW > viewSize || milH > viewSize) {
       result = result.replaceFirst(
         RegExp(r'viewBox="[^"]+"'),
-        'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
+        'viewBox="-$halfSize -$halfSize $viewSize $viewSize"',
       );
     }
     return result;
@@ -180,6 +212,9 @@ class _SvgAssetTile extends ConsumerWidget {
 
   static double _attr(String svg, String name) {
     final m = RegExp('$name="([^"]+)"').firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? _kViewMils : _kViewMils;
+    final defaultSize = _kViewMils;
+    return m != null
+        ? double.tryParse(m.group(1)!) ?? defaultSize
+        : defaultSize;
   }
 }

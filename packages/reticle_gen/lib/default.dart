@@ -7,7 +7,7 @@ class MilReticleDrawer implements SVGDrawerInterface {
     const String color = 'onSurface';
     const double thickness = 0.05;
     const double tickHalfLength = 0.5;
-    const double fontSize = 0.45; // мілів
+    const double fontSize = 0.45;
     const double labelOffset = 0.2;
 
     canvas

@@ -17,6 +17,7 @@ class TargetPickerScreen extends ConsumerWidget {
       currentId: currentTargetId,
       watchList: (ref) => ref.watch(targetListProvider),
       watchSvg: (ref, id) => ref.watch(targetSvgProvider(id)),
+      // miniTiles: true,
     );
   }
 }

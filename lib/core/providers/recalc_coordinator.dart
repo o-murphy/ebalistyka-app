@@ -31,13 +31,13 @@ class RecalcCoordinator extends Notifier<void> {
       if (prev?.value != null) _triggerAll(); // any unit change → recalc
     });
 
-    ref.listen<AsyncValue<ReticleSettings>>(
-      reticleSettingsNotifierProvider,
-      (prev, next) {
-        if (!next.hasValue) return;
-        if (prev?.value != null) _triggerAll();
-      },
-    );
+    ref.listen<AsyncValue<ReticleSettings>>(reticleSettingsNotifierProvider, (
+      prev,
+      next,
+    ) {
+      if (!next.hasValue) return;
+      if (prev?.value != null) _triggerAll();
+    });
   }
 
   /// Called from router/shell when a tab is activated.
