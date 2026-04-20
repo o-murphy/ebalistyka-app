@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="-10 -10 20 20" target-mil-size="0" data-mil-width="20" data-mil-height="20" data-factor="100" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="-10 -10 20 20" shape-rendering="crispEdges">
   <clipPath id="clip0">
     <circle id="circle-0" cx="0" cy="0" r="10" fill="transparent"/>
   </clipPath>

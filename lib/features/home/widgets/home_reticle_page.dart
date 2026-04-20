@@ -15,7 +15,16 @@ class HomeReticlePage extends ConsumerWidget {
   const HomeReticlePage({super.key});
 
   static double _parseMilWidth(String svg) {
-    final m = RegExp(r'data-mil-width="([^"]+)"').firstMatch(svg);
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
+    ).firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
+  }
+
+  static double _parseMilHeight(String svg) {
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+[^"]*?\s+([^"]*?)"',
+    ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
@@ -78,6 +87,7 @@ class HomeReticlePage extends ConsumerWidget {
                       targetSizeMil: reticleSizeMil,
                       offsetXMil: vmState.adjustmentWindMil,
                       offsetYMil: vmState.adjustmentElevMil,
+                      clipRadius: 15,
                     ),
                   ),
                 ),

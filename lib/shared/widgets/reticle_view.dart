@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,7 +20,10 @@ class ReticleView extends ConsumerWidget {
     required this.targetSizeMil,
     required this.offsetXMil,
     required this.offsetYMil,
+    this.clipRadius,
   });
+
+  final double? clipRadius;
 
   /// Reticle asset ID (filename without `.svg`). Null → default reticle.
   final String? reticleImageId;
@@ -45,7 +50,7 @@ class ReticleView extends ConsumerWidget {
       aspectRatio: 1,
       child: reticleAsync.when(
         loading: () => const SizedBox.shrink(),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
         data: (reticleSvg) {
           final targetSvg = targetAsync.value;
           return _buildView(context, cs, reticleSvg, targetSvg);
@@ -61,7 +66,14 @@ class ReticleView extends ConsumerWidget {
     String? targetSvg,
   ) {
     final meta = _parseSvgMeta(reticleSvg);
-    var svg = _clipViewMils(resolveSvgColorRoles(reticleSvg, cs), meta);
+    String materialSvg = resolveSvgColorRoles(reticleSvg, cs);
+    double effectiveWidth = meta.milWidth;
+    double effectiveHeight = meta.milHeight;
+    if (clipRadius != null) {
+      materialSvg = _clipViewMils(materialSvg, meta, clipRadius!);
+      effectiveWidth = min(effectiveWidth, 2 * clipRadius!);
+      effectiveHeight = min(effectiveHeight, 2 * clipRadius!);
+    }
 
     final lineColor = svgHex(
       cs.brightness == Brightness.dark
@@ -75,8 +87,8 @@ class ReticleView extends ConsumerWidget {
       offsetXMil: offsetXMil,
       offsetYMil: offsetYMil,
       targetSizeMil: targetSizeMil,
-      milWidth: meta.milWidth,
-      milHeight: meta.milHeight,
+      milWidth: effectiveWidth,
+      milHeight: effectiveHeight,
       lineColor: lineColor,
     );
 
@@ -88,7 +100,7 @@ class ReticleView extends ConsumerWidget {
           ClipOval(child: SvgPicture.string(underlaySvg, fit: BoxFit.contain)),
 
         // Reticle overlay (on top)
-        ClipOval(child: SvgPicture.string(svg, fit: BoxFit.contain)),
+        ClipOval(child: SvgPicture.string(materialSvg, fit: BoxFit.contain)),
 
         // Border
         Positioned.fill(
@@ -118,8 +130,8 @@ class ReticleView extends ConsumerWidget {
 
     // Build SVG elements for underlay
     final buffer = StringBuffer();
-    buffer.writeln('<?xml version="1.0" encoding="utf-8"?>');
     buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg"');
+    buffer.writeln('     shape-rendering="crispEdges"'); // Цей рядок
     buffer.writeln(
       '     viewBox="-${milWidth / 2} -${milHeight / 2} $milWidth $milHeight">',
     );
@@ -177,38 +189,40 @@ class ReticleView extends ConsumerWidget {
     return svg.substring(start, end);
   }
 
-  static const double _kViewMils = 30.0;
+  // static const double _kViewMils = 30.0;
 
-  static String _clipViewMils(String svg, _SvgMeta meta) {
-    if (meta.milWidth <= _kViewMils && meta.milHeight <= _kViewMils) return svg;
+  static String _clipViewMils(String svg, _SvgMeta meta, double clipRadius) {
+    if (meta.milWidth <= 2 * clipRadius && meta.milHeight <= 2 * clipRadius) {
+      return svg;
+    }
     return svg.replaceFirst(
       RegExp(r'viewBox="[^"]+"'),
-      'viewBox="${-_kViewMils / 2} ${-_kViewMils / 2} $_kViewMils $_kViewMils"',
+      'viewBox="${-clipRadius} ${-clipRadius} ${2 * clipRadius} ${2 * clipRadius}"',
     );
   }
 
   static _SvgMeta _parseSvgMeta(String svg) {
-    double attr(String name, double fallback) {
-      final m = RegExp('$name="([^"]+)"').firstMatch(svg);
-      return m != null ? (double.tryParse(m.group(1)!) ?? fallback) : fallback;
+    // Отримання розмірів з viewBox
+    double milWidth = 30.0; // значення за замовчуванням
+    double milHeight = 30.0;
+
+    final viewBoxMatch = RegExp(r'viewBox="([^"]+)"').firstMatch(svg);
+    if (viewBoxMatch != null) {
+      final parts = viewBoxMatch.group(1)!.trim().split(RegExp(r'\s+'));
+      if (parts.length == 4) {
+        // parts: [minX, minY, width, height]
+        milWidth = double.tryParse(parts[2]) ?? milWidth;
+        milHeight = double.tryParse(parts[3]) ?? milHeight;
+      }
     }
 
-    return _SvgMeta(
-      milWidth: attr('data-mil-width', 30.0),
-      milHeight: attr('data-mil-height', 30.0),
-      factor: attr('data-factor', 100.0),
-    );
+    return _SvgMeta(milWidth: milWidth, milHeight: milHeight);
   }
 }
 
 class _SvgMeta {
-  const _SvgMeta({
-    required this.milWidth,
-    required this.milHeight,
-    required this.factor,
-  });
+  const _SvgMeta({required this.milWidth, required this.milHeight});
 
   final double milWidth;
   final double milHeight;
-  final double factor;
 }

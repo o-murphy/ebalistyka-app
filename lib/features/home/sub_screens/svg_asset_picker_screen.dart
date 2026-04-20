@@ -63,7 +63,6 @@ class SvgAssetPickerScreen extends ConsumerWidget {
               isSelected: sorted[i] == selected,
               watchSvg: watchSvg,
               onTap: () => context.pop(sorted[i]),
-              mini: miniTiles,
             ),
           );
         },
@@ -78,17 +77,14 @@ class _SvgAssetTile extends ConsumerWidget {
     required this.isSelected,
     required this.watchSvg,
     required this.onTap,
-    this.mini = false,
+    this.clipRadius = 12.0, // Радіус обрізання в MIL (половина від 30)
   });
 
   final String assetId;
   final bool isSelected;
   final AsyncValue<String> Function(WidgetRef, String) watchSvg;
   final VoidCallback onTap;
-  final bool mini;
-
-  static const double _kViewMils = 30.0;
-  static const double _kViewMilsMini = 20.0;
+  final double clipRadius;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,24 +93,19 @@ class _SvgAssetTile extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: mini ? 8 : 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: isSelected
             ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(mini ? 8 : 12),
-                side: BorderSide(color: cs.primary, width: mini ? 1.5 : 2),
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: cs.primary, width: 2),
               )
             : null,
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              mini ? 8 : 12,
-              mini ? 6 : 10,
-              mini ? 8 : 12,
-              mini ? 8 : 12,
-            ),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -122,38 +113,26 @@ class _SvgAssetTile extends ConsumerWidget {
                   children: [
                     Text(
                       assetId,
-                      style: (mini ? tt.bodyMedium : tt.titleMedium)?.copyWith(
+                      style: tt.titleMedium?.copyWith(
                         color: isSelected ? cs.primary : null,
                         fontWeight: isSelected
                             ? FontWeight.w700
                             : FontWeight.w500,
-                        fontSize: mini ? 12 : null,
                       ),
                     ),
                     const Spacer(),
                     if (isSelected)
-                      Icon(
-                        Icons.check_circle,
-                        color: cs.primary,
-                        size: mini ? 16 : 20,
-                      ),
+                      Icon(Icons.check_circle, color: cs.primary, size: 20),
                   ],
                 ),
-                SizedBox(height: mini ? 6 : 10),
+                const SizedBox(height: 10),
                 AspectRatio(
                   aspectRatio: 1,
                   child: svgAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (_, _) => const SizedBox.shrink(),
-                    data: (svg) => Transform.scale(
-                      scale: mini ? 0.25 : 1.0,
-                      child: _buildPreview(
-                        _prepareSvg(svg, cs, mini: mini),
-                        cs,
-                        mini: mini,
-                      ),
-                    ),
+                    error: (_, __) => const SizedBox.shrink(),
+                    data: (svg) => _buildPreview(svg, cs),
                   ),
                 ),
               ],
@@ -164,57 +143,82 @@ class _SvgAssetTile extends ConsumerWidget {
     );
   }
 
-  static Widget _buildPreview(
-    String svg,
-    ColorScheme cs, {
-    bool mini = false,
-  }) => Stack(
-    fit: StackFit.expand,
-    children: [
-      ClipOval(child: SvgPicture.string(svg, fit: BoxFit.contain)),
-      Positioned.fill(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: cs.onSurface.withAlpha(80),
-              width: mini ? 1 : 1.5,
+  Widget _buildPreview(String svg, ColorScheme cs) {
+    final preparedSvg = _prepareSvg(svg, cs);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // SVG малюється в своєму натуральному розмірі, але обрізається кругом
+        ClipOval(child: SvgPicture.string(preparedSvg, fit: BoxFit.contain)),
+        // Рамка
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: cs.onSurface.withAlpha(80), width: 1.5),
             ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 
-  static String _prepareSvg(String svg, ColorScheme cs, {bool mini = false}) {
+  String _prepareSvg(String svg, ColorScheme cs) {
     var result = resolveSvgColorRoles(svg, cs);
+
+    // Видаляємо width/height
     result = result.replaceFirst(RegExp(r'\bwidth="[^"]*"\s*'), '');
     result = result.replaceFirst(RegExp(r'\bheight="[^"]*"\s*'), '');
+
+    // Видаляємо metadata
     result = result.replaceAll(RegExp(r'<metadata\b[^/]*/>', dotAll: true), '');
     result = result.replaceAll(
       RegExp(r'<metadata\b[^>]*>.*?</metadata>', dotAll: true),
       '',
     );
 
-    final viewSize = mini ? _kViewMilsMini : _kViewMils;
-    final halfSize = viewSize / 2;
+    // Застосовуємо обрізання viewBox до clipRadius
+    result = _clipViewMils(result, clipRadius);
 
-    final milW = _attr(result, 'data-mil-width');
-    final milH = _attr(result, 'data-mil-height');
-    if (milW > viewSize || milH > viewSize) {
-      result = result.replaceFirst(
-        RegExp(r'viewBox="[^"]+"'),
-        'viewBox="-$halfSize -$halfSize $viewSize $viewSize"',
-      );
-    }
+    // Додаємо shape-rendering для кращої якості
+    result = result.replaceFirst(
+      RegExp(r'<svg\b'),
+      '<svg shape-rendering="crispEdges"',
+    );
+
     return result;
   }
 
-  static double _attr(String svg, String name) {
-    final m = RegExp('$name="([^"]+)"').firstMatch(svg);
-    final defaultSize = _kViewMils;
-    return m != null
-        ? double.tryParse(m.group(1)!) ?? defaultSize
-        : defaultSize;
+  String _clipViewMils(String svg, double clipRadius) {
+    // Отримуємо поточний viewBox
+    final viewBoxMatch = RegExp(r'viewBox="([^"]+)"').firstMatch(svg);
+    if (viewBoxMatch == null) return svg;
+
+    final parts = viewBoxMatch.group(1)!.trim().split(RegExp(r'\s+'));
+    if (parts.length != 4) return svg;
+
+    final minX = double.tryParse(parts[0]) ?? 0;
+    final minY = double.tryParse(parts[1]) ?? 0;
+    final currentWidth = double.tryParse(parts[2]) ?? 0;
+    final currentHeight = double.tryParse(parts[3]) ?? 0;
+
+    // Обчислюємо центр оригінального viewBox
+    final centerX = minX + currentWidth / 2;
+    final centerY = minY + currentHeight / 2;
+
+    // Новий розмір (діаметр)
+    final viewSize = 2 * clipRadius;
+
+    // Новий viewBox з центром в оригінальному центрі
+    final newMinX = centerX - clipRadius;
+    final newMinY = centerY - clipRadius;
+    final newViewBox = '$newMinX $newMinY $viewSize $viewSize';
+
+    // Завжди замінюємо на новий viewBox для однакового масштабування
+    return svg.replaceFirst(
+      RegExp(r'viewBox="[^"]+"'),
+      'viewBox="$newViewBox"',
+    );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:reticle_gen/reticle_gen.dart';
 
-const double reticleSizeMil = 20;
 const double targetSize = 2;
 const double targetHeightMil = targetSize;
 const double targetWidthMil = targetSize;
@@ -17,11 +16,7 @@ class TargetPlate20cmDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   final outputPath = args.isNotEmpty ? args.first : 'default.svg';
-  MilReticleSVGCanvas(
-      milHeight: reticleSizeMil,
-      milWidth: reticleSizeMil,
-      targetMilSize: targetSize,
-    )
+  MilReticleSVGCanvas(milHeight: targetSize, milWidth: targetSize)
     ..generate(TargetPlate20cmDrawer())
     ..svg.export(outputPath);
 }

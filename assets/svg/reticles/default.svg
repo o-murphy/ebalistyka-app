@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="-15 -15 30 30" target-mil-size="0" data-mil-width="30" data-mil-height="30" data-factor="100" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="-15 -15 30 30" shape-rendering="crispEdges">
   <clipPath id="clip0">
     <circle id="circle-0" cx="0" cy="0" r="15" fill="transparent"/>
   </clipPath>
@@ -32,5 +32,4 @@
     <path id="label-20" d="M -1.139 11.775 L -1.139 12.225 M -0.947 11.775 L -0.7 11.775 M -0.7 11.775 L -0.7 12 M -0.947 12 L -0.7 12 M -0.947 12 L -0.947 12.225 M -0.947 12.225 L -0.7 12.225" fill="none" stroke="onSurface" stroke-width="0.041" stroke-linejoin="round" stroke-linecap="round"/>
     <path id="label-21" d="M -1.139 13.775 L -1.139 14.225 M -0.947 13.775 L -0.947 14 M -0.7 13.775 L -0.7 14 M -0.947 14 L -0.7 14 M -0.7 14 L -0.7 14.225" fill="none" stroke="onSurface" stroke-width="0.041" stroke-linejoin="round" stroke-linecap="round"/>
   </g>
-  <circle id="circle-1" cx="0" cy="0" r="15" fill="none" stroke="onSurface" stroke-width="0.05"/>
 </svg>

@@ -129,10 +129,8 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     }
 
     final targetSvgAsync = ref.watch(targetSvgProvider(_targetImage));
-    final reticleSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
-    final targetSizeMil =
-        targetSvgAsync.whenData(_parseTargetSize).value ?? 0.0;
-    final targetSizeDisplay = reticleSizeMil >= 0.0
+    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
+    final targetSizeDisplay = targetSizeMil >= 0.0
         ? fmt.targetSize(Angular.mil(targetSizeMil))
         : nullStr;
 
@@ -152,7 +150,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTopBlock(context, topBlockHeight, vmState, reticleSizeMil),
+              _buildTopBlock(context, topBlockHeight, vmState, targetSizeMil),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
@@ -340,6 +338,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                     targetSizeMil: targetSizeMil,
                     offsetXMil: vmState.adjustmentWindMil,
                     offsetYMil: vmState.adjustmentElevMil,
+                    clipRadius: 20,
                   ),
                 ),
               ),
@@ -361,12 +360,16 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   }
 
   static double _parseMilWidth(String svg) {
-    final m = RegExp(r'data-mil-width="([^"]+)"').firstMatch(svg);
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
+    ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
-  static double _parseTargetSize(String svg) {
-    final m = RegExp(r'target-mil-size="([^"]+)"').firstMatch(svg);
+  static double _parseMilHeight(String svg) {
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+[^"]*?\s+([^"]*?)"',
+    ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
