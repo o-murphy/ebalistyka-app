@@ -47,7 +47,6 @@ Utility set — composition TBD.
 - Privacy Policy
 - Terms of Use
 - Changelog
-- GitHub link (minimum for alpha — may move to Alpha TODO)
 
 ---
 
