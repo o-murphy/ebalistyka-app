@@ -195,7 +195,7 @@ abstract final class A7pConverter {
     final sight = export.sight;
     final weapon = export.weapon;
 
-    final distances = switch (range) {
+    final distancesTable = switch (range) {
       A7pRange.subsonic => subsonicRangeTable,
       A7pRange.low => lowRangeTable,
       A7pRange.medium => mediumRangeTable,
@@ -204,11 +204,12 @@ abstract final class A7pConverter {
       _ => mediumRangeTable,
     };
     final zeroDistanceMeter =
-        ammo?.zeroDistanceMeter.toInt() ?? distances.first;
+        ammo?.zeroDistanceMeter.toInt() ?? distancesTable.first;
     final zeroDistanceIdx = _findClosestDistanceIndex(
-      distances,
+      distancesTable,
       zeroDistanceMeter,
     );
+    final distances = distancesTable.map((el) => el * 100);
 
     final profileName = export.name.substring(
       0,
