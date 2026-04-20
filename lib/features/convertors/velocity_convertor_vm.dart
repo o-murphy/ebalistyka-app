@@ -1,6 +1,8 @@
 import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
+import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -92,16 +94,20 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
         .updateVelocityMachUseCustomAtmo(value);
   }
 
-  void updateAtmoTemperature(double rawCelsius) {
+  void updateAtmoTemperature(double rawValue) {
+    final units = ref.read(unitSettingsProvider);
+    final celsiusValue = rawValue.convert(units.temperatureUnit, Unit.celsius);
     ref
         .read(convertorsProvider.notifier)
-        .updateVelocityAtmoTemperature(Temperature.celsius(rawCelsius));
+        .updateVelocityAtmoTemperature(Temperature.celsius(celsiusValue));
   }
 
-  void updateAtmoPressure(double rawHPa) {
+  void updateAtmoPressure(double rawValue) {
+    final units = ref.read(unitSettingsProvider);
+    final hPaValue = rawValue.convert(units.pressureUnit, Unit.hPa);
     ref
         .read(convertorsProvider.notifier)
-        .updateVelocityAtmoPressure(Pressure.hPa(rawHPa));
+        .updateVelocityAtmoPressure(Pressure.hPa(hPaValue));
   }
 
   void updateAtmoHumidity(double rawFrac) {
@@ -110,10 +116,12 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
         .updateVelocityAtmoHumidityFrac(rawFrac);
   }
 
-  void updateAtmoAltitude(double rawMeter) {
+  void updateAtmoAltitude(double rawValue) {
+    final units = ref.read(unitSettingsProvider);
+    final meterValue = rawValue.convert(units.distanceUnit, Unit.meter);
     ref
         .read(convertorsProvider.notifier)
-        .updateVelocityAtmoAltitude(Distance.meter(rawMeter));
+        .updateVelocityAtmoAltitude(Distance.meter(meterValue));
   }
 
   Atmo _buildAtmo(ConvertorsState s) => s.velocityMachUseCustomAtmo

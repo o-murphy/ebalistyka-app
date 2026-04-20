@@ -7,7 +7,7 @@ const double targetWidthMil = targetSize;
 class TargetPointDrawer implements SVGDrawerInterface {
   @override
   void draw(MilReticleSVGCanvas canvas) {
-    const String color = 'DarkOrange';
+    const String color = '#FF8C00';
     canvas.dot(0, 0, targetSize / 2, color);
   }
 }
