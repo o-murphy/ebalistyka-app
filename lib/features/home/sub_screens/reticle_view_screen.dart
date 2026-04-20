@@ -141,21 +141,6 @@ class ReticleViewScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              // const Icon(Icons.remove_red_eye_outlined, size: 72),
-              // const SizedBox(height: 20),
-              // Text(
-              //   'Reticle View Screen placeholder',
-              //   textAlign: TextAlign.center,
-              //   style: const TextStyle(
-              //     fontSize: 18,
-              //     fontWeight: FontWeight.w600,
-              //   ),
-              // ),
-              // const SizedBox(height: 12),
-              // const Text(
-              //   'This route is reserved for the fullscreen reticle view screen.',
-              //   textAlign: TextAlign.center,
-              // ),
             ],
           ),
         );

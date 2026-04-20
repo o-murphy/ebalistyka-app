@@ -147,6 +147,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final ctx = ref.read(shotContextProvider).value;
     final settings = ref.read(settingsProvider).value;
     final units = ref.read(unitSettingsProvider);
+    final reticle = ref.read(reticleSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
     if (ctx == null || settings == null) {
@@ -191,6 +192,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         profile: profile,
         conditions: conditions,
         settings: settings,
+        reticle: reticle,
         units: units,
         formatter: formatter,
         result: result,
@@ -264,6 +266,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required Profile profile,
     required ShootingConditions conditions,
     required GeneralSettings settings,
+    required ReticleSettings reticle,
     required UnitSettings units,
     required UnitFormatter formatter,
     required BallisticsResult result,
@@ -295,13 +298,23 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
 
     final adjustment = _buildAdjustment(hit, targetM, result.holdRad, settings);
-    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil);
+    final elevMil =
+        Angular.radian(result.holdRad).in_(Unit.mil) -
+        reticle.verticalAdjustment.convert(
+          reticle.verticalAdjustmentUnitValue,
+          Unit.mil,
+        );
     final targetPoint = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windMil = targetPoint != null
         ? targetPoint.windageAngle.in_(Unit.mil)
-        : 0.0;
+        : 0.0 +
+              reticle.horizontalAdjustment.convert(
+                reticle.horizontalAdjustmentUnitValue,
+                Unit.mil,
+              );
+    ;
     final tableData = _buildHomeTable(
       hit,
       targetM,
