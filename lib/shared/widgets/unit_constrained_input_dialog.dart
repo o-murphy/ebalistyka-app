@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +106,7 @@ Future<void> _showUnitEditDialogInternal(
                     decoration: InputDecoration(
                       suffixText: sym,
                       errorText: dialogState.errorText,
-                      hintText: allowNull ? '—' : null,
+                      hintText: allowNull ? nullStr : null,
                       suffixIcon: allowNull && controller.text.isNotEmpty
                           ? IconButton(
                               icon: const Icon(IconDef.clear),

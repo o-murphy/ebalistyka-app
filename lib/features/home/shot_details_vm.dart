@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -142,7 +143,7 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     // Gyroscopic stability
     final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
     final bcWeapon = weapon?.toWeapon(sightHeight);
-    String sgStr = '—';
+    String sgStr = nullStr;
     if (bcWeapon != null) {
       final currentShot = profile.toCurrentShot(conditions, bcWeapon);
       final sg = currentShot.calculateStabilityCoefficient();
@@ -162,18 +163,18 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
       currentMv: formatter.velocity(curVelocity),
       zeroMv: formatter.velocity(zeroVelocity),
       speedOfSound: soundSpeedFps == null
-          ? '—'
+          ? nullStr
           : formatter.velocity(Velocity.fps(soundSpeedFps)),
       velocityAtTarget: formatter.velocity(atTarget.velocity),
       energyAtMuzzle: firstPoint == null
-          ? '—'
+          ? nullStr
           : formatter.energy(firstPoint.energy),
       energyAtTarget: formatter.energy(atTarget.energy),
       gyroscopicStability: sgStr,
       shotDistance: formatter.distance(conditions.distance),
       heightAtTarget: formatter.drop(atTarget.height),
       maxHeightDistance: apexPoint == null
-          ? '—'
+          ? nullStr
           : formatter.distance(apexPoint.distance),
       windage: formatter.drop(atTarget.windage),
       timeToTarget: formatter.time(atTarget.time),

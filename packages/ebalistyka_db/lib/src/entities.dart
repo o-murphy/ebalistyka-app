@@ -456,6 +456,7 @@ class UnitSettings with Cloneable<UnitSettings> {
   String barrelLength = "inch";
   String time = "second";
   String torque = "newtonMeter";
+  String targetSize = "mil";
 
   final owner = ToOne<Owner>();
 

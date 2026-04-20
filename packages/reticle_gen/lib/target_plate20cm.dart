@@ -17,7 +17,11 @@ class TargetPlate20cmDrawer implements SVGDrawerInterface {
 
 void main(List<String> args) {
   final outputPath = args.isNotEmpty ? args.first : 'default.svg';
-  MilReticleSVGCanvas(milHeight: reticleSizeMil, milWidth: reticleSizeMil)
+  MilReticleSVGCanvas(
+      milHeight: reticleSizeMil,
+      milWidth: reticleSizeMil,
+      targetMilSize: targetSize,
+    )
     ..generate(TargetPlate20cmDrawer())
     ..svg.export(outputPath);
 }

@@ -16,7 +16,7 @@ class HomeReticlePage extends ConsumerWidget {
 
   static double _parseMilWidth(String svg) {
     final m = RegExp(r'data-mil-width="([^"]+)"').firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.5;
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
   @override
@@ -41,7 +41,7 @@ class HomeReticlePage extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
 
     final targetSvgAsync = ref.watch(targetSvgProvider(vmState.targetId));
-    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.5;
+    final reticleSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,7 +75,7 @@ class HomeReticlePage extends ConsumerWidget {
                     child: ReticleView(
                       reticleImageId: vmState.reticleId,
                       targetImageId: vmState.targetId,
-                      targetSizeMil: targetSizeMil,
+                      targetSizeMil: reticleSizeMil,
                       offsetXMil: vmState.adjustmentWindMil,
                       offsetYMil: vmState.adjustmentElevMil,
                     ),

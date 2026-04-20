@@ -23,6 +23,7 @@ class UnitSettingsExport {
     required this.barrelLength,
     required this.time,
     required this.torque,
+    required this.targetSize,
   });
 
   final String angular;
@@ -41,6 +42,7 @@ class UnitSettingsExport {
   final String barrelLength;
   final String time;
   final String torque;
+  final String targetSize;
 
   factory UnitSettingsExport.fromJson(Map<String, dynamic> json) =>
       _$UnitSettingsExportFromJson(json);
@@ -64,6 +66,7 @@ class UnitSettingsExport {
     barrelLength: s.barrelLength,
     time: s.time,
     torque: s.torque,
+    targetSize: s.targetSize,
   );
 
   UnitSettings toEntity() => UnitSettings()
@@ -82,5 +85,6 @@ class UnitSettingsExport {
     ..twist = twist
     ..barrelLength = barrelLength
     ..time = time
-    ..torque = torque;
+    ..torque = torque
+    ..targetSize = targetSize;
 }

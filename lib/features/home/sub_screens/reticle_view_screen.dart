@@ -4,12 +4,14 @@ import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -111,6 +113,8 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
+    final fmt = ref.watch(unitFormatterProvider);
+
     if (vmState is HomeUiNoData) {
       return EmptyStatePlaceholder(
         type: vmState.type,
@@ -125,7 +129,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     }
 
     final targetSvgAsync = ref.watch(targetSvgProvider(_targetImage));
-    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.5;
+    final reticleSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
+    final targetSizeMil =
+        targetSvgAsync.whenData(_parseTargetSize).value ?? 0.0;
+    final targetSizeDisplay = reticleSizeMil >= 0.0
+        ? fmt.targetSize(Angular.mil(targetSizeMil))
+        : nullStr;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -143,7 +152,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTopBlock(context, topBlockHeight, vmState, targetSizeMil),
+              _buildTopBlock(context, topBlockHeight, vmState, reticleSizeMil),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
@@ -223,7 +232,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ),
                       InfoListTile(
                         label: 'Target size',
-                        value: '${targetSizeMil.toStringAsFixed(2)} MIL',
+                        value: targetSizeDisplay,
                         icon: Icons.crop_free,
                       ),
                       // ── Reticle ──────────────────────────────────────────
@@ -353,7 +362,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
   static double _parseMilWidth(String svg) {
     final m = RegExp(r'data-mil-width="([^"]+)"').firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.5;
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
+  }
+
+  static double _parseTargetSize(String svg) {
+    final m = RegExp(r'target-mil-size="([^"]+)"').firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
   Widget _clickLabel(BuildContext context, String label) {

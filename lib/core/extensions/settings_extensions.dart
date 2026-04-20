@@ -76,6 +76,12 @@ extension UnitSettingsExtension on UnitSettings {
   Unit get energyUnit =>
       Unit.values.firstWhere((u) => u.name == energy, orElse: () => Unit.joule);
   set energyUnit(Unit v) => energy = v.name;
+
+  Unit get targetSizeUnit => Unit.values.firstWhere(
+    (u) => u.name == targetSize,
+    orElse: () => Unit.mil,
+  );
+  set targetSizeUnit(Unit v) => targetSize = v.name;
 }
 
 extension TablesSettingsExtension on TablesSettings {

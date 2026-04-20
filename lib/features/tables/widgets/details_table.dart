@@ -1,4 +1,5 @@
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class DetailsTableContent extends StatelessWidget {
 
     Widget section(String title) => ListSectionTile(title);
 
-    String v(String? s) => s?.isNotEmpty == true ? s! : '—';
+    String v(String? s) => s?.isNotEmpty == true ? s! : nullStr;
 
     final items = <Widget>[
       // Rifle

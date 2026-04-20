@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
@@ -64,11 +65,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
 
-    final profileName = vmState is HomeUiReady ? vmState.profileName : '—';
-    final tempStr = vmState is HomeUiReady ? vmState.tempDisplay : '—';
-    final altStr = vmState is HomeUiReady ? vmState.altDisplay : '—';
-    final pressStr = vmState is HomeUiReady ? vmState.pressDisplay : '—';
-    final humidStr = vmState is HomeUiReady ? vmState.humidDisplay : '—';
+    final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
+    final tempStr = vmState is HomeUiReady ? vmState.tempDisplay : nullStr;
+    final altStr = vmState is HomeUiReady ? vmState.altDisplay : nullStr;
+    final pressStr = vmState is HomeUiReady ? vmState.pressDisplay : nullStr;
+    final humidStr = vmState is HomeUiReady ? vmState.humidDisplay : nullStr;
     final windAngleDeg = vmState is HomeUiReady ? vmState.windAngleDeg : 0.0;
     final windInitialAngle = (windAngleDeg - 90) * math.pi / 180;
 

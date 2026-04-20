@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
@@ -32,7 +33,7 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
 
   String get _sym => symbol ?? displayUnit.symbol;
 
-  /// Get display value to display (in case of null returns '—')
+  /// Get display value to display (in case of null returns nullStr)
   String _getDisplayText() {
     // For nullable, rawValue can be null, but we can't check for it in the base class
     // Therefore, this method must be overridden in descendants
@@ -126,7 +127,7 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
 
   @override
   String _getDisplayText() {
-    if (_isEmpty) return isRequired ? 'Required' : '—';
+    if (_isEmpty) return isRequired ? 'Required' : nullStr;
 
     final helper = UnitConversionHelper(
       constraints: constraints,

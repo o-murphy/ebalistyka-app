@@ -860,7 +860,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(8, 7409307519479360238),
     name: 'UnitSettings',
-    lastPropertyId: const obx_int.IdUid(18, 1589305927285534260),
+    lastPropertyId: const obx_int.IdUid(19, 5135449223109821406),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -973,6 +973,12 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(15, 5972717579111743737),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(19, 5135449223109821406),
+        name: 'targetSize',
+        type: 9,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -2375,7 +2381,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final barrelLengthOffset = fbb.writeString(object.barrelLength);
         final timeOffset = fbb.writeString(object.time);
         final torqueOffset = fbb.writeString(object.torque);
-        fbb.startTable(19);
+        final targetSizeOffset = fbb.writeString(object.targetSize);
+        fbb.startTable(20);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, angularOffset);
         fbb.addOffset(2, distanceOffset);
@@ -2394,6 +2401,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(15, timeOffset);
         fbb.addOffset(16, torqueOffset);
         fbb.addInt64(17, object.owner.targetId);
+        fbb.addOffset(18, targetSizeOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2450,7 +2458,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ).vTableGet(buffer, rootOffset, 34, '')
           ..torque = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 36, '');
+          ).vTableGet(buffer, rootOffset, 36, '')
+          ..targetSize = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 40, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -3442,6 +3453,11 @@ class UnitSettings_ {
   /// See [UnitSettings.owner].
   static final owner = obx.QueryRelationToOne<UnitSettings, Owner>(
     _entities[7].properties[17],
+  );
+
+  /// See [UnitSettings.targetSize].
+  static final targetSize = obx.QueryStringProperty<UnitSettings>(
+    _entities[7].properties[18],
   );
 }
 

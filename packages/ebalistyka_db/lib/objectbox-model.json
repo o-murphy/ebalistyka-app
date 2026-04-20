@@ -691,7 +691,7 @@
     },
     {
       "id": "8:7409307519479360238",
-      "lastPropertyId": "18:1589305927285534260",
+      "lastPropertyId": "19:5135449223109821406",
       "name": "UnitSettings",
       "properties": [
         {
@@ -787,6 +787,11 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "19:5135449223109821406",
+          "name": "targetSize",
+          "type": 9
         }
       ],
       "relations": []

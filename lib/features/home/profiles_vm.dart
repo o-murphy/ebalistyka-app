@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,27 +187,31 @@ ProfileCardData _buildCardData(
     id: profile.id.toString(),
     name: profile.name,
     weaponFingerprint: _weaponFingerprint(weapon),
-    weaponName: weapon?.name ?? '—',
+    weaponName: weapon?.name ?? nullStr,
     weaponImage: weapon?.image,
-    weaponCaliber: weapon != null ? formatter.diameter(weapon.caliber) : '—',
+    weaponCaliber: weapon != null
+        ? formatter.diameter(weapon.caliber)
+        : nullStr,
     twist: weapon != null && weapon.twistInch.abs() > 0
         ? formatter.twist(weapon.twist)
-        : '—',
+        : nullStr,
     rightHanded: weapon?.isRightHandTwist ?? true,
     ammoId: ammo?.id,
     ammoFingerprint: _ammoFingerprint(ammo),
-    ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : '—',
-    cartridgeName: ammo?.name ?? '—',
-    projectileName: ammo?.projectileName ?? '—',
-    dragModel: ammo?.dragModelFormattedInfo ?? '—',
+    ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : nullStr,
+    cartridgeName: ammo?.name ?? nullStr,
+    projectileName: ammo?.projectileName ?? nullStr,
+    dragModel: ammo?.dragModelFormattedInfo ?? nullStr,
     muzzleVelocity: (ammo != null && ammo.mv != null)
         ? formatter.velocity(ammo.mv!)
-        : '—',
-    weight: ammo != null ? formatter.weight(ammo.weight) : '—',
+        : nullStr,
+    weight: ammo != null ? formatter.weight(ammo.weight) : nullStr,
     sightId: sight?.id,
     sightFingerprint: _sightFingerprint(sight),
     sightName: sight?.name ?? 'Not selected',
-    sightHeight: sight != null ? formatter.sightHeight(sight.sightHeight) : '—',
+    sightHeight: sight != null
+        ? formatter.sightHeight(sight.sightHeight)
+        : nullStr,
     focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
     reticleImage: sight?.reticleImage?.isNotEmpty == true
         ? sight!.reticleImage!
@@ -216,13 +221,13 @@ ProfileCardData _buildCardData(
             sight.minMagnification,
             sight.maxMagnification,
           )
-        : '—',
+        : nullStr,
     verticalClick: sight != null
         ? formatter.click(sight.verticalClick, sight.verticalClickUnitValue)
-        : '—',
+        : nullStr,
     horizontalClick: sight != null
         ? formatter.click(sight.horizontalClick, sight.horizontalClickUnitValue)
-        : '—',
+        : nullStr,
   );
 }
 

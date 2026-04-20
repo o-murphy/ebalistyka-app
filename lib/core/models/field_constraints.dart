@@ -318,10 +318,18 @@ abstract final class FC {
 
   static const convertorTorque = torque;
   static const convertorAngular = FieldConstraints(
-    rawUnit: Unit.mil,
-    minRaw: -90.0,
-    maxRaw: 90.0,
+    rawUnit: Unit.degree,
+    minRaw: 0,
+    maxRaw: 360,
     stepRaw: 1.0,
     accuracy: 1,
+  );
+
+  static const targetSize = FieldConstraints(
+    rawUnit: Unit.mil,
+    minRaw: 0.001,
+    maxRaw: 100,
+    stepRaw: 0.1,
+    accuracy: 3,
   );
 }

@@ -7,6 +7,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
@@ -583,7 +584,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
                 ? fmt.diameter(
                     Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
                   )
-                : '—',
+                : nullStr,
             icon: IconDef.caliber,
           ),
           NullableUnitValueFieldTile(

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:riverpod/riverpod.dart';
@@ -218,6 +220,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final formatter = ref.read(unitFormatterProvider);
     final info = _buildPointInfo(point, formatter);
+
     state = AsyncData(
       HomeUiReady(
         profileName: current.profileName,
@@ -375,6 +378,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final windMil =
         (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
         hAdjMil;
+
     final tableData = _buildHomeTable(
       hit,
       targetM,
@@ -462,7 +466,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;
 
-    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : '—';
+    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : nullStr;
     final dragStr = ammo.dragModelFormattedInfo;
 
     String? sgStr;
@@ -560,7 +564,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         .toList();
 
     final distHeaders = dists.map<String>((m) {
-      if (m < 0) return '—';
+      if (m < 0) return nullStr;
       final disp = Distance.meter(m).in_(distUnit);
       return disp.toFixedSafe(distAcc);
     }).toList();
@@ -608,7 +612,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       for (var ci = 0; ci < dists.length; ci++) {
         final hold = tableHolds.length > ci ? tableHolds[ci] : double.nan;
         final valStr = (hold.isNaN || dists[ci] < 0)
-            ? '—'
+            ? nullStr
             : Angular.radian(hold).in_(u).toFixedSafe(acc);
         cells.add(
           FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
@@ -624,7 +628,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       for (var ci = 0; ci < dists.length; ci++) {
         final p = points[ci];
         final valStr = p == null
-            ? '—'
+            ? nullStr
             : (rd.$3(p) ?? double.nan).toFixedSafe(rd.$4);
         cells.add(
           FormattedCell(value: valStr, isTargetColumn: ci == targetCol),

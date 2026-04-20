@@ -162,6 +162,7 @@ class _StrokeFont {
 class MilReticleSVGCanvas {
   final double milWidth;
   final double milHeight;
+  final double targetMilSize;
   final int factor;
   final double unitScale;
 
@@ -185,6 +186,7 @@ class MilReticleSVGCanvas {
   MilReticleSVGCanvas({
     this.milWidth = 30.0,
     this.milHeight = 30.0,
+    this.targetMilSize = 0.0,
     this.factor = 100,
     this.unitScale = 1.0,
   });
@@ -224,6 +226,7 @@ class MilReticleSVGCanvas {
         XmlName('viewBox'),
         '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(milWidth)} ${_fmtNum(milHeight)}',
       ),
+      XmlAttribute(XmlName('target-mil-size'), _fmtNum(targetMilSize)),
       XmlAttribute(XmlName('data-mil-width'), _fmtNum(milWidth)),
       XmlAttribute(XmlName('data-mil-height'), _fmtNum(milHeight)),
       XmlAttribute(XmlName('data-factor'), factor.toString()),
