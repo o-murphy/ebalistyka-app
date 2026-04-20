@@ -458,10 +458,13 @@ class _ZoomableViewState extends State<ZoomableView>
       final tapPos = _doubleTapDetails!.localPosition;
       const targetScale = 3.0; // Рівень масштабу
 
+      // Для коректної роботи 2D трансформацій в Matrix4:
+      // translateByDouble(x, y, z, w): w зазвичай 1.0 для положення в ідентичній матриці
+      // scaleByDouble(x, y, z, w): z=1.0 (щоб не сплющити 2D), w=1.0 (діагональ)
       final targetMatrix = Matrix4.identity()
-        ..translate(tapPos.dx, tapPos.dy)
-        ..scale(targetScale)
-        ..translate(-tapPos.dx, -tapPos.dy);
+        ..translateByDouble(tapPos.dx, tapPos.dy, 0.0, 1.0)
+        ..scaleByDouble(targetScale, targetScale, 1.0, 1.0)
+        ..translateByDouble(-tapPos.dx, -tapPos.dy, 0.0, 1.0);
 
       _animateTransformation(targetMatrix);
     }
