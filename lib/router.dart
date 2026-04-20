@@ -30,6 +30,7 @@ abstract final class Routes {
 
   // Home stack — shot info
   static const shotDetails = '/home/shot-details';
+  static const reticleView = '/home/reticle-view';
 
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
@@ -100,6 +101,10 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'shot-details',
                   builder: (_, _) => const ShotDetailsScreen(),
+                ),
+                GoRoute(
+                  path: 'reticle-view',
+                  builder: (_, _) => const ReticleViewScreen(),
                 ),
                 GoRoute(
                   path: 'profiles',

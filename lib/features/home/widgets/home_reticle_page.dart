@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart'
     show AdjustmentDisplayFormat;
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
@@ -53,16 +55,20 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: ReticleView(
-                    reticleImageId: ref
-                        .watch(activeProfileProvider)
-                        ?.sight
-                        .target
-                        ?.reticleImage,
-                    targetImageId: null,
-                    targetSizeMil: 0.5,
-                    offsetXMil: vmState.adjustmentWindMil,
-                    offsetYMil: vmState.adjustmentElevMil,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => context.push(Routes.reticleView),
+                    child: ReticleView(
+                      reticleImageId: ref
+                          .watch(activeProfileProvider)
+                          ?.sight
+                          .target
+                          ?.reticleImage,
+                      targetImageId: null,
+                      targetSizeMil: 0.5,
+                      offsetXMil: vmState.adjustmentWindMil,
+                      offsetYMil: vmState.adjustmentElevMil,
+                    ),
                   ),
                 ),
               ),
