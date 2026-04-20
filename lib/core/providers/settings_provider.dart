@@ -310,12 +310,6 @@ class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
     s.targetImage = imageId;
     await save(s);
   }
-
-  Future<void> setTargetSize(Distance value) async {
-    final s = state.value ?? _loadOrCreate(_owner);
-    s.targetSize = value;
-    await save(s);
-  }
 }
 
 // ── Providers ─────────────────────────────────────────────────────────────────
