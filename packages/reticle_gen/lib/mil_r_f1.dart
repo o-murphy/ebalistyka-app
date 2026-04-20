@@ -100,12 +100,12 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
     const P = MilRF1Sizes.P;
     const Q = MilRF1Sizes.Q;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 10, 'white'),
+      shape: (c) => c.circle(0, 0, 10, bgColor),
       draw: (c) {
         c.fill(bgColor);
 

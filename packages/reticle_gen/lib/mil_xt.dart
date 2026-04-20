@@ -95,14 +95,14 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
     const M = MilXtSizes.M;
     const N = MilXtSizes.N;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
     const String accentColor = "red";
     const double halfI = I / 2;
     const double labelOffset = 0.4;
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 24, 'white'),
+      shape: (c) => c.circle(0, 0, 24, bgColor),
       draw: (c) {
         c.fill(bgColor);
 

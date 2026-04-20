@@ -141,12 +141,12 @@ class MoarReticleDrawer implements SVGDrawerInterface {
     const N = MoarSizes.N; // now with MoarSizes (2.0 MOA)
     const O = MoarSizes.O; // 0.8 MOA
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 40, 'white'),
+      shape: (c) => c.circle(0, 0, 40, bgColor),
       draw: (c) {
         c.fill(bgColor);
 

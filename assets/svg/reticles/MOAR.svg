@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2370.37" height="2370.37" viewBox="-11.852 -11.852 23.704 23.704" data-mil-width="23.704" data-mil-height="23.704" data-factor="100" shape-rendering="crispEdges">
   <g transform="scale(0.296)">
     <clipPath id="clip0">
-      <circle id="circle-0" cx="0" cy="0" r="40" fill="white"/>
+      <circle id="circle-0" cx="0" cy="0" r="40" fill="transparent"/>
     </clipPath>
     <g id="clipgroup-0" clip-path="url(#clip0)">
-      <rect id="fill-0" x="-40" y="-40" width="80" height="80" fill="white"/>
+      <rect id="fill-0" x="-40" y="-40" width="80" height="80" fill="transparent"/>
       <path id="cross-0" d="M -1 0 L 1 0 M 0 -1 L 0 1" fill="none" stroke="red" stroke-width="0.125"/>
       <line id="hline-0" x1="2" y1="0" x2="20" y2="0" stroke="red" stroke-width="0.125"/>
       <line id="hline-1" x1="-2" y1="0" x2="-20" y2="0" stroke="red" stroke-width="0.125"/>
@@ -26,18 +26,18 @@
       <path id="vruler-3" d="M -0.25 2 L 0.25 2 M -0.25 3 L 0.25 3 M -0.25 4 L 0.25 4 M -0.25 5 L 0.25 5 M -0.25 6 L 0.25 6 M -0.25 7 L 0.25 7 M -0.25 8 L 0.25 8 M -0.25 9 L 0.25 9 M -0.25 10 L 0.25 10 M -0.25 11 L 0.25 11 M -0.25 12 L 0.25 12 M -0.25 13 L 0.25 13 M -0.25 14 L 0.25 14 M -0.25 15 L 0.25 15 M -0.25 16 L 0.25 16 M -0.25 17 L 0.25 17 M -0.25 18 L 0.25 18 M -0.25 19 L 0.25 19 M -0.25 20 L 0.25 20 M -0.25 21 L 0.25 21 M -0.25 22 L 0.25 22 M -0.25 23 L 0.25 23 M -0.25 24 L 0.25 24 M -0.25 25 L 0.25 25 M -0.25 26 L 0.25 26 M -0.25 27 L 0.25 27 M -0.25 28 L 0.25 28 M -0.25 29 L 0.25 29 M -0.25 30 L 0.25 30 M -0.25 31 L 0.25 31 M -0.25 32 L 0.25 32 M -0.25 33 L 0.25 33 M -0.25 34 L 0.25 34 M -0.25 35 L 0.25 35 M -0.25 36 L 0.25 36 M -0.25 37 L 0.25 37 M -0.25 38 L 0.25 38 M -0.25 39 L 0.25 39 M -0.25 40 L 0.25 40" fill="none" stroke="red" stroke-width="0.125"/>
       <path id="vruler-4" d="M -2 10 L 2 10 M -2 20 L 2 20 M -2 30 L 2 30 M -2 40 L 2 40" fill="none" stroke="red" stroke-width="0.125"/>
       <path id="vruler-5" d="M -2 -10 L 2 -10" fill="none" stroke="red" stroke-width="0.125"/>
-      <text id="text-0" x="-20" y="-2.2" fill="black" font-size="1.111" text-anchor="middle">20</text>
-      <text id="text-1" x="-10" y="-2.2" fill="black" font-size="1.111" text-anchor="middle">10</text>
-      <text id="text-2" x="10" y="-2.2" fill="black" font-size="1.111" text-anchor="middle">10</text>
-      <text id="text-3" x="20" y="-2.2" fill="black" font-size="1.111" text-anchor="middle">20</text>
-      <text id="text-4" x="-3" y="10.368" fill="black" font-size="1.458" text-anchor="middle">10</text>
-      <text id="text-5" x="-3" y="20.368" fill="black" font-size="1.458" text-anchor="middle">20</text>
-      <text id="text-6" x="-3" y="30.368" fill="black" font-size="1.458" text-anchor="middle">30</text>
-      <text id="text-7" x="-3" y="40.368" fill="black" font-size="1.458" text-anchor="middle">40</text>
-      <rect id="rect-0" x="-40" y="-0.859" width="5" height="1.719" fill="black"/>
-      <rect id="rect-1" x="35" y="-0.859" width="35" height="1.719" fill="black"/>
-      <path id="path-0" d="M 40 0 L 21 0 M -40 0 L -21 0" fill="none" stroke="black" stroke-width="0.125"/>
-      <path id="path-1" d="M 40 0.859 L 23 0.859 L 21 0 L 23 -0.859 L 40 -0.859 Z M -40 0.859 L -23 0.859 L -21 0 L -23 -0.859 L -40 -0.859 Z" fill="none" stroke="black" stroke-width="0.34"/>
+      <text id="text-0" x="-20" y="-2.2" fill="onSurface" font-size="1.111" text-anchor="middle">20</text>
+      <text id="text-1" x="-10" y="-2.2" fill="onSurface" font-size="1.111" text-anchor="middle">10</text>
+      <text id="text-2" x="10" y="-2.2" fill="onSurface" font-size="1.111" text-anchor="middle">10</text>
+      <text id="text-3" x="20" y="-2.2" fill="onSurface" font-size="1.111" text-anchor="middle">20</text>
+      <text id="text-4" x="-3" y="10.368" fill="onSurface" font-size="1.458" text-anchor="middle">10</text>
+      <text id="text-5" x="-3" y="20.368" fill="onSurface" font-size="1.458" text-anchor="middle">20</text>
+      <text id="text-6" x="-3" y="30.368" fill="onSurface" font-size="1.458" text-anchor="middle">30</text>
+      <text id="text-7" x="-3" y="40.368" fill="onSurface" font-size="1.458" text-anchor="middle">40</text>
+      <rect id="rect-0" x="-40" y="-0.859" width="5" height="1.719" fill="onSurface"/>
+      <rect id="rect-1" x="35" y="-0.859" width="35" height="1.719" fill="onSurface"/>
+      <path id="path-0" d="M 40 0 L 21 0 M -40 0 L -21 0" fill="none" stroke="onSurface" stroke-width="0.125"/>
+      <path id="path-1" d="M 40 0.859 L 23 0.859 L 21 0 L 23 -0.859 L 40 -0.859 Z M -40 0.859 L -23 0.859 L -21 0 L -23 -0.859 L -40 -0.859 Z" fill="none" stroke="onSurface" stroke-width="0.34"/>
     </g>
   </g>
 </svg>

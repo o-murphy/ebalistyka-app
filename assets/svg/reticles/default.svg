@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="-15 -15 30 30" data-mil-width="30" data-mil-height="30" data-factor="100" shape-rendering="crispEdges">
   <clipPath id="clip0">
-    <circle id="circle-0" cx="0" cy="0" r="15" fill="white"/>
+    <circle id="circle-0" cx="0" cy="0" r="15" fill="transparent"/>
   </clipPath>
   <g id="clipgroup-0" clip-path="url(#clip0)">
     <line id="line-0" x1="-10" y1="0" x2="10" y2="0" stroke="onSurface" stroke-width="0.05"/>

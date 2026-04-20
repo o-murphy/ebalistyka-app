@@ -48,11 +48,11 @@ class Ddr2ReticleDrawer implements SVGDrawerInterface {
     const O = Ddr2Sizes.O;
     const P = H;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, B, 'white'),
+      shape: (c) => c.circle(0, 0, B, bgColor),
       draw: (c) {
         c.fill(bgColor);
 

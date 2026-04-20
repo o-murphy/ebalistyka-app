@@ -69,8 +69,8 @@ class ReticleView extends ConsumerWidget {
           : Colors.deepOrangeAccent,
     );
 
-    svg = _injectTarget(
-      svg,
+    // Create underlay SVG with target and adjustment lines
+    final underlaySvg = _buildUnderlaySvg(
       targetSvg: targetSvg,
       offsetXMil: offsetXMil,
       offsetYMil: offsetYMil,
@@ -83,7 +83,14 @@ class ReticleView extends ConsumerWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
+        // Underlay (target + adjustment lines) - goes BEHIND reticle
+        if (underlaySvg != null)
+          ClipOval(child: SvgPicture.string(underlaySvg, fit: BoxFit.contain)),
+
+        // Reticle overlay (on top)
         ClipOval(child: SvgPicture.string(svg, fit: BoxFit.contain)),
+
+        // Border
         Positioned.fill(
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -96,8 +103,7 @@ class ReticleView extends ConsumerWidget {
     );
   }
 
-  static String _injectTarget(
-    String svg, {
+  String? _buildUnderlaySvg({
     required String? targetSvg,
     required double offsetXMil,
     required double offsetYMil,
@@ -110,35 +116,58 @@ class ReticleView extends ConsumerWidget {
     final maxY = milHeight / 2;
     final outOfRange = offsetXMil.abs() > maxX || offsetYMil.abs() > maxY;
 
+    // Build SVG elements for underlay
+    final buffer = StringBuffer();
+    buffer.writeln('<?xml version="1.0" encoding="utf-8"?>');
+    buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg"');
+    buffer.writeln(
+      '     viewBox="-${milWidth / 2} -${milHeight / 2} $milWidth $milHeight">',
+    );
+
     if (outOfRange) {
       const fs = 1.8;
       const dy = fs * 0.35;
-      final el =
-          '\n  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" '
-          'fill="$lineColor" font-weight="bold">OUT OF RANGE</text>';
-      return svg.replaceFirst('</svg>', '$el\n</svg>');
-    }
-
-    const sw = 0.05;
-    final lines =
-        '''
-  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" stroke="$lineColor" stroke-width="$sw"/>
-  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" stroke="$lineColor" stroke-width="$sw"/>''';
-
-    final String targetEl;
-    if (targetSvg != null) {
-      final tMeta = _parseSvgMeta(targetSvg);
-      final inner = _extractSvgInner(targetSvg);
-      final scale = tMeta.milWidth > 0 ? targetSizeMil / tMeta.milWidth : 1.0;
-      targetEl =
-          '\n  <g transform="translate($offsetXMil,$offsetYMil) scale($scale)">$inner\n  </g>';
+      buffer.writeln(
+        '  <text x="0" y="$dy" text-anchor="middle" font-size="$fs" ',
+      );
+      buffer.writeln(
+        '        fill="$lineColor" font-weight="bold">OUT OF RANGE</text>',
+      );
     } else {
-      const r = 0.2;
-      targetEl =
-          '\n  <circle cx="$offsetXMil" cy="$offsetYMil" r="$r" fill="$lineColor" stroke="$lineColor" stroke-width="$sw"/>';
+      const sw = 0.05;
+
+      // Adjustment lines (targeting crosshair)
+      buffer.writeln(
+        '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
+      );
+      buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+      buffer.writeln(
+        '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
+      );
+      buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+
+      // Target
+      if (targetSvg != null) {
+        final tMeta = _parseSvgMeta(targetSvg);
+        final inner = _extractSvgInner(targetSvg);
+        final scale = tMeta.milWidth > 0 ? targetSizeMil / tMeta.milWidth : 1.0;
+        buffer.writeln(
+          '  <g transform="translate($offsetXMil,$offsetYMil) scale($scale)">',
+        );
+        buffer.writeln('    $inner');
+        buffer.writeln('  </g>');
+      } else {
+        const r = 0.2;
+        buffer.writeln('  <circle cx="$offsetXMil" cy="$offsetYMil" r="$r" ');
+        buffer.writeln(
+          '          fill="$lineColor" stroke="$lineColor" stroke-width="$sw"/>',
+        );
+      }
     }
 
-    return svg.replaceFirst('</svg>', '$lines$targetEl\n</svg>');
+    buffer.writeln('</svg>');
+
+    return buffer.toString();
   }
 
   static String _extractSvgInner(String svg) {

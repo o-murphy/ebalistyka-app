@@ -83,13 +83,13 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
     const M = MilCf1Sizes.M;
     const N = MilCf1Sizes.N;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
-    const String clipColor = "white"; //"surface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
+    const String clipColor = "surface"; //"surface";
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 30, 'white'),
+      shape: (c) => c.circle(0, 0, 30, bgColor),
       draw: (c) {
         c.fill(bgColor);
 
