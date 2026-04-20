@@ -214,7 +214,7 @@
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "37:2717354904851346876",
+      "lastPropertyId": "42:3813538830418793542",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -315,6 +315,31 @@
           "id": "37:2717354904851346876",
           "name": "velocityLastUnit",
           "type": 9
+        },
+        {
+          "id": "38:4681954903335024634",
+          "name": "velocityMachUseCustomAtmo",
+          "type": 1
+        },
+        {
+          "id": "39:5791327597424338172",
+          "name": "velocityAtmoTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "40:2017561635183624910",
+          "name": "velocityAtmoPressureHPa",
+          "type": 8
+        },
+        {
+          "id": "41:4381899651249346681",
+          "name": "velocityAtmoHumidityFrac",
+          "type": 8
+        },
+        {
+          "id": "42:3813538830418793542",
+          "name": "velocityAtmoAltitudeMeter",
+          "type": 8
         }
       ],
       "relations": []

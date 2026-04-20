@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
@@ -126,13 +126,43 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   Future<void> updateVelocityValue(double? valueInMps) async {
     if (valueInMps == null || valueInMps < 0) return;
     final s = state.value ?? _load();
-    s.velocityValueMps = valueInMps;
+    s.velocityValue = Velocity.mps(valueInMps);
     await _save(s);
   }
 
   Future<void> updateVelocityUnit(Unit unit) async {
     final s = state.value ?? _load();
     s.velocityUnit = unit;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityMachUseCustomAtmo(bool value) async {
+    final s = state.value ?? _load();
+    s.velocityMachUseCustomAtmo = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoTemperature(Temperature value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoTemperature = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoPressure(Pressure value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoPressure = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoHumidityFrac(double valueFrac) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoHumidityFrac = valueFrac;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoAltitude(Distance value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoAltitude = value;
     await _save(s);
   }
 

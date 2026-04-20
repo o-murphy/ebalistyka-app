@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 class VelocityConvertorUiState {
   final GenericConvertorField mps;
@@ -14,6 +15,12 @@ class VelocityConvertorUiState {
   final double? rawValue;
   final Unit inputUnit;
 
+  final bool useCustomAtmo;
+  final double atmoTemperatureC;
+  final double atmoPressureHPa;
+  final double atmoHumidityFrac;
+  final double atmoAltitudeMeter;
+
   const VelocityConvertorUiState({
     required this.mps,
     required this.kmh,
@@ -22,31 +29,28 @@ class VelocityConvertorUiState {
     required this.mach,
     required this.rawValue,
     required this.inputUnit,
+    required this.useCustomAtmo,
+    required this.atmoTemperatureC,
+    required this.atmoPressureHPa,
+    required this.atmoHumidityFrac,
+    required this.atmoAltitudeMeter,
   });
 }
 
 class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
   @override
   VelocityConvertorUiState build() {
-    final convertorsState = ref.watch(convertorStateProvider);
-    return _buildState(
-      convertorsState.velocityValueMps,
-      convertorsState.velocityUnit,
-    );
+    final s = ref.watch(convertorStateProvider);
+    return _buildState(s);
   }
 
   void updateRawValue(double? rawValueInInputUnit) {
-    final convertorsState = ref.read(convertorStateProvider);
-
+    final s = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
       ref.read(convertorsProvider.notifier).updateVelocityValue(null);
       return;
     }
-
-    final mpsValue = rawValueInInputUnit.convert(
-      convertorsState.velocityUnit,
-      Unit.mps,
-    );
+    final mpsValue = rawValueInInputUnit.convert(s.velocityUnit, Unit.mps);
     if (mpsValue >= 0) {
       ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
     }
@@ -54,6 +58,36 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
 
   void changeInputUnit(Unit newUnit) {
     ref.read(convertorsProvider.notifier).updateVelocityUnit(newUnit);
+  }
+
+  void toggleCustomAtmo(bool value) {
+    ref
+        .read(convertorsProvider.notifier)
+        .updateVelocityMachUseCustomAtmo(value);
+  }
+
+  void updateAtmoTemperature(double rawCelsius) {
+    ref
+        .read(convertorsProvider.notifier)
+        .updateVelocityAtmoTemperature(Temperature.celsius(rawCelsius));
+  }
+
+  void updateAtmoPressure(double rawHPa) {
+    ref
+        .read(convertorsProvider.notifier)
+        .updateVelocityAtmoPressure(Pressure.hPa(rawHPa));
+  }
+
+  void updateAtmoHumidity(double rawFrac) {
+    ref
+        .read(convertorsProvider.notifier)
+        .updateVelocityAtmoHumidityFrac(rawFrac);
+  }
+
+  void updateAtmoAltitude(double rawMeter) {
+    ref
+        .read(convertorsProvider.notifier)
+        .updateVelocityAtmoAltitude(Distance.meter(rawMeter));
   }
 
   double? _getDisplayValue(double? rawMps, Unit inputUnit) {
@@ -76,14 +110,27 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     return '${value.toStringAsFixed(decimals)} $symbol';
   }
 
-  VelocityConvertorUiState _buildState(double rawMps, Unit inputUnit) {
-    final mpsRaw = rawMps;
-    final kmhRaw = mpsRaw.convert(Unit.mps, Unit.kmh);
-    final fpsRaw = mpsRaw.convert(Unit.mps, Unit.fps);
-    final mphRaw = mpsRaw.convert(Unit.mps, Unit.mph);
+  VelocityConvertorUiState _buildState(ConvertorsState s) {
+    final rawMps = s.velocityValue.in_(Unit.mps);
+    final inputUnit = s.velocityUnit;
 
-    final speedOfSoundMps = Atmo.icao().mach.in_(Unit.mps);
-    final machRaw = speedOfSoundMps > 0 ? mpsRaw / speedOfSoundMps : 0.0;
+    final kmhRaw = rawMps.convert(Unit.mps, Unit.kmh);
+    final fpsRaw = rawMps.convert(Unit.mps, Unit.fps);
+    final mphRaw = rawMps.convert(Unit.mps, Unit.mph);
+
+    final useCustom = s.velocityMachUseCustomAtmo;
+
+    final atmo = useCustom
+        ? Atmo(
+            temperature: s.velocityAtmoTemperature,
+            pressure: s.velocityAtmoPressure,
+            humidity: s.velocityAtmoHumidityFrac,
+            altitude: s.velocityAtmoAltitude,
+          )
+        : Atmo.icao();
+
+    final speedOfSoundMps = atmo.mach.in_(Unit.mps);
+    final machRaw = speedOfSoundMps > 0 ? rawMps / speedOfSoundMps : 0.0;
 
     final mpsAccuracy = FC.convertorVelocity.accuracyFor(Unit.mps);
     final kmhAccuracy = FC.convertorVelocity.accuracyFor(Unit.kmh);
@@ -93,10 +140,15 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     return VelocityConvertorUiState(
       rawValue: _getDisplayValue(rawMps, inputUnit),
       inputUnit: inputUnit,
+      useCustomAtmo: useCustom,
+      atmoTemperatureC: s.velocityAtmoTemperature.in_(Unit.celsius),
+      atmoPressureHPa: s.velocityAtmoPressure.in_(Unit.hPa),
+      atmoHumidityFrac: s.velocityAtmoHumidityFrac,
+      atmoAltitudeMeter: s.velocityAtmoAltitude.in_(Unit.meter),
       mps: GenericConvertorField(
         label: 'Meters per second',
-        formattedValue: _formatValue(mpsRaw, mpsAccuracy, Unit.mps.symbol),
-        value: mpsRaw,
+        formattedValue: _formatValue(rawMps, mpsAccuracy, Unit.mps.symbol),
+        value: rawMps,
         symbol: Unit.mps.symbol,
         decimals: mpsAccuracy,
       ),
@@ -122,7 +174,7 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
         decimals: mphAccuracy,
       ),
       mach: GenericConvertorField(
-        label: 'Mach (ICAO)',
+        label: useCustom ? 'Mach (custom atmo)' : 'Mach (ICAO)',
         formattedValue: _formatValue(machRaw, 3, 'Ma'),
         value: machRaw,
         symbol: 'Ma',

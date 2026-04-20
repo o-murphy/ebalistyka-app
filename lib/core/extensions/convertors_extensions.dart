@@ -83,4 +83,18 @@ extension ConvertorsStateExtension on ConvertorsState {
     orElse: () => Unit.mps,
   );
   set velocityUnit(Unit v) => velocityLastUnit = v.name;
+
+  Temperature get velocityAtmoTemperature =>
+      Temperature.celsius(velocityAtmoTemperatureC);
+  set velocityAtmoTemperature(Temperature v) =>
+      velocityAtmoTemperatureC = v.in_(Unit.celsius);
+
+  Pressure get velocityAtmoPressure => Pressure.hPa(velocityAtmoPressureHPa);
+  set velocityAtmoPressure(Pressure v) =>
+      velocityAtmoPressureHPa = v.in_(Unit.hPa);
+
+  Distance get velocityAtmoAltitude =>
+      Distance.meter(velocityAtmoAltitudeMeter);
+  set velocityAtmoAltitude(Distance v) =>
+      velocityAtmoAltitudeMeter = v.in_(Unit.meter);
 }

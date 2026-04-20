@@ -578,6 +578,11 @@ class ConvertorsState with Cloneable<ConvertorsState> {
   String anglesConvOutputLastUnit = "centimeter";
   double velocityValueMps = 300.0;
   String velocityLastUnit = "mps";
+  bool velocityMachUseCustomAtmo = false;
+  double velocityAtmoTemperatureC = 15.0;
+  double velocityAtmoPressureHPa = 1013.25;
+  double velocityAtmoHumidityFrac = 0.0;
+  double velocityAtmoAltitudeMeter = 0.0;
 
   final owner = ToOne<Owner>();
 
@@ -601,6 +606,11 @@ class ConvertorsState with Cloneable<ConvertorsState> {
     String? anglesConvOutputLastUnit,
     double? velocityValueMps,
     String? velocityLastUnit,
+    bool? velocityMachUseCustomAtmo,
+    double? velocityAtmoTemperatureC,
+    double? velocityAtmoPressureHPa,
+    double? velocityAtmoHumidityFrac,
+    double? velocityAtmoAltitudeMeter,
   }) {
     return ConvertorsState()
       ..id = id ?? this.id
@@ -626,6 +636,16 @@ class ConvertorsState with Cloneable<ConvertorsState> {
       ..anglesConvOutputLastUnit =
           anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit
       ..velocityValueMps = velocityValueMps ?? this.velocityValueMps
-      ..velocityLastUnit = velocityLastUnit ?? this.velocityLastUnit;
+      ..velocityLastUnit = velocityLastUnit ?? this.velocityLastUnit
+      ..velocityMachUseCustomAtmo =
+          velocityMachUseCustomAtmo ?? this.velocityMachUseCustomAtmo
+      ..velocityAtmoTemperatureC =
+          velocityAtmoTemperatureC ?? this.velocityAtmoTemperatureC
+      ..velocityAtmoPressureHPa =
+          velocityAtmoPressureHPa ?? this.velocityAtmoPressureHPa
+      ..velocityAtmoHumidityFrac =
+          velocityAtmoHumidityFrac ?? this.velocityAtmoHumidityFrac
+      ..velocityAtmoAltitudeMeter =
+          velocityAtmoAltitudeMeter ?? this.velocityAtmoAltitudeMeter;
   }
 }
