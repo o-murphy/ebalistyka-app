@@ -118,24 +118,17 @@ extension UnitSettingsFullExtension on UnitSettings {
   set torqueUnit(Unit v) => torque = v.name;
 }
 
-// extension ReticleSettingsExtension on ReticleSettings {
-//   Angular get verticalAdjustment => Angular.radian(verticalAdjustmentRad);
-//   set verticalAdjustment(Angular v) => verticalAdjustment = v.in_(Unit.radian);
+extension ReticleSettingsExtension on ReticleSettings {
+  Unit get verticalAdjustmentUnitValue => Unit.values.firstWhere(
+    (u) => u.name == verticalAdjustmentUnit,
+    orElse: () => Unit.mil,
+  );
+  set verticalAdjustmentUnitValue(Unit v) => verticalAdjustmentUnit = v.name;
 
-//   Unit get verticalAdjustmentUnitValue => Unit.values.firstWhere(
-//     (u) => u.name == verticalAdjustmentUnit,
-//     orElse: () => Unit.mil,
-//   );
-//   set verticalAdjustmentUnitValue(Unit v) => verticalAdjustmentUnit = v.name;
-
-//   Angular get horizontalAdjustment => Angular.radian(horizontalAdjustmentRad);
-//   set horizontalAdjustment(Angular v) =>
-//       horizontalAdjustment = v.in_(Unit.radian);
-
-//   Unit get horizontalAdjustmentUnitValue => Unit.values.firstWhere(
-//     (u) => u.name == horizontalAdjustmentUnit,
-//     orElse: () => Unit.mil,
-//   );
-//   set horizontalAdjustmentUnitValue(Unit v) =>
-//       horizontalAdjustmentUnit = v.name;
-// }
+  Unit get horizontalAdjustmentUnitValue => Unit.values.firstWhere(
+    (u) => u.name == horizontalAdjustmentUnit,
+    orElse: () => Unit.mil,
+  );
+  set horizontalAdjustmentUnitValue(Unit v) =>
+      horizontalAdjustmentUnit = v.name;
+}
