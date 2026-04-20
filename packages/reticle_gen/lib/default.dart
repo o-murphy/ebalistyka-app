@@ -28,13 +28,12 @@ class MilReticleDrawer implements SVGDrawerInterface {
             final bool showLabel = i.abs() % 2 == 0;
 
             if (showLabel) {
-              c.text(
+              c.label(
                 i.abs().toStringAsFixed(0),
                 pos,
-                -(tickHalfLength + labelOffset + fontSize),
+                -(tickHalfLength + labelOffset + fontSize * 1.35),
                 color,
-                fontSize: fontSize,
-                textAnchor: 'middle',
+                h: fontSize,
               );
             }
           }
@@ -45,13 +44,13 @@ class MilReticleDrawer implements SVGDrawerInterface {
             final bool showLabel = i.abs() % 2 == 0;
 
             if (showLabel) {
-              c.text(
+              c.label(
                 i.abs().toStringAsFixed(0),
                 -(tickHalfLength + labelOffset),
-                pos + fontSize * 0.35,
+                pos,
                 color,
-                fontSize: fontSize,
-                textAnchor: 'end',
+                h: fontSize,
+                anchor: 'end',
               );
             }
           }

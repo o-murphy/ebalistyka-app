@@ -68,6 +68,86 @@ abstract interface class SVGDrawerInterface {
   void draw(MilReticleSVGCanvas canvas);
 }
 
+// ─── Stroke font — 7-segment style, platform-independent ─────────────────────
+
+class _StrokeFont {
+  static const double widthRatio = 0.55;
+
+  static const _segT = 0; // top horizontal
+  static const _segM = 1; // middle horizontal
+  static const _segB = 2; // bottom horizontal
+  static const _segUl = 3; // upper-left vertical
+  static const _segUr = 4; // upper-right vertical
+  static const _segLl = 5; // lower-left vertical
+  static const _segLr = 6; // lower-right vertical
+  static const _segCv = 7; // center vertical (full height, for '1')
+
+  static const _glyphs = <String, List<int>>{
+    '0': [_segT, _segUl, _segUr, _segLl, _segLr, _segB],
+    '1': [_segCv],
+    '2': [_segT, _segUr, _segM, _segLl, _segB],
+    '3': [_segT, _segUr, _segM, _segLr, _segB],
+    '4': [_segUl, _segUr, _segM, _segLr],
+    '5': [_segT, _segUl, _segM, _segLr, _segB],
+    '6': [_segT, _segUl, _segM, _segLl, _segLr, _segB],
+    '7': [_segT, _segUr, _segLr],
+    '8': [_segT, _segUl, _segUr, _segM, _segLl, _segLr, _segB],
+    '9': [_segT, _segUl, _segUr, _segM, _segLr, _segB],
+    '-': [_segM],
+  };
+
+  static bool hasGlyph(String c) => _glyphs.containsKey(c);
+
+  static void drawGlyph(
+    String char,
+    double ox,
+    double oy,
+    double w,
+    double h,
+    PathBuilder pb,
+  ) {
+    final segs = _glyphs[char];
+    if (segs == null) return;
+    final hh = h / 2;
+    for (final seg in segs) {
+      switch (seg) {
+        case _segT:
+          pb
+            ..moveTo(ox, oy)
+            ..lineTo(ox + w, oy);
+        case _segM:
+          pb
+            ..moveTo(ox, oy + hh)
+            ..lineTo(ox + w, oy + hh);
+        case _segB:
+          pb
+            ..moveTo(ox, oy + h)
+            ..lineTo(ox + w, oy + h);
+        case _segUl:
+          pb
+            ..moveTo(ox, oy)
+            ..lineTo(ox, oy + hh);
+        case _segUr:
+          pb
+            ..moveTo(ox + w, oy)
+            ..lineTo(ox + w, oy + hh);
+        case _segLl:
+          pb
+            ..moveTo(ox, oy + hh)
+            ..lineTo(ox, oy + h);
+        case _segLr:
+          pb
+            ..moveTo(ox + w, oy + hh)
+            ..lineTo(ox + w, oy + h);
+        case _segCv:
+          pb
+            ..moveTo(ox + w / 2, oy)
+            ..lineTo(ox + w / 2, oy + h);
+      }
+    }
+  }
+}
+
 /// A canvas whose coordinate system is in mils.
 ///
 /// The SVG [viewBox] spans [−milWidth/2 .. milWidth/2] × [−milHeight/2 ..
@@ -280,6 +360,53 @@ class MilReticleSVGCanvas {
         [XmlText(content)],
       ),
     );
+  }
+
+  /// Draws [content] as a stroke-font (7-segment) label.
+  ///
+  /// [cx, cy] — center of the glyph bounding box in mils.
+  /// [h] — glyph height (= visual cap-height) in mils.
+  /// [sw] — stroke width in mils; defaults to h × 0.09.
+  /// [anchor]: 'middle' = horizontal center at cx (default),
+  ///           'start'  = left edge at cx,
+  ///           'end'    = right edge at cx.
+  void label(
+    String content,
+    double cx,
+    double cy,
+    String stroke, {
+    double h = 1.0,
+    double sw = 0.0,
+    String anchor = 'middle',
+  }) {
+    final effectiveSw = sw > 0 ? sw : h * 0.09;
+    final w = h * _StrokeFont.widthRatio;
+    final gap = h * 0.15;
+    final step = w + gap;
+
+    final chars = content.split('').where(_StrokeFont.hasGlyph).toList();
+    if (chars.isEmpty) return;
+
+    final totalWidth = chars.length * w + (chars.length - 1) * gap;
+    final startX = switch (anchor) {
+      'start' => cx,
+      'end' => cx - totalWidth,
+      _ => cx - totalWidth / 2,
+    };
+
+    _hint('label');
+    batchLines(stroke, effectiveSw, (pb) {
+      for (var i = 0; i < chars.length; i++) {
+        _StrokeFont.drawGlyph(
+          chars[i],
+          startX + i * step,
+          cy - h / 2,
+          w,
+          h,
+          pb,
+        );
+      }
+    });
   }
 
   /// Clips [draw] to the shape defined by [shape].

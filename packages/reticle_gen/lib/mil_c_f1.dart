@@ -128,18 +128,11 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
 
         for (double i = -A / 2; i <= A / 2; i += F) {
           if (i == 0) continue;
-          c.text(i.abs().toStringAsFixed(0), i, -1 + H, color, fontSize: H);
+          c.label(i.abs().toStringAsFixed(0), i, H * 0.65 - 1, color, h: H);
         }
 
         for (double i = 1; i <= 30; i += F) {
-          c.text(
-            i.abs().toStringAsFixed(0),
-            -0.5,
-            i + H * 0.35,
-            color,
-            fontSize: H,
-            textAnchor: "middle",
-          );
+          c.label(i.abs().toStringAsFixed(0), -0.5, i, color, h: H);
         }
 
         c
@@ -169,13 +162,12 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
           );
 
         for (double i = -N / 2; i <= N / 2; i += F) {
-          c.text(
+          c.label(
             i.abs().toStringAsFixed(0),
             3.1 + i,
-            3 + 0.5 + H,
+            3.5 + H * 0.65,
             color,
-            fontSize: H,
-            textAnchor: "middle",
+            h: H,
           );
         }
 
@@ -211,22 +203,8 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
             stroke: color,
             strokeWidth: C,
           )
-          ..text(
-            2.abs().toStringAsFixed(0),
-            3.1 + 0.5,
-            1 + H * 0.35,
-            color,
-            fontSize: H,
-            textAnchor: "middle",
-          )
-          ..text(
-            1.abs().toStringAsFixed(0),
-            3.1 + 0.5,
-            2 + H * 0.35,
-            color,
-            fontSize: H,
-            textAnchor: "middle",
-          );
+          ..label('2', 3.1 + 0.5, 1, color, h: H)
+          ..label('1', 3.1 + 0.5, 2, color, h: H);
       },
     );
   }

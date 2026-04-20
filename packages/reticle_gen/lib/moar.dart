@@ -175,18 +175,11 @@ class MoarReticleDrawer implements SVGDrawerInterface {
 
         for (double i = -A / 2; i <= A / 2; i += 10) {
           if (i == 0) continue;
-          c.text(i.abs().toStringAsFixed(0), i, -3 + O, color, fontSize: O);
+          c.label(i.abs().toStringAsFixed(0), i, -3 + O * 0.65, color, h: O);
         }
 
         for (double i = 10; i <= 40; i += 10) {
-          c.text(
-            i.abs().toStringAsFixed(0),
-            -3,
-            i + J * 0.35,
-            color,
-            fontSize: J,
-            textAnchor: "middle",
-          );
+          c.label(i.abs().toStringAsFixed(0), -3, i, color, h: J);
         }
 
         c

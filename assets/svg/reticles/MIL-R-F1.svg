@@ -31,15 +31,15 @@
     <line id="hline-7" x1="-0.6" y1="0" x2="-1.2" y2="0" stroke="red" stroke-width="0.036"/>
     <line id="vline-0" x1="0" y1="0.6" x2="0" y2="1.2" stroke="red" stroke-width="0.036"/>
     <line id="vline-1" x1="0" y1="-0.6" x2="0" y2="-1.2" stroke="red" stroke-width="0.036"/>
-    <text id="text-0" x="-4" y="-0.72" fill="onSurface" font-size="0.389" text-anchor="middle">4</text>
-    <text id="text-1" x="-2" y="-0.72" fill="onSurface" font-size="0.389" text-anchor="middle">2</text>
-    <text id="text-2" x="2" y="-0.72" fill="onSurface" font-size="0.389" text-anchor="middle">2</text>
-    <text id="text-3" x="4" y="-0.72" fill="onSurface" font-size="0.389" text-anchor="middle">4</text>
-    <text id="text-4" x="-1" y="2.098" fill="onSurface" font-size="0.389" text-anchor="middle">2</text>
-    <text id="text-5" x="-1" y="4.098" fill="onSurface" font-size="0.389" text-anchor="middle">4</text>
-    <text id="text-6" x="-1" y="6.098" fill="onSurface" font-size="0.389" text-anchor="middle">6</text>
-    <text id="text-7" x="-1" y="8.098" fill="onSurface" font-size="0.389" text-anchor="middle">8</text>
-    <text id="text-8" x="-1" y="10.098" fill="onSurface" font-size="0.389" text-anchor="middle">10</text>
+    <path id="label-0" d="M -4.077 -0.958 L -4.077 -0.818 M -3.923 -0.958 L -3.923 -0.818 M -4.077 -0.818 L -3.923 -0.818 M -3.923 -0.818 L -3.923 -0.678" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-1" d="M -2.077 -0.958 L -1.923 -0.958 M -1.923 -0.958 L -1.923 -0.818 M -2.077 -0.818 L -1.923 -0.818 M -2.077 -0.818 L -2.077 -0.678 M -2.077 -0.678 L -1.923 -0.678" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-2" d="M 1.923 -0.958 L 2.077 -0.958 M 2.077 -0.958 L 2.077 -0.818 M 1.923 -0.818 L 2.077 -0.818 M 1.923 -0.818 L 1.923 -0.678 M 1.923 -0.678 L 2.077 -0.678" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-3" d="M 3.923 -0.958 L 3.923 -0.818 M 4.077 -0.958 L 4.077 -0.818 M 3.923 -0.818 L 4.077 -0.818 M 4.077 -0.818 L 4.077 -0.678" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-4" d="M -1.077 1.86 L -0.923 1.86 M -0.923 1.86 L -0.923 2 M -1.077 2 L -0.923 2 M -1.077 2 L -1.077 2.14 M -1.077 2.14 L -0.923 2.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-5" d="M -1.077 3.86 L -1.077 4 M -0.923 3.86 L -0.923 4 M -1.077 4 L -0.923 4 M -0.923 4 L -0.923 4.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-6" d="M -1.077 5.86 L -0.923 5.86 M -1.077 5.86 L -1.077 6 M -1.077 6 L -0.923 6 M -1.077 6 L -1.077 6.14 M -0.923 6 L -0.923 6.14 M -1.077 6.14 L -0.923 6.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-7" d="M -1.077 7.86 L -0.923 7.86 M -1.077 7.86 L -1.077 8 M -0.923 7.86 L -0.923 8 M -1.077 8 L -0.923 8 M -1.077 8 L -1.077 8.14 M -0.923 8 L -0.923 8.14 M -1.077 8.14 L -0.923 8.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
+    <path id="label-8" d="M -1.098 9.86 L -1.098 10.14 M -0.979 9.86 L -0.825 9.86 M -0.979 9.86 L -0.979 10 M -0.825 9.86 L -0.825 10 M -0.979 10 L -0.979 10.14 M -0.825 10 L -0.825 10.14 M -0.979 10.14 L -0.825 10.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
     <line id="vline-2" x1="3.5" y1="1" x2="3.5" y2="3.3" stroke="onSurface" stroke-width="0.029"/>
     <line id="hline-8" x1="2.5" y1="3" x2="4.5" y2="3" stroke="onSurface" stroke-width="0.029"/>
     <path id="vruler-4" d="M 3.1 1 L 3.9 1 M 3.1 2 L 3.9 2" fill="none" stroke="onSurface" stroke-width="0.029"/>
@@ -58,6 +58,6 @@
     <line id="vline-6" x1="3.7" y1="2.9" x2="3.7" y2="3" stroke="onSurface" stroke-width="0.029"/>
     <path id="path-0" d="M 30 0 L 5.2 0 M -30 0 L -5.2 0" fill="none" stroke="onSurface" stroke-width="0.036"/>
     <path id="path-1" d="M 30 0.25 L 6 0.25 L 5.2 0 L 6 -0.25 L 30 -0.25 M -30 0.25 L -6 0.25 L -5.2 0 L -6 -0.25 L -30 -0.25" fill="none" stroke="onSurface" stroke-width="0.1"/>
-    <text id="text-9" x="4" y="1.098" fill="onSurface" font-size="0.389" text-anchor="middle">2</text>
+    <path id="label-9" d="M 3.923 0.86 L 4.077 0.86 M 4.077 0.86 L 4.077 1 M 3.923 1 L 4.077 1 M 3.923 1 L 3.923 1.14 M 3.923 1.14 L 4.077 1.14" fill="none" stroke="onSurface" stroke-width="0.025"/>
   </g>
 </svg>

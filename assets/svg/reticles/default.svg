@@ -9,28 +9,28 @@
     <path id="hruler-1" d="M 10 -0.5 L 10 0.5 M 9 -0.5 L 9 0.5 M 8 -0.5 L 8 0.5 M 7 -0.5 L 7 0.5 M 6 -0.5 L 6 0.5 M 5 -0.5 L 5 0.5 M 4 -0.5 L 4 0.5 M 3 -0.5 L 3 0.5 M 2 -0.5 L 2 0.5 M 1 -0.5 L 1 0.5" fill="none" stroke="onSurface" stroke-width="0.05"/>
     <path id="vruler-0" d="M -0.5 -10 L 0.5 -10 M -0.5 -9 L 0.5 -9 M -0.5 -8 L 0.5 -8 M -0.5 -7 L 0.5 -7 M -0.5 -6 L 0.5 -6 M -0.5 -5 L 0.5 -5 M -0.5 -4 L 0.5 -4 M -0.5 -3 L 0.5 -3 M -0.5 -2 L 0.5 -2 M -0.5 -1 L 0.5 -1 M -0.5 0 L 0.5 0 M -0.5 1 L 0.5 1" fill="none" stroke="onSurface" stroke-width="0.05"/>
     <path id="vruler-1" d="M -0.5 14 L 0.5 14 M -0.5 13 L 0.5 13 M -0.5 12 L 0.5 12 M -0.5 11 L 0.5 11 M -0.5 10 L 0.5 10 M -0.5 9 L 0.5 9 M -0.5 8 L 0.5 8 M -0.5 7 L 0.5 7 M -0.5 6 L 0.5 6 M -0.5 5 L 0.5 5 M -0.5 4 L 0.5 4 M -0.5 3 L 0.5 3 M -0.5 2 L 0.5 2 M -0.5 1 L 0.5 1" fill="none" stroke="onSurface" stroke-width="0.05"/>
-    <text id="text-0" x="-10" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">10</text>
-    <text id="text-1" x="-8" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">8</text>
-    <text id="text-2" x="-6" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">6</text>
-    <text id="text-3" x="-4" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">4</text>
-    <text id="text-4" x="-2" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">2</text>
-    <text id="text-5" x="2" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">2</text>
-    <text id="text-6" x="4" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">4</text>
-    <text id="text-7" x="6" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">6</text>
-    <text id="text-8" x="8" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">8</text>
-    <text id="text-9" x="10" y="-1.15" fill="onSurface" font-size="0.625" text-anchor="middle">10</text>
-    <text id="text-10" x="-0.7" y="-9.843" fill="onSurface" font-size="0.625" text-anchor="end">10</text>
-    <text id="text-11" x="-0.7" y="-7.843" fill="onSurface" font-size="0.625" text-anchor="end">8</text>
-    <text id="text-12" x="-0.7" y="-5.843" fill="onSurface" font-size="0.625" text-anchor="end">6</text>
-    <text id="text-13" x="-0.7" y="-3.843" fill="onSurface" font-size="0.625" text-anchor="end">4</text>
-    <text id="text-14" x="-0.7" y="-1.843" fill="onSurface" font-size="0.625" text-anchor="end">2</text>
-    <text id="text-15" x="-0.7" y="2.158" fill="onSurface" font-size="0.625" text-anchor="end">2</text>
-    <text id="text-16" x="-0.7" y="4.158" fill="onSurface" font-size="0.625" text-anchor="end">4</text>
-    <text id="text-17" x="-0.7" y="6.158" fill="onSurface" font-size="0.625" text-anchor="end">6</text>
-    <text id="text-18" x="-0.7" y="8.158" fill="onSurface" font-size="0.625" text-anchor="end">8</text>
-    <text id="text-19" x="-0.7" y="10.158" fill="onSurface" font-size="0.625" text-anchor="end">10</text>
-    <text id="text-20" x="-0.7" y="12.158" fill="onSurface" font-size="0.625" text-anchor="end">12</text>
-    <text id="text-21" x="-0.7" y="14.158" fill="onSurface" font-size="0.625" text-anchor="end">14</text>
+    <path id="label-0" d="M -10.158 -1.533 L -10.158 -1.083 M -9.966 -1.533 L -9.719 -1.533 M -9.966 -1.533 L -9.966 -1.308 M -9.719 -1.533 L -9.719 -1.308 M -9.966 -1.308 L -9.966 -1.083 M -9.719 -1.308 L -9.719 -1.083 M -9.966 -1.083 L -9.719 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-1" d="M -8.124 -1.533 L -7.876 -1.533 M -8.124 -1.533 L -8.124 -1.308 M -7.876 -1.533 L -7.876 -1.308 M -8.124 -1.308 L -7.876 -1.308 M -8.124 -1.308 L -8.124 -1.083 M -7.876 -1.308 L -7.876 -1.083 M -8.124 -1.083 L -7.876 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-2" d="M -6.124 -1.533 L -5.876 -1.533 M -6.124 -1.533 L -6.124 -1.308 M -6.124 -1.308 L -5.876 -1.308 M -6.124 -1.308 L -6.124 -1.083 M -5.876 -1.308 L -5.876 -1.083 M -6.124 -1.083 L -5.876 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-3" d="M -4.124 -1.533 L -4.124 -1.308 M -3.876 -1.533 L -3.876 -1.308 M -4.124 -1.308 L -3.876 -1.308 M -3.876 -1.308 L -3.876 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-4" d="M -2.124 -1.533 L -1.876 -1.533 M -1.876 -1.533 L -1.876 -1.308 M -2.124 -1.308 L -1.876 -1.308 M -2.124 -1.308 L -2.124 -1.083 M -2.124 -1.083 L -1.876 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-5" d="M 1.876 -1.533 L 2.124 -1.533 M 2.124 -1.533 L 2.124 -1.308 M 1.876 -1.308 L 2.124 -1.308 M 1.876 -1.308 L 1.876 -1.083 M 1.876 -1.083 L 2.124 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-6" d="M 3.876 -1.533 L 3.876 -1.308 M 4.124 -1.533 L 4.124 -1.308 M 3.876 -1.308 L 4.124 -1.308 M 4.124 -1.308 L 4.124 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-7" d="M 5.876 -1.533 L 6.124 -1.533 M 5.876 -1.533 L 5.876 -1.308 M 5.876 -1.308 L 6.124 -1.308 M 5.876 -1.308 L 5.876 -1.083 M 6.124 -1.308 L 6.124 -1.083 M 5.876 -1.083 L 6.124 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-8" d="M 7.876 -1.533 L 8.124 -1.533 M 7.876 -1.533 L 7.876 -1.308 M 8.124 -1.533 L 8.124 -1.308 M 7.876 -1.308 L 8.124 -1.308 M 7.876 -1.308 L 7.876 -1.083 M 8.124 -1.308 L 8.124 -1.083 M 7.876 -1.083 L 8.124 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-9" d="M 9.843 -1.533 L 9.843 -1.083 M 10.034 -1.533 L 10.281 -1.533 M 10.034 -1.533 L 10.034 -1.308 M 10.281 -1.533 L 10.281 -1.308 M 10.034 -1.308 L 10.034 -1.083 M 10.281 -1.308 L 10.281 -1.083 M 10.034 -1.083 L 10.281 -1.083" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-10" d="M -1.139 -10.225 L -1.139 -9.775 M -0.947 -10.225 L -0.7 -10.225 M -0.947 -10.225 L -0.947 -10 M -0.7 -10.225 L -0.7 -10 M -0.947 -10 L -0.947 -9.775 M -0.7 -10 L -0.7 -9.775 M -0.947 -9.775 L -0.7 -9.775" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-11" d="M -0.948 -8.225 L -0.7 -8.225 M -0.948 -8.225 L -0.948 -8 M -0.7 -8.225 L -0.7 -8 M -0.948 -8 L -0.7 -8 M -0.948 -8 L -0.948 -7.775 M -0.7 -8 L -0.7 -7.775 M -0.948 -7.775 L -0.7 -7.775" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-12" d="M -0.948 -6.225 L -0.7 -6.225 M -0.948 -6.225 L -0.948 -6 M -0.948 -6 L -0.7 -6 M -0.948 -6 L -0.948 -5.775 M -0.7 -6 L -0.7 -5.775 M -0.948 -5.775 L -0.7 -5.775" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-13" d="M -0.948 -4.225 L -0.948 -4 M -0.7 -4.225 L -0.7 -4 M -0.948 -4 L -0.7 -4 M -0.7 -4 L -0.7 -3.775" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-14" d="M -0.948 -2.225 L -0.7 -2.225 M -0.7 -2.225 L -0.7 -2 M -0.948 -2 L -0.7 -2 M -0.948 -2 L -0.948 -1.775 M -0.948 -1.775 L -0.7 -1.775" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-15" d="M -0.948 1.775 L -0.7 1.775 M -0.7 1.775 L -0.7 2 M -0.948 2 L -0.7 2 M -0.948 2 L -0.948 2.225 M -0.948 2.225 L -0.7 2.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-16" d="M -0.948 3.775 L -0.948 4 M -0.7 3.775 L -0.7 4 M -0.948 4 L -0.7 4 M -0.7 4 L -0.7 4.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-17" d="M -0.948 5.775 L -0.7 5.775 M -0.948 5.775 L -0.948 6 M -0.948 6 L -0.7 6 M -0.948 6 L -0.948 6.225 M -0.7 6 L -0.7 6.225 M -0.948 6.225 L -0.7 6.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-18" d="M -0.948 7.775 L -0.7 7.775 M -0.948 7.775 L -0.948 8 M -0.7 7.775 L -0.7 8 M -0.948 8 L -0.7 8 M -0.948 8 L -0.948 8.225 M -0.7 8 L -0.7 8.225 M -0.948 8.225 L -0.7 8.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-19" d="M -1.139 9.775 L -1.139 10.225 M -0.947 9.775 L -0.7 9.775 M -0.947 9.775 L -0.947 10 M -0.7 9.775 L -0.7 10 M -0.947 10 L -0.947 10.225 M -0.7 10 L -0.7 10.225 M -0.947 10.225 L -0.7 10.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-20" d="M -1.139 11.775 L -1.139 12.225 M -0.947 11.775 L -0.7 11.775 M -0.7 11.775 L -0.7 12 M -0.947 12 L -0.7 12 M -0.947 12 L -0.947 12.225 M -0.947 12.225 L -0.7 12.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
+    <path id="label-21" d="M -1.139 13.775 L -1.139 14.225 M -0.947 13.775 L -0.947 14 M -0.7 13.775 L -0.7 14 M -0.947 14 L -0.7 14 M -0.7 14 L -0.7 14.225" fill="none" stroke="onSurface" stroke-width="0.041"/>
   </g>
   <circle id="circle-1" cx="0" cy="0" r="15" fill="transparent" stroke="onSurface" stroke-width="0.05"/>
 </svg>
