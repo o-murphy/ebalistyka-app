@@ -1,7 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/features/home/home_vm.dart';
+import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/info_tile.dart';
+import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +18,24 @@ class ReticleViewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final vmAsync = ref.watch(homeVmProvider);
+    final vmState = vmAsync.value;
+
     final zoomableViewKey = GlobalKey<_ZoomableViewState>();
+
+    if (vmState is HomeUiNoData) {
+      return EmptyStatePlaceholder(
+        type: vmState.type,
+        message: vmState.message,
+      );
+    }
+
+    if (vmState is HomeUiError) {
+      return Center(child: Text('Error: ${vmState.message}'));
+    }
+    if (vmAsync.isLoading || vmState is! HomeUiReady) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -63,8 +85,8 @@ class ReticleViewScreen extends ConsumerWidget {
                                   ?.reticleImage,
                               targetImageId: null,
                               targetSizeMil: 0.5,
-                              offsetXMil: 0.0,
-                              offsetYMil: 0.0,
+                              offsetXMil: vmState.adjustmentWindMil,
+                              offsetYMil: vmState.adjustmentElevMil,
                             ),
                           ),
                         ),
@@ -85,21 +107,55 @@ class ReticleViewScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.remove_red_eye_outlined, size: 72),
-              const SizedBox(height: 20),
-              Text(
-                'Reticle View Screen placeholder',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
+                  child: ListView(
+                    children: [
+                      ListSectionTile("Adjustments"),
+                      Center(
+                        // ← Додати Center
+                        child: AdjPanel(
+                          adjustment: vmState.adjustment,
+                          fmt: vmState.adjustmentFormat,
+                          isEmpty: vmState.adjustment.elevation.isEmpty,
+                          displayVertical: false,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Divider(height: 1),
+                      InfoListTile(
+                        label: "Vertical adjustment",
+                        value: "<none>",
+                      ),
+                      InfoListTile(
+                        label: "Horizontal adjustment",
+                        value: "<none>",
+                      ),
+                      InfoListTile(label: "Target", value: "<none>"),
+                      InfoListTile(label: "Reticle pattern", value: "<none>"),
+                      InfoListTile(label: "Vertical click", value: "<none>"),
+                      InfoListTile(label: "Horizontal click", value: "<none>"),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'This route is reserved for the fullscreen reticle view screen.',
-                textAlign: TextAlign.center,
-              ),
+              // const Icon(Icons.remove_red_eye_outlined, size: 72),
+              // const SizedBox(height: 20),
+              // Text(
+              //   'Reticle View Screen placeholder',
+              //   textAlign: TextAlign.center,
+              //   style: const TextStyle(
+              //     fontSize: 18,
+              //     fontWeight: FontWeight.w600,
+              //   ),
+              // ),
+              // const SizedBox(height: 12),
+              // const Text(
+              //   'This route is reserved for the fullscreen reticle view screen.',
+              //   textAlign: TextAlign.center,
+              // ),
             ],
           ),
         );

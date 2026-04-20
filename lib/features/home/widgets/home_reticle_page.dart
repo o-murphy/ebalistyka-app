@@ -1,13 +1,11 @@
+import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:ebalistyka/core/extensions/settings_extensions.dart'
-    show AdjustmentDisplayFormat;
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 
@@ -76,14 +74,12 @@ class HomeReticlePage extends ConsumerWidget {
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
-                  child: vmState.adjustment.elevation.isEmpty
-                      ? Center(
-                          child: Text('Enable units...', style: tt.bodySmall),
-                        )
-                      : _AdjPanel(
-                          adjustment: vmState.adjustment,
-                          fmt: vmState.adjustmentFormat,
-                        ),
+                  child: AdjPanel(
+                    adjustment: vmState.adjustment,
+                    fmt: vmState.adjustmentFormat,
+                    isEmpty: vmState.adjustment.elevation.isEmpty,
+                    displayVertical: true,
+                  ),
                 ),
               ),
             ],
@@ -134,107 +130,4 @@ class _SemicolonWrappingText extends StatelessWidget {
       return Text(lines.join('\n'), style: style, textAlign: TextAlign.center);
     },
   );
-}
-
-// ─── Adjustment panel ─────────────────────────────────────────────────────────
-
-class _AdjPanel extends StatelessWidget {
-  const _AdjPanel({required this.adjustment, required this.fmt});
-
-  final AdjustmentData adjustment;
-  final AdjustmentDisplayFormat fmt;
-
-  String _elevDir() {
-    if (adjustment.elevation.isEmpty) return '';
-    final pos = adjustment.elevation.first.isPositive;
-    return switch (fmt) {
-      AdjustmentDisplayFormat.arrows => pos ? '↑' : '↓',
-      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
-      AdjustmentDisplayFormat.letters => pos ? 'U' : 'D',
-    };
-  }
-
-  String _windDir() {
-    if (adjustment.windage.isEmpty) return '';
-    final pos = adjustment.windage.first.isPositive;
-    return switch (fmt) {
-      AdjustmentDisplayFormat.arrows => pos ? '→' : '←',
-      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
-      AdjustmentDisplayFormat.letters => pos ? 'R' : 'L',
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
-
-    final headerStyle = tt.labelMedium!.copyWith(
-      color: cs.onSurface.withAlpha(180),
-      fontWeight: FontWeight.w600,
-    );
-    final dirStyle = tt.titleSmall!.copyWith(
-      color: cs.primary,
-      fontWeight: FontWeight.w700,
-    );
-    final valStyle = tt.bodyMedium!.copyWith(fontWeight: FontWeight.w700);
-    final unitStyle = tt.bodySmall!.copyWith(
-      color: cs.onSurface.withAlpha(140),
-    );
-
-    Widget valueRow(AdjustmentValue v) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
-      child: Row(
-        mainAxisSize: MainAxisSize.min, // Required min for correct BoxFit
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Text(v.absValue.toStringAsFixed(v.decimals), style: valStyle),
-          const SizedBox(width: 4),
-          Text(v.symbol, style: unitStyle),
-        ],
-      ),
-    );
-
-    Widget sectionHeader(String label, String dir) => Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(label, style: headerStyle),
-        if (dir.isNotEmpty) ...[
-          const SizedBox(width: 6),
-          Text(dir, style: dirStyle),
-        ],
-      ],
-    );
-
-    return FittedBox(
-      fit: BoxFit.contain,
-      alignment: Alignment.center,
-      child: IntrinsicWidth(
-        child: Column(
-          // stretch forces the children (including the SizedBox with Divider)
-          // to take up the full width calculated by IntrinsicWidth
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            sectionHeader('Drop', _elevDir()),
-            const SizedBox(height: 2),
-            ...adjustment.elevation.map(valueRow),
-
-            // Wrapper container for adaptive width Divider
-            const SizedBox(
-              width: double.infinity,
-              child: Divider(height: 16, thickness: 1, indent: 0, endIndent: 0),
-            ),
-
-            sectionHeader('Windage', _windDir()),
-            const SizedBox(height: 2),
-            ...adjustment.windage.map(valueRow),
-          ],
-        ),
-      ),
-    );
-  }
 }
