@@ -516,11 +516,9 @@ Owner (singleton, token="local")
 | Provider                    | Purpose                                              |
 | --------------------------- | ---------------------------------------------------- |
 | `shotContextProvider`       | `ShotContext { profile, conditions }` — for VMs      |
-| `recalcCoordinatorProvider` | Centralises recalc triggers (profile/settings/tabs)  |
 | `homeVmProvider`            | `HomeUiState` (sealed: Loading/Ready/Error)          |
-| `conditionsVmProvider`      | `ConditionsUiState`                                  |
-| `tablesVmProvider`          | `TablesUiState` (sealed)                             |
 | `shotDetailsVmProvider`     | `ShotDetailsUiState` (sealed)                        |
+| `trajectoryTablesVmProvider`| `TrajectoryTablesUiState` (sealed)                   |
 | `ballisticsServiceProvider` | FFI-backed `BallisticsService`                       |
 | `unitFormatterProvider`     | `UnitFormatter` (depends on `unitSettingsProvider`)  |
 
@@ -691,9 +689,28 @@ Full MVVM + service layer (5 phases):
 - Phase 0: `UnitFormatter` interface + impl (57 tests)
 - Phase 1: `BallisticsService` + FFI impl
 - Phase 2: `HomeVM`, `ConditionsVM`, `TablesVM` (70 tests)
-- Phase 3: `RecalcCoordinator` (18 tests)
+- Phase 3: `RecalcCoordinator` ✅ CREATED, then ❌ REMOVED (Apr 21, 2026)
 - Phase 4: Screens wired to ViewModels
 - Phase 5: Cleanup — deleted `dimension_converter.dart`, `calculation_provider.dart`
+
+---
+
+### RecalcCoordinator Removal Refactoring ✅ (RECALC_REFACTORING.md)
+
+**Date:** April 21, 2026  
+**Status:** ✅ COMPLETED
+
+Centralized `RecalcCoordinator` was replaced with **distributed listeners** in each ViewModel:
+- Each ViewModel now manages its own `ref.listen()` calls in `build()`
+- Added `fireImmediately: true` to all listeners → **fixes immediate calculation on app startup**
+- Renamed public `recalculate()` → private `_recalculate()` in all VMs
+- Added `ref.mounted` checks after async gaps → prevents "reference after disposal" errors
+- Deleted `test/core/recalc_coordinator_test.dart`
+- Updated test pattern: `_recalculate(container)` → `_waitFor<T>(container)` (listener-driven)
+
+See [RECALC_REFACTORING.md](RECALC_REFACTORING.md) for detailed migration notes.
+
+**Benefits:** No single point of failure, simpler, immediate calculations on startup.
 
 ---
 
