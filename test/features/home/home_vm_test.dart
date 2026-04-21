@@ -240,32 +240,32 @@ void main() {
     });
 
     test('wind angle is set from conditions', () {
-      expect(state.windAngleDeg, closeTo(90.0, 0.1));
+      expect(state.conditionsState.windAngleDeg, closeTo(90.0, 0.1));
     });
 
     test('conditions displays are non-empty strings', () {
-      expect(state.tempDisplay, isNotEmpty);
-      expect(state.altDisplay, isNotEmpty);
-      expect(state.pressDisplay, isNotEmpty);
-      expect(state.humidDisplay, isNotEmpty);
+      expect(state.conditionsState.tempDisplay, isNotEmpty);
+      expect(state.conditionsState.altDisplay, isNotEmpty);
+      expect(state.conditionsState.pressDisplay, isNotEmpty);
+      expect(state.conditionsState.humidDisplay, isNotEmpty);
     });
 
     test('conditions contain correct units', () {
-      expect(state.tempDisplay, contains('°C'));
-      expect(state.altDisplay, contains('m'));
-      expect(state.pressDisplay, contains('hPa'));
-      expect(state.humidDisplay, contains('%'));
+      expect(state.conditionsState.tempDisplay, contains('°C'));
+      expect(state.conditionsState.altDisplay, contains('m'));
+      expect(state.conditionsState.pressDisplay, contains('hPa'));
+      expect(state.conditionsState.humidDisplay, contains('%'));
     });
 
     test('cartridge info line contains projectile name and MV', () {
-      expect(state.cartridgeInfoLine, contains('Test 175gr'));
-      expect(state.cartridgeInfoLine, contains('m/s'));
-      expect(state.cartridgeInfoLine, contains('G7'));
+      expect(state.reticleState.cartridgeInfoLine, contains('Test 175gr'));
+      expect(state.reticleState.cartridgeInfoLine, contains('m/s'));
+      expect(state.reticleState.cartridgeInfoLine, contains('G7'));
     });
 
     test('adjustment data has elevation values', () {
-      expect(state.adjustment.elevation, isNotEmpty);
-      expect(state.adjustment.elevation.first.symbol, 'MRAD');
+      expect(state.reticleState.adjustment.elevation, isNotEmpty);
+      expect(state.reticleState.adjustment.elevation.first.symbol, 'MRAD');
     });
 
     test('table data has 5 distance headers', () {
@@ -277,12 +277,12 @@ void main() {
     });
 
     test('chart data has points', () {
-      expect(state.chartData.points, isNotEmpty);
+      expect(state.chartState.chartData.points, isNotEmpty);
     });
 
     test('selected point info is auto-populated at target distance', () {
-      expect(state.selectedPointInfo, isNotNull);
-      expect(state.selectedChartIndex, isNotNull);
+      expect(state.chartState.selectedPointInfo, isNotNull);
+      expect(state.chartState.selectedChartIndex, isNotNull);
     });
 
     test('ballistics service was called once', () {
@@ -310,19 +310,20 @@ void main() {
       final notifier = container.read(homeVmProvider.notifier);
       notifier.selectChartPoint(5);
       final state = container.read(homeVmProvider).value as HomeUiReady;
-      expect(state.selectedPointInfo, isNotNull);
-      expect(state.selectedPointInfo!.distance, isNotEmpty);
-      expect(state.selectedPointInfo!.velocity, isNotEmpty);
-      expect(state.selectedPointInfo!.energy, isNotEmpty);
+      expect(state.chartState.selectedPointInfo, isNotNull);
+      expect(state.chartState.selectedPointInfo!.distance, isNotEmpty);
+      expect(state.chartState.selectedPointInfo!.velocity, isNotEmpty);
+      expect(state.chartState.selectedPointInfo!.energy, isNotEmpty);
     });
 
     test('selectChartPoint with invalid index preserves previous info', () {
       final notifier = container.read(homeVmProvider.notifier);
       final before = (container.read(homeVmProvider).value as HomeUiReady)
+          .chartState
           .selectedPointInfo;
       notifier.selectChartPoint(999);
       final state = container.read(homeVmProvider).value as HomeUiReady;
-      expect(state.selectedPointInfo, equals(before));
+      expect(state.chartState.selectedPointInfo, equals(before));
     });
   });
 
@@ -349,13 +350,13 @@ void main() {
     tearDown(() => container.dispose());
 
     test('conditions display in imperial units', () {
-      expect(state.tempDisplay, contains('°F'));
-      expect(state.altDisplay, contains('yd'));
-      expect(state.pressDisplay, contains('mmHg'));
+      expect(state.conditionsState.tempDisplay, contains('°F'));
+      expect(state.conditionsState.altDisplay, contains('yd'));
+      expect(state.conditionsState.pressDisplay, contains('mmHg'));
     });
 
     test('cartridge info uses imperial velocity', () {
-      expect(state.cartridgeInfoLine, contains('ft/s'));
+      expect(state.reticleState.cartridgeInfoLine, contains('ft/s'));
     });
   });
 
@@ -373,9 +374,12 @@ void main() {
       addTearDown(container.dispose);
 
       final state = await _recalculate(container);
-      expect(state.adjustment.elevation.any((v) => v.symbol == 'MOA'), isTrue);
       expect(
-        state.adjustment.elevation.any((v) => v.symbol == 'MRAD'),
+        state.reticleState.adjustment.elevation.any((v) => v.symbol == 'MOA'),
+        isTrue,
+      );
+      expect(
+        state.reticleState.adjustment.elevation.any((v) => v.symbol == 'MRAD'),
         isFalse,
       );
     });
@@ -393,7 +397,7 @@ void main() {
       addTearDown(container.dispose);
 
       final state = await _recalculate(container);
-      expect(state.adjustment.elevation.length, 2);
+      expect(state.reticleState.adjustment.elevation.length, 2);
     });
   });
 

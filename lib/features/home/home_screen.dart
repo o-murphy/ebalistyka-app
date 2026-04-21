@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
@@ -99,6 +100,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         // Is scrolling needed?
         final needsScroll =
             scrollableHeight > constraints.maxHeight - bottomHeight;
+
+        getWindDirCtx(deg) => UnitPickerContext(
+          context,
+          label: 'Wind direction',
+          rawValue: deg,
+          constraints: FC.windDirection,
+          displayUnit: Unit.degree,
+          onChanged: (v) {
+            final normalized = (((v! % 360) + 360) % 360);
+            ref.read(homeVmProvider.notifier).updateWindDirection(normalized);
+          },
+        );
 
         return Stack(
           children: [
@@ -221,23 +234,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         },
                                         onDirectionTap: (deg) =>
                                             showUnitEditDialog(
-                                              context,
-                                              label: 'Wind direction',
-                                              rawValue: deg,
-                                              constraints: FC.windDirection,
-                                              displayUnit: Unit.degree,
-                                              onChanged: (newDeg) {
-                                                final normalized =
-                                                    ((newDeg % 360) + 360) %
-                                                    360;
-                                                ref
-                                                    .read(
-                                                      homeVmProvider.notifier,
-                                                    )
-                                                    .updateWindDirection(
-                                                      normalized,
-                                                    );
-                                              },
+                                              getWindDirCtx(deg),
                                             ),
                                       ),
                                     ),

@@ -95,10 +95,10 @@ abstract final class FC {
 
   /// Humidity in percent (0–100). rawUnit == displayUnit so toDisplay is identity.
   static const humidity = FieldConstraints(
-    rawUnit: Unit.percent,
+    rawUnit: Unit.fraction,
     minRaw: 0.0,
-    maxRaw: 100.0,
-    stepRaw: 1.0,
+    maxRaw: 1.0,
+    stepRaw: 0.01,
     accuracy: 0,
   );
 

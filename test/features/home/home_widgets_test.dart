@@ -132,47 +132,49 @@ HomeUiReady _makeReady({
   int? selectedChartIndex = 2,
   FormattedTableData tableData = _kDefaultTableData,
 }) {
+  final adj =
+      adjustment ??
+      const AdjustmentData(
+        elevation: [
+          AdjustmentValue(
+            absValue: 2.5,
+            isPositive: true,
+            symbol: 'MRAD',
+            decimals: 2,
+          ),
+        ],
+        windage: [
+          AdjustmentValue(
+            absValue: 1.2,
+            isPositive: false,
+            symbol: 'MRAD',
+            decimals: 2,
+          ),
+        ],
+      );
   return HomeUiReady(
     profileName: 'Test Profile',
     weaponName: 'Test Rifle',
     ammoName: 'Test .308',
-    windAngleDeg: 90.0,
-    tempDisplay: '20 °C',
-    altDisplay: '150 m',
-    pressDisplay: '1013 hPa',
-    humidDisplay: '50 %',
-    windSpeedDisplay: '5 m/s',
-    windSpeedMps: 5.0,
-    lookAngleDisplay: '0°',
-    lookAngleDeg: 0.0,
-    targetDistanceDisplay: '300 m',
-    targetDistanceM: 300.0,
-    cartridgeInfoLine: cartridgeInfoLine,
-    adjustment:
-        adjustment ??
-        const AdjustmentData(
-          elevation: [
-            AdjustmentValue(
-              absValue: 2.5,
-              isPositive: true,
-              symbol: 'MRAD',
-              decimals: 2,
-            ),
-          ],
-          windage: [
-            AdjustmentValue(
-              absValue: 1.2,
-              isPositive: false,
-              symbol: 'MRAD',
-              decimals: 2,
-            ),
-          ],
-        ),
-    adjustmentFormat: fmt,
+    conditionsState: const HomeConditionsUiState(
+      windAngleDeg: 90.0,
+      tempDisplay: '20 °C',
+      altDisplay: '150 m',
+      pressDisplay: '1013 hPa',
+      humidDisplay: '50 %',
+      targetDistanceM: 300.0,
+    ),
+    reticleState: ReticleUiState(
+      cartridgeInfoLine: cartridgeInfoLine,
+      adjustment: adj,
+      adjustmentFormat: fmt,
+    ),
     tableData: tableData,
-    chartData: ChartData(points: chartPoints, snapDistM: 100),
-    selectedPointInfo: selectedPointInfo,
-    selectedChartIndex: selectedChartIndex,
+    chartState: HomeChartUiState(
+      chartData: ChartData(points: chartPoints, snapDistM: 100),
+      selectedPointInfo: selectedPointInfo,
+      selectedChartIndex: selectedChartIndex,
+    ),
   );
 }
 

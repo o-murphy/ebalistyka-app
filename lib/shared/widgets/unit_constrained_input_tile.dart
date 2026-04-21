@@ -1,6 +1,7 @@
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -92,13 +93,15 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
 
   @override
   void _showDialog(BuildContext context) => showUnitEditDialog(
-    context,
-    label: title,
-    rawValue: rawValue,
-    constraints: constraints,
-    displayUnit: displayUnit,
-    symbol: symbol,
-    onChanged: onChanged,
+    UnitPickerContext(
+      context,
+      label: title,
+      rawValue: rawValue,
+      constraints: constraints,
+      displayUnit: displayUnit,
+      symbol: symbol,
+      onChanged: (v) => onChanged(v!),
+    ),
   );
 }
 

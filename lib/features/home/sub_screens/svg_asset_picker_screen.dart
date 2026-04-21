@@ -77,14 +77,14 @@ class _SvgAssetTile extends ConsumerWidget {
     required this.isSelected,
     required this.watchSvg,
     required this.onTap,
-    this.clipRadius = 12.0, // Радіус обрізання в MIL (половина від 30)
   });
 
   final String assetId;
   final bool isSelected;
   final AsyncValue<String> Function(WidgetRef, String) watchSvg;
   final VoidCallback onTap;
-  final double clipRadius;
+
+  static const double clipRadius = 12.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -131,7 +131,7 @@ class _SvgAssetTile extends ConsumerWidget {
                   child: svgAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (_, __) => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
                     data: (svg) => _buildPreview(svg, cs),
                   ),
                 ),
