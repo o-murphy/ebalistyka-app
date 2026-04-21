@@ -157,14 +157,22 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
   Future<HomeUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue && next.value == null) {
-        state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
-      }
-    });
+      if (next.hasValue) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
+      if (!next.hasValue) return;
+      if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
+      if (prev != null) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
+      if (prev != null) _recalculate();
+    }, fireImmediately: true);
     return const HomeUiNoData(type: EmptyStateType.noProfile);
   }
 
-  Future<void> recalculate() async {
+  Future<void> _recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
     final settings = ref.read(settingsProvider).value;
     final units = ref.read(unitSettingsProvider);
@@ -223,6 +231,18 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     } catch (e) {
       state = AsyncData(HomeUiError(e.toString()));
     }
+  }
+
+  static bool _generalNeedsRecalc(GeneralSettings? prev, GeneralSettings next) {
+    if (prev == null) return true;
+    return prev.homeChartDistanceStep != next.homeChartDistanceStep ||
+        prev.homeTableDistanceStep != next.homeTableDistanceStep ||
+        prev.homeShowMrad != next.homeShowMrad ||
+        prev.homeShowMoa != next.homeShowMoa ||
+        prev.homeShowMil != next.homeShowMil ||
+        prev.homeShowCmPer100m != next.homeShowCmPer100m ||
+        prev.homeShowInPer100yd != next.homeShowInPer100yd ||
+        prev.homeShowSubsonicTransition != next.homeShowSubsonicTransition;
   }
 
   void selectChartPoint(int index) {

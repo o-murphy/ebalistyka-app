@@ -6,7 +6,6 @@ import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'core/providers/recalc_coordinator.dart';
 
 import 'features/home/home_screen.dart';
 import 'features/home/sub_screens/home_sub_screens.dart';
@@ -394,23 +393,14 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(recalcCoordinatorProvider.notifier)
-          .onTabActivated(widget.shell.currentIndex);
-    });
   }
 
   void _onTabSelected(int i) {
     widget.shell.goBranch(i, initialLocation: true);
-    ref.read(recalcCoordinatorProvider.notifier).onTabActivated(i);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Initialise the coordinator — it sets up its own listeners.
-    ref.watch(recalcCoordinatorProvider);
-
     return Scaffold(
       body: SafeArea(child: widget.shell),
       bottomNavigationBar: NavigationBar(

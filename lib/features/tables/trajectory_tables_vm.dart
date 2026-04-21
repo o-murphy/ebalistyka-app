@@ -63,19 +63,25 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   @override
   Future<TrajectoryTablesUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue && next.value == null) {
+      if (!next.hasValue) return;
+      if (next.value == null) {
         state = const AsyncData(
           TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
         );
+      } else {
+        _recalculate();
       }
-    });
+    }, fireImmediately: true);
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {
       _rebuild();
-    });
+    }, fireImmediately: true);
+    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
+      if (prev != null) _rebuild();
+    }, fireImmediately: true);
     return const TrajectoryTablesUiLoading();
   }
 
-  Future<void> recalculate() async {
+  Future<void> _recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
     final tablesSettings = ref.read(tablesSettingsProvider);
     final units = ref.read(unitSettingsProvider);

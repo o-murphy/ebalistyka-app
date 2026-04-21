@@ -4,6 +4,8 @@
 // ObjectBox entities used directly (no old model classes).
 //   flutter test test/features/home/home_vm_test.dart
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -203,15 +205,17 @@ ProviderContainer _createContainer({
   );
 }
 
-/// Ensures async dependencies resolve, then triggers recalculate.
-Future<HomeUiReady> _recalculate(ProviderContainer container) async {
-  await container.read(shotContextProvider.future);
-  await container.read(settingsProvider.future);
-  await Future<void>.delayed(Duration.zero);
-  final notifier = container.read(homeVmProvider.notifier);
-  await notifier.recalculate();
-  final state = container.read(homeVmProvider).value;
-  return state as HomeUiReady;
+/// Waits until the VM emits a state of type [T].
+Future<T> _waitFor<T extends HomeUiState>(ProviderContainer container) {
+  final completer = Completer<T>();
+  late ProviderSubscription<AsyncValue<HomeUiState>> sub;
+  sub = container.listen<AsyncValue<HomeUiState>>(homeVmProvider, (_, value) {
+    if (value.value is T) {
+      completer.complete(value.value! as T);
+      sub.close();
+    }
+  }, fireImmediately: true);
+  return completer.future;
 }
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -229,7 +233,7 @@ void main() {
         conditions: _makeConditions(),
         service: service,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -301,7 +305,7 @@ void main() {
         conditions: _makeConditions(),
         service: service,
       );
-      await _recalculate(container);
+      await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -344,7 +348,7 @@ void main() {
         service: service,
         unitSettings: imperialUnits,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -373,7 +377,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = await _recalculate(container);
+      final state = await _waitFor<HomeUiReady>(container);
       expect(
         state.reticleState.adjustment.elevation.any((v) => v.symbol == 'MOA'),
         isTrue,
@@ -396,26 +400,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = await _recalculate(container);
+      final state = await _waitFor<HomeUiReady>(container);
       expect(state.reticleState.adjustment.elevation.length, 2);
-    });
-  });
-
-  group('HomeViewModel — zero caching', () {
-    test('second recalculate reuses cached zero', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
-
-      await _recalculate(container);
-      expect(service.callCount, 1);
-
-      await _recalculate(container);
-      expect(service.callCount, 2);
     });
   });
 
@@ -436,20 +422,13 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(shotContextProvider.future);
-      await container.read(settingsProvider.future);
-      await Future<void>.delayed(Duration.zero);
-
-      final notifier = container.read(homeVmProvider.notifier);
-      await notifier.recalculate();
-      final state = container.read(homeVmProvider).value;
-      expect(state, isA<HomeUiError>());
-      expect((state as HomeUiError).message, contains('Boom'));
+      final state = await _waitFor<HomeUiError>(container);
+      expect(state.message, contains('Boom'));
     });
   });
 
   group('HomeViewModel — initial state', () {
-    test('starts with loading state', () async {
+    test('starts with no-data before shot context resolves', () async {
       final service = _FakeBallisticsService(_makeResult());
       final container = _createContainer(
         profile: _makeProfile(),
@@ -458,7 +437,6 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // build() returns HomeUiNoData until recalculate is called
       final state = await container.read(homeVmProvider.future);
       expect(state, isA<HomeUiNoData>());
     });

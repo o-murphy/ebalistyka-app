@@ -70,10 +70,20 @@ class ShotDetailsReady extends ShotDetailsUiState {
 class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
   @override
   Future<ShotDetailsUiState> build() async {
+    ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
+      if (next.hasValue) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
+      if (!next.hasValue) return;
+      if (prev?.value != null) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
+      if (prev != null) _recalculate();
+    }, fireImmediately: true);
     return _calculate();
   }
 
-  Future<void> recalculate() async {
+  Future<void> _recalculate() async {
     try {
       final newState = await _calculate();
       if (!ref.mounted) return;
