@@ -165,9 +165,10 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ListSectionTile('Adjustments'),
                       Center(
                         child: AdjPanel(
-                          adjustment: vmState.adjustment,
-                          fmt: vmState.adjustmentFormat,
-                          isEmpty: vmState.adjustment.elevation.isEmpty,
+                          adjustment: vmState.reticleState.adjustment,
+                          fmt: vmState.reticleState.adjustmentFormat,
+                          isEmpty:
+                              vmState.reticleState.adjustment.elevation.isEmpty,
                           displayVertical: false,
                         ),
                       ),
@@ -337,8 +338,8 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                     reticleImageId: _reticleImage,
                     targetImageId: _targetImage,
                     targetSizeMil: targetSizeMil,
-                    offsetXMil: vmState.adjustmentWindMil,
-                    offsetYMil: vmState.adjustmentElevMil,
+                    offsetXMil: vmState.reticleState.adjustmentWindMil,
+                    offsetYMil: vmState.reticleState.adjustmentElevMil,
                     clipRadius: 20,
                   ),
                 ),
@@ -363,13 +364,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   static double _parseMilWidth(String svg) {
     final m = RegExp(
       r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
-    ).firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
-  }
-
-  static double _parseMilHeight(String svg) {
-    final m = RegExp(
-      r'viewBox="[^"]*?\s+[^"]*?\s+[^"]*?\s+([^"]*?)"',
     ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }

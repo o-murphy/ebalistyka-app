@@ -1,4 +1,3 @@
-import 'package:ebalistyka/core/providers/reticle_provider.dart';
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,20 +12,6 @@ import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 
 class HomeReticlePage extends ConsumerWidget {
   const HomeReticlePage({super.key});
-
-  static double _parseMilWidth(String svg) {
-    final m = RegExp(
-      r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
-    ).firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
-  }
-
-  static double _parseMilHeight(String svg) {
-    final m = RegExp(
-      r'viewBox="[^"]*?\s+[^"]*?\s+[^"]*?\s+([^"]*?)"',
-    ).firstMatch(svg);
-    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,19 +34,16 @@ class HomeReticlePage extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
 
-    final targetSvgAsync = ref.watch(targetSvgProvider(vmState.targetId));
-    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
-    final targetSizeMilAtDistance =
-        targetSizeMil * 100 / vmState.targetDistanceM;
+    final rs = vmState.reticleState;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (vmState.adjustedMessageLine != null)
+        if (rs.adjustedMessageLine != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
-              vmState.adjustedMessageLine!,
+              rs.adjustedMessageLine!,
               style: tt.labelMedium?.copyWith(color: cs.tertiary),
             ),
           ),
@@ -84,11 +66,11 @@ class HomeReticlePage extends ConsumerWidget {
                     behavior: HitTestBehavior.opaque,
                     onTap: () => context.push(Routes.reticleView),
                     child: ReticleView(
-                      reticleImageId: vmState.reticleId,
-                      targetImageId: vmState.targetId,
-                      targetSizeMil: targetSizeMilAtDistance,
-                      offsetXMil: vmState.adjustmentWindMil,
-                      offsetYMil: vmState.adjustmentElevMil,
+                      reticleImageId: rs.reticleId,
+                      targetImageId: rs.targetId,
+                      targetSizeMil: rs.targetSizeMilAtDistance,
+                      offsetXMil: rs.adjustmentWindMil,
+                      offsetYMil: rs.adjustmentElevMil,
                       clipRadius: 15,
                     ),
                   ),
@@ -99,9 +81,9 @@ class HomeReticlePage extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
                   child: AdjPanel(
-                    adjustment: vmState.adjustment,
-                    fmt: vmState.adjustmentFormat,
-                    isEmpty: vmState.adjustment.elevation.isEmpty,
+                    adjustment: rs.adjustment,
+                    fmt: rs.adjustmentFormat,
+                    isEmpty: rs.adjustment.elevation.isEmpty,
                     displayVertical: true,
                   ),
                 ),

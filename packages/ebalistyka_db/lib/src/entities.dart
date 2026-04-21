@@ -668,9 +668,11 @@ class ConvertorsState with Cloneable<ConvertorsState> {
       ..distanceConvTargetSizeUnit =
           distanceConvTargetSizeUnit ?? this.distanceConvTargetSizeUnit
       ..distanceConvTargetSizeAngularMil =
-          distanceConvTargetSizeAngularMil ?? this.distanceConvTargetSizeAngularMil
+          distanceConvTargetSizeAngularMil ??
+          this.distanceConvTargetSizeAngularMil
       ..distanceConvTargetSizeAngularUnit =
-          distanceConvTargetSizeAngularUnit ?? this.distanceConvTargetSizeAngularUnit;
+          distanceConvTargetSizeAngularUnit ??
+          this.distanceConvTargetSizeAngularUnit;
   }
 }
 

@@ -32,6 +32,28 @@ import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
+class ReticleUiState {
+  final String? reticleId;
+  final String? targetId;
+  final double targetSizeMilAtDistance;
+  final String? adjustedMessageLine;
+  final AdjustmentData adjustment;
+  final AdjustmentDisplayFormat adjustmentFormat;
+  final double adjustmentElevMil;
+  final double adjustmentWindMil;
+
+  const ReticleUiState({
+    this.reticleId,
+    this.targetId,
+    this.targetSizeMilAtDistance = 0.0,
+    this.adjustedMessageLine,
+    required this.adjustment,
+    this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
+    this.adjustmentElevMil = 0.0,
+    this.adjustmentWindMil = 0.0,
+  });
+}
+
 sealed class HomeUiState {
   const HomeUiState();
 }
@@ -58,14 +80,8 @@ class HomeUiReady extends HomeUiState {
   final double targetDistanceM;
 
   // Bottom block — Page 1 (Reticle)
-  final String? adjustedMessageLine;
+  final ReticleUiState reticleState;
   final String cartridgeInfoLine;
-  final String? reticleId;
-  final String? targetId;
-  final AdjustmentData adjustment;
-  final AdjustmentDisplayFormat adjustmentFormat;
-  final double adjustmentElevMil;
-  final double adjustmentWindMil;
 
   // Bottom block — Page 2 (Table)
   final FormattedTableData tableData;
@@ -84,20 +100,14 @@ class HomeUiReady extends HomeUiState {
     required this.altDisplay,
     required this.pressDisplay,
     required this.humidDisplay,
-    this.adjustedMessageLine,
+    required this.reticleState,
     required this.cartridgeInfoLine,
-    this.reticleId,
-    this.targetId,
     required this.windSpeedDisplay,
     required this.windSpeedMps,
     required this.lookAngleDisplay,
     required this.lookAngleDeg,
     required this.targetDistanceDisplay,
     required this.targetDistanceM,
-    required this.adjustment,
-    this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
-    this.adjustmentElevMil = 0.0,
-    this.adjustmentWindMil = 0.0,
     required this.tableData,
     required this.chartData,
     this.selectedPointInfo,
@@ -196,7 +206,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           .read(ballisticsServiceProvider)
           .calculateForTarget(profile, conditions, opts);
 
-      final uiState = _buildReadyState(
+      final uiState = await _buildReadyState(
         profile: profile,
         conditions: conditions,
         settings: settings,
@@ -231,20 +241,14 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         altDisplay: current.altDisplay,
         pressDisplay: current.pressDisplay,
         humidDisplay: current.humidDisplay,
-        adjustedMessageLine: current.adjustedMessageLine,
+        reticleState: current.reticleState,
         cartridgeInfoLine: current.cartridgeInfoLine,
-        reticleId: current.reticleId,
-        targetId: current.targetId,
         windSpeedDisplay: current.windSpeedDisplay,
         windSpeedMps: current.windSpeedMps,
         lookAngleDisplay: current.lookAngleDisplay,
         lookAngleDeg: current.lookAngleDeg,
         targetDistanceDisplay: current.targetDistanceDisplay,
         targetDistanceM: current.targetDistanceM,
-        adjustment: current.adjustment,
-        adjustmentFormat: current.adjustmentFormat,
-        adjustmentElevMil: current.adjustmentElevMil,
-        adjustmentWindMil: current.adjustmentWindMil,
         tableData: current.tableData,
         chartData: current.chartData,
         selectedPointInfo: info,
@@ -318,7 +322,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   // ── Private builders ───────────────────────────────────────────────────────
 
-  HomeUiReady _buildReadyState({
+  Future<HomeUiReady> _buildReadyState({
     required Profile profile,
     required ShootingConditions conditions,
     required GeneralSettings settings,
@@ -326,7 +330,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required UnitSettings units,
     required UnitFormatter formatter,
     required BallisticsResult result,
-  }) {
+  }) async {
     final hit = result.hitResult;
     final targetM = conditions.distanceMeter;
 
@@ -379,6 +383,25 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
         hAdjMil;
 
+    final targetSvg = await ref
+        .read(targetSvgProvider(reticle.targetImage).future)
+        .catchError((_) => '');
+    final targetSizeMil = _parseMilWidth(targetSvg);
+    final targetSizeMilAtDistance = targetM > 0
+        ? targetSizeMil * 100 / targetM
+        : 0.0;
+
+    final reticleState = ReticleUiState(
+      reticleId: profile.sight.target?.reticleImage,
+      targetId: reticle.targetImage,
+      targetSizeMilAtDistance: targetSizeMilAtDistance,
+      adjustedMessageLine: adjustedMessageLine,
+      adjustment: adjustment,
+      adjustmentFormat: settings.adjustmentDisplayFormat,
+      adjustmentElevMil: elevMil,
+      adjustmentWindMil: windMil,
+    );
+
     final tableData = _buildHomeTable(
       hit,
       targetM,
@@ -403,25 +426,26 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       altDisplay: altStr,
       pressDisplay: pressStr,
       humidDisplay: humidStr,
-      adjustedMessageLine: adjustedMessageLine,
+      reticleState: reticleState,
       cartridgeInfoLine: cartridgeInfoLine,
-      reticleId: profile.sight.target?.reticleImage,
-      targetId: reticle.targetImage,
       windSpeedDisplay: windSpeedDisplay,
       windSpeedMps: windMps,
       lookAngleDisplay: lookAngleDisplay,
       lookAngleDeg: lookDeg,
       targetDistanceDisplay: targetDistanceDisplay,
       targetDistanceM: targetM,
-      adjustment: adjustment,
-      adjustmentFormat: settings.adjustmentDisplayFormat,
-      adjustmentElevMil: elevMil,
-      adjustmentWindMil: windMil,
       tableData: tableData,
       chartData: chartData,
       selectedPointInfo: autoInfo,
       selectedChartIndex: autoIndex,
     );
+  }
+
+  static double _parseMilWidth(String svg) {
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
+    ).firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
   String? _buildAdjustedMessageLine(ReticleSettings reticle) {

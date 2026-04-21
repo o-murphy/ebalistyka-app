@@ -21,9 +21,11 @@ class ReticleView extends ConsumerWidget {
     required this.offsetXMil,
     required this.offsetYMil,
     this.clipRadius,
+    this.showAdjLines = true,
   });
 
   final double? clipRadius;
+  final bool? showAdjLines;
 
   /// Reticle asset ID (filename without `.svg`). Null → default reticle.
   final String? reticleImageId;
@@ -53,7 +55,7 @@ class ReticleView extends ConsumerWidget {
         error: (_, _) => const SizedBox.shrink(),
         data: (reticleSvg) {
           final targetSvg = targetAsync.value;
-          return _buildView(context, cs, reticleSvg, targetSvg);
+          return _buildView(context, cs, reticleSvg, targetSvg, showAdjLines);
         },
       ),
     );
@@ -64,6 +66,7 @@ class ReticleView extends ConsumerWidget {
     ColorScheme cs,
     String reticleSvg,
     String? targetSvg,
+    bool? showAdjLines,
   ) {
     final meta = _parseSvgMeta(reticleSvg);
     String materialSvg = resolveSvgColorRoles(reticleSvg, cs);
@@ -84,6 +87,7 @@ class ReticleView extends ConsumerWidget {
     // Create underlay SVG with target and adjustment lines
     final underlaySvg = _buildUnderlaySvg(
       targetSvg: targetSvg,
+      showAdjLines: showAdjLines,
       offsetXMil: offsetXMil,
       offsetYMil: offsetYMil,
       targetSizeMil: targetSizeMil,
@@ -117,6 +121,7 @@ class ReticleView extends ConsumerWidget {
 
   String? _buildUnderlaySvg({
     required String? targetSvg,
+    required bool? showAdjLines,
     required double offsetXMil,
     required double offsetYMil,
     required double targetSizeMil,
@@ -148,15 +153,17 @@ class ReticleView extends ConsumerWidget {
     } else {
       const sw = 0.05;
 
-      // Adjustment lines (targeting crosshair)
-      buffer.writeln(
-        '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
-      );
-      buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
-      buffer.writeln(
-        '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
-      );
-      buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+      if (showAdjLines ?? true) {
+        // Adjustment lines (targeting crosshair)
+        buffer.writeln(
+          '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
+        );
+        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+        buffer.writeln(
+          '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
+        );
+        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+      }
 
       // Target
       if (targetSvg != null) {
