@@ -588,6 +588,10 @@ class ConvertorsState with Cloneable<ConvertorsState> {
   double velocityAtmoPressureHPa = 1013.25;
   double velocityAtmoHumidityFrac = 0.0;
   double velocityAtmoAltitudeMeter = 0.0;
+  double distanceConvTargetSizeInch = 8;
+  String distanceConvTargetSizeUnit = "inch";
+  double distanceConvTargetSizeAngularMil = 1;
+  String distanceConvTargetSizeAngularUnit = "mil";
 
   final owner = ToOne<Owner>();
 
@@ -617,6 +621,10 @@ class ConvertorsState with Cloneable<ConvertorsState> {
     double? velocityAtmoPressureHPa,
     double? velocityAtmoHumidityFrac,
     double? velocityAtmoAltitudeMeter,
+    double? distanceConvTargetSizeInch,
+    String? distanceConvTargetSizeUnit,
+    double? distanceConvTargetSizeAngularMil,
+    String? distanceConvTargetSizeAngularUnit,
   }) {
     return ConvertorsState()
       ..id = id ?? this.id
@@ -654,7 +662,15 @@ class ConvertorsState with Cloneable<ConvertorsState> {
       ..velocityAtmoHumidityFrac =
           velocityAtmoHumidityFrac ?? this.velocityAtmoHumidityFrac
       ..velocityAtmoAltitudeMeter =
-          velocityAtmoAltitudeMeter ?? this.velocityAtmoAltitudeMeter;
+          velocityAtmoAltitudeMeter ?? this.velocityAtmoAltitudeMeter
+      ..distanceConvTargetSizeInch =
+          distanceConvTargetSizeInch ?? this.distanceConvTargetSizeInch
+      ..distanceConvTargetSizeUnit =
+          distanceConvTargetSizeUnit ?? this.distanceConvTargetSizeUnit
+      ..distanceConvTargetSizeAngularMil =
+          distanceConvTargetSizeAngularMil ?? this.distanceConvTargetSizeAngularMil
+      ..distanceConvTargetSizeAngularUnit =
+          distanceConvTargetSizeAngularUnit ?? this.distanceConvTargetSizeAngularUnit;
   }
 }
 

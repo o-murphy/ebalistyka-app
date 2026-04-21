@@ -9,7 +9,7 @@ import 'package:ebalistyka/router.dart';
 const _convertors = [
   (
     type: 'target-distance',
-    label: 'Target Distance',
+    label: 'Target at distance',
     icon: IconDef.distanceConvertor,
   ),
   (type: 'velocity', label: 'Velocity', icon: IconDef.velocityConvertor),

@@ -172,6 +172,34 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
     await _save(s);
   }
 
+  // ── Target distance convertor ─────────────────────────────────────────────────
+
+  Future<void> updateDistanceConvTargetSize(double? valueInInches) async {
+    if (valueInInches == null || valueInInches < 0) return;
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeInch = valueInInches;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeUnitValue = unit;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeAngular(double? valueInMil) async {
+    if (valueInMil == null || valueInMil <= 0) return;
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeAngularMil = valueInMil;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeAngularUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeAngularUnitValue = unit;
+    await _save(s);
+  }
+
   // ── Angles convertor ──────────────────────────────────────────────────────────
 
   Future<void> updateAnglesConvDistanceValue(double? valueInMeters) async {

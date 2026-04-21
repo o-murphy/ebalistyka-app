@@ -324,7 +324,7 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'target-distance',
-                  builder: (_, _) => const DistanceConvertorScreen(),
+                  builder: (_, _) => const TargetDistanceConvertorScreen(),
                 ),
                 GoRoute(
                   path: 'velocity',

@@ -281,7 +281,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 3319446897955563326),
     name: 'ConvertorsState',
-    lastPropertyId: const obx_int.IdUid(43, 8438901470766944339),
+    lastPropertyId: const obx_int.IdUid(47, 7375443151860469216),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -435,6 +435,30 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(43, 8438901470766944339),
         name: 'velocityMachInputValue',
         type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(44, 3471815158763774584),
+        name: 'distanceConvTargetSizeInch',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(45, 5809428912489568420),
+        name: 'distanceConvTargetSizeUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(46, 584671159332997229),
+        name: 'distanceConvTargetSizeAngularMil',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(47, 7375443151860469216),
+        name: 'distanceConvTargetSizeAngularUnit',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -1680,7 +1704,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
           object.anglesConvOutputLastUnit,
         );
         final velocityLastUnitOffset = fbb.writeString(object.velocityLastUnit);
-        fbb.startTable(44);
+        final distanceConvTargetSizeUnitOffset = fbb.writeString(
+          object.distanceConvTargetSizeUnit,
+        );
+        final distanceConvTargetSizeAngularUnitOffset = fbb.writeString(
+          object.distanceConvTargetSizeAngularUnit,
+        );
+        fbb.startTable(48);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.lengthValueInch);
         fbb.addFloat64(3, object.weightValueGrain);
@@ -1706,6 +1736,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(40, object.velocityAtmoHumidityFrac);
         fbb.addFloat64(41, object.velocityAtmoAltitudeMeter);
         fbb.addFloat64(42, object.velocityMachInputValue);
+        fbb.addFloat64(43, object.distanceConvTargetSizeInch);
+        fbb.addOffset(44, distanceConvTargetSizeUnitOffset);
+        fbb.addFloat64(45, object.distanceConvTargetSizeAngularMil);
+        fbb.addOffset(46, distanceConvTargetSizeAngularUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1825,7 +1859,21 @@ obx_int.ModelDefinition getObjectBoxModel() {
             rootOffset,
             88,
             0,
-          );
+          )
+          ..distanceConvTargetSizeInch = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            90,
+            0,
+          )
+          ..distanceConvTargetSizeUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 92, '')
+          ..distanceConvTargetSizeAngularMil = const fb.Float64Reader()
+              .vTableGet(buffer, rootOffset, 94, 0)
+          ..distanceConvTargetSizeAngularUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 96, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -3074,6 +3122,22 @@ class ConvertorsState_ {
   /// See [ConvertorsState.velocityMachInputValue].
   static final velocityMachInputValue =
       obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[24]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeInch].
+  static final distanceConvTargetSizeInch =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[25]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeUnit].
+  static final distanceConvTargetSizeUnit =
+      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[26]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeAngularMil].
+  static final distanceConvTargetSizeAngularMil =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[27]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeAngularUnit].
+  static final distanceConvTargetSizeAngularUnit =
+      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[28]);
 }
 
 /// [GeneralSettings] entity fields to define ObjectBox queries.

@@ -219,7 +219,7 @@
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "43:8438901470766944339",
+      "lastPropertyId": "47:7375443151860469216",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -350,6 +350,26 @@
           "id": "43:8438901470766944339",
           "name": "velocityMachInputValue",
           "type": 8
+        },
+        {
+          "id": "44:3471815158763774584",
+          "name": "distanceConvTargetSizeInch",
+          "type": 8
+        },
+        {
+          "id": "45:5809428912489568420",
+          "name": "distanceConvTargetSizeUnit",
+          "type": 9
+        },
+        {
+          "id": "46:584671159332997229",
+          "name": "distanceConvTargetSizeAngularMil",
+          "type": 8
+        },
+        {
+          "id": "47:7375443151860469216",
+          "name": "distanceConvTargetSizeAngularUnit",
+          "type": 9
         }
       ],
       "relations": []

@@ -332,4 +332,12 @@ abstract final class FC {
     stepRaw: 0.1,
     accuracy: 3,
   );
+
+  static const convertorTargetPhysicalSize = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 2,
+  );
 }

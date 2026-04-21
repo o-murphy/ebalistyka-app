@@ -75,6 +75,30 @@ extension ConvertorsStateExtension on ConvertorsState {
   );
   set anglesConvOutputUnit(Unit v) => anglesConvOutputLastUnit = v.name;
 
+  Distance get distanceConvTargetSize =>
+      Distance.inch(distanceConvTargetSizeInch);
+  set distanceConvTargetSize(Distance v) =>
+      distanceConvTargetSizeInch = v.in_(Unit.inch);
+
+  Unit get distanceConvTargetSizeUnitValue => Unit.values.firstWhere(
+    (u) => u.name == distanceConvTargetSizeUnit,
+    orElse: () => Unit.inch,
+  );
+  set distanceConvTargetSizeUnitValue(Unit v) =>
+      distanceConvTargetSizeUnit = v.name;
+
+  Angular get distanceConvTargetSizeAngular =>
+      Angular.mil(distanceConvTargetSizeAngularMil);
+  set distanceConvTargetSizeAngular(Angular v) =>
+      distanceConvTargetSizeAngularMil = v.in_(Unit.mil);
+
+  Unit get distanceConvTargetSizeAngularUnitValue => Unit.values.firstWhere(
+    (u) => u.name == distanceConvTargetSizeAngularUnit,
+    orElse: () => Unit.mil,
+  );
+  set distanceConvTargetSizeAngularUnitValue(Unit v) =>
+      distanceConvTargetSizeAngularUnit = v.name;
+
   Velocity get velocityValue => Velocity.mps(velocityValueMps);
   set velocityValue(Velocity v) => velocityValueMps = v.in_(Unit.mps);
 
