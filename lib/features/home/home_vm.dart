@@ -216,6 +216,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateForTarget(profile, conditions, opts);
+      if (!ref.mounted) return;
 
       final uiState = await _buildReadyState(
         profile: profile,
@@ -226,10 +227,13 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         formatter: formatter,
         result: result,
       );
+      if (!ref.mounted) return;
 
       state = AsyncData(uiState);
     } catch (e) {
-      state = AsyncData(HomeUiError(e.toString()));
+      if (ref.mounted) {
+        state = AsyncData(HomeUiError(e.toString()));
+      }
     }
   }
 

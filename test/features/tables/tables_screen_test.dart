@@ -74,11 +74,6 @@ class _MockTrajectoryTablesViewModel extends TrajectoryTablesViewModel {
 
   @override
   Future<TrajectoryTablesUiState> build() async => _state;
-
-  @override
-  Future<void> recalculate() async {
-    // Do nothing in tests
-  }
 }
 
 /// Wraps a widget with Riverpod ProviderScope and mocked providers

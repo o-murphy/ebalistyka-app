@@ -127,7 +127,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateTable(profile, conditions, opts);
-
+      if (!ref.mounted) return;
       _lastResult = result;
       _lastProfile = profile;
 

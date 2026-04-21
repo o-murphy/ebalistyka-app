@@ -30,9 +30,6 @@ class _FakeHomeVM extends HomeViewModel {
   Future<HomeUiState> build() async => _initialState;
 
   @override
-  Future<void> recalculate() async {}
-
-  @override
   void selectChartPoint(int index) {}
 }
 
@@ -40,9 +37,6 @@ class _FakeHomeVM extends HomeViewModel {
 class _NeverReadyHomeVM extends HomeViewModel {
   @override
   Future<HomeUiState> build() => Completer<HomeUiState>().future;
-
-  @override
-  Future<void> recalculate() async {}
 
   @override
   void selectChartPoint(int index) {}
