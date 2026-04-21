@@ -898,5 +898,5 @@ Convertors      ✅  8/8 individual convertor screens implemented (incl. TargetD
 ─── Beta ───
 Phase 12        ⏳  Home Note / Help / More buttons
 Reticles cont.  ⏳  Wizard placeholders (Sight/Ammo); remaining SVG reticles via reticle_gen
-Phase 13        ⏳  Clicks display, zeroOffset, filters, code quality, localization, platforms, legal, tools
+Phase 13        ⏳  Clicks display, zeroOffset, custom drag editor, filters, code quality, localization, platforms, legal, tools
 ```
