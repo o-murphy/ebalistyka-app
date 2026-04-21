@@ -38,6 +38,33 @@ class FieldConstraints {
   }
 }
 
+/// Extension of [FieldConstraints] with ruler/graph tick configuration.
+class RulerConstraints {
+  RulerConstraints({required this.fc, double? tick, double? smallTick})
+    : tick = tick ?? fc.stepRaw,
+      smallTick =
+          smallTick ?? _defaultSmallTick(tick ?? fc.stepRaw, fc.accuracy);
+
+  final FieldConstraints fc;
+  final double tick;
+  final double smallTick;
+
+  static double _defaultSmallTick(double tick, int accuracy) {
+    final minStep = pow(10, -accuracy).toDouble();
+    final calculated = tick / 5;
+    return calculated > minStep ? calculated : minStep;
+  }
+
+  // Проксі методи до fc для зручності
+  Unit get rawUnit => fc.rawUnit;
+  double get minRaw => fc.minRaw;
+  double get maxRaw => fc.maxRaw;
+  double get stepRaw => fc.stepRaw;
+  int get accuracy => fc.accuracy;
+
+  int accuracyFor(Unit displayUnit) => fc.accuracyFor(displayUnit);
+}
+
 // ─── Role definitions ─────────────────────────────────────────────────────────
 
 abstract final class FC {
@@ -339,5 +366,25 @@ abstract final class FC {
     maxRaw: 9999.0,
     stepRaw: 0.1,
     accuracy: 2,
+  );
+}
+
+abstract final class RC {
+  static final targetDistance = RulerConstraints(
+    fc: FC.targetDistance,
+    tick: 50,
+    smallTick: 10,
+  );
+
+  static final windSpeed = RulerConstraints(
+    fc: FC.windSpeed,
+    tick: 0.5,
+    smallTick: 0.1,
+  );
+
+  static final lookAngle = RulerConstraints(
+    fc: FC.lookAngle,
+    tick: 5,
+    smallTick: 1,
   );
 }

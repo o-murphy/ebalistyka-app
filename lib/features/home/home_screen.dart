@@ -66,11 +66,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final vmState = vmAsync.value;
 
     final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
-    final tempStr = vmState is HomeUiReady ? vmState.tempDisplay : nullStr;
-    final altStr = vmState is HomeUiReady ? vmState.altDisplay : nullStr;
-    final pressStr = vmState is HomeUiReady ? vmState.pressDisplay : nullStr;
-    final humidStr = vmState is HomeUiReady ? vmState.humidDisplay : nullStr;
-    final windAngleDeg = vmState is HomeUiReady ? vmState.windAngleDeg : 0.0;
+    final cs = vmState is HomeUiReady ? vmState.conditionsState : null;
+    final tempStr = cs?.tempDisplay ?? nullStr;
+    final altStr = cs?.altDisplay ?? nullStr;
+    final pressStr = cs?.pressDisplay ?? nullStr;
+    final humidStr = cs?.humidDisplay ?? nullStr;
+    final windAngleDeg = cs?.windAngleDeg ?? 0.0;
     final windInitialAngle = (windAngleDeg - 90) * math.pi / 180;
 
     return LayoutBuilder(

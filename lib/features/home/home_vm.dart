@@ -32,11 +32,30 @@ import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
+class HomeConditionsUiState {
+  final double windAngleDeg;
+  final String tempDisplay;
+  final String altDisplay;
+  final String pressDisplay;
+  final String humidDisplay;
+  final double targetDistanceM;
+
+  const HomeConditionsUiState({
+    this.windAngleDeg = 0.0,
+    this.tempDisplay = '',
+    this.altDisplay = '',
+    this.pressDisplay = '',
+    this.humidDisplay = '',
+    this.targetDistanceM = 0.0,
+  });
+}
+
 class ReticleUiState {
   final String? reticleId;
   final String? targetId;
   final double targetSizeMilAtDistance;
   final String? adjustedMessageLine;
+  final String cartridgeInfoLine;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
   final double adjustmentElevMil;
@@ -47,6 +66,7 @@ class ReticleUiState {
     this.targetId,
     this.targetSizeMilAtDistance = 0.0,
     this.adjustedMessageLine,
+    this.cartridgeInfoLine = '',
     required this.adjustment,
     this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
     this.adjustmentElevMil = 0.0,
@@ -58,60 +78,43 @@ sealed class HomeUiState {
   const HomeUiState();
 }
 
-class HomeUiReady extends HomeUiState {
-  // Top block
-  final String profileName;
-  final String weaponName;
-  final String ammoName;
-  final double windAngleDeg;
-
-  // Info tiles
-  final String tempDisplay;
-  final String altDisplay;
-  final String pressDisplay;
-  final String humidDisplay;
-
-  // Quick actions
-  final String windSpeedDisplay;
-  final double windSpeedMps;
-  final String lookAngleDisplay;
-  final double lookAngleDeg;
-  final String targetDistanceDisplay;
-  final double targetDistanceM;
-
-  // Bottom block — Page 1 (Reticle)
-  final ReticleUiState reticleState;
-  final String cartridgeInfoLine;
-
-  // Bottom block — Page 2 (Table)
-  final FormattedTableData tableData;
-
-  // Bottom block — Page 3 (Chart)
+class HomeChartUiState {
   final ChartData chartData;
   final HomeChartPointInfo? selectedPointInfo;
   final int? selectedChartIndex;
+
+  const HomeChartUiState({
+    required this.chartData,
+    this.selectedPointInfo,
+    this.selectedChartIndex,
+  });
+
+  HomeChartUiState withSelection(HomeChartPointInfo info, int index) =>
+      HomeChartUiState(
+        chartData: chartData,
+        selectedPointInfo: info,
+        selectedChartIndex: index,
+      );
+}
+
+class HomeUiReady extends HomeUiState {
+  final String profileName;
+  final String weaponName;
+  final String ammoName;
+
+  final HomeConditionsUiState conditionsState;
+  final ReticleUiState reticleState;
+  final FormattedTableData tableData;
+  final HomeChartUiState chartState;
 
   const HomeUiReady({
     required this.profileName,
     required this.weaponName,
     required this.ammoName,
-    required this.windAngleDeg,
-    required this.tempDisplay,
-    required this.altDisplay,
-    required this.pressDisplay,
-    required this.humidDisplay,
+    required this.conditionsState,
     required this.reticleState,
-    required this.cartridgeInfoLine,
-    required this.windSpeedDisplay,
-    required this.windSpeedMps,
-    required this.lookAngleDisplay,
-    required this.lookAngleDeg,
-    required this.targetDistanceDisplay,
-    required this.targetDistanceM,
     required this.tableData,
-    required this.chartData,
-    this.selectedPointInfo,
-    this.selectedChartIndex,
+    required this.chartState,
   });
 }
 
@@ -225,34 +228,20 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   void selectChartPoint(int index) {
     final current = state.value;
     if (current is! HomeUiReady) return;
-    final point = current.chartData.pointAt(index);
+    final point = current.chartState.chartData.pointAt(index);
     if (point == null) return;
 
-    final formatter = ref.read(unitFormatterProvider);
-    final info = _buildPointInfo(point, formatter);
+    final info = _buildPointInfo(point, ref.read(unitFormatterProvider));
 
     state = AsyncData(
       HomeUiReady(
         profileName: current.profileName,
         weaponName: current.weaponName,
         ammoName: current.ammoName,
-        windAngleDeg: current.windAngleDeg,
-        tempDisplay: current.tempDisplay,
-        altDisplay: current.altDisplay,
-        pressDisplay: current.pressDisplay,
-        humidDisplay: current.humidDisplay,
+        conditionsState: current.conditionsState,
         reticleState: current.reticleState,
-        cartridgeInfoLine: current.cartridgeInfoLine,
-        windSpeedDisplay: current.windSpeedDisplay,
-        windSpeedMps: current.windSpeedMps,
-        lookAngleDisplay: current.lookAngleDisplay,
-        lookAngleDeg: current.lookAngleDeg,
-        targetDistanceDisplay: current.targetDistanceDisplay,
-        targetDistanceM: current.targetDistanceM,
         tableData: current.tableData,
-        chartData: current.chartData,
-        selectedPointInfo: info,
-        selectedChartIndex: index,
+        chartState: current.chartState.withSelection(info, index),
       ),
     );
   }
@@ -335,21 +324,17 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final targetM = conditions.distanceMeter;
 
     final windDirDeg = conditions.windDirectionDeg;
-    final windMps = conditions.windSpeedMps;
 
-    final tempStr = formatter.temperature(conditions.temperature);
-    final altStr = formatter.distance(conditions.altitude);
-    final pressStr = formatter.pressure(conditions.pressure);
-    final humidStr = formatter.humidity(
-      Ratio(conditions.humidityFrac, Unit.fraction),
+    final conditionsState = HomeConditionsUiState(
+      windAngleDeg: windDirDeg,
+      tempDisplay: formatter.temperature(conditions.temperature),
+      altDisplay: formatter.distance(conditions.altitude),
+      pressDisplay: formatter.pressure(conditions.pressure),
+      humidDisplay: formatter.humidity(
+        Ratio(conditions.humidityFrac, Unit.fraction),
+      ),
+      targetDistanceM: targetM,
     );
-
-    final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
-
-    final lookDeg = conditions.lookAngle.in_(Unit.degree);
-    final lookAngleDisplay = '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
-
-    final targetDistanceDisplay = formatter.distance(conditions.distance);
 
     final adjustedMessageLine = _buildAdjustedMessageLine(reticle);
     final cartridgeInfoLine = _buildCartridgeInfoLine(
@@ -396,6 +381,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetId: reticle.targetImage,
       targetSizeMilAtDistance: targetSizeMilAtDistance,
       adjustedMessageLine: adjustedMessageLine,
+      cartridgeInfoLine: cartridgeInfoLine,
       adjustment: adjustment,
       adjustmentFormat: settings.adjustmentDisplayFormat,
       adjustmentElevMil: elevMil,
@@ -421,23 +407,14 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       profileName: profile.name,
       weaponName: profile.weapon.target?.name ?? '',
       ammoName: profile.ammo.target?.name ?? '',
-      windAngleDeg: windDirDeg,
-      tempDisplay: tempStr,
-      altDisplay: altStr,
-      pressDisplay: pressStr,
-      humidDisplay: humidStr,
+      conditionsState: conditionsState,
       reticleState: reticleState,
-      cartridgeInfoLine: cartridgeInfoLine,
-      windSpeedDisplay: windSpeedDisplay,
-      windSpeedMps: windMps,
-      lookAngleDisplay: lookAngleDisplay,
-      lookAngleDeg: lookDeg,
-      targetDistanceDisplay: targetDistanceDisplay,
-      targetDistanceM: targetM,
       tableData: tableData,
-      chartData: chartData,
-      selectedPointInfo: autoInfo,
-      selectedChartIndex: autoIndex,
+      chartState: HomeChartUiState(
+        chartData: chartData,
+        selectedPointInfo: autoInfo,
+        selectedChartIndex: autoIndex,
+      ),
     );
   }
 

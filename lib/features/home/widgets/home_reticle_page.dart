@@ -50,7 +50,7 @@ class HomeReticlePage extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: _SemicolonWrappingText(
-            vmState.cartridgeInfoLine,
+            vmState.reticleState.cartridgeInfoLine,
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
           ),
         ),

@@ -130,7 +130,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     final targetSvgAsync = ref.watch(targetSvgProvider(_targetImage));
     final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
     final targetSizeMilAtDistance =
-        targetSizeMil * 100 / vmState.targetDistanceM;
+        targetSizeMil * 100 / vmState.conditionsState.targetDistanceM;
     final targetSizeDisplay = targetSizeMil >= 0.0
         ? fmt.targetSize(Angular.mil(targetSizeMil))
         : nullStr;
