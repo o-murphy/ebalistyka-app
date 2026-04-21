@@ -6,9 +6,10 @@ import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,6 +35,33 @@ class QuickActionsPanel extends ConsumerWidget {
     final distDisplay = fmt.distance(conditions.distance);
     final distM = conditions.distanceMeter;
 
+    final UnitPickerContext windSpeedCtx = UnitPickerContext(
+      context,
+      label: 'Wind speed',
+      rawValue: windMps,
+      constraints: FC.windSpeed,
+      displayUnit: units.velocityUnit,
+      onChanged: (v) => notifier.updateWindSpeed(v!),
+    );
+
+    final UnitPickerContext lookAngleCtx = UnitPickerContext(
+      context,
+      label: 'Look angle',
+      rawValue: lookDeg,
+      constraints: FC.lookAngle,
+      displayUnit: Unit.degree,
+      onChanged: (v) => notifier.updateLookAngle(v!),
+    );
+
+    final UnitPickerContext targetRangeCtx = UnitPickerContext(
+      context,
+      label: 'Target range',
+      rawValue: distM,
+      constraints: FC.targetDistance,
+      displayUnit: units.distanceUnit,
+      onChanged: (v) => notifier.updateDistance(v!),
+    );
+
     return IconValueButtonRow(
       height: 104,
       items: [
@@ -42,42 +70,21 @@ class QuickActionsPanel extends ConsumerWidget {
           value: windDisplay,
           label: 'Wind speed',
           heroTag: 'qa-wind',
-          onTap: () => showUnitEditDialog(
-            context,
-            label: 'Wind speed',
-            rawValue: windMps,
-            constraints: FC.windSpeed,
-            displayUnit: units.velocityUnit,
-            onChanged: notifier.updateWindSpeed,
-          ),
+          onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
         ),
         IconValueButton(
           icon: IconDef.angle,
           value: lookDisplay,
           label: 'Look angle',
           heroTag: 'qa-angle',
-          onTap: () => showUnitEditDialog(
-            context,
-            label: 'Look angle',
-            rawValue: lookDeg,
-            constraints: FC.lookAngle,
-            displayUnit: Unit.degree,
-            onChanged: notifier.updateLookAngle,
-          ),
+          onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
         ),
         IconValueButton(
           icon: IconDef.range,
           value: distDisplay,
           label: 'Target range',
           heroTag: 'qa-range',
-          onTap: () => showUnitEditDialog(
-            context,
-            label: 'Target range',
-            rawValue: distM,
-            constraints: FC.targetDistance,
-            displayUnit: units.distanceUnit,
-            onChanged: notifier.updateDistance,
-          ),
+          onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
         ),
       ],
     );

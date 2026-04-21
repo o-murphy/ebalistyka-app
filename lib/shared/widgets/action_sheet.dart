@@ -9,17 +9,21 @@ sealed class ActionSheetEntry {
 /// A tappable item in an action sheet.
 /// [onTap] may be async; it is called after the sheet is dismissed.
 class ActionSheetItem extends ActionSheetEntry {
-  const ActionSheetItem({
-    required this.icon,
+  ActionSheetItem({
     required this.title,
-    required this.onTap,
+    this.onTap,
+    this.icon,
+    this.subtitle,
     this.isDestructive = false,
+    this.isDisabled = false,
   });
 
-  final IconData icon;
+  IconData? icon;
   final String title;
-  final Future<void> Function() onTap;
+  final String? subtitle;
+  final Future<void> Function()? onTap;
   final bool isDestructive;
+  final bool isDisabled;
 }
 
 /// A thin horizontal divider between groups of items.
@@ -62,16 +66,17 @@ Future<void> showActionSheet(
                 :final title,
                 :final onTap,
                 :final isDestructive,
+                :final subtitle,
+                :final isDisabled,
               ) =>
-                ListTile(
-                  leading: Icon(icon, color: isDestructive ? Colors.red : null),
-                  title: Text(
-                    title,
-                    style: isDestructive
-                        ? const TextStyle(color: Colors.red)
-                        : null,
-                  ),
-                  onTap: () {
+                _ActionSheetItem(
+                  icon: icon,
+                  title: title,
+                  subtitle: subtitle,
+                  isDestructive: isDestructive,
+                  isDisabled: isDisabled || onTap == null,
+                  onTap: onTap,
+                  onSelected: () {
                     pending = onTap;
                     Navigator.of(ctx).pop();
                   },
@@ -85,4 +90,63 @@ Future<void> showActionSheet(
 
   // Sheet is fully dismissed — now safe to push routes or show dialogs.
   await pending?.call();
+}
+
+class _ActionSheetItem extends StatelessWidget {
+  const _ActionSheetItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.isDestructive,
+    required this.isDisabled,
+    required this.onTap,
+    required this.onSelected,
+  });
+
+  final IconData? icon;
+  final String title;
+  final String? subtitle;
+  final bool isDestructive;
+  final bool isDisabled;
+  final Future<void> Function()? onTap;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: icon != null
+          ? Icon(
+              icon,
+              color: isDisabled
+                  ? colorScheme.onSurface.withValues(alpha: 0.38)
+                  : isDestructive
+                  ? colorScheme.error
+                  : null,
+            )
+          : null,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isDisabled
+              ? colorScheme.onSurface.withValues(alpha: 0.38)
+              : isDestructive
+              ? colorScheme.error
+              : null,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: TextStyle(
+                color: isDisabled
+                    ? colorScheme.onSurface.withValues(alpha: 0.38)
+                    : colorScheme.onSurfaceVariant,
+              ),
+            )
+          : null,
+      onTap: isDisabled ? null : onSelected,
+    );
+  }
 }

@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:481047032094263803",
-      "lastPropertyId": "61:6275749238367959778",
+      "lastPropertyId": "64:8581311930876680754",
       "name": "Ammo",
       "properties": [
         {
@@ -195,26 +195,31 @@
           "type": 8
         },
         {
-          "id": "58:2449350094904024515",
-          "name": "zeroOffsetXRad",
-          "type": 8
-        },
-        {
-          "id": "59:3182962183369396844",
-          "name": "zeroOffsetYRad",
-          "type": 8
-        },
-        {
           "id": "60:7509424573994252574",
           "name": "zeroAltitudeMeter",
           "type": 8
+        },
+        {
+          "id": "62:799128093389168803",
+          "name": "zeroOffsetX",
+          "type": 8
+        },
+        {
+          "id": "63:5715363799047104994",
+          "name": "zeroOffsetY",
+          "type": 8
+        },
+        {
+          "id": "64:8581311930876680754",
+          "name": "zeroOffsetUnit",
+          "type": 9
         }
       ],
       "relations": []
     },
     {
       "id": "2:3319446897955563326",
-      "lastPropertyId": "35:570052440190756322",
+      "lastPropertyId": "47:7375443151860469216",
       "name": "ConvertorsState",
       "properties": [
         {
@@ -304,6 +309,66 @@
         {
           "id": "35:570052440190756322",
           "name": "anglesConvOutputLastUnit",
+          "type": 9
+        },
+        {
+          "id": "36:7495548274965250269",
+          "name": "velocityValueMps",
+          "type": 8
+        },
+        {
+          "id": "37:2717354904851346876",
+          "name": "velocityLastUnit",
+          "type": 9
+        },
+        {
+          "id": "38:4681954903335024634",
+          "name": "velocityMachUseCustomAtmo",
+          "type": 1
+        },
+        {
+          "id": "39:5791327597424338172",
+          "name": "velocityAtmoTemperatureC",
+          "type": 8
+        },
+        {
+          "id": "40:2017561635183624910",
+          "name": "velocityAtmoPressureHPa",
+          "type": 8
+        },
+        {
+          "id": "41:4381899651249346681",
+          "name": "velocityAtmoHumidityFrac",
+          "type": 8
+        },
+        {
+          "id": "42:3813538830418793542",
+          "name": "velocityAtmoAltitudeMeter",
+          "type": 8
+        },
+        {
+          "id": "43:8438901470766944339",
+          "name": "velocityMachInputValue",
+          "type": 8
+        },
+        {
+          "id": "44:3471815158763774584",
+          "name": "distanceConvTargetSizeInch",
+          "type": 8
+        },
+        {
+          "id": "45:5809428912489568420",
+          "name": "distanceConvTargetSizeUnit",
+          "type": 9
+        },
+        {
+          "id": "46:584671159332997229",
+          "name": "distanceConvTargetSizeAngularMil",
+          "type": 8
+        },
+        {
+          "id": "47:7375443151860469216",
+          "name": "distanceConvTargetSizeAngularUnit",
           "type": 9
         }
       ],
@@ -646,7 +711,7 @@
     },
     {
       "id": "8:7409307519479360238",
-      "lastPropertyId": "18:1589305927285534260",
+      "lastPropertyId": "19:5135449223109821406",
       "name": "UnitSettings",
       "properties": [
         {
@@ -742,6 +807,11 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "19:5135449223109821406",
+          "name": "targetSize",
+          "type": 9
         }
       ],
       "relations": []
@@ -906,10 +976,57 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "12:6849051147696960557",
+      "lastPropertyId": "10:8494963848536132259",
+      "name": "ReticleSettings",
+      "properties": [
+        {
+          "id": "1:5243600524700089722",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "4:5234752950815003840",
+          "name": "targetImage",
+          "type": 9
+        },
+        {
+          "id": "6:6576419286705648195",
+          "name": "ownerId",
+          "indexId": "23:6800428834975185432",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Owner"
+        },
+        {
+          "id": "7:1142594723297985528",
+          "name": "verticalAdjustment",
+          "type": 8
+        },
+        {
+          "id": "8:7310246849331811761",
+          "name": "verticalAdjustmentUnit",
+          "type": 9
+        },
+        {
+          "id": "9:257814256636269169",
+          "name": "horizontalAdjustment",
+          "type": 8
+        },
+        {
+          "id": "10:8494963848536132259",
+          "name": "horizontalAdjustmentUnit",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "11:7626615768518305721",
-  "lastIndexId": "22:5656087516355577029",
+  "lastEntityId": "12:6849051147696960557",
+  "lastIndexId": "23:6800428834975185432",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
@@ -992,7 +1109,12 @@
     3711858234252380760,
     824601022869745530,
     6275749238367959778,
-    3085806308739651023
+    3085806308739651023,
+    486479794952929440,
+    968810543137024596,
+    4141946973460114136,
+    2449350094904024515,
+    3182962183369396844
   ],
   "retiredRelationUids": [],
   "version": 1

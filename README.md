@@ -13,6 +13,8 @@
 
 A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance C++ ballistic solver engine with RK4/Euler integration.
 
+_UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
+
 ---
 
 ## Screenshots

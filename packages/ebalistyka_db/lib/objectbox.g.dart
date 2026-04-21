@@ -21,7 +21,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(1, 481047032094263803),
     name: 'Ammo',
-    lastPropertyId: const obx_int.IdUid(61, 6275749238367959778),
+    lastPropertyId: const obx_int.IdUid(64, 8581311930876680754),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -245,21 +245,27 @@ final _entities = <obx_int.ModelEntity>[
         flags: 0,
       ),
       obx_int.ModelProperty(
-        id: const obx_int.IdUid(58, 2449350094904024515),
-        name: 'zeroOffsetXRad',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
-        id: const obx_int.IdUid(59, 3182962183369396844),
-        name: 'zeroOffsetYRad',
-        type: 8,
-        flags: 0,
-      ),
-      obx_int.ModelProperty(
         id: const obx_int.IdUid(60, 7509424573994252574),
         name: 'zeroAltitudeMeter',
         type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(62, 799128093389168803),
+        name: 'zeroOffsetX',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(63, 5715363799047104994),
+        name: 'zeroOffsetY',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(64, 8581311930876680754),
+        name: 'zeroOffsetUnit',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -275,7 +281,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 3319446897955563326),
     name: 'ConvertorsState',
-    lastPropertyId: const obx_int.IdUid(35, 570052440190756322),
+    lastPropertyId: const obx_int.IdUid(47, 7375443151860469216),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -380,6 +386,78 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(35, 570052440190756322),
         name: 'anglesConvOutputLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(36, 7495548274965250269),
+        name: 'velocityValueMps',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(37, 2717354904851346876),
+        name: 'velocityLastUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(38, 4681954903335024634),
+        name: 'velocityMachUseCustomAtmo',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(39, 5791327597424338172),
+        name: 'velocityAtmoTemperatureC',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(40, 2017561635183624910),
+        name: 'velocityAtmoPressureHPa',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(41, 4381899651249346681),
+        name: 'velocityAtmoHumidityFrac',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(42, 3813538830418793542),
+        name: 'velocityAtmoAltitudeMeter',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(43, 8438901470766944339),
+        name: 'velocityMachInputValue',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(44, 3471815158763774584),
+        name: 'distanceConvTargetSizeInch',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(45, 5809428912489568420),
+        name: 'distanceConvTargetSizeUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(46, 584671159332997229),
+        name: 'distanceConvTargetSizeAngularMil',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(47, 7375443151860469216),
+        name: 'distanceConvTargetSizeAngularUnit',
         type: 9,
         flags: 0,
       ),
@@ -806,7 +884,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(8, 7409307519479360238),
     name: 'UnitSettings',
-    lastPropertyId: const obx_int.IdUid(18, 1589305927285534260),
+    lastPropertyId: const obx_int.IdUid(19, 5135449223109821406),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -919,6 +997,12 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(15, 5972717579111743737),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(19, 5135449223109821406),
+        name: 'targetSize',
+        type: 9,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -1113,6 +1197,61 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(12, 6849051147696960557),
+    name: 'ReticleSettings',
+    lastPropertyId: const obx_int.IdUid(10, 8494963848536132259),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 5243600524700089722),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 5234752950815003840),
+        name: 'targetImage',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 6576419286705648195),
+        name: 'ownerId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(23, 6800428834975185432),
+        relationField: 'owner',
+        relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 1142594723297985528),
+        name: 'verticalAdjustment',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 7310246849331811761),
+        name: 'verticalAdjustmentUnit',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(9, 257814256636269169),
+        name: 'horizontalAdjustment',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(10, 8494963848536132259),
+        name: 'horizontalAdjustmentUnit',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -1157,8 +1296,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(11, 7626615768518305721),
-    lastIndexId: const obx_int.IdUid(22, 5656087516355577029),
+    lastEntityId: const obx_int.IdUid(12, 6849051147696960557),
+    lastIndexId: const obx_int.IdUid(23, 6800428834975185432),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [6584000130387526342],
@@ -1238,6 +1377,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
       824601022869745530,
       6275749238367959778,
       3085806308739651023,
+      486479794952929440,
+      968810543137024596,
+      4141946973460114136,
+      2449350094904024515,
+      3182962183369396844,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -1296,7 +1440,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final customDragTableMachOffset = object.customDragTableMach == null
             ? null
             : fbb.writeListFloat64(object.customDragTableMach!);
-        fbb.startTable(62);
+        final zeroOffsetUnitOffset = fbb.writeString(object.zeroOffsetUnit);
+        fbb.startTable(65);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addOffset(5, dragTypeValueOffset);
@@ -1333,9 +1478,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(54, object.zeroPressurehPa);
         fbb.addFloat64(55, object.zeroHumidityFrac);
         fbb.addFloat64(56, object.zeroPowderTemperatureC);
-        fbb.addFloat64(57, object.zeroOffsetXRad);
-        fbb.addFloat64(58, object.zeroOffsetYRad);
         fbb.addFloat64(59, object.zeroAltitudeMeter);
+        fbb.addFloat64(61, object.zeroOffsetX);
+        fbb.addFloat64(62, object.zeroOffsetY);
+        fbb.addOffset(63, zeroOffsetUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1492,24 +1638,27 @@ obx_int.ModelDefinition getObjectBoxModel() {
             116,
             0,
           )
-          ..zeroOffsetXRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            118,
-            0,
-          )
-          ..zeroOffsetYRad = const fb.Float64Reader().vTableGet(
-            buffer,
-            rootOffset,
-            120,
-            0,
-          )
           ..zeroAltitudeMeter = const fb.Float64Reader().vTableGet(
             buffer,
             rootOffset,
             122,
             0,
-          );
+          )
+          ..zeroOffsetX = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            126,
+            0,
+          )
+          ..zeroOffsetY = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            128,
+            0,
+          )
+          ..zeroOffsetUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 130, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -1554,7 +1703,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final anglesConvOutputLastUnitOffset = fbb.writeString(
           object.anglesConvOutputLastUnit,
         );
-        fbb.startTable(36);
+        final velocityLastUnitOffset = fbb.writeString(object.velocityLastUnit);
+        final distanceConvTargetSizeUnitOffset = fbb.writeString(
+          object.distanceConvTargetSizeUnit,
+        );
+        final distanceConvTargetSizeAngularUnitOffset = fbb.writeString(
+          object.distanceConvTargetSizeAngularUnit,
+        );
+        fbb.startTable(48);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.lengthValueInch);
         fbb.addFloat64(3, object.weightValueGrain);
@@ -1572,6 +1728,18 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(32, object.anglesConvAngularValueMil);
         fbb.addOffset(33, anglesConvAngularLastUnitOffset);
         fbb.addOffset(34, anglesConvOutputLastUnitOffset);
+        fbb.addFloat64(35, object.velocityValueMps);
+        fbb.addOffset(36, velocityLastUnitOffset);
+        fbb.addBool(37, object.velocityMachUseCustomAtmo);
+        fbb.addFloat64(38, object.velocityAtmoTemperatureC);
+        fbb.addFloat64(39, object.velocityAtmoPressureHPa);
+        fbb.addFloat64(40, object.velocityAtmoHumidityFrac);
+        fbb.addFloat64(41, object.velocityAtmoAltitudeMeter);
+        fbb.addFloat64(42, object.velocityMachInputValue);
+        fbb.addFloat64(43, object.distanceConvTargetSizeInch);
+        fbb.addOffset(44, distanceConvTargetSizeUnitOffset);
+        fbb.addFloat64(45, object.distanceConvTargetSizeAngularMil);
+        fbb.addOffset(46, distanceConvTargetSizeAngularUnitOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1646,7 +1814,66 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ).vTableGet(buffer, rootOffset, 70, '')
           ..anglesConvOutputLastUnit = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 72, '');
+          ).vTableGet(buffer, rootOffset, 72, '')
+          ..velocityValueMps = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            74,
+            0,
+          )
+          ..velocityLastUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 76, '')
+          ..velocityMachUseCustomAtmo = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            78,
+            false,
+          )
+          ..velocityAtmoTemperatureC = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            80,
+            0,
+          )
+          ..velocityAtmoPressureHPa = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            82,
+            0,
+          )
+          ..velocityAtmoHumidityFrac = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            84,
+            0,
+          )
+          ..velocityAtmoAltitudeMeter = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            86,
+            0,
+          )
+          ..velocityMachInputValue = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            88,
+            0,
+          )
+          ..distanceConvTargetSizeInch = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            90,
+            0,
+          )
+          ..distanceConvTargetSizeUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 92, '')
+          ..distanceConvTargetSizeAngularMil = const fb.Float64Reader()
+              .vTableGet(buffer, rootOffset, 94, 0)
+          ..distanceConvTargetSizeAngularUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 96, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2202,7 +2429,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final barrelLengthOffset = fbb.writeString(object.barrelLength);
         final timeOffset = fbb.writeString(object.time);
         final torqueOffset = fbb.writeString(object.torque);
-        fbb.startTable(19);
+        final targetSizeOffset = fbb.writeString(object.targetSize);
+        fbb.startTable(20);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, angularOffset);
         fbb.addOffset(2, distanceOffset);
@@ -2221,6 +2449,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(15, timeOffset);
         fbb.addOffset(16, torqueOffset);
         fbb.addInt64(17, object.owner.targetId);
+        fbb.addOffset(18, targetSizeOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2277,7 +2506,10 @@ obx_int.ModelDefinition getObjectBoxModel() {
           ).vTableGet(buffer, rootOffset, 34, '')
           ..torque = const fb.StringReader(
             asciiOptimization: true,
-          ).vTableGet(buffer, rootOffset, 36, '');
+          ).vTableGet(buffer, rootOffset, 36, '')
+          ..targetSize = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 40, '');
         object.owner.targetId = const fb.Int64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -2507,6 +2739,72 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    ReticleSettings: obx_int.EntityDefinition<ReticleSettings>(
+      model: _entities[10],
+      toOneRelations: (ReticleSettings object) => [object.owner],
+      toManyRelations: (ReticleSettings object) => {},
+      getId: (ReticleSettings object) => object.id,
+      setId: (ReticleSettings object, int id) {
+        object.id = id;
+      },
+      objectToFB: (ReticleSettings object, fb.Builder fbb) {
+        final targetImageOffset = object.targetImage == null
+            ? null
+            : fbb.writeString(object.targetImage!);
+        final verticalAdjustmentUnitOffset = fbb.writeString(
+          object.verticalAdjustmentUnit,
+        );
+        final horizontalAdjustmentUnitOffset = fbb.writeString(
+          object.horizontalAdjustmentUnit,
+        );
+        fbb.startTable(11);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(3, targetImageOffset);
+        fbb.addInt64(5, object.owner.targetId);
+        fbb.addFloat64(6, object.verticalAdjustment);
+        fbb.addOffset(7, verticalAdjustmentUnitOffset);
+        fbb.addFloat64(8, object.horizontalAdjustment);
+        fbb.addOffset(9, horizontalAdjustmentUnitOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+
+        final object = ReticleSettings()
+          ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
+          ..targetImage = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGetNullable(buffer, rootOffset, 10)
+          ..verticalAdjustment = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            16,
+            0,
+          )
+          ..verticalAdjustmentUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 18, '')
+          ..horizontalAdjustment = const fb.Float64Reader().vTableGet(
+            buffer,
+            rootOffset,
+            20,
+            0,
+          )
+          ..horizontalAdjustmentUnit = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 22, '');
+        object.owner.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        object.owner.attach(store);
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -2686,19 +2984,24 @@ class Ammo_ {
     _entities[0].properties[35],
   );
 
-  /// See [Ammo.zeroOffsetXRad].
-  static final zeroOffsetXRad = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroAltitudeMeter].
+  static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[36],
   );
 
-  /// See [Ammo.zeroOffsetYRad].
-  static final zeroOffsetYRad = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroOffsetX].
+  static final zeroOffsetX = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[37],
   );
 
-  /// See [Ammo.zeroAltitudeMeter].
-  static final zeroAltitudeMeter = obx.QueryDoubleProperty<Ammo>(
+  /// See [Ammo.zeroOffsetY].
+  static final zeroOffsetY = obx.QueryDoubleProperty<Ammo>(
     _entities[0].properties[38],
+  );
+
+  /// See [Ammo.zeroOffsetUnit].
+  static final zeroOffsetUnit = obx.QueryStringProperty<Ammo>(
+    _entities[0].properties[39],
   );
 
   /// see [Ammo.profiles]
@@ -2785,6 +3088,56 @@ class ConvertorsState_ {
   /// See [ConvertorsState.anglesConvOutputLastUnit].
   static final anglesConvOutputLastUnit =
       obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[16]);
+
+  /// See [ConvertorsState.velocityValueMps].
+  static final velocityValueMps = obx.QueryDoubleProperty<ConvertorsState>(
+    _entities[1].properties[17],
+  );
+
+  /// See [ConvertorsState.velocityLastUnit].
+  static final velocityLastUnit = obx.QueryStringProperty<ConvertorsState>(
+    _entities[1].properties[18],
+  );
+
+  /// See [ConvertorsState.velocityMachUseCustomAtmo].
+  static final velocityMachUseCustomAtmo =
+      obx.QueryBooleanProperty<ConvertorsState>(_entities[1].properties[19]);
+
+  /// See [ConvertorsState.velocityAtmoTemperatureC].
+  static final velocityAtmoTemperatureC =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[20]);
+
+  /// See [ConvertorsState.velocityAtmoPressureHPa].
+  static final velocityAtmoPressureHPa =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[21]);
+
+  /// See [ConvertorsState.velocityAtmoHumidityFrac].
+  static final velocityAtmoHumidityFrac =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[22]);
+
+  /// See [ConvertorsState.velocityAtmoAltitudeMeter].
+  static final velocityAtmoAltitudeMeter =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[23]);
+
+  /// See [ConvertorsState.velocityMachInputValue].
+  static final velocityMachInputValue =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[24]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeInch].
+  static final distanceConvTargetSizeInch =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[25]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeUnit].
+  static final distanceConvTargetSizeUnit =
+      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[26]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeAngularMil].
+  static final distanceConvTargetSizeAngularMil =
+      obx.QueryDoubleProperty<ConvertorsState>(_entities[1].properties[27]);
+
+  /// See [ConvertorsState.distanceConvTargetSizeAngularUnit].
+  static final distanceConvTargetSizeAngularUnit =
+      obx.QueryStringProperty<ConvertorsState>(_entities[1].properties[28]);
 }
 
 /// [GeneralSettings] entity fields to define ObjectBox queries.
@@ -3165,6 +3518,11 @@ class UnitSettings_ {
   static final owner = obx.QueryRelationToOne<UnitSettings, Owner>(
     _entities[7].properties[17],
   );
+
+  /// See [UnitSettings.targetSize].
+  static final targetSize = obx.QueryStringProperty<UnitSettings>(
+    _entities[7].properties[18],
+  );
 }
 
 /// [Weapon] entity fields to define ObjectBox queries.
@@ -3305,4 +3663,40 @@ class ShootingConditions_ {
   static final owner = obx.QueryRelationToOne<ShootingConditions, Owner>(
     _entities[9].properties[15],
   );
+}
+
+/// [ReticleSettings] entity fields to define ObjectBox queries.
+class ReticleSettings_ {
+  /// See [ReticleSettings.id].
+  static final id = obx.QueryIntegerProperty<ReticleSettings>(
+    _entities[10].properties[0],
+  );
+
+  /// See [ReticleSettings.targetImage].
+  static final targetImage = obx.QueryStringProperty<ReticleSettings>(
+    _entities[10].properties[1],
+  );
+
+  /// See [ReticleSettings.owner].
+  static final owner = obx.QueryRelationToOne<ReticleSettings, Owner>(
+    _entities[10].properties[2],
+  );
+
+  /// See [ReticleSettings.verticalAdjustment].
+  static final verticalAdjustment = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[3],
+  );
+
+  /// See [ReticleSettings.verticalAdjustmentUnit].
+  static final verticalAdjustmentUnit =
+      obx.QueryStringProperty<ReticleSettings>(_entities[10].properties[4]);
+
+  /// See [ReticleSettings.horizontalAdjustment].
+  static final horizontalAdjustment = obx.QueryDoubleProperty<ReticleSettings>(
+    _entities[10].properties[5],
+  );
+
+  /// See [ReticleSettings.horizontalAdjustmentUnit].
+  static final horizontalAdjustmentUnit =
+      obx.QueryStringProperty<ReticleSettings>(_entities[10].properties[6]);
 }

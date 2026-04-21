@@ -18,6 +18,9 @@ SettingsExport _$SettingsExportFromJson(Map<String, dynamic> json) =>
       conditions: ConditionsExport.fromJson(
         json['conditions'] as Map<String, dynamic>,
       ),
+      reticle: ReticleSettingsExport.fromJson(
+        json['reticle'] as Map<String, dynamic>,
+      ),
     );
 
 Map<String, dynamic> _$SettingsExportToJson(SettingsExport instance) =>
@@ -26,4 +29,5 @@ Map<String, dynamic> _$SettingsExportToJson(SettingsExport instance) =>
       'units': instance.units,
       'tables': instance.tables,
       'conditions': instance.conditions,
+      'reticle': instance.reticle,
     };

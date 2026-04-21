@@ -9,6 +9,7 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -98,7 +99,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               ammo.mv != null
                                   ? formatter.velocity(ammo.mv!)
-                                  : '—',
+                                  : nullStr,
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],

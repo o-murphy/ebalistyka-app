@@ -74,4 +74,51 @@ extension ConvertorsStateExtension on ConvertorsState {
     orElse: () => Unit.centimeter,
   );
   set anglesConvOutputUnit(Unit v) => anglesConvOutputLastUnit = v.name;
+
+  Distance get distanceConvTargetSize =>
+      Distance.inch(distanceConvTargetSizeInch);
+  set distanceConvTargetSize(Distance v) =>
+      distanceConvTargetSizeInch = v.in_(Unit.inch);
+
+  Unit get distanceConvTargetSizeUnitValue => Unit.values.firstWhere(
+    (u) => u.name == distanceConvTargetSizeUnit,
+    orElse: () => Unit.inch,
+  );
+  set distanceConvTargetSizeUnitValue(Unit v) =>
+      distanceConvTargetSizeUnit = v.name;
+
+  Angular get distanceConvTargetSizeAngular =>
+      Angular.mil(distanceConvTargetSizeAngularMil);
+  set distanceConvTargetSizeAngular(Angular v) =>
+      distanceConvTargetSizeAngularMil = v.in_(Unit.mil);
+
+  Unit get distanceConvTargetSizeAngularUnitValue => Unit.values.firstWhere(
+    (u) => u.name == distanceConvTargetSizeAngularUnit,
+    orElse: () => Unit.mil,
+  );
+  set distanceConvTargetSizeAngularUnitValue(Unit v) =>
+      distanceConvTargetSizeAngularUnit = v.name;
+
+  Velocity get velocityValue => Velocity.mps(velocityValueMps);
+  set velocityValue(Velocity v) => velocityValueMps = v.in_(Unit.mps);
+
+  Unit get velocityUnit => Unit.values.firstWhere(
+    (u) => u.name == velocityLastUnit,
+    orElse: () => Unit.mps,
+  );
+  set velocityUnit(Unit v) => velocityLastUnit = v.name;
+
+  Temperature get velocityAtmoTemperature =>
+      Temperature.celsius(velocityAtmoTemperatureC);
+  set velocityAtmoTemperature(Temperature v) =>
+      velocityAtmoTemperatureC = v.in_(Unit.celsius);
+
+  Pressure get velocityAtmoPressure => Pressure.hPa(velocityAtmoPressureHPa);
+  set velocityAtmoPressure(Pressure v) =>
+      velocityAtmoPressureHPa = v.in_(Unit.hPa);
+
+  Distance get velocityAtmoAltitude =>
+      Distance.meter(velocityAtmoAltitudeMeter);
+  set velocityAtmoAltitude(Distance v) =>
+      velocityAtmoAltitudeMeter = v.in_(Unit.meter);
 }

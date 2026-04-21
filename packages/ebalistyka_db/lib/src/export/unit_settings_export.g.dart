@@ -24,6 +24,7 @@ UnitSettingsExport _$UnitSettingsExportFromJson(Map<String, dynamic> json) =>
       barrelLength: json['barrelLength'] as String,
       time: json['time'] as String,
       torque: json['torque'] as String,
+      targetSize: json['targetSize'] as String,
     );
 
 Map<String, dynamic> _$UnitSettingsExportToJson(UnitSettingsExport instance) =>
@@ -44,4 +45,5 @@ Map<String, dynamic> _$UnitSettingsExportToJson(UnitSettingsExport instance) =>
       'barrelLength': instance.barrelLength,
       'time': instance.time,
       'torque': instance.torque,
+      'targetSize': instance.targetSize,
     };

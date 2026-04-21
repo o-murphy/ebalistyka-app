@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -211,7 +212,7 @@ class TableHtmlExporter {
       sb.writeln('<tr$cls>');
       sb.writeln('<td class="rng">${_esc(t.distanceHeaders[pi])}</td>');
       for (final r in t.rows) {
-        final v = pi < r.cells.length ? r.cells[pi].value : '—';
+        final v = pi < r.cells.length ? r.cells[pi].value : nullStr;
         sb.writeln('<td>${_esc(v)}</td>');
       }
       sb.writeln('</tr>');

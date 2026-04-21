@@ -25,6 +25,7 @@ abstract interface class UnitFormatter {
   String time(double seconds); // "1.234 s"
   String powderSensitivity(Ratio dim); // "2.00 %"
   String torque(Torque dim);
+  String targetSize(Angular dim);
 
   String windSpeed(Velocity dim);
   String windDirection(Angular dim);

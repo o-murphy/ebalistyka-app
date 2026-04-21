@@ -4,6 +4,8 @@
 // ObjectBox entities used directly (no old model classes).
 //   flutter test test/features/home/home_vm_test.dart
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -203,15 +205,17 @@ ProviderContainer _createContainer({
   );
 }
 
-/// Ensures async dependencies resolve, then triggers recalculate.
-Future<HomeUiReady> _recalculate(ProviderContainer container) async {
-  await container.read(shotContextProvider.future);
-  await container.read(settingsProvider.future);
-  await Future<void>.delayed(Duration.zero);
-  final notifier = container.read(homeVmProvider.notifier);
-  await notifier.recalculate();
-  final state = container.read(homeVmProvider).value;
-  return state as HomeUiReady;
+/// Waits until the VM emits a state of type [T].
+Future<T> _waitFor<T extends HomeUiState>(ProviderContainer container) {
+  final completer = Completer<T>();
+  late ProviderSubscription<AsyncValue<HomeUiState>> sub;
+  sub = container.listen<AsyncValue<HomeUiState>>(homeVmProvider, (_, value) {
+    if (value.value is T) {
+      completer.complete(value.value! as T);
+      sub.close();
+    }
+  }, fireImmediately: true);
+  return completer.future;
 }
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -229,7 +233,7 @@ void main() {
         conditions: _makeConditions(),
         service: service,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -240,32 +244,32 @@ void main() {
     });
 
     test('wind angle is set from conditions', () {
-      expect(state.windAngleDeg, closeTo(90.0, 0.1));
+      expect(state.conditionsState.windAngleDeg, closeTo(90.0, 0.1));
     });
 
     test('conditions displays are non-empty strings', () {
-      expect(state.tempDisplay, isNotEmpty);
-      expect(state.altDisplay, isNotEmpty);
-      expect(state.pressDisplay, isNotEmpty);
-      expect(state.humidDisplay, isNotEmpty);
+      expect(state.conditionsState.tempDisplay, isNotEmpty);
+      expect(state.conditionsState.altDisplay, isNotEmpty);
+      expect(state.conditionsState.pressDisplay, isNotEmpty);
+      expect(state.conditionsState.humidDisplay, isNotEmpty);
     });
 
     test('conditions contain correct units', () {
-      expect(state.tempDisplay, contains('°C'));
-      expect(state.altDisplay, contains('m'));
-      expect(state.pressDisplay, contains('hPa'));
-      expect(state.humidDisplay, contains('%'));
+      expect(state.conditionsState.tempDisplay, contains('°C'));
+      expect(state.conditionsState.altDisplay, contains('m'));
+      expect(state.conditionsState.pressDisplay, contains('hPa'));
+      expect(state.conditionsState.humidDisplay, contains('%'));
     });
 
     test('cartridge info line contains projectile name and MV', () {
-      expect(state.cartridgeInfoLine, contains('Test 175gr'));
-      expect(state.cartridgeInfoLine, contains('m/s'));
-      expect(state.cartridgeInfoLine, contains('G7'));
+      expect(state.reticleState.cartridgeInfoLine, contains('Test 175gr'));
+      expect(state.reticleState.cartridgeInfoLine, contains('m/s'));
+      expect(state.reticleState.cartridgeInfoLine, contains('G7'));
     });
 
     test('adjustment data has elevation values', () {
-      expect(state.adjustment.elevation, isNotEmpty);
-      expect(state.adjustment.elevation.first.symbol, 'MRAD');
+      expect(state.reticleState.adjustment.elevation, isNotEmpty);
+      expect(state.reticleState.adjustment.elevation.first.symbol, 'MRAD');
     });
 
     test('table data has 5 distance headers', () {
@@ -277,12 +281,12 @@ void main() {
     });
 
     test('chart data has points', () {
-      expect(state.chartData.points, isNotEmpty);
+      expect(state.chartState.chartData.points, isNotEmpty);
     });
 
     test('selected point info is auto-populated at target distance', () {
-      expect(state.selectedPointInfo, isNotNull);
-      expect(state.selectedChartIndex, isNotNull);
+      expect(state.chartState.selectedPointInfo, isNotNull);
+      expect(state.chartState.selectedChartIndex, isNotNull);
     });
 
     test('ballistics service was called once', () {
@@ -301,7 +305,7 @@ void main() {
         conditions: _makeConditions(),
         service: service,
       );
-      await _recalculate(container);
+      await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -310,19 +314,20 @@ void main() {
       final notifier = container.read(homeVmProvider.notifier);
       notifier.selectChartPoint(5);
       final state = container.read(homeVmProvider).value as HomeUiReady;
-      expect(state.selectedPointInfo, isNotNull);
-      expect(state.selectedPointInfo!.distance, isNotEmpty);
-      expect(state.selectedPointInfo!.velocity, isNotEmpty);
-      expect(state.selectedPointInfo!.energy, isNotEmpty);
+      expect(state.chartState.selectedPointInfo, isNotNull);
+      expect(state.chartState.selectedPointInfo!.distance, isNotEmpty);
+      expect(state.chartState.selectedPointInfo!.velocity, isNotEmpty);
+      expect(state.chartState.selectedPointInfo!.energy, isNotEmpty);
     });
 
     test('selectChartPoint with invalid index preserves previous info', () {
       final notifier = container.read(homeVmProvider.notifier);
       final before = (container.read(homeVmProvider).value as HomeUiReady)
+          .chartState
           .selectedPointInfo;
       notifier.selectChartPoint(999);
       final state = container.read(homeVmProvider).value as HomeUiReady;
-      expect(state.selectedPointInfo, equals(before));
+      expect(state.chartState.selectedPointInfo, equals(before));
     });
   });
 
@@ -343,19 +348,19 @@ void main() {
         service: service,
         unitSettings: imperialUnits,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<HomeUiReady>(container);
     });
 
     tearDown(() => container.dispose());
 
     test('conditions display in imperial units', () {
-      expect(state.tempDisplay, contains('°F'));
-      expect(state.altDisplay, contains('yd'));
-      expect(state.pressDisplay, contains('mmHg'));
+      expect(state.conditionsState.tempDisplay, contains('°F'));
+      expect(state.conditionsState.altDisplay, contains('yd'));
+      expect(state.conditionsState.pressDisplay, contains('mmHg'));
     });
 
     test('cartridge info uses imperial velocity', () {
-      expect(state.cartridgeInfoLine, contains('ft/s'));
+      expect(state.reticleState.cartridgeInfoLine, contains('ft/s'));
     });
   });
 
@@ -372,10 +377,13 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = await _recalculate(container);
-      expect(state.adjustment.elevation.any((v) => v.symbol == 'MOA'), isTrue);
+      final state = await _waitFor<HomeUiReady>(container);
       expect(
-        state.adjustment.elevation.any((v) => v.symbol == 'MRAD'),
+        state.reticleState.adjustment.elevation.any((v) => v.symbol == 'MOA'),
+        isTrue,
+      );
+      expect(
+        state.reticleState.adjustment.elevation.any((v) => v.symbol == 'MRAD'),
         isFalse,
       );
     });
@@ -392,26 +400,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = await _recalculate(container);
-      expect(state.adjustment.elevation.length, 2);
-    });
-  });
-
-  group('HomeViewModel — zero caching', () {
-    test('second recalculate reuses cached zero', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
-
-      await _recalculate(container);
-      expect(service.callCount, 1);
-
-      await _recalculate(container);
-      expect(service.callCount, 2);
+      final state = await _waitFor<HomeUiReady>(container);
+      expect(state.reticleState.adjustment.elevation.length, 2);
     });
   });
 
@@ -432,20 +422,13 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(shotContextProvider.future);
-      await container.read(settingsProvider.future);
-      await Future<void>.delayed(Duration.zero);
-
-      final notifier = container.read(homeVmProvider.notifier);
-      await notifier.recalculate();
-      final state = container.read(homeVmProvider).value;
-      expect(state, isA<HomeUiError>());
-      expect((state as HomeUiError).message, contains('Boom'));
+      final state = await _waitFor<HomeUiError>(container);
+      expect(state.message, contains('Boom'));
     });
   });
 
   group('HomeViewModel — initial state', () {
-    test('starts with loading state', () async {
+    test('starts with no-data before shot context resolves', () async {
       final service = _FakeBallisticsService(_makeResult());
       final container = _createContainer(
         profile: _makeProfile(),
@@ -454,7 +437,6 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // build() returns HomeUiNoData until recalculate is called
       final state = await container.read(homeVmProvider.future);
       expect(state, isA<HomeUiNoData>());
     });

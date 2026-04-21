@@ -83,6 +83,9 @@ class UnitFormatterImpl implements UnitFormatter {
   String torque(Torque dim) => _fmt(dim, FC.torque, _u.torqueUnit);
 
   @override
+  String targetSize(Angular dim) => _fmt(dim, FC.targetSize, _u.targetSizeUnit);
+
+  @override
   String windSpeed(Velocity dim) => _fmt(dim, FC.windSpeed, _u.velocityUnit);
 
   @override

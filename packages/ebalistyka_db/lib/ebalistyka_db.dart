@@ -9,6 +9,7 @@ export 'src/export/ebcp_item.dart';
 export 'src/export/float64list_converter.dart';
 export 'src/export/general_settings_export.dart';
 export 'src/export/profile_export.dart';
+export 'src/export/reticle_settings_export.dart';
 export 'src/export/settings_export.dart';
 export 'src/export/sight_export.dart';
 export 'src/export/tables_settings_export.dart';

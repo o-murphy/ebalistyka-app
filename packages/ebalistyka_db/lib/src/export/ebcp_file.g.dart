@@ -7,7 +7,7 @@ part of 'ebcp_file.dart';
 // **************************************************************************
 
 EbcpFile _$EbcpFileFromJson(Map<String, dynamic> json) => EbcpFile(
-  version: json['version'] as String,
+  version: json['version'] as String? ?? kEbcpFormatVersion,
   items: (json['items'] as List<dynamic>)
       .map((e) => EbcpItem.fromJson(e as Map<String, dynamic>))
       .toList(),

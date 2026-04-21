@@ -1,3 +1,7 @@
+dart packages/reticle_gen/lib/target_default.dart  assets/svg/targets/default.svg
+dart packages/reticle_gen/lib/target_body.dart  assets/svg/targets/Body.svg
+dart packages/reticle_gen/lib/target_plate20cm.dart  assets/svg/targets/20cmPlate.svg
+
 dart packages/reticle_gen/lib/ddr_2.dart  assets/svg/reticles/DDR-2.svg
 dart packages/reticle_gen/lib/moar.dart "ATACR 35x"  assets/svg/reticles/MOAR.svg
 dart packages/reticle_gen/lib/mil_r_f1.dart "ATACR 35x F1"  assets/svg/reticles/MIL-R-F1.svg

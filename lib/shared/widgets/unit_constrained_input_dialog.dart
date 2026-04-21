@@ -1,174 +1,261 @@
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
 
-// ── Refactored dialog using the same helper ─────────────────────────────────
+// ── Refactored dialog using UnitPickerContext ──────────────────────────────
 
-class _DialogState {
-  double editRaw;
-  bool isNullValue;
-  String? errorText;
+class _UnitEditDialogContent extends StatefulWidget {
+  const _UnitEditDialogContent({
+    required this.pickerContext,
+    required this.initialRawValue,
+  });
 
-  _DialogState({required this.editRaw, required this.isNullValue})
-    : errorText = null;
+  final UnitPickerContext pickerContext;
+  final double? initialRawValue;
+
+  @override
+  State<_UnitEditDialogContent> createState() => _UnitEditDialogContentState();
 }
 
-Future<void> _showUnitEditDialogInternal(
-  BuildContext context, {
-  required String label,
-  required double? initialRawValue,
-  required FieldConstraints constraints,
-  required Unit displayUnit,
-  required String? symbol,
-  required bool allowNull,
-  required void Function(double?) onChanged,
-}) async {
-  final helper = UnitConversionHelper(
-    constraints: constraints,
-    displayUnit: displayUnit,
-  );
-  final sym = symbol ?? displayUnit.symbol;
+class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
+  late final TextEditingController _controller;
+  late final UnitConversionHelper _helper;
 
-  final initialRaw = initialRawValue ?? constraints.minRaw;
-  final controller = TextEditingController(
-    text: initialRawValue != null
-        ? helper.formatDisplayValue(helper.toDisplay(initialRawValue))
-        : '',
-  );
+  late double _editRaw;
+  late bool _isNullValue;
+  String? _errorText;
 
-  await showDialog<void>(
-    context: context,
-    builder: (ctx) {
-      final dialogState = _DialogState(
-        editRaw: initialRaw,
-        isNullValue: initialRawValue == null,
+  @override
+  void initState() {
+    super.initState();
+    final ctx = widget.pickerContext;
+
+    _helper = UnitConversionHelper(
+      constraints: ctx.constraints,
+      displayUnit: ctx.displayUnit,
+    );
+
+    // IMPORTANT: Use initialRawValue to define the initial state null
+    _editRaw = widget.initialRawValue ?? ctx.constraints.minRaw;
+    _isNullValue = widget.initialRawValue == null;
+
+    final initialText = widget.initialRawValue != null
+        ? _helper.formatDisplayValue(_helper.toDisplay(widget.initialRawValue!))
+        : '';
+
+    _controller = TextEditingController(text: initialText);
+  }
+
+  void _onTextChanged(String text) {
+    final (rawValue, errorText) = _helper.parseAndValidate(text);
+
+    setState(() {
+      _errorText = errorText;
+      if (errorText == null) {
+        _isNullValue = (rawValue == null);
+        if (rawValue != null) {
+          _editRaw = rawValue;
+        }
+      } else {
+        _isNullValue = false;
+      }
+    });
+  }
+
+  void _step(int dir) {
+    setState(() {
+      _isNullValue = false;
+      _editRaw = (_editRaw + dir * _helper.stepRaw).clamp(
+        widget.pickerContext.constraints.minRaw,
+        widget.pickerContext.constraints.maxRaw,
       );
+      _controller.text = _helper.formatDisplayValue(
+        _helper.toDisplay(_editRaw),
+      );
+      _errorText = null;
+    });
+  }
 
-      return StatefulBuilder(
-        builder: (ctx, setState) {
-          void step(int dir) {
-            dialogState.isNullValue = false;
-            dialogState.editRaw = (dialogState.editRaw + dir * helper.stepRaw)
-                .clamp(constraints.minRaw, constraints.maxRaw);
-            controller.text = helper.formatDisplayValue(
-              helper.toDisplay(dialogState.editRaw),
-            );
-            dialogState.errorText = null;
-            setState(() {});
-          }
+  void _clearField() {
+    if (widget.pickerContext.allowNull != true) return;
+    _controller.clear();
+    setState(() {
+      _isNullValue = true;
+      _errorText = null;
+      _editRaw = widget.pickerContext.constraints.minRaw;
+    });
+  }
 
-          void clearField() {
-            if (!allowNull) return;
-            controller.clear();
-            dialogState.isNullValue = true;
-            dialogState.errorText = null;
-            dialogState.editRaw = constraints.minRaw;
-            setState(() {});
-          }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
-          void onTextChanged(String text) {
-            final (rawValue, errorText) = helper.parseAndValidate(text);
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ctx = widget.pickerContext;
+    final sym = ctx.symbol ?? ctx.displayUnit.symbol;
+    final accuracy = ctx.constraints.accuracyFor(ctx.displayUnit);
 
-            setState(() {
-              if (errorText == null) {
-                dialogState.errorText = null;
-                dialogState.isNullValue = rawValue == null;
-                if (rawValue != null) {
-                  dialogState.editRaw = rawValue;
-                }
-              } else {
-                dialogState.errorText = errorText;
-                dialogState.isNullValue = false;
-              }
-            });
-          }
+    final canSave =
+        _errorText == null && (!_isNullValue || (ctx.allowNull == true));
 
-          return AlertDialog(
-            title: Text('$label  ($sym)'),
-            content: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(IconDef.minus),
-                  onPressed: () => setState(() => step(-1)),
+    String displayHeader;
+    Color headerColor;
+
+    if (_errorText != null) {
+      displayHeader = "Invalid";
+      headerColor = theme.colorScheme.error;
+    } else if (_isNullValue) {
+      displayHeader = nullStr;
+      headerColor = theme.colorScheme.onSurfaceVariant;
+    } else {
+      displayHeader = _helper.toDisplay(_editRaw).toStringAsFixed(accuracy);
+      headerColor = theme.colorScheme.primary;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            ctx.label,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                displayHeader,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: headerColor,
+                  fontWeight: FontWeight.w900,
                 ),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    autofocus: true,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: true,
-                    ),
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      suffixText: sym,
-                      errorText: dialogState.errorText,
-                      hintText: allowNull ? '—' : null,
-                      suffixIcon: allowNull && controller.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(IconDef.clear),
-                              onPressed: clearField,
-                              iconSize: 12,
-                            )
-                          : null,
-                    ),
-                    onChanged: onTextChanged,
+              ),
+              if (_errorText == null && !_isNullValue) ...[
+                const SizedBox(width: 6),
+                Text(
+                  sym,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(IconDef.plus),
-                  onPressed: () => setState(() => step(1)),
-                ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel'),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton.filledTonal(
+                icon: const Icon(IconDef.minus),
+                onPressed: () => _step(-1),
               ),
-              TextButton(
-                onPressed: dialogState.errorText != null
-                    ? null
-                    : () {
-                        if (dialogState.isNullValue && allowNull) {
-                          onChanged(null);
-                        } else {
-                          onChanged(dialogState.editRaw);
-                        }
-                        Navigator.pop(ctx);
-                      },
-                child: const Text('OK'),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge,
+                  decoration: InputDecoration(
+                    errorText: _errorText,
+                    errorMaxLines: 2,
+                    hintText: ctx.allowNull == true ? nullStr : null,
+                    filled: true,
+                    fillColor: theme.colorScheme.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    suffixIcon:
+                        ctx.allowNull == true && _controller.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(IconDef.clear),
+                            onPressed: _clearField,
+                            iconSize: 18,
+                          )
+                        : null,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onChanged: _onTextChanged,
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filledTonal(
+                icon: const Icon(IconDef.plus),
+                onPressed: () => _step(1),
               ),
             ],
-          );
-        },
-      );
-    },
-  );
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Dismiss'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton(
+                  onPressed: !canSave
+                      ? null
+                      : () {
+                          ctx.onChanged(_isNullValue ? null : _editRaw);
+                          Navigator.pop(context);
+                        },
+                  child: const Text('OK'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── Public dialog functions ─────────────────────────────────────────────────
 
-void showUnitEditDialog(
-  BuildContext context, {
-  required String label,
-  required double rawValue,
-  required FieldConstraints constraints,
-  required Unit displayUnit,
-  String? symbol,
-  required ValueChanged<double> onChanged,
-}) {
-  _showUnitEditDialogInternal(
-    context,
-    label: label,
-    initialRawValue: rawValue,
-    constraints: constraints,
-    displayUnit: displayUnit,
-    symbol: symbol,
-    allowNull: false,
-    onChanged: (value) => onChanged(value!),
+void showUnitEditDialog(UnitPickerContext pickerContext) {
+  showDialog<void>(
+    context: pickerContext.buildContext,
+    builder: (ctx) => Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: _UnitEditDialogContent(
+        pickerContext: pickerContext,
+        initialRawValue: pickerContext.rawValue,
+      ),
+    ),
   );
 }
 
@@ -181,14 +268,28 @@ Future<void> showNullableUnitEditDialog(
   String? symbol,
   required ValueChanged<double?> onChanged,
 }) async {
-  await _showUnitEditDialogInternal(
+  // Create a context. Although internally UnitPickerContext onChanged has type ValueChanged<double>,
+  // we wrap our nullable onChanged to avoid a Type Error when passing null.
+  final pickerContext = UnitPickerContext(
     context,
     label: label,
-    initialRawValue: rawValue,
+    rawValue: rawValue ?? constraints.minRaw,
     constraints: constraints,
     displayUnit: displayUnit,
+    onChanged: onChanged,
     symbol: symbol,
     allowNull: true,
-    onChanged: onChanged,
+  );
+
+  await showDialog<void>(
+    context: context,
+    builder: (ctx) => Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: _UnitEditDialogContent(
+        pickerContext: pickerContext,
+        initialRawValue: rawValue,
+      ),
+    ),
   );
 }

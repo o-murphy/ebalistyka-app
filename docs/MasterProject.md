@@ -1,8 +1,8 @@
 # eBalistyka — Master Project Document
 
-**Version:** 2.0
-**Status:** Working Document
-**Stack:** Flutter · Dart · Riverpod · FFI (bclibc C++)
+**Version:** 3.0
+**Status:** Living Document — updated 2026-04-20
+**Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
 **Package:** `ebalistyka` · Bundle ID: `com.ballistics.ebalistyka`
 
 ---
@@ -81,8 +81,7 @@ Each primary screen has its **own independent navigation stack**. Sub-screens ar
 
 | Primary screen | Sub-screen stack                                           |
 | -------------- | ---------------------------------------------------------- |
-| **Home**       | → Rifle Selection → (Sight / Cartridge / Library / Create) |
-| **Home**       | → Projectile Selection → (Library / Create)                |
+| **Home**       | → Profiles (PageView) → Weapon/Ammo/Sight wizards          |
 | **Home**       | → Shot Details (Info screen)                               |
 | **Settings**   | → Units of Measurement                                     |
 | **Settings**   | → Adjustment Display                                       |
@@ -102,13 +101,23 @@ Each primary screen has its **own independent navigation stack**. Sub-screens ar
 ```
 / (ShellRoute — bottom nav always visible)
 ├── /home
-│   ├── /home/rifle-select
-│   │   ├── /home/rifle-select/rifle-edit
-│   │   ├── /home/rifle-select/sight-select
-│   │   └── /home/rifle-select/cartridge
-│   │       └── /home/rifle-select/cartridge/edit
-│   ├── /home/projectile-select
-│   │   └── /home/projectile-select/edit
+│   ├── /home/profiles
+│   │   ├── /home/profiles/weapon-create
+│   │   ├── /home/profiles/weapon-collection
+│   │   │     └── /home/profiles/weapon-wizard
+│   │   ├── /home/profiles/weapon-edit
+│   │   ├── /home/profiles/ammo-select
+│   │   │   ├── .../ammo-create
+│   │   │   ├── .../cartridge-collection → .../ammo-wizard
+│   │   │   └── .../bullet-collection → .../ammo-wizard
+│   │   ├── /home/profiles/ammo-edit
+│   │   │   ├── .../multi-bc-g1 / multi-bc-g7
+│   │   │   ├── .../drag-table
+│   │   │   └── .../powder-sensitivity
+│   │   ├── /home/profiles/sight-select
+│   │   │   ├── .../sight-create
+│   │   │   └── .../sight-collection → .../sight-wizard
+│   │   └── /home/profiles/sight-edit
 │   └── /home/shot-details
 ├── /conditions
 ├── /tables
@@ -148,17 +157,17 @@ Control panel for shot parameters.
 
 | Element                     | Action                                         |
 | --------------------------- | ---------------------------------------------- |
-| Rifle selection button      | Opens Rifle Selection screen (stack push)      |
-| Projectile selection button | Opens Projectile Selection screen (stack push) |
+| Rifle/Profile selection button | Opens ProfilesScreen (stack push)           |
+| Projectile (Ammo) display      | Info-only, edit via ProfilesScreen          |
 
 **Navigation buttons:**
 
 | Element             | Action                                          |
 | ------------------- | ----------------------------------------------- |
-| Shot details button | Pushes Info screen                              |
-| New note button     | Creates a note for the shot (stub → Phase 12)   |
-| Help button         | Shows all-in-one help overlay (stub → Phase 12) |
-| More button         | Pushes Tools screen (stub → Phase 12)           |
+| Shot details button | Pushes Shot Details screen ✅                    |
+| New note button     | `showNotAvailableSnackBar` stub (→ Phase 12)    |
+| Help button         | `showNotAvailableSnackBar` stub (→ Phase 12)    |
+| More button         | `showNotAvailableSnackBar` stub (→ Phase 12)    |
 
 **Read-only indicators** (values from Conditions screen):
 
@@ -169,9 +178,9 @@ Control panel for shot parameters.
 | Humidity sign    | Current humidity    |
 | Pressure sign    | Current pressure    |
 
-**Wind Direction Wheel:** Interactive element for selecting wind direction. Displays current direction. Double-tap resets to 0°.
+**Wind Direction Wheel:** Interactive element for selecting wind direction. Displays current direction. Double-tap resets to 0°. ✅
 
-**Quick action buttons** (each opens a ruler-like selector overlay):
+**Quick action buttons** (each opens a spin-box dialog):
 
 | Button          | Parameter              |
 | --------------- | ---------------------- |
@@ -183,59 +192,36 @@ Control panel for shot parameters.
 
 Switched by swipe.
 
-**Page 1: Reticle + Adjustments**
+**Page 1: Reticle + Adjustments** ✅
 
 ```
 ┌──────────────────────────────────────┐
-│  [reticle placeholder]  │  ↑ 2.34   │
-│                         │  MIL      │
-│                         │  0.98 MOA │
-│                         │  ─────────│
-│                         │  → 0.12   │
-│                         │  MIL      │
+│  [SVG reticle + correction dot] │ ↑ 2.34   │
+│                                 │ MIL      │
+│                                 │ 0.98 MOA │
+│                                 │ ─────────│
+│                                 │ → 0.12   │
+│                                 │ MIL      │
 └──────────────────────────────────────┘
 ```
 
-- Left half: rounded square placeholder for future reticle widget
-- Right half: two rows (drop / windage), each showing adjustment value in multiple units (cm/100m, in/100yd, MOA, MIL, MRAD) based on Adjustment Display settings
-- Data source: `homeVmProvider` → `HomeUiReady.reticleData` → drop/windage adjustments per enabled unit
+- Left: SVG reticle via `reticleSvgProvider`, color roles resolved, correction indicator overlaid
+- Right: Drop/Windage in enabled adjustment units; `AdjustmentFormat` (arrows/signs/letters)
 
-**Page 2: Adjustment Tables**
+**Page 2: Adjustment Tables** ✅
 
-Vertically scrollable set of compact tables. Each table: header row with distances (target ± 2 steps), value row. Tables:
+Vertically scrollable set of compact tables (target ± 2 steps, 11 rows).
 
-| Table            | Unit                        |
-| ---------------- | --------------------------- |
-| Height           | `units.drop`                |
-| Slant Height     | `units.drop`                |
-| Angle (MIL)      | mil                         |
-| Angle (MOA)      | moa                         |
-| Drop (MIL)       | mil                         |
-| Drop (MOA)       | moa                         |
-| Windage (MIL)    | mil                         |
-| Windage (MOA)    | moa                         |
-| Velocity         | `units.velocity`            |
-| Energy           | `units.energy`              |
-| Time             | seconds                     |
+**Page 3: Trajectory Chart** ✅
 
-**Page 3: Trajectory Chart**
+- Info grid with selected point values (trajectory + velocity curves)
+- Pan → nearest point; axis numeric labels only
 
-- Above chart: info grid with currently selected point values
-  - Left column: Trajectory label, Velocity, Energy, Time
-  - Right column: Height, Drop, Windage, Distance
-- Chart: trajectory curve + velocity curve only (no barrel/sight lines)
-- Default selected point: start of trajectory
-- Pan on chart → highlights nearest point, updates info grid above
-- Axis labels removed; numeric tick labels only, right-aligned to chart edges
 ---
 
-### 4.2 Conditions Screen
+### 4.2 Conditions Screen ✅
 
 > **Purpose:** Input and editing of environmental parameters.
-
-**Input fields** (units from `unitSettingsProvider`):
-
-Layout per field: `[−]  value  unit  [+]` — the +/− buttons are adjacent to the value, not at the edges of the row. Tapping the value itself opens a keyboard dialog for direct numeric entry.
 
 | Parameter   | Unit                |
 | ----------- | ------------------- |
@@ -244,61 +230,43 @@ Layout per field: `[−]  value  unit  [+]` — the +/− buttons are adjacent t
 | Humidity    | %                   |
 | Pressure    | `units.pressure`    |
 
-**Switches** (read/write `AppSettings` via `SettingsNotifier`):
-
-| Switch                                        | Note                                                            |
-| --------------------------------------------- | --------------------------------------------------------------- |
-| Coriolis effect                               |                                                                 |
-| Powder temperature sensitivity                | When ON — reveals sub-switch + readonly fields (see below)      |
-| ↳ Use different powder temperature            | Sub-switch; when ON — shows editable `Powder temperature` field |
-| ↳ *(readonly)* Muzzle velocity at powder temp | Calculated via `Ammo.getVelocityForTemp(currentPowderTemp)`     |
-| ↳ *(readonly)* Powder sensitivity             | `Cartridge.tempModifier` formatted as `%/15°C`                  |
-| Derivation                                    |                                                                 |
-| Aerodynamic jump                              | Always ON, control disabled (engine limitation)                 |
-| Pressure depends on altitude                  | Always ON, control disabled (engine limitation)                 |
-
-Powder temperature field appears in the **switch section** (not atmospheric fields), below the sub-switch, only when `useDiffPowderTemperature` is ON.
+**Switches:** Coriolis, Powder temperature sensitivity (with sub-switch + powder temp field + readonly MV/sensitivity), Derivation, Aerodynamic jump (always ON, disabled), Pressure depends on altitude (always ON, disabled).
 
 ---
 
-### 4.3 Tables Screen
+### 4.3 Tables Screen ✅
 
 > **Purpose:** Full trajectory table for the current shot.
-
-Layout (top to bottom):
 
 | Element                   | Description                                                                |
 | ------------------------- | -------------------------------------------------------------------------- |
 | **Header**                | Back button, "Tables" title, Configure + Export buttons                    |
 | **Spoiler / accordion**   | Collapsible panel: rifle, cartridge, sight, atmospheric conditions summary |
-| **Zero crossing table**   | Small table showing zero-crossing points (from `HitResult.zeros`)          |
-| **Full trajectory table** | Complete trajectory for all distances; zero-distance row highlighted       |
+| **Zero crossing table**   | Small table showing zero-crossing points                                   |
+| **Full trajectory table** | Complete trajectory; zero-distance row highlighted                         |
 | **Configure button**      | Pushes `/tables/configure`                                                 |
-| **Export / Share button** | Exports table via share sheet (PDF or HTML, TBD)                           |
-
-All values that has no overloads in table configuration - FC-based
-Should use a behaviour from it's configuration for step start/end, not from app settings 
+| **Export button**         | HTML export via `table_html_exporter.dart` ✅                               |
 
 ---
 
 ### 4.4 Convertors Screen
 
-> **Purpose:** Collection of unit converters. Sub-screens are placeholders for now.
+> **Purpose:** Collection of unit converters.
 
-**Layout:** Responsive scrollable grid — tile count per row adapts to screen width (`SliverGrid.extent` with `maxCrossAxisExtent ≈ 160 dp`). Each tile — square card with rounded corners, large icon, name below.
+**Layout:** Responsive scrollable grid (`SliverGrid.extent`, `maxCrossAxisExtent ≈ 160 dp`). ✅
 
 **Converters (8 total):**
 
-| #   | Route type        | Name                  |
-| --- | ----------------- | --------------------- |
-| 1   | `target-distance` | Target Distance       |
-| 2   | `velocity`        | Velocity              |
-| 3   | `length`          | Length                |
-| 4   | `weight`          | Weight                |
-| 5   | `pressure`        | Pressure              |
-| 6   | `temperature`     | Temperature           |
-| 7   | `mil-moa`         | MIL / MOA at Distance |
-| 8   | `torque`          | Torque                |
+| #   | Route type        | Name                  | Status |
+| --- | ----------------- | --------------------- | ------ |
+| 1   | `target-distance` | Target Distance       | ⏳ stub |
+| 2   | `velocity`        | Velocity              | ✅      |
+| 3   | `length`          | Length                | ✅      |
+| 4   | `weight`          | Weight                | ✅      |
+| 5   | `pressure`        | Pressure              | ✅      |
+| 6   | `temperature`     | Temperature           | ✅      |
+| 7   | `mil-moa`         | MIL / MOA at Distance | ✅      |
+| 8   | `torque`          | Torque                | ✅      |
 
 ---
 
@@ -308,15 +276,16 @@ Should use a behaviour from it's configuration for step start/end, not from app 
 
 | Section        | Element                                              | Status         |
 | -------------- | ---------------------------------------------------- | -------------- |
-| **Language**   | Tap → AlertDialog radio uk/en, calls `setLanguage()` | ✅              |
+| **Language**   | AlertDialog radio uk/en                              | ✅              |
 | **Appearance** | Theme — SegmentedButton (System/Light/Dark)          | ✅              |
 | **Appearance** | Units of Measurement → `/settings/units`             | ✅              |
 | **Ballistics** | Adjustment Display → `/settings/adjustment`          | ✅              |
 | **Ballistics** | Subsonic transition switch                           | ✅              |
-| **Ballistics** | Table distance step (dialog)                         | ✅              | Affects Home bottom block Page 2 only. Tables screen will have its own per-screen step setting. |
+| **Ballistics** | Table distance step (dialog)                         | ✅              |
 | **Ballistics** | Chart distance step (dialog)                         | ✅              |
-| **Data**       | Export / Import buttons                              | ⏳ stub         |
-| **About**      | Version, links (GitHub, Privacy, Terms, Changelog)   | ✅ (links stub) |
+| **Data**       | Export backup / Import backup (.ebcp, full data)     | ✅              |
+| **About**      | Version, GitHub link                                 | ✅              |
+| **About**      | Privacy Policy / Terms of Use / Changelog links      | ⏳ stub         |
 
 ---
 
@@ -324,227 +293,117 @@ Should use a behaviour from it's configuration for step start/end, not from app 
 
 ---
 
-### 5.1 Info Screen
+### 5.1 Shot Details Screen ✅
 
 > Opened from **Shot details** button on Home.
 
-Full read-only list of all current shot parameters (`ShotProfile`). No editing.
+Full read-only list of current shot parameters. Sections: Velocity, Energy, Stability (Miller Sg), Trajectory. All values unit-aware via `ShotDetailsViewModel`.
 
 ---
 
-### 5.2 Reticle Screen
+### 5.2 Reticle Fullscreen Screen ⏳
 
 > Opened from the small reticle preview on Home → Page 1.
 
-Full-screen display of the scope reticle with calculated adjustments overlaid. Details TBD.
+Full-screen display of the scope reticle with calculated adjustments. Details TBD. Depends on `RETICLES_AND_IMAGES.md`.
 
 ---
 
-### 5.3 Tools Screen
+### 5.3 Tools Screen ⏳
 
-> Opened from **More** button on Home.
+> Opened from **More** button on Home. Currently `showNotAvailableSnackBar`.
 
-Contains at minimum three ruler-like selectors:
-
-| Tool                     | Description                             |
-| ------------------------ | --------------------------------------- |
-| Wind speed selector      | Ruler-based wind speed selection        |
-| Look angle selector      | Ruler-based inclination angle selection |
-| Target distance selector | Ruler-based target distance selection   |
+Post-Alpha. Composition TBD.
 
 ---
 
-### 5.4 Help Overlay
+### 5.4 Help Overlay ⏳
 
 > Opened from **Help** button on Home.
 
-All-in-one overlay that **simultaneously highlights all** key UI elements with short labels. Not a step-by-step tour — everything shown at once.
-
-Implementation: `Stack` + positioned coach mark widgets over `HomeScreen`.
+All-in-one overlay that simultaneously highlights all key UI elements. Post-Alpha.
 
 ---
 
-### 5.5 Value Input Widgets (reusable)
+### 5.5 Value Input Widgets ✅
 
-Two reusable input patterns:
+**SpinBox Selector** (`showUnitEditDialog`): `[−] field [+]` modal dialog. POS-terminal digit input. Used by `UnitValueField`, `QuickActionsPanel`, `TempControl`. ✅
 
-**Ruler Selector** (`lib/widgets/ruler_selector.dart`):
-- Modal dialog/popup with vertical layout
-- Float/int input field with POS-terminal-style behavior (digits enter from right)
-- Touchable vertical ruler with tick marks; center tick = selected value
-- Touch drag + keyboard input
-
-**Spin Box Selector** (`lib/widgets/spin_box_selector.dart`):
-- Modal dialog/popup
-- Float/int input with POS-terminal-style behavior
-- Up/Down buttons flanking the input field, change value by configured step
-
-Reference implementations (TypeScript originals):
-- `doubleSpinBox.tsx`, `valueDialog.tsx`, `ruler.tsx`, `numericField.tsx` in `ebalistyka-web`
-
-Input accuracy logic follows the referenced components.
-
-Used for: wind speed, look angle, target distance, conditions fields.
+**RulerSelector** ⏳ (Post-Alpha): touch-drag ruler for QuickActionsPanel replacement.
 
 ---
 
-### 5.6 Units Screen (`/settings/units`)
+### 5.6 Units Screen ✅ (`/settings/units`)
 
-> Opened from **Settings → Units of Measurement**.
-
-List of unit categories, each with an inline chip/dropdown selector.
-
-| Category             | Options                               |
-| -------------------- | ------------------------------------- |
-| Velocity             | fps / m/s                             |
-| Distance             | meters / yards / feet                 |
-| Sight height         | inches / cm                           |
-| Pressure             | mmHg / inHg / hPa / PSI               |
-| Temperature          | Celsius / Fahrenheit                  |
-| Drop / Windage       | meters / feet / cm / inches           |
-| Drop / Windage angle | MIL / MOA / MRAD / cm/100m / in/100yd |
-| Energy               | joules / foot-pounds                  |
-| Bullet weight        | grams / grains                        |
-| OGW                  | pounds / kg                           |
-| Bullet length        | mm / cm / inches                      |
+11 unit categories, each with inline chip selector. Full list in `UnitSettings`.
 
 ---
 
-### 5.7 Adjustment Display Screen (`/settings/adjustment`)
+### 5.7 Adjustment Display Screen ✅ (`/settings/adjustment`)
 
-> Opened from **Settings → Adjustment Display**.
-
-| Setting             | Options                           |
-| ------------------- | --------------------------------- |
-| Adjustment format   | Arrows ↑↓ / Signs +− / Letters UD |
-| Show MRAD           | switch                            |
-| Show MOA            | switch                            |
-| Show MIL            | switch                            |
-| Show cm/100m        | switch                            |
-| Show in/100yd       | switch                            |
-| Table distance step | (later)                           |
-| Chart distance step | (later)                           |
-
-Stored as flat fields directly in `AppSettings` (no nested model).
+`AdjustmentFormat` SegmentedButton + 5 unit switches (MRAD/MOA/MIL/cm/in).
 
 ---
 
-### 5.8 Rifle Selection Screen
+### 5.8 Profiles Screen ✅ (`/home/profiles`)
 
-> Opened from **Rifle selection** button on Home.
+`PageView` of `ProfileCard` widgets. FAB → Add flow (new / from collection / import). Per-card: Duplicate, Export (.ebcp/.a7p), Rename, Remove. Active profile is page 0.
 
-| Element                | Description                            |
-| ---------------------- | -------------------------------------- |
-| Library list           | Select existing rifle                  |
-| Create manually button | Pushes Rifle Edit screen               |
-| Sight selection        | Select or create a sight for the rifle |
-| Cartridge button       | Pushes Cartridge screen                |
-
----
-
-### 5.9 Projectile Selection Screen
-
-> Opened from **Projectile selection** button on Home.
-
-| Element                | Description                   |
-| ---------------------- | ----------------------------- |
-| Library list           | Select existing projectile    |
-| Create manually button | Pushes Projectile Edit screen |
+**ProfileCard layout:**
+- `_ProfileControlTile`: sight FAB (top-left) + ammo FAB (bottom-right)
+- Weapon section (tap → WeaponWizardScreen)
+- Ammo section (tap → AmmoWizardScreen, if selected)
+- Sight section (tap → SightWizardScreen, if selected)
+- Select / Go to calc button (if ammo + sight selected)
 
 ---
 
-### 5.10 Cartridge Screen
+### 5.9 Wizard Screens ✅
 
-Three actions on one screen:
-
-| Element                    | Description                                   |
-| -------------------------- | --------------------------------------------- |
-| Select from library        | Replace current cartridge                     |
-| Create manually            | Push Cartridge Edit screen                    |
-| Current cartridge settings | Edit parameters of already selected cartridge |
-
----
-
-### 5.11 Table Configuration Screen (`/tables/configure`)
-
-> Opened from **Configure** button on Tables screen.
-
-Configure visible columns and distance step for the trajectory table. Saved in `AppSettings`.
-
-All values that has no overloads in table configuration - FC-based
-
-* Start distance
-* End distance
-* Distance step
-* Display two zeros switch - enables additional small table with 2 zero crossing points
-* Details spoiler settings (check what to display):
-    * Rifle section switch
-      * Caliber switch
-      * Twist switch
-      * Twist direction switch
-    * Projectile switch
-      * Drag-Model type switch
-      * BC switch
-      * Zero Muzzle Velocity
-      * Curr Muzzle Velocity
-      * Zero Distance
-      * Bullet len
-      * Bullet diameter
-      * Bullet Weight
-      * Gyrostability
-    * Sight section switch - for now adding to document not implementing
-      * Scope? x1-x20????
-      * Focal plane: FFC SFC LWIR switch
-      * Reticle name switch
-      * Hor click switch
-      * Ver click switch
-      * Hor click units switch
-      * Ver click units switch
-    * Atmosphere section switch
-      * Curr Temperature
-      * Curr Humidity
-      * Curr Pressure
-      * Wind speed
-      * Wind direction
-
-* Table columns section (switches check what to display):
-    * Time
-    * Range
-    * Velocity
-    * Height
-    * Drop
-    * Drop Adjustment
-    * Windage
-    * Windage Drop Adjustment
-    * Display adjustment in current units or in all adjusment units checked? - will display column for each selected
-    * Drop / Windage units (uses this, and not global)
-    * Mach
-    * Drag
-    * Energy
-
+| Screen                  | File                              | Notes |
+| ----------------------- | --------------------------------- | ----- |
+| `WeaponWizardScreen`    | `weapon_wizard_screen.dart`       | name, caliber, twist, barrelLength; caliber readonly from collection |
+| `AmmoWizardScreen`      | `ammo_wizard_screen.dart`         | Full: drag model, BC table, MV, powder sens, zero conditions, coriolis |
+| `SightWizardScreen`     | `sight_wizard_screen.dart`        | name, height, clicks, magnification, focal plane |
+| `MultiBcEditorScreen`   | `multi_bc_editor_screen.dart`     | G1/G7 table (5 rows, sort desc by V) |
+| `CustomDragTableEditor` | `multi_bc_editor_screen.dart`     | 100 rows, readOnly default |
+| `PowderSensTableEditor` | `powder_sens_table_editor_screen` | T→V table (5 rows), auto-calc coefficient |
 
 ---
 
-### 5.12 Convertor Screen (`/convertors/:type`)
+### 5.10 Collection Screens ✅
 
-> Opened from any tile on Convertors screen.
-
-Two input fields with keyboard + unit labels. Real-time recalculation using the existing `Unit`/`Dimension` system.
+`WeaponCollectionScreen`, `AmmoCollectionScreen` (cartridge/bullet, caliber filter), `SightCollectionScreen`.
 
 ---
 
-### 5.13
+### 5.11 Table Configuration Screen ✅ (`/tables/configure`)
 
-The wind direction wheel and value input should use step from the FC
-So create special wind_direction FC role 
+Range, step, showZeros, spoiler section switches (20+ toggles), column visibility (11 columns), drop/adj unit overrides, start < end validation.
 
-### 5.14
+---
 
-Shot details screen - add GSF (gyrostability) ✅
+### 5.12 Convertor Screens
 
-### 5.15
+Each convertor screen shows multiple output fields simultaneously with real-time recalculation. Input unit is selectable via chip/segment. State persisted per-convertor in `ConvertorsState` (ObjectBox).
 
-Home screen - Page 1 - add GSF to title after dragmodel ✅
+**VelocityConvertorScreen:** mps / km·h / fps / mph / Mach input; Mach uses ICAO or custom atmosphere (temperature, pressure, humidity, altitude). ✅
+
+**DistanceConvertorScreen:** ⏳ stub — to be implemented.
+
+**Other screens** (Length, Weight, Pressure, Temperature, MIL/MOA, Torque): ✅ implemented.
+
+---
+
+### 5.13 Wind Direction Wheel ✅
+
+Step from FC `windDirection` role. Pan + tap + double-tap reset.
+
+### 5.14 Shot Details — Gyrostability ✅
+
+GSF shown in Shot Details screen and as info row on Home Page 1.
+
+---
 
 ## 6. State Architecture
 
@@ -554,33 +413,35 @@ Home screen - Page 1 - add GSF to title after dragmodel ✅
 ┌─────────────────────────────────────────┐
 │           UI (screens / widgets)         │
 │    ref.watch(xxxVmProvider)              │
-│    receives ready-to-display strings     │
 ├─────────────────────────────────────────┤
 │           ViewModels                     │
 │  HomeViewModel · ConditionsViewModel     │
-│  TablesViewModel                         │
+│  TablesViewModel · ShotDetailsViewModel  │
 │  (sealed UiState classes, formatted)     │
 ├─────────────────────────────────────────┤
-│        Formatting / UnitFormatter        │
+│        Formatting                        │
 │  UnitFormatter · UnitFormatterImpl       │
 │  (Dimension/double → String)             │
 ├─────────────────────────────────────────┤
 │           Riverpod providers             │
-│  ShotProfileNotifier · SettingsNotifier  │
-│  RecalcCoordinator · HomeCalcNotifier    │
+│  AppStateNotifier · SettingsNotifier     │
+│  ShotConditionsNotifier · RecalcCoord.   │
+│  ConvertorsNotifier                      │
 ├─────────────────────────────────────────┤
 │         Domain / Services                │
 │  BallisticsService (interface)           │
 │  BallisticsServiceImpl (FFI bridge)      │
+│  EbcpService · A7pService               │
 ├─────────────────────────────────────────┤
-│           Domain models                  │
-│  Rifle · Sight · Cartridge · Projectile  │
-│  Shot · Atmo · Wind · HitResult          │
-│  (NO global unit state — explicit Unit)  │
+│           ObjectBox Entities             │
+│  Owner · Profile · Weapon · Ammo · Sight │
+│  GeneralSettings · UnitSettings          │
+│  TablesSettings · ShootingConditions     │
+│  ConvertorsState                         │
 ├─────────────────────────────────────────┤
-│           Infrastructure                 │
-│  JsonFileStorage · ProfileSerializer     │
-│  Calculator (FFI mapper)                 │
+│     Extension Getters/Setters            │
+│  lib/core/extensions/*.dart              │
+│  (typed access over raw DB fields)       │
 ├─────────────────────────────────────────┤
 │              FFI / C++                   │
 │         bclibc ballistics engine         │
@@ -589,173 +450,103 @@ Home screen - Page 1 - add GSF to title after dragmodel ✅
 
 ### 6.2 Unit System
 
-`PreferredUnits` removed from domain. Domain classes use explicit `Unit` parameters. UI reads units via `unitSettingsProvider`.
+`packages/bclibc_ffi` provides: per-dimension enums (`DistanceUnit`, `VelocityUnit`, `TemperatureUnit`, etc.), `Dimension<T,U>` base class, concrete `Distance`, `Velocity`, `Temperature`, `Pressure`, `Angular`, `Weight`, `Energy`, `Ratio`, `Atmo` classes. FFI enums are proper Dart enums (generated by ffigen ^20).
 
-**UnitFormatter** (`lib/formatting/`): Stateless formatter that converts between raw domain values and display strings. Takes `UnitSettings` at construction, provides `format(FieldRole, value)`, `inputToRaw(FieldRole, displayValue)`, `rawToInput(FieldRole, rawValue)`. Testable with `dart test` (no Flutter dependency).
+`Unit` enum (in `unit.dart`) maps all units with conversion factors; `Unit.mach` included (ICAO constant). Atmosphere-aware mach conversions via `VelocityMachExtension` in `conditions.dart`.
 
-### 6.3 Domain Models
+### 6.3 ObjectBox Entities
 
-#### `UnitSettings` — `lib/src/models/unit_settings.dart`
+All persisted data lives in `packages/ebalistyka_db`. Entities:
 
-```dart
-class UnitSettings {
-  final Unit velocity;      // fps / mps
-  final Unit distance;      // meter / yard / foot
-  final Unit sightHeight;   // inch / centimeter
-  final Unit pressure;      // mmHg / inHg / hPa / psi
-  final Unit temperature;   // celsius / fahrenheit
-  final Unit drop;          // meter / foot / centimeter / inch
-  final Unit adjustment;    // mil / moa / mrad / cmPer100m / inPer100yd
-  final Unit energy;        // joule / footPound
-  final Unit weight;        // gram / grain
-  final Unit ogw;           // pound / kilogram
-  final Unit length;        // millimeter / centimeter / inch
-  // internal / less-visible
-  final Unit angular;       // degree / radian / mil / moa
-  final Unit diameter;      // inch
-  final Unit twist;         // inch
-  final Unit time;          // second
-}
+```
+Owner (singleton, token="local")
+  ├── Weapon[]         caliber, twist, barrelLength, zeroElevation, image
+  ├── Ammo[]           mv, mvTemperature, BC/drag, powder sensitivity, zero conditions
+  ├── Sight[]          height, clicks, focal plane, reticleImage, magnification
+  ├── Profile[]        ToOne<Weapon>, ToOne<Ammo>, ToOne<Sight>, sortOrder
+  ├── GeneralSettings  theme, language, adjustment display, dist/chart steps
+  ├── UnitSettings     11 unit categories
+  ├── TablesSettings   range, step, visible columns, spoiler sections
+  ├── ShootingConditions  atmo, wind, powder temp, coriolis, target distance
+  └── ConvertorsState  per-convertor value + unit + mach atmo state
 ```
 
-#### `AppSettings` — `lib/src/models/app_settings.dart`
-
-Adjustment display fields added directly (no nested model):
-
-```dart
-enum AdjustmentFormat { arrows, signs, letters }
-
-class AppSettings {
-  final UnitSettings units;
-  final String     languageCode;
-  final ThemeMode  themeMode;
-  final double     tableDistanceStep;
-  final double     chartDistanceStep;
-  final bool       showSubsonicTransition;
-  final bool       enableCoriolis;
-  final bool       enablePowderSensitivity;         // UI toggle — show/use powder sens
-  final bool       useDiffPowderTemperature;   // Use separate powder temp vs atmo temp
-  final bool       enableDerivation;
-  final bool       enableAerodynamicJump;
-  final bool       pressureDependsOnAltitude;
-  // Adjustment display (Phase 10.3)
-  final AdjustmentFormat adjustmentFormat;  // ↑↓ / +− / UD
-  final bool showMrad;
-  final bool showMoa;
-  final bool showMil;
-  final bool showCmPer100m;
-  final bool showInPer100yd;
-}
-```
-
-#### `Cartridge` — `lib/src/models/cartridge.dart`
-
-Stores ammunition + powder sensitivity data:
-
-```dart
-class Cartridge {
-  final dynamic mv;                   // Velocity — reference MV (at powderTemp)
-  final dynamic powderTemp;           // Temperature — reference powder temp for mv
-  final double  tempModifier;         // Powder sensitivity coefficient (%/15°C)
-  final bool    usePowderSensitivity; // Whether engine uses powder sensitivity
-  // ...
-}
-```
-
-`mv` is always the MV measured at `powderTemp`. To get MV at another temperature, use `Ammo.getVelocityForTemp(currentTemp)`.
-
-#### `ShotProfile` — `lib/src/models/shot_profile.dart`
-
-```dart
-class ShotProfile {
-  final String     id;
-  final String     name;
-  final Rifle      rifle;
-  final Sight      sight;
-  final Cartridge  cartridge;
-  final Atmo       conditions;      // Current atmospheric conditions
-  final Atmo?      zeroConditions;  // Atmo at time of zeroing; null → use conditions
-  final Distance   zeroDistance;    // Distance at which zero was set (default 100 m)
-  final Distance   targetDistance;  // Current target range (used by QuickActionsPanel)
-  final List<Wind> winds;
-  final Angular    lookAngle;
-  final double?    latitudeDeg;
-  final double?    azimuthDeg;
-
-}
-```
-
-`zeroConditions` is optional (null = use current `conditions`). `zeroDistance` is used by `calculation_provider.dart` instead of the previous hardcoded 100 m. `targetDistance` is the quick-action target range (default 300 m).
+**Extension files** (typed getters/setters — never access raw DB fields directly):
+- `lib/core/extensions/weapon_extensions.dart`
+- `lib/core/extensions/ammo_extensions.dart`
+- `lib/core/extensions/sight_extensions.dart`
+- `lib/core/extensions/profile_extensions.dart`
+- `lib/core/extensions/conditions_extensions.dart`
+- `lib/core/extensions/settings_extensions.dart`
+- `lib/core/extensions/convertors_extensions.dart`
 
 ### 6.4 Riverpod Providers
 
-#### Data providers
+#### Core / storage
 
-| Provider                   | Type                                                          | Purpose                                                                        |
-| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `settingsProvider`         | `AsyncNotifierProvider<SettingsNotifier, AppSettings>`        | All app settings                                                               |
-| `unitSettingsProvider`     | `Provider<UnitSettings>`                                      | Sync unit access                                                               |
-| `themeModeProvider`        | `Provider<ThemeMode>`                                         | Sync theme access                                                              |
-| `shotProfileProvider`      | `AsyncNotifierProvider<ShotProfileNotifier, ShotProfile>`     | Current shot profile                                                           |
-| `rifleLibraryProvider`     | `AsyncNotifierProvider`                                       | Rifle CRUD                                                                     |
-| `cartridgeLibraryProvider` | `AsyncNotifierProvider`                                       | Cartridge CRUD                                                                 |
-| `sightLibraryProvider`     | `AsyncNotifierProvider`                                       | Sight CRUD                                                                     |
-| `appStorageProvider`       | `Provider<AppStorage>`                                        | Storage singleton                                                              |
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `storeProvider`             | ObjectBox Store singleton                            |
+| `ownerProvider`             | Owner entity (token="local"), creates if missing     |
+| `appStateProvider`          | Main aggregate: all entities; OB stream; seed        |
+| `cartridgesProvider`        | selector → `List<Ammo>`                              |
+| `sightsProvider`            | selector → `List<Sight>`                             |
+| `weaponsProvider`           | selector → `List<Weapon>`                            |
 
-#### Service providers
+#### Settings & conditions
 
-| Provider                   | Type                                                          | Purpose                                                                        |
-| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `ballisticsServiceProvider`| `Provider<BallisticsService>`                                 | FFI-backed calculation service                                                 |
-| `unitFormatterProvider`    | `Provider<UnitFormatter>`                                     | Unit formatting (depends on unitSettingsProvider)                              |
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `settingsProvider`          | `GeneralSettings` (OB stream)                        |
+| `unitSettingsProvider`      | `UnitSettings` (sync selector)                       |
+| `themeModeProvider`         | `ThemeMode` (sync selector)                          |
+| `tablesSettingsProvider`    | `TablesSettings` (OB stream)                         |
+| `shotConditionsProvider`    | `ShootingConditions` (OB stream)                     |
 
-#### ViewModel providers
+#### Profiles
 
-| Provider                   | Type                                                          | Purpose                                                                        |
-| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `homeVmProvider`           | `AsyncNotifierProvider<HomeViewModel, HomeUiState>`           | Home screen state (sealed: Loading/Ready/Error)                                |
-| `conditionsVmProvider`     | `AsyncNotifierProvider<ConditionsViewModel, ConditionsUiState>` | Conditions screen state                                                      |
-| `tablesVmProvider`         | `AsyncNotifierProvider<TablesViewModel, TablesUiState>`       | Tables screen state                                                            |
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `profilesPagingProvider`    | Sync — ordered IDs + activeId; paging only           |
+| `profileCardProvider(id)`   | Family — card data (fingerprints); rebuild per card  |
+| `profilesActionsProvider`   | Actions: select/create/rename/duplicate/remove       |
 
-#### Coordination providers
+#### Shot context & calculation
 
-| Provider                   | Type                                                          | Purpose                                                                        |
-| -------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `recalcCoordinatorProvider`| `NotifierProvider<RecalcCoordinator, void>`                   | Centralises recalculation triggers on profile/settings changes and tab switches |
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `shotContextProvider`       | `ShotContext { profile, conditions }` — for VMs      |
+| `homeVmProvider`            | `HomeUiState` (sealed: Loading/Ready/Error)          |
+| `shotDetailsVmProvider`     | `ShotDetailsUiState` (sealed)                        |
+| `trajectoryTablesVmProvider`| `TrajectoryTablesUiState` (sealed)                   |
+| `ballisticsServiceProvider` | FFI-backed `BallisticsService`                       |
+| `unitFormatterProvider`     | `UnitFormatter` (depends on `unitSettingsProvider`)  |
 
-**Calculation architecture (after refactoring):**
+#### Convertors
 
-`RecalcCoordinator` listens to `shotProfileProvider` and `settingsProvider`. On change, it triggers:
-- `homeVmProvider.notifier.recalculate()`
-- `tablesVmProvider.notifier.recalculate()`
-- `homeCalculationProvider.notifier.markDirty()` + `recalculateIfNeeded()`
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `convertorsProvider`        | `ConvertorsState` (OB stream)                        |
+| `convertorStateProvider`    | Sync selector (defaults while loading)               |
+| `velocityConvertorVmProvider` etc. | Per-convertor ViewModels                     |
 
-On tab activation (from router):
-- Tab 0 (Home): triggers `homeVmProvider` + `homeCalculationProvider`
-- Tab 2 (Tables): triggers `tablesVmProvider`
+#### SVG / Assets
 
-**BallisticsService** (`lib/domain/ballistics_service.dart` + `lib/services/ballistics_service_impl.dart`):
-- Interface: `calculateForTarget(profile, options, cachedZeroElevRad?)`
-- Returns `BallisticsCalcResult { hitResult, zeroElevationRad }`
-- ViewModels call it via `ref.read(ballisticsServiceProvider)`
-- Zero elevation caching done per-VM via `_buildZeroKey()` fingerprint
-
-> Note: `zeroConditions` defaults to null in the seed (= use `conditions`). A dedicated Zero Conditions UI screen is pending (Phase 8.8 follow-up).
+| Provider                    | Purpose                                              |
+| --------------------------- | ---------------------------------------------------- |
+| `reticleSvgProvider(id)`    | Loads SVG from `assets/svg/reticles/`                |
+| `weaponSvgProvider(id)`     | Loads SVG from `assets/svg/weapon/`                  |
+| `ammoSvgProvider(id)`       | Loads SVG from `assets/svg/ammo/`                    |
+| `reticleListProvider`       | All reticle IDs from asset manifest                  |
+| `builtinCollectionProvider` | Lazy-loaded `collection.json`                        |
 
 ### 6.5 Storage
 
-**Interface:** `lib/storage/app_storage.dart`
-**Implementation:** `JsonFileStorage` — JSON files in app documents directory.
+ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRUD. No JsonFileStorage.
 
-Export archive:
-```
-ebalistyka_backup.zip
-├── settings.json
-├── profile.json
-├── rifles.json
-├── cartridges.json
-└── sights.json
-```
+**Export formats:**
+- `.ebcp` — JSON + CBOR archive (native). `EbcpService` in `lib/core/services/ebcp_service.dart`.
+- `.a7p` — Protobuf (Archer / A-TACS compatible). `A7pService` in `lib/core/services/a7p_service.dart`. Library: `packages/a7p`.
 
 ---
 
@@ -763,10 +554,11 @@ ebalistyka_backup.zip
 
 | #   | Question                                                         | Status            |
 | --- | ---------------------------------------------------------------- | ----------------- |
-| 1   | Table export format: PDF or HTML?                                | ⏳ TBD             |
-| 2   | Reticle screen — static or interactive?                          | ⏳ TBD             |
+| 1   | Table export format: PDF or HTML?                                | ✅ HTML (implemented) |
+| 2   | Reticle fullscreen — static or interactive?                      | ⏳ TBD             |
 | 3   | Localizations: UK + EN only or more?                             | ⏳ UK + EN for now |
-| 4   | cm/100m and in/100yd — are these `Unit` enum values or computed? | ✅ `Unit.cmPer100m` / `Unit.inchesPer100Yd` — повноцінні enum-значення з конверсійними факторами |
+| 4   | Weapon/Sight/Ammo `image` field format (entity images)           | ⏳ TBD (file / base64 / asset) |
+| 5   | `DistanceConvertorScreen` — same multi-field pattern as others?  | ⏳ TBD             |
 
 ---
 
@@ -774,250 +566,253 @@ ebalistyka_backup.zip
 
 ### 8.1 Implemented ✅
 
-#### Infrastructure
+#### Infrastructure & packages
 
-| Area | File(s) | Notes |
-| ---- | ------- | ----- |
-| **App name / Bundle ID** | platform configs | `eBalistyka` · `com.ballistics.ebalistyka` — all platforms updated |
-| **bclibc submodule** | `external/bclibc` | Replaces former `native/` and `py-ballisticcalc` dirs; pinned at v1.0.0 |
-| **Solver (FFI)** | `src/solver/` | Full unit system, conditions, munition, drag tables, shot, trajectory, calculator, FFI to bclibc |
-| **Domain models** | `src/models/` | Rifle, Sight, Projectile, Cartridge, ShotProfile, AppSettings, UnitSettings, TableConfig, seed data |
-| **Storage** | `storage/` | AppStorage interface + JsonFileStorage (JSON files in app documents dir) |
-| **Providers** | `providers/` | Settings, ShotProfile, Library (Rifle/Sight/Cartridge), Calculation, Storage |
-| **Navigation** | `router.dart` | GoRouter + StatefulShellRoute; all routes; tab switch resets branch stack |
-| **Main** | `main.dart` | ProviderScope, MaterialApp.router, static ThemeData, themeModeProvider, global scroll behavior |
+| Area | Notes |
+| ---- | ----- |
+| **App name / Bundle ID** | `eBalistyka` · `com.ballistics.ebalistyka` — all platforms |
+| **bclibc submodule** | `external/bclibc`; FFI via `packages/bclibc_ffi` |
+| **bclibc_ffi package** | Per-dimension enums, `Dimension<T,U>`, `Atmo`, `Unit.mach`, mach extensions; ffigen ^20 |
+| **ebalistyka_db package** | ObjectBox entities + codegen; `EbcpFile` + export DTOs; `json_serializable` |
+| **a7p package** | `A7pFile`, `A7pConverter`, `A7pValidator`; proto schema |
+| **reticle_gen package** | CLI SVG generator; `CanvasInterface`, `SVGCanvas`, `MilReticleCanvas`; partial |
+| **ObjectBox storage** | Single `Store`; stream-based reactive updates; `storeProvider` + `ownerProvider` |
+| **Feature-first structure** | `lib/features/`, `lib/core/`, `lib/shared/`, `lib/main.dart`, `lib/router.dart` |
+| **Navigation** | GoRouter + StatefulShellRoute; all routes; tab switch resets branch stack |
+| **BallisticsService** | Interface + FFI-backed impl; zero-elevation caching (`_buildZeroKey`) |
+| **UnitFormatter** | Pure-Dart formatter; 57+ tests |
 
 #### Screens
 
-| Screen | File | Status |
-| ------ | ---- | ------ |
-| Home | `screens/home_screen.dart` | ✅ Top block (rifle/projectile selectors, wind wheel, SideControlBlock, QuickActionsPanel); 3-page bottom block. ⚠️ SideControlBlock: Shot Details button wired; Note/Help/More buttons are `() {}` stubs |
-| Home — Page 1 | `widgets/home_reticle_page.dart` | ✅ Reticle placeholder (CustomPainter) + Drop/Windage panel with direction indicators per enabled unit; bullet/MV/drag info row |
-| Home — Page 2 | `widgets/home_table_page.dart` | ✅ Compact 5-col table (target ± 2 steps), 11 rows, target column highlighted, FC-based accuracy |
-| Home — Page 3 | `widgets/home_chart_page.dart` | ✅ Chart (trajectory + velocity curves) + info grid + tap/drag point selection + page persistence |
-| Conditions | `screens/conditions_screen.dart` | ✅ All fields; TempControl; powder sensitivity full flow (sub-switch + powder temp field + readonly MV); Coriolis/derivation/AJ/pressure switches |
-| Tables | `screens/tables_screen.dart` | ✅ Spinner; frozen header; zero-row highlight; zero-crossings table; row tap → detail dialog; details spoiler (rifle/projectile/atmosphere); Configure button. ⚠️ Export button is `() {}` stub |
-| Tables → Configure | `screens/tables_sub_screens.dart` | ✅ Range/step; showZeros/showSubsonic; spoiler section switches (20+ toggles); column visibility (11 columns); adjAllUnits; dropUnit/adjUnit overrides; start < end cross-validation |
-| Settings | `screens/settings_screen.dart` | ✅ Theme; language; distance steps (unit-aware); subsonic switch. ⚠️ Export/Import profile buttons, GitHub/Privacy/Terms/Changelog links — all `() {}` stubs |
-| Settings → Units | `screens/settings_units_screen.dart` | ✅ 11 unit categories, dialog picker, wired to SettingsNotifier |
-| Settings → Adjustment Display | `screens/settings_adjustment_screen.dart` | ✅ AdjustmentFormat SegmentedButton + 5 unit switches |
-| Convertors | `screens/convertor_screen.dart` | ✅ 8-tile grid (target distance, velocity, length, weight, pressure, temperature, MIL/MOA, energy) — each tile navigates to `/convertors/:type` |
-| Convertors → Individual | `screens/convertor_screen.dart` | ⚠️ Route exists, screen is stub |
-| Shot Details | `screens/shot_details_screen.dart` | ✅ 4 sections: Velocity, Energy, Stability (Miller Sg), Trajectory; all values unit-aware |
-| Rifle/Projectile/Cartridge/Sight screens | `screens/home_sub_screens.dart` | ⛔ All 7 screens are stubs (`StubScreen`) |
+| Screen | Status | Notes |
+| ------ | ------ | ----- |
+| Home (top block) | ✅ | Profile selector FAB, wind wheel, side controls, quick actions |
+| Home — Page 1 (Reticle) | ✅ | SVG reticle + color roles + correction dot + AdjPanel |
+| Home — Page 2 (Table) | ✅ | 5-col compact table, 11 rows, FC-based accuracy |
+| Home — Page 3 (Chart) | ✅ | Dual-curve chart, tap/pan snap, info grid |
+| Conditions | ✅ | All fields, all switches, powder sensitivity full flow |
+| Tables | ✅ | Frozen header, zero-crossings, detail dialog, spoiler, HTML export |
+| Tables → Configure | ✅ | Range/step, 20+ toggles, 11 columns, unit overrides |
+| Settings | ✅ | Theme, language, steps, export/import backup |
+| Settings → Units | ✅ | 11 categories |
+| Settings → Adjustment Display | ✅ | Format + 5 switches |
+| Convertors grid | ✅ | 8-tile responsive grid |
+| Convertors → Velocity | ✅ | mps/kmh/fps/mph/Mach; custom atmosphere for Mach |
+| Convertors → Length | ✅ | |
+| Convertors → Weight | ✅ | |
+| Convertors → Pressure | ✅ | |
+| Convertors → Temperature | ✅ | |
+| Convertors → MIL/MOA | ✅ | |
+| Convertors → Torque | ✅ | |
+| Convertors → Distance | ⏳ | stub |
+| Shot Details | ✅ | 4 sections via `ShotDetailsViewModel` |
+| ProfilesScreen | ✅ | PageView, paging, FAB, per-card callbacks, export/import |
+| WeaponWizardScreen | ✅ | Caliber readonly from collection; required highlighting |
+| AmmoWizardScreen | ✅ | Full: drag model, BC/custom table, MV, powder sens, zero cond, coriolis |
+| SightWizardScreen | ✅ | height, clicks, focal plane, magnification |
+| MultiBcEditorScreen | ✅ | G1/G7 (5 rows, sort desc by V) + CustomDragTable (100 rows) |
+| PowderSensTableEditorScreen | ✅ | T→V (5 rows), pairwise algorithm, auto-fills row 0 from wizard |
+| WeaponCollectionScreen | ✅ | |
+| AmmoCollectionScreen | ✅ | cartridge/bullet filter + caliber filter (tolerance 0.001") |
+| SightCollectionScreen | ✅ | |
+| MyAmmoScreen | ✅ | |
+| MySightsScreen | ✅ | |
 
-#### Widgets & shared components
-
-| Widget | File | Notes |
-| ------ | ---- | ----- |
-| `TrajectoryTable` | `widgets/trajectory_table.dart` | Sticky header, bidirectional h-scroll sync, FC-based accuracy, subsonic highlight ✅ |
-| `TrajectoryChart` | `widgets/trajectory_chart.dart` | CustomPainter, dual axis, subsonic line, tap/pan snap ✅ |
-| `WindIndicator` | `widgets/wind_indicator.dart` | Pan + tap + double-tap reset; clock-face display ✅ |
-| `QuickActionsPanel` | `widgets/quick_actions_panel.dart` | Wind speed, look angle, target distance; `showUnitEditDialog` ✅ |
-| `UnitValueField` | `widgets/unit_value_field.dart` | `[icon label value ✎]` tappable row + `showUnitEditDialog()` top-level fn ✅ |
-| `TempControl` | `widgets/temperature_control.dart` | Big centred ± widget + dialog ✅ |
-| `SideControlBlock` | `widgets/side_control_block.dart` | FAB pair + info rows ✅ |
-| `IconValueButton` | `widgets/icon_value_button.dart` | FAB-style selector buttons ✅ |
-| `SectionHeader` | `widgets/section_header.dart` | Reusable all-caps section label ✅ |
-| Settings helpers | `widgets/settings_helpers.dart` | `SettingsHeader`, `SettingsSectionLabel`, `SettingsUnitTile` ✅ |
-
-#### Calculation engine
-
-| Feature | Notes |
-| ------- | ----- |
-| BallisticsService | Single service interface; `HomeViewModel` and `TablesViewModel` call it via provider |
-| RecalcCoordinator | Centralises all recalculation triggers (profile/settings changes + tab activation) |
-| ViewModels | `HomeViewModel`, `TablesViewModel` — produce sealed UiState with formatted strings |
-| ShotDetailsViewModel | Replaced legacy homeCalculationProvider; provides formatted data for Shot Info screen |
-| Zero uses zeroConditions | Always uses `profile.zeroConditions ?? profile.conditions` |
-| Zero elevation cache | `_buildZeroKey` (19-field flat list, `listEquals`) — zero phase skipped when zero-relevant inputs unchanged |
-| Powder sensitivity | Engine handles `getVelocityForTemp` internally; `usePowderSensitivity` flag propagated correctly |
-| Coriolis / spin drift | Passed via `latitudeDeg` / `azimuthDeg` / settings flags |
-
-#### Proto / A7P
+#### Widgets & services
 
 | Item | Status |
 | ---- | ------ |
-| `proto/profedit.proto` | ✅ Schema present (stripped of buf/validate) |
-| `src/proto/profedit.pb.dart` | ✅ Generated (Dart protobuf classes) |
-| `src/a7p/` directory | ✅ `a7p_parser.dart` (213 lines) + `a7p_validator.dart` (157 lines) implemented |
-| A7P import UI | ⛔ Not started |
-| A7P export UI | ⛔ Not started |
+| `TrajectoryTable` | ✅ Sticky header, h-scroll sync, FC accuracy, subsonic highlight |
+| `TrajectoryChart` | ✅ CustomPainter, dual axis, subsonic line, tap/pan snap |
+| `WindIndicator` | ✅ Pan + tap + double-tap reset |
+| `QuickActionsPanel` | ✅ Wind speed, look angle, target distance |
+| `SvgAssetView` | ✅ Color role resolution, `AsyncValue<String>` |
+| `WeaponSvgView` / `AmmoSvgView` | ✅ |
+| `ProfileCard` | ✅ fingerprint-based rebuild, ammo/sight FABs |
+| `PowderSensSection` | ✅ Reusable (wizard + conditions modes) |
+| `CoriolisSection` | ✅ |
+| `EbcpService` | ✅ share, pick, buildFullExport, restoreFromExport |
+| `A7pService` | ✅ share, pick, auto-detect format |
+| `table_html_exporter` | ✅ |
+
+#### A7P
+
+| Item | Status |
+| ---- | ------ |
+| `packages/a7p` | ✅ `A7pFile`, `A7pConverter`, `A7pValidator` |
+| Proto schema | ✅ `packages/a7p/proto/profedit.proto` |
+| A7P import UI | ✅ FilePicker → auto-detect → import |
+| A7P export UI | ✅ Per-profile export sheet (.ebcp / .a7p) |
 
 ---
 
 ### 8.2 Pending ⚠️
 
-#### 🔴 High priority
+#### 🔴 Alpha blocker
 
-| Area | Notes | Phase |
-| ---- | ----- | ----- |
-| **A7P parser** | `Profile` proto → `ShotProfile` domain; scale-factor conversion; validation | A7P |
-| **A7P writer** | `ShotProfile` → `Profile` proto → `.a7p` bytes | A7P |
-| **A7P validation** | Port Python yupy schema to Dart; G1/G7 coef_rows ≤ 5, CUSTOM ≤ 200; unique mv | A7P |
-| **A7P import UI** | `file_picker` → parse → load into profile | A7P |
-| **A7P export UI** | serialize → `share_plus` | A7P |
-| **Zero Conditions UI** | Screen to edit `zeroConditions` separately from current `conditions` | 8.8 follow-up |
+| Area | Notes |
+| ---- | ----- |
+| **DistanceConvertorScreen** | Currently stub; implement per ALPHA_UX.md |
 
-#### 🟠 Medium priority
+#### 🟠 Post-Alpha medium
 
-| Area | Notes | Phase |
-| ---- | ----- | ----- |
-| Rifle Selection screen | List from `rifleLibraryProvider` + FAB to create | 11 |
-| Rifle Edit screen | Form: name, sight height, twist, caliber | 11 |
-| Sight Selection screen | List from `sightLibraryProvider` | 11 |
-| Cartridge screen | Select / create / edit current cartridge | 11 |
-| Projectile Selection screen | List from `cartridgeLibraryProvider` | 11 |
-| Cartridge/Projectile Edit screen | Full ammo + projectile form | 11 |
-| Individual Convertor screen | Two fields + real-time conversion via `Unit`/`Dimension` | 9 |
+| Area | Notes |
+| ---- | ----- |
+| Reticle fullscreen view | Opens from Home Page 1 reticle tap; spec TBD |
+| Tools Screen | Opened from Home "More" button; composition TBD |
+| Help Overlay | Coach marks; library TBD |
+| RulerSelector widget | Touch-drag ruler for QuickActionsPanel |
 
-#### 🔵 Lower priority
+#### 🔵 Post-Alpha lower
 
-| Area | Notes | Phase |
-| ---- | ----- | ----- |
-| Table export | PDF/HTML + share sheet | 13 |
-| Profile import | `file_picker` + ZIP restore | 13 |
-| Localization uk/en | ARB + flutter_localizations | 13 |
-| iOS C++ bundling | `.a` static lib in Xcode | 13 |
-| RulerSelector widget | Touch-drag ruler; replaces `showUnitEditDialog` in QuickActionsPanel (SpinBox вже є як `showUnitEditDialog`) | 5.5 |
-| Reticle screen | Full-screen reticle (TBD) | 12 |
-| Help Overlay | Coach marks | 12 |
-| Tools Screen | Placeholder | 12 |
-
+| Area | Notes |
+| ---- | ----- |
+| Localization uk/en | ARB + flutter_localizations |
+| Settings → Legal links | Privacy Policy, Terms of Use, Changelog |
+| Remaining SVG reticles | Generate all IDs via `reticle_gen` |
+| Entity images (Weapon/Sight/Ammo) | Format TBD (file / base64 / asset) |
+| iOS C++ library bundling | `.a` static lib in Xcode |
 
 ---
 
 ## 9. Implementation Phases
 
-### Phase 1–5 ✅ — Foundation
+### Phases 1–5 ✅ — Foundation
 
 Domain models, storage, providers, navigation. **Done.**
 
 ---
 
-### Architecture Refactoring ✅ — MVVM + Service Layer
+### Architecture Refactoring ✅ (REFACTORING_PLAN.md — Doc #1)
 
-Full refactoring per `REFACTORING_PLAN.md` (5 phases):
-- **Phase 0:** UnitFormatter interface + implementation (57 tests, `dart test`)
-- **Phase 1:** BallisticsService interface + FFI-backed implementation
-- **Phase 2:** HomeViewModel, ConditionsViewModel, TablesViewModel — sealed UiState, 70 tests
-- **Phase 3:** RecalcCoordinator — centralised recalculation triggers, 18 tests
-- **Phase 4:** Screens wired to ViewModels (home, conditions, tables)
-- **Phase 5:** Cleanup — deleted `dimension_converter.dart`, `calculation_provider.dart`; extracted `HomeCalculationNotifier` to `home_calculation_provider.dart`
-
-**Total: 145 non-FFI tests passing.**
+Full MVVM + service layer (5 phases):
+- Phase 0: `UnitFormatter` interface + impl (57 tests)
+- Phase 1: `BallisticsService` + FFI impl
+- Phase 2: `HomeVM`, `ConditionsVM`, `TablesVM` (70 tests)
+- Phase 3: `RecalcCoordinator` ✅ CREATED, then ❌ REMOVED (Apr 21, 2026)
+- Phase 4: Screens wired to ViewModels
+- Phase 5: Cleanup — deleted `dimension_converter.dart`, `calculation_provider.dart`
 
 ---
 
-### Phase 5.5 — Value Input Widgets
+### RecalcCoordinator Removal Refactoring ✅ (RECALC_REFACTORING.md)
 
-**MVP ✅:** `showUnitEditDialog()` — reusable `[−] field [+]` dialog; used by `UnitValueField`, `QuickActionsPanel`, `TempControl`.
+**Date:** April 21, 2026  
+**Status:** ✅ COMPLETED
 
-**Remaining (low priority):**
+Centralized `RecalcCoordinator` was replaced with **distributed listeners** in each ViewModel:
+- Each ViewModel now manages its own `ref.listen()` calls in `build()`
+- Added `fireImmediately: true` to all listeners → **fixes immediate calculation on app startup**
+- Renamed public `recalculate()` → private `_recalculate()` in all VMs
+- Added `ref.mounted` checks after async gaps → prevents "reference after disposal" errors
+- Deleted `test/core/recalc_coordinator_test.dart`
+- Updated test pattern: `_recalculate(container)` → `_waitFor<T>(container)` (listener-driven)
 
-- **RulerSelector** (`lib/widgets/ruler_selector.dart`): modal with vertical touch-drag ruler + POS digit input. Will replace `showUnitEditDialog` in QuickActionsPanel.
-- **SpinBoxSelector** ✅ — реалізований як `showUnitEditDialog()` (`[−] field [+]` + validation + OK/Cancel). Окремий виджет не потрібен.
+See [RECALC_REFACTORING.md](RECALC_REFACTORING.md) for detailed migration notes.
+
+**Benefits:** No single point of failure, simpler, immediate calculations on startup.
+
+---
+
+### Post-Refactoring Improvements ✅ (REFACTORING_PLAN_2.md — Doc #2)
+
+- Phase 1: Feature-first directory restructure (72 files moved, 244 tests pass)
+- Phase 2: `ShotDetailsViewModel` — legacy provider eliminated
+- Phase 3: FFI enum wrappers — resolved by Phase 4
+- Phase 4: ffigen ^20 update — proper Dart enums generated
+- Phase 5: Strict dimension typing — per-dimension enums, `Dimension<T,U>` parameterized
+
+---
+
+### ObjectBox Migration ✅ (OBJECTBOX_MIGRATION.md — Doc #3)
+
+All steps complete. ObjectBox is sole storage layer. `JsonFileStorage` deleted.
+
+---
+
+### Profiles CRUD ✅ (PROFILES_CRUD_PLAN.md — Doc #4)
+
+All wizard screens, collection screens, selection flows, export/import (ebcp + a7p), full backup, reactive paging with fingerprint-based card rebuilds. **Done.**
+
+---
+
+### Phase 5.5 — Value Input Widgets ✅
+
+`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector pending (Post-Alpha).
 
 ---
 
 ### Phase 6 ✅ — Home Screen Bottom Block
 
-All three pages done. Extracted to `home_reticle_page.dart`, `home_table_page.dart`, `home_chart_page.dart`.
-
-**Stubs remaining in Home top block (Phase 12):**
-- "New note" button — `onBottomPressed: () {}`
-- "Help" button — `() {}`
-- "More" button — `() {}`
+All three pages. Extracted to `home_reticle_page.dart`, `home_table_page.dart`, `home_chart_page.dart`.
 
 ---
 
 ### Phase 7 ✅ — Conditions Screen
 
-All fields, all switches, powder sensitivity full flow. Done.
+All fields + switches + powder sensitivity full flow.
 
 ---
 
 ### Phase 8 ✅ — Tables Screen
 
-Frozen header, zero-crossings table, row detail dialog, details spoiler, TableConfig screen. `zeroDistance` + `zeroConditions?` + `targetDistance` in `ShotProfile`. Hardcoded 100 m removed.
-
-**Pending:**
-- **8.7** Export button (stub)
-- **8.8 follow-up** Zero Conditions UI
+Frozen header, zero-crossings, row detail dialog, details spoiler, `TableConfig` screen. HTML export connected.
 
 ---
 
-### Phase 9 — Convertors Screen
+### Phase 9 — Convertors ✅ (7/8)
 
-Grid ✅. Individual convertor screen (`/convertors/:type`) — **not implemented**.
+Grid ✅. 7 individual convertor screens ✅. `DistanceConvertorScreen` ⏳ — last alpha blocker.
 
 ---
 
 ### Phase 10 ✅ — Settings Screen
 
-Theme, language, distance steps, units (11 categories), Adjustment Display (format + 5 toggles). Done.
-
-**Stubs remaining (Phase 13):**
-- Export / Import profile buttons — `() {}`
-- GitHub / Privacy Policy / Terms of Use / Changelog links — `() {}`
+Theme, language, steps, units (11 categories), Adjustment Display, export/import backup, GitHub link.
 
 ---
 
-### Phase 11 — Rifle / Cartridge / Sight Selection
+### Phase 11 ✅ — Rifle / Cartridge / Sight Selection
 
-All 7 screens are stubs. To implement:
-- `RifleSelectionScreen` — list + FAB create
-- `RifleEditScreen` — name, sight height, twist, caliber form
-- `SightSelectionScreen` — list from `sightLibraryProvider`
-- `CartridgeScreen` — select / create / edit current
-- `ProjectileSelectionScreen` — list from `cartridgeLibraryProvider`
-- `CartridgeEditScreen` + `ProjectileEditScreen` — full ammo + projectile form
+All 7 screens implemented. Weapon, Ammo (with all sub-editors), Sight wizards + collection screens.
 
 ---
 
-### Phase A7P — .a7p File Support 🔴🔴
+### Phase A7P ✅ — .a7p File Support
 
-Proto generated (`src/proto/profedit.pb.dart`). Validator and parser implemented.
-
-**Status:**
-1. `lib/src/a7p/a7p_validator.dart` — ✅ implemented
-2. `lib/src/a7p/a7p_parser.dart` — ✅ implemented (`Profile` → `ShotProfile` with scale-factor conversion)
-3. `lib/src/a7p/a7p_writer.dart` — ⛔ not started (`ShotProfile` → `Payload` bytes)
-4. Add deps: `file_picker`, `share_plus`, `archive`
-
-**Scale factors** (from proto comments):
-| Field | Raw unit | Scale |
-| ----- | -------- | ----- |
-| `sc_height` | mm | ×1 |
-| `r_twist` | inch | ×100 |
-| `c_muzzle_velocity` | m/s | ×10 |
-| `c_zero_temperature` | °C | ×1 |
-| `c_t_coeff` | %/15°C | ×1000 |
-| `c_zero_air_pressure` | hPa | ×10 |
-| `b_diameter` | inch | ×1000 |
-| `b_weight` | grain | ×10 |
-| `b_length` | inch | ×1000 |
-| `distances[]` | m | ×100 |
-| `coef_rows.bc_cd` | BC or Cd | ×10000 |
-| `coef_rows.mv` | m/s | ×10 |
-| `zero_x` / `zero_y` | clicks | ×−1000 / ×1000 |
-
-**Validation rules** (from Python schema):
-- `profile_name`, `cartridge_name`, `bullet_name`, `caliber` — required, max 50 chars
-- `short_name_top`, `short_name_bot` — required, max 8 chars
-- `distances[]` — 1–200 items, each 100–300000
-- `switches[]` — min 4 items; VALUE type: distance 100–300000; INDEX type: distance 0–255
-- G1/G7 `coef_rows`: 1–5 items, bc_cd 0–10000, mv 0–30000, mv values unique (except 0)
-- CUSTOM `coef_rows`: 1–200 items, bc_cd 0–10000, mv 0–10000, mv unique (except 0)
+`packages/a7p` complete. Import/export UI done. `A7pService` wired.
 
 ---
 
-### Phase 13 — Polish & Export
+### Reticles & Images 🔄 (RETICLES_AND_IMAGES.md — Doc #5)
 
-- Localization (ARB, flutter_localizations, uk + en)
-- Table export — PDF or HTML via share sheet
-- Profile import via `file_picker`
-- iOS C++ library bundling
+SVG display, color-role resolution, correction dot injection: ✅  
+`reticle_gen` CLI: partial (default + MIL-XT done).  
+Fullscreen reticle view: pending.
+
+---
+
+### Alpha UX 🔄 (ALPHA_UX.md — Doc #6)
+
+One remaining item: `DistanceConvertorScreen`.
+
+---
+
+### Phase 12 — Home Note / Help / More buttons ⏳
+
+After alpha. All three stubs.
+
+---
+
+### Phase 13 — Post-Alpha Polish ⏳
+
+- Localization uk/en
+- Legal links (Privacy, Terms, Changelog)
+- RulerSelector widget
+- Reticle fullscreen view
+- Help Overlay
+- Tools Screen
+- iOS C++ bundling
 
 ---
 
@@ -1029,29 +824,40 @@ Proto generated (`src/proto/profedit.pb.dart`). Validator and parser implemented
 flutter_riverpod:
 go_router:
 ffi:
+objectbox: ^4.0.0
+objectbox_flutter_libs: ^4.0.0
 protobuf: ^6.0.0
 uuid: ^4.0.0
 path_provider: ^2.1.0
 window_manager:
 sticky_headers:
 crypto: ^3.0.3
+file_picker:
+share_plus:
+archive:
+flutter_svg:
+json_serializable:
+json_annotation:
+build_runner:              # dev
+objectbox_generator:       # dev
+ffigen: ^20.0.0            # dev (packages/bclibc_ffi)
 ```
 
-### To add (A7P phase)
+### Internal packages
 
-```yaml
-file_picker: ^8.0.0      # .a7p import + profile import
-share_plus: ^9.0.0       # .a7p export + table export share sheet
-archive: ^3.0.0          # ZIP backup export
-flutter_localizations: sdk
-intl: ^0.19.0
+```
+packages/bclibc_ffi    — FFI wrapper + Unit/Dimension system
+packages/ebalistyka_db — ObjectBox entities + export DTOs
+packages/a7p           — A7P format (encode/decode/validate/convert)
+packages/reticle_gen   — SVG reticle generator CLI
 ```
 
-### protoc toolchain (dev, not in pubspec)
+### protoc toolchain (dev)
 
 ```bash
 dart pub global activate protoc_plugin
-# then: protoc --dart_out=lib/src/proto proto/profedit.proto
+# then: protoc --dart_out=packages/a7p/lib/src/proto packages/a7p/proto/profedit.proto
+# or: make proto-a7p
 ```
 
 ---
@@ -1059,36 +865,26 @@ dart pub global activate protoc_plugin
 ## 11. Execution Order
 
 ```
-Phase 1–5   ✅  Foundation
-Phase 10    ✅  Settings
-Phase 7     ✅  Conditions Screen
-Phase 8     ✅  Tables Screen
-Phase 8.8   ✅  ShotProfile zero fields; hardcoded 100 m removed
-Phase 5.5   ✅  QuickActionsPanel MVP
-Phase 6     ✅  Home Screen bottom block; files extracted
-Refactor    ✅  home_screen, settings screens split into widget files
-Rename      ✅  eBalistyka / com.ballistics.ebalistyka
-Zero cache  ✅  _buildZeroKey + Phase 1 skip when zero inputs unchanged
+Phase 1–5       ✅  Foundation
+Phase 10        ✅  Settings
+Phase 7         ✅  Conditions Screen
+Phase 8         ✅  Tables Screen + Configure
+Phase 5.5       ✅  QuickActionsPanel MVP (showUnitEditDialog)
+Phase 6         ✅  Home Screen bottom block (3 pages)
+Refactor        ✅  REFACTORING_PLAN (Phases 0–5): MVVM + UnitFormatter + BallisticsService
+Refactor 2      ✅  REFACTORING_PLAN_2 (Phases 1–5): feature-first, ShotDetailsVM, FFI enums, dim typing
+ObjectBox       ✅  OBJECTBOX_MIGRATION: JsonFileStorage → ObjectBox; all extensions
+Phase A7P       ✅  packages/a7p + A7pService + import/export UI
+Phase 11        ✅  All wizard screens (Weapon/Ammo/Sight) + collection screens + ProfilesScreen
+Reticles        ✅  SVG display + color roles + correction dot (HomeReticlePage)
+Convertors      ✅  7/8 individual convertor screens implemented
 
-─── Architecture Refactoring (REFACTORING_PLAN.md) ───
-Refactor 0  ✅  UnitFormatter interface + implementation + 57 tests
-Refactor 1  ✅  BallisticsService interface + FFI implementation
-Refactor 2  ✅  HomeViewModel + ConditionsViewModel + TablesViewModel (70 tests)
-Refactor 3  ✅  RecalcCoordinator (18 tests); router.dart updated
-Refactor 4  ✅  Screens wired to ViewModels (home, conditions, tables)
-Refactor 5  ✅  Cleanup: deleted dimension_converter.dart, calculation_provider.dart;
-                extracted HomeCalculationNotifier → home_calculation_provider.dart
-Tests reorg ✅  Tests moved to test/formatting/, test/viewmodels/, test/services/
+─── Alpha Blockers ───
+DistanceConvtr  ⏳  DistanceConvertorScreen — implement (6.ALPHA_UX.md)
 
-─── Remaining ───
-A7P         🔴  writer → import/export UI (validator + parser done; add file_picker, share_plus, archive)
-Zero Cond   🔴  Zero Conditions UI — screen to edit zeroConditions separately from current conditions
-Phase 11        Rifle / Cartridge / Sight / Projectile selection + edit screens (7 stubs)
-Phase 9         Individual Convertor screen (/convertors/:type stub)
-8.7             Tables Export button
-Phase 13        Settings: Export/Import profile buttons; GitHub/Privacy/Terms/Changelog links
-Phase 13        l10n uk/en, PDF table export, iOS C++ bundling
-Phase 12        Home: Note / Help / More buttons
-Phase 5.5 ⏳    RulerSelector widget — touch-drag ruler для QuickActionsPanel (lower priority)
-                SpinBoxSelector = showUnitEditDialog ✅ (вже реалізований як [−] field [+] діалог)
+─── Post-Alpha ───
+Phase 9.last    ⏳  DistanceConvertorScreen → marks alpha complete
+Phase 12        ⏳  Home Note / Help / More buttons
+Reticles cont.  ⏳  Fullscreen reticle view; remaining SVG reticles via reticle_gen
+Phase 13        ⏳  Localization, RulerSelector, Help overlay, Tools screen, Legal links, iOS bundling
 ```

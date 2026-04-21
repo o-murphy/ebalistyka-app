@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:ebalistyka/core/providers/reticle_provider.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:riverpod/riverpod.dart';
@@ -10,12 +12,14 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
@@ -28,72 +32,89 @@ import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
-sealed class HomeUiState {
-  const HomeUiState();
-}
-
-class HomeUiReady extends HomeUiState {
-  // Top block
-  final String profileName;
-  final String weaponName;
-  final String ammoName;
+class HomeConditionsUiState {
   final double windAngleDeg;
-
-  // Info tiles
   final String tempDisplay;
   final String altDisplay;
   final String pressDisplay;
   final String humidDisplay;
-
-  // Quick actions
-  final String windSpeedDisplay;
-  final double windSpeedMps;
-  final String lookAngleDisplay;
-  final double lookAngleDeg;
-  final String targetDistanceDisplay;
   final double targetDistanceM;
 
-  // Bottom block — Page 1 (Reticle)
-  final String cartridgeInfoLine;
+  const HomeConditionsUiState({
+    this.windAngleDeg = 0.0,
+    this.tempDisplay = '',
+    this.altDisplay = '',
+    this.pressDisplay = '',
+    this.humidDisplay = '',
+    this.targetDistanceM = 0.0,
+  });
+}
+
+class ReticleUiState {
   final String? reticleId;
+  final String? targetId;
+  final double targetSizeMilAtDistance;
+  final String? adjustedMessageLine;
+  final String cartridgeInfoLine;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
   final double adjustmentElevMil;
   final double adjustmentWindMil;
 
-  // Bottom block — Page 2 (Table)
-  final FormattedTableData tableData;
+  const ReticleUiState({
+    this.reticleId,
+    this.targetId,
+    this.targetSizeMilAtDistance = 0.0,
+    this.adjustedMessageLine,
+    this.cartridgeInfoLine = '',
+    required this.adjustment,
+    this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
+    this.adjustmentElevMil = 0.0,
+    this.adjustmentWindMil = 0.0,
+  });
+}
 
-  // Bottom block — Page 3 (Chart)
+sealed class HomeUiState {
+  const HomeUiState();
+}
+
+class HomeChartUiState {
   final ChartData chartData;
   final HomeChartPointInfo? selectedPointInfo;
   final int? selectedChartIndex;
+
+  const HomeChartUiState({
+    required this.chartData,
+    this.selectedPointInfo,
+    this.selectedChartIndex,
+  });
+
+  HomeChartUiState withSelection(HomeChartPointInfo info, int index) =>
+      HomeChartUiState(
+        chartData: chartData,
+        selectedPointInfo: info,
+        selectedChartIndex: index,
+      );
+}
+
+class HomeUiReady extends HomeUiState {
+  final String profileName;
+  final String weaponName;
+  final String ammoName;
+
+  final HomeConditionsUiState conditionsState;
+  final ReticleUiState reticleState;
+  final FormattedTableData tableData;
+  final HomeChartUiState chartState;
 
   const HomeUiReady({
     required this.profileName,
     required this.weaponName,
     required this.ammoName,
-    required this.windAngleDeg,
-    required this.tempDisplay,
-    required this.altDisplay,
-    required this.pressDisplay,
-    required this.humidDisplay,
-    required this.cartridgeInfoLine,
-    this.reticleId,
-    required this.windSpeedDisplay,
-    required this.windSpeedMps,
-    required this.lookAngleDisplay,
-    required this.lookAngleDeg,
-    required this.targetDistanceDisplay,
-    required this.targetDistanceM,
-    required this.adjustment,
-    this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
-    this.adjustmentElevMil = 0.0,
-    this.adjustmentWindMil = 0.0,
+    required this.conditionsState,
+    required this.reticleState,
     required this.tableData,
-    required this.chartData,
-    this.selectedPointInfo,
-    this.selectedChartIndex,
+    required this.chartState,
   });
 }
 
@@ -136,17 +157,26 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
   Future<HomeUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue && next.value == null) {
-        state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
-      }
-    });
+      if (next.hasValue) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
+      if (!next.hasValue) return;
+      if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
+      if (prev != null) _recalculate();
+    }, fireImmediately: true);
+    ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
+      if (prev != null) _recalculate();
+    }, fireImmediately: true);
     return const HomeUiNoData(type: EmptyStateType.noProfile);
   }
 
-  Future<void> recalculate() async {
+  Future<void> _recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
     final settings = ref.read(settingsProvider).value;
     final units = ref.read(unitSettingsProvider);
+    final reticle = ref.read(reticleSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
 
     if (ctx == null || settings == null) {
@@ -186,56 +216,56 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateForTarget(profile, conditions, opts);
+      if (!ref.mounted) return;
 
-      final uiState = _buildReadyState(
+      final uiState = await _buildReadyState(
         profile: profile,
         conditions: conditions,
         settings: settings,
+        reticle: reticle,
         units: units,
         formatter: formatter,
         result: result,
       );
+      if (!ref.mounted) return;
 
       state = AsyncData(uiState);
     } catch (e) {
-      state = AsyncData(HomeUiError(e.toString()));
+      if (ref.mounted) {
+        state = AsyncData(HomeUiError(e.toString()));
+      }
     }
+  }
+
+  static bool _generalNeedsRecalc(GeneralSettings? prev, GeneralSettings next) {
+    if (prev == null) return true;
+    return prev.homeChartDistanceStep != next.homeChartDistanceStep ||
+        prev.homeTableDistanceStep != next.homeTableDistanceStep ||
+        prev.homeShowMrad != next.homeShowMrad ||
+        prev.homeShowMoa != next.homeShowMoa ||
+        prev.homeShowMil != next.homeShowMil ||
+        prev.homeShowCmPer100m != next.homeShowCmPer100m ||
+        prev.homeShowInPer100yd != next.homeShowInPer100yd ||
+        prev.homeShowSubsonicTransition != next.homeShowSubsonicTransition;
   }
 
   void selectChartPoint(int index) {
     final current = state.value;
     if (current is! HomeUiReady) return;
-    final point = current.chartData.pointAt(index);
+    final point = current.chartState.chartData.pointAt(index);
     if (point == null) return;
 
-    final formatter = ref.read(unitFormatterProvider);
-    final info = _buildPointInfo(point, formatter);
+    final info = _buildPointInfo(point, ref.read(unitFormatterProvider));
+
     state = AsyncData(
       HomeUiReady(
         profileName: current.profileName,
         weaponName: current.weaponName,
         ammoName: current.ammoName,
-        windAngleDeg: current.windAngleDeg,
-        tempDisplay: current.tempDisplay,
-        altDisplay: current.altDisplay,
-        pressDisplay: current.pressDisplay,
-        humidDisplay: current.humidDisplay,
-        cartridgeInfoLine: current.cartridgeInfoLine,
-        reticleId: current.reticleId,
-        windSpeedDisplay: current.windSpeedDisplay,
-        windSpeedMps: current.windSpeedMps,
-        lookAngleDisplay: current.lookAngleDisplay,
-        lookAngleDeg: current.lookAngleDeg,
-        targetDistanceDisplay: current.targetDistanceDisplay,
-        targetDistanceM: current.targetDistanceM,
-        adjustment: current.adjustment,
-        adjustmentFormat: current.adjustmentFormat,
-        adjustmentElevMil: current.adjustmentElevMil,
-        adjustmentWindMil: current.adjustmentWindMil,
+        conditionsState: current.conditionsState,
+        reticleState: current.reticleState,
         tableData: current.tableData,
-        chartData: current.chartData,
-        selectedPointInfo: info,
-        selectedChartIndex: index,
+        chartState: current.chartState.withSelection(info, index),
       ),
     );
   }
@@ -258,50 +288,130 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     await ref.read(shotConditionsProvider.notifier).updateDistance(meters);
   }
 
+  Future<void> updateReticleAdjustments({
+    required double vRaw,
+    required Unit vUnit,
+    required double hRaw,
+    required Unit hUnit,
+  }) async {
+    final s = ref.read(reticleSettingsNotifierProvider).value;
+    if (s == null) return;
+    s.verticalAdjustmentUnitValue = vUnit;
+    s.verticalAdjustment = Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit);
+    s.horizontalAdjustmentUnitValue = hUnit;
+    s.horizontalAdjustment = Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit);
+    await ref.read(reticleSettingsNotifierProvider.notifier).save(s);
+  }
+
+  Future<void> updateTargetImage(String? imageId) async {
+    await ref
+        .read(reticleSettingsNotifierProvider.notifier)
+        .setTargetImage(imageId);
+  }
+
+  Future<void> updateSightReticleImage(String? imageId) async {
+    final ctx = ref.read(shotContextProvider).value;
+    final sight = ctx?.profile.sight.target;
+    if (sight == null) return;
+    sight.reticleImage = imageId;
+    await ref.read(appStateProvider.notifier).saveSight(sight);
+  }
+
+  Future<void> updateSightClicks({
+    required double vRaw,
+    required Unit vUnit,
+    required double hRaw,
+    required Unit hUnit,
+  }) async {
+    final ctx = ref.read(shotContextProvider).value;
+    final sight = ctx?.profile.sight.target;
+    if (sight == null) return;
+    sight.verticalClickUnitValue = vUnit;
+    sight.verticalClick = Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit);
+    sight.horizontalClickUnitValue = hUnit;
+    sight.horizontalClick = Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit);
+    await ref.read(appStateProvider.notifier).saveSight(sight);
+  }
+
   // ── Private builders ───────────────────────────────────────────────────────
 
-  HomeUiReady _buildReadyState({
+  Future<HomeUiReady> _buildReadyState({
     required Profile profile,
     required ShootingConditions conditions,
     required GeneralSettings settings,
+    required ReticleSettings reticle,
     required UnitSettings units,
     required UnitFormatter formatter,
     required BallisticsResult result,
-  }) {
+  }) async {
     final hit = result.hitResult;
     final targetM = conditions.distanceMeter;
 
     final windDirDeg = conditions.windDirectionDeg;
-    final windMps = conditions.windSpeedMps;
 
-    final tempStr = formatter.temperature(conditions.temperature);
-    final altStr = formatter.distance(conditions.altitude);
-    final pressStr = formatter.pressure(conditions.pressure);
-    final humidStr = formatter.humidity(
-      Ratio(conditions.humidityFrac, Unit.fraction),
+    final conditionsState = HomeConditionsUiState(
+      windAngleDeg: windDirDeg,
+      tempDisplay: formatter.temperature(conditions.temperature),
+      altDisplay: formatter.distance(conditions.altitude),
+      pressDisplay: formatter.pressure(conditions.pressure),
+      humidDisplay: formatter.humidity(
+        Ratio(conditions.humidityFrac, Unit.fraction),
+      ),
+      targetDistanceM: targetM,
     );
 
-    final windSpeedDisplay = formatter.velocity(Velocity.mps(windMps));
-
-    final lookDeg = conditions.lookAngle.in_(Unit.degree);
-    final lookAngleDisplay = '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
-
-    final targetDistanceDisplay = formatter.distance(conditions.distance);
-
+    final adjustedMessageLine = _buildAdjustedMessageLine(reticle);
     final cartridgeInfoLine = _buildCartridgeInfoLine(
       profile,
       conditions,
       formatter,
     );
 
-    final adjustment = _buildAdjustment(hit, targetM, result.holdRad, settings);
-    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil);
+    final vAdjMil = reticle.verticalAdjustment.convert(
+      reticle.verticalAdjustmentUnitValue,
+      Unit.mil,
+    );
+    final hAdjMil = reticle.horizontalAdjustment.convert(
+      reticle.horizontalAdjustmentUnitValue,
+      Unit.mil,
+    );
+
+    final adjustment = _buildAdjustment(
+      hit,
+      targetM,
+      result.holdRad,
+      settings,
+      elevOffsetMil: vAdjMil,
+      windOffsetMil: hAdjMil,
+    );
+    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil;
     final targetPoint = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
-    final windMil = targetPoint != null
-        ? targetPoint.windageAngle.in_(Unit.mil)
+    final windMil =
+        (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
+        hAdjMil;
+
+    final targetSvg = await ref
+        .read(targetSvgProvider(reticle.targetImage).future)
+        .catchError((_) => '');
+    final targetSizeMil = _parseMilWidth(targetSvg);
+    final targetSizeMilAtDistance = targetM > 0
+        ? targetSizeMil * 100 / targetM
         : 0.0;
+
+    final reticleState = ReticleUiState(
+      reticleId: profile.sight.target?.reticleImage,
+      targetId: reticle.targetImage,
+      targetSizeMilAtDistance: targetSizeMilAtDistance,
+      adjustedMessageLine: adjustedMessageLine,
+      cartridgeInfoLine: cartridgeInfoLine,
+      adjustment: adjustment,
+      adjustmentFormat: settings.adjustmentDisplayFormat,
+      adjustmentElevMil: elevMil,
+      adjustmentWindMil: windMil,
+    );
+
     final tableData = _buildHomeTable(
       hit,
       targetM,
@@ -321,29 +431,56 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       profileName: profile.name,
       weaponName: profile.weapon.target?.name ?? '',
       ammoName: profile.ammo.target?.name ?? '',
-      windAngleDeg: windDirDeg,
-      tempDisplay: tempStr,
-      altDisplay: altStr,
-      pressDisplay: pressStr,
-      humidDisplay: humidStr,
-      cartridgeInfoLine: cartridgeInfoLine,
-      reticleId: profile.sight.target?.reticleImage,
-      windSpeedDisplay: windSpeedDisplay,
-      windSpeedMps: windMps,
-      lookAngleDisplay: lookAngleDisplay,
-      lookAngleDeg: lookDeg,
-      targetDistanceDisplay: targetDistanceDisplay,
-      targetDistanceM: targetM,
-      adjustment: adjustment,
-      adjustmentFormat: settings.adjustmentDisplayFormat,
-      adjustmentElevMil: elevMil,
-      adjustmentWindMil: windMil,
+      conditionsState: conditionsState,
+      reticleState: reticleState,
       tableData: tableData,
-      chartData: chartData,
-      selectedPointInfo: autoInfo,
-      selectedChartIndex: autoIndex,
+      chartState: HomeChartUiState(
+        chartData: chartData,
+        selectedPointInfo: autoInfo,
+        selectedChartIndex: autoIndex,
+      ),
     );
   }
+
+  static double _parseMilWidth(String svg) {
+    final m = RegExp(
+      r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
+    ).firstMatch(svg);
+    return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
+  }
+
+  String? _buildAdjustedMessageLine(ReticleSettings reticle) {
+    final vAdj = reticle.verticalAdjustment;
+    final hAdj = reticle.horizontalAdjustment;
+    if (vAdj == 0.0 && hAdj == 0.0) return null;
+
+    final vUnit = reticle.verticalAdjustmentUnitValue;
+    final hUnit = reticle.horizontalAdjustmentUnitValue;
+    final parts = <String>[];
+
+    if (vAdj != 0.0) {
+      final acc = FC.adjustment.accuracyFor(vUnit);
+      parts.add(
+        '${vAdj > 0 ? '+' : ''}${vAdj.toFixedSafe(acc)} ${_unitLabel(vUnit)} vertical',
+      );
+    }
+    if (hAdj != 0.0) {
+      final acc = FC.adjustment.accuracyFor(hUnit);
+      parts.add(
+        '${hAdj > 0 ? '+' : ''}${hAdj.toFixedSafe(acc)} ${_unitLabel(hUnit)} horizontal',
+      );
+    }
+    return 'Drum adjustment: ${parts.join(' / ')}';
+  }
+
+  static String _unitLabel(Unit u) => switch (u) {
+    Unit.mRad => 'MRAD',
+    Unit.moa => 'MOA',
+    Unit.mil => 'MIL',
+    Unit.cmPer100m => 'cm/100m',
+    Unit.inPer100Yd => 'in/100yd',
+    _ => u.name.toUpperCase(),
+  };
 
   String _buildCartridgeInfoLine(
     Profile profile,
@@ -354,7 +491,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;
 
-    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : '—';
+    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : nullStr;
     final dragStr = ammo.dragModelFormattedInfo;
 
     String? sgStr;
@@ -375,13 +512,20 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     bclibc.HitResult hit,
     double targetM,
     double holdRad,
-    GeneralSettings settings,
-  ) {
-    final elevAngle = Angular.radian(holdRad);
+    GeneralSettings settings, {
+    double elevOffsetMil = 0.0,
+    double windOffsetMil = 0.0,
+  }) {
+    final elevAngle = Angular(
+      Angular.radian(holdRad).in_(Unit.mil) + elevOffsetMil,
+      Unit.mil,
+    );
     final point = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
-    final windAngle = point?.windageAngle;
+    final windAngle = point != null
+        ? Angular(point.windageAngle.in_(Unit.mil) + windOffsetMil, Unit.mil)
+        : null;
 
     final dispUnits = <(Unit, String)>[
       if (settings.homeShowMrad) (Unit.mRad, 'MRAD'),
@@ -445,7 +589,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         .toList();
 
     final distHeaders = dists.map<String>((m) {
-      if (m < 0) return '—';
+      if (m < 0) return nullStr;
       final disp = Distance.meter(m).in_(distUnit);
       return disp.toFixedSafe(distAcc);
     }).toList();
@@ -493,7 +637,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       for (var ci = 0; ci < dists.length; ci++) {
         final hold = tableHolds.length > ci ? tableHolds[ci] : double.nan;
         final valStr = (hold.isNaN || dists[ci] < 0)
-            ? '—'
+            ? nullStr
             : Angular.radian(hold).in_(u).toFixedSafe(acc);
         cells.add(
           FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
@@ -509,7 +653,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       for (var ci = 0; ci < dists.length; ci++) {
         final p = points[ci];
         final valStr = p == null
-            ? '—'
+            ? nullStr
             : (rd.$3(p) ?? double.nan).toFixedSafe(rd.$4);
         cells.add(
           FormattedCell(value: valStr, isTargetColumn: ci == targetCol),
