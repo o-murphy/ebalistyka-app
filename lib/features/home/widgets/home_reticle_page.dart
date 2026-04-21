@@ -50,7 +50,9 @@ class HomeReticlePage extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
 
     final targetSvgAsync = ref.watch(targetSvgProvider(vmState.targetId));
-    final reticleSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
+    final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
+    final targetSizeMilAtDistance =
+        targetSizeMil * 100 / vmState.targetDistanceM;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +86,7 @@ class HomeReticlePage extends ConsumerWidget {
                     child: ReticleView(
                       reticleImageId: vmState.reticleId,
                       targetImageId: vmState.targetId,
-                      targetSizeMil: reticleSizeMil,
+                      targetSizeMil: targetSizeMilAtDistance,
                       offsetXMil: vmState.adjustmentWindMil,
                       offsetYMil: vmState.adjustmentElevMil,
                       clipRadius: 15,

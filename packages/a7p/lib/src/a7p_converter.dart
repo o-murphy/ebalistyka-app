@@ -138,8 +138,8 @@ abstract final class A7pConverter {
       customDragTableCd: customCd,
       muzzleVelocityMps: p.cMuzzleVelocity / 10.0,
       muzzleVelocityTemperatureC: p.cZeroTemperature.toDouble(),
-      usePowderSensitivity: p.cTCoeff != 0,
-      powderSensitivityFrac: p.cTCoeff / 1000.0,
+      usePowderSensitivity: p.cTCoeff >= 0,
+      powderSensitivityFrac: (p.cTCoeff / 1000.0) / 100.0,
       zeroDistanceMeter: zeroMeter,
       zeroLookAngleRad: 0.0,
       zeroAltitudeMeter: 0.0,
@@ -235,10 +235,9 @@ abstract final class A7pConverter {
       -100,
       100,
     );
-    final tCoeff = ((ammo?.powderSensitivityFrac ?? 0.0) * 1000).round().clamp(
-      0,
-      5000,
-    );
+    final tCoeff = (((ammo?.powderSensitivityFrac ?? 0.0) * 100) * 1000)
+        .round()
+        .clamp(0, 5000);
     final bDiameter = ((ammo?.caliberInch ?? weapon.caliberInch) * 1000)
         .round()
         .clamp(1, 50000);
