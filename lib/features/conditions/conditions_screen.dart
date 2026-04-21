@@ -1,10 +1,11 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
+import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -24,6 +25,34 @@ class ConditionsScreen extends ConsumerWidget {
     }
 
     final notifier = ref.read(conditionsVmProvider.notifier);
+
+    final UnitPickerContext altCtx = UnitPickerContext(
+      context,
+      label: 'Altitude',
+      rawValue: state.altitude.rawValue,
+      constraints: FC.altitude,
+      displayUnit: state.altitude.displayUnit,
+      onChanged: (v) => notifier.updateAltitude(v!),
+    );
+
+    final UnitPickerContext humCtx = UnitPickerContext(
+      context,
+      label: 'Humidity',
+      rawValue: state.humidity.rawValue,
+      constraints: FC.humidity,
+      displayUnit: state.humidity.displayUnit,
+      symbol: '%',
+      onChanged: (v) => notifier.updateHumidity(v!),
+    );
+
+    final UnitPickerContext pressCtx = UnitPickerContext(
+      context,
+      label: 'Pressure',
+      rawValue: state.pressure.rawValue,
+      constraints: FC.pressure,
+      displayUnit: state.pressure.displayUnit,
+      onChanged: (v) => notifier.updatePressure(v!),
+    );
 
     return BaseScreen(
       title: 'Conditions',
@@ -51,14 +80,7 @@ class ConditionsScreen extends ConsumerWidget {
                   heroTag: 'cond-alt',
                   value:
                       '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
-                  onTap: () => showUnitEditDialog(
-                    context,
-                    label: 'Altitude',
-                    rawValue: state.altitude.rawValue,
-                    constraints: FC.altitude,
-                    displayUnit: state.altitude.displayUnit,
-                    onChanged: notifier.updateAltitude,
-                  ),
+                  onTap: () => showUnitHybridPickerDialog(altCtx),
                 ),
                 IconValueButton(
                   icon: IconDef.humidity,
@@ -66,30 +88,16 @@ class ConditionsScreen extends ConsumerWidget {
                   heroTag: 'cond-hum',
                   value:
                       '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
-                  onTap: () => showUnitEditDialog(
-                    context,
-                    label: 'Humidity',
-                    rawValue: state.humidity.rawValue,
-                    constraints: FC.humidity,
-                    displayUnit: state.humidity.displayUnit,
-                    symbol: '%',
-                    onChanged: notifier.updateHumidity,
-                  ),
+                  onTap: () => showUnitHybridPickerDialog(humCtx),
                 ),
+
                 IconValueButton(
                   icon: IconDef.velocity,
                   label: 'Pressure',
                   heroTag: 'cond-press',
                   value:
                       '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
-                  onTap: () => showUnitEditDialog(
-                    context,
-                    label: 'Pressure',
-                    rawValue: state.pressure.rawValue,
-                    constraints: FC.pressure,
-                    displayUnit: state.pressure.displayUnit,
-                    onChanged: notifier.updatePressure,
-                  ),
+                  onTap: () => showUnitHybridPickerDialog(pressCtx),
                 ),
               ],
             ),

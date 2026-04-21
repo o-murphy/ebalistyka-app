@@ -98,12 +98,12 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
     final N = variant.n;
     const O = MoarTSizes.O;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
     const String accentColor = "red";
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 30, 'white'),
+      shape: (c) => c.circle(0, 0, 30, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 
@@ -132,18 +132,11 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
 
         for (double i = -A / 2; i <= A / 2; i += 10) {
           if (i == 0) continue;
-          c.text(i.abs().toStringAsFixed(0), i, -3 + N, color, fontSize: N);
+          c.label(i.abs().toStringAsFixed(0), i, -3 + N * 0.65, color, h: N);
         }
 
         for (double i = 10; i <= A / 2; i += 10) {
-          c.text(
-            i.abs().toStringAsFixed(0),
-            -3,
-            i + F * 0.35,
-            color,
-            fontSize: F,
-            textAnchor: "middle",
-          );
+          c.label(i.abs().toStringAsFixed(0), -3, i, color, h: F);
         }
 
         c

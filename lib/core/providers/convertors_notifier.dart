@@ -1,4 +1,4 @@
-import 'package:bclibc_ffi/unit.dart';
+import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
@@ -118,6 +118,85 @@ class ConvertorsNotifier extends AsyncNotifier<ConvertorsState> {
   Future<void> updateTorqueUnit(Unit unit) async {
     final s = state.value ?? _load();
     s.torqueUnit = unit;
+    await _save(s);
+  }
+
+  // ── Velocity ──────────────────────────────────────────────────────────────────
+
+  Future<void> updateVelocityValue(double? valueInMps) async {
+    if (valueInMps == null || valueInMps < 0) return;
+    final s = state.value ?? _load();
+    s.velocityValue = Velocity.mps(valueInMps);
+    await _save(s);
+  }
+
+  Future<void> updateVelocityUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.velocityUnit = unit;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityMachInputValue(double mach) async {
+    final s = state.value ?? _load();
+    s.velocityMachInputValue = mach;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityMachUseCustomAtmo(bool value) async {
+    final s = state.value ?? _load();
+    s.velocityMachUseCustomAtmo = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoTemperature(Temperature value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoTemperature = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoPressure(Pressure value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoPressure = value;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoHumidityFrac(double valueFrac) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoHumidityFrac = valueFrac;
+    await _save(s);
+  }
+
+  Future<void> updateVelocityAtmoAltitude(Distance value) async {
+    final s = state.value ?? _load();
+    s.velocityAtmoAltitude = value;
+    await _save(s);
+  }
+
+  // ── Target distance convertor ─────────────────────────────────────────────────
+
+  Future<void> updateDistanceConvTargetSize(double? valueInInches) async {
+    if (valueInInches == null || valueInInches < 0) return;
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeInch = valueInInches;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeUnitValue = unit;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeAngular(double? valueInMil) async {
+    if (valueInMil == null || valueInMil <= 0) return;
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeAngularMil = valueInMil;
+    await _save(s);
+  }
+
+  Future<void> updateDistanceConvTargetSizeAngularUnit(Unit unit) async {
+    final s = state.value ?? _load();
+    s.distanceConvTargetSizeAngularUnitValue = unit;
     await _save(s);
   }
 

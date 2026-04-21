@@ -29,18 +29,19 @@ class HomeChartPage extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final chart = vmState.chartData;
+    final cs = vmState.chartState;
+    final chart = cs.chartData;
     if (chart.points.isEmpty) {
       return const EmptyStatePlaceholder();
     }
 
     return Column(
       children: [
-        _ChartInfoGrid(info: vmState.selectedPointInfo),
+        _ChartInfoGrid(info: cs.selectedPointInfo),
         Expanded(
           child: TrajectoryChart(
             points: chart.points,
-            selectedIndex: vmState.selectedChartIndex,
+            selectedIndex: cs.selectedChartIndex,
             snapDistM: chart.snapDistM,
             showSubsonicLine: true,
             onIndexSelected: (i) =>

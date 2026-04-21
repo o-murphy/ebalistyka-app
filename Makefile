@@ -1,4 +1,4 @@
-.PHONY: native ffigen proto-a7p proto-setup test format clean objectbox objectbox-setup objectbox-clean run run-clean unit objectbox
+.PHONY: native ffigen reticles proto-a7p proto-setup test format clean objectbox objectbox-setup objectbox-clean run run-clean unit objectbox
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -45,6 +45,9 @@ else
 	sudo apt-get install -y protobuf-compiler
 	dart pub global activate protoc_plugin
 endif
+
+reticles:
+	./scripts/gen_reticles.sh
 
 # Re-generate Dart protobuf bindings for packages/a7p
 proto-a7p:

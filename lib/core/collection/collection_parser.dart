@@ -113,47 +113,6 @@ abstract final class CollectionParser {
     if (sensTable.isNotEmpty) {
       _applyPowderSensTable(ammo, sensTable);
     }
-
-    // Zero conditions
-    final zc = j['zeroConditions'] as Map<String, dynamic>?;
-    if (zc != null) {
-      ammo.zeroDistance = Distance.meter(
-        (zc['distance'] as num? ?? 100.0).toDouble(),
-      );
-      ammo.zeroLookAngle = Angular.degree(
-        (zc['lookAngle'] as num? ?? 0.0).toDouble(),
-      );
-      ammo.zeroUseDiffPowderTemperature =
-          zc['useDiffPowderTemperature'] as bool? ?? false;
-      ammo.zeroUseCoriolis = zc['useCoriolis'] as bool? ?? false;
-      ammo.zeroLatitudeDeg = (zc['latitudeDeg'] as num? ?? 0.0).toDouble();
-      ammo.zeroAzimuthDeg = (zc['azimuthDeg'] as num? ?? 0.0).toDouble();
-
-      final atmo = zc['atmo'] as Map<String, dynamic>?;
-      if (atmo != null) {
-        ammo.zeroAltitude = Distance.meter(
-          (atmo['altitude'] as num? ?? 0.0).toDouble(),
-        );
-        ammo.zeroTemperature = Temperature.celsius(
-          (atmo['temperature'] as num? ?? 15.0).toDouble(),
-        );
-        ammo.zeroPressure = Pressure.hPa(
-          (atmo['pressure'] as num? ?? 1013.25).toDouble(),
-        );
-        ammo.zeroHumidityFrac = (atmo['humidity'] as num? ?? 0.0).toDouble();
-        ammo.zeroPowderTemp = Temperature.celsius(
-          (atmo['powderTemperature'] as num? ?? 15.0).toDouble(),
-        );
-      }
-    }
-
-    // Zero offset (x/y in mrad → radians)
-    final zo = j['zeroOffset'] as Map<String, dynamic>?;
-    if (zo != null) {
-      ammo.zeroOffsetXRad = ((zo['x'] as num? ?? 0.0).toDouble()) / 1000.0;
-      ammo.zeroOffsetYRad = ((zo['y'] as num? ?? 0.0).toDouble()) / 1000.0;
-    }
-
     return ammo;
   }
 

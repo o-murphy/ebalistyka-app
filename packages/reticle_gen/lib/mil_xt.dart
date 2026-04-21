@@ -95,14 +95,14 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
     const M = MilXtSizes.M;
     const N = MilXtSizes.N;
 
-    const String bgColor = "white";
-    const String color = "black"; //"onSurface";
+    const String bgColor = 'transparent';
+    const String color = "onSurface"; //"onSurface";
     const String accentColor = "red";
     const double halfI = I / 2;
     const double labelOffset = 0.4;
 
     canvas.clip(
-      shape: (c) => c.circle(0, 0, 24, 'white'),
+      shape: (c) => c.circle(0, 0, 24, fill: bgColor),
       draw: (c) {
         c.fill(bgColor);
 
@@ -110,20 +110,8 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
         void zoneRow(double j, double xOff, double dotRange) {
           final fontSize = j.round() % 2 == 0 ? F : K;
           c
-            ..text(
-              j.toStringAsFixed(0),
-              xOff,
-              j + fontSize * 0.35,
-              color,
-              fontSize: fontSize,
-            )
-            ..text(
-              j.toStringAsFixed(0),
-              -xOff,
-              j + fontSize * 0.35,
-              color,
-              fontSize: fontSize,
-            )
+            ..label(j.toStringAsFixed(0), xOff, j, color, h: fontSize)
+            ..label(j.toStringAsFixed(0), -xOff, j, color, h: fontSize)
             // Large dots every E, skip center (i==0):
             ..hDotLine(j, -dotRange, -E, E, M / 2, color)
             ..hDotLine(j, E, dotRange, E, M / 2, color)
@@ -191,13 +179,12 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
         // 2a. Horizontal axis marks (±1..10)
         for (double i = -10; i <= 10; i += E) {
           if (i == 0) continue;
-          c.text(
+          c.label(
             i.abs().toStringAsFixed(0),
             i,
-            -(halfI + F),
+            -(halfI + F + K * 0.35),
             color,
-            fontSize: K,
-            textAnchor: 'middle',
+            h: K,
           );
         }
 
@@ -247,13 +234,13 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
           ..vDashLine(0, 0.1, 24, 0.8, 0.2, accentColor, A);
 
         for (double i = -5; i <= -2; i += E) {
-          c.text(
+          c.label(
             i.abs().toStringAsFixed(0),
             -(halfI + labelOffset),
-            i + F * 0.35,
+            i,
             color,
-            fontSize: K,
-            textAnchor: 'end',
+            h: K,
+            anchor: 'end',
           );
         }
 

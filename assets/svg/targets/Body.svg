@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="510" height="510" viewBox="-2.55 -2.55 5.1 5.1" shape-rendering="crispEdges">
+  <clipPath id="clip0">
+    <path id="batch-0" d="M 2.55 2.55 L -2.55 2.55 L -2.55 -1.173 L -1.173 -1.173 L -1.173 -2.55 L 1.173 -2.55 L 1.173 -1.173 L 2.55 -1.173 Z" fill="none" stroke="none" stroke-width="0" stroke-linejoin="miter" stroke-linecap="miter"/>
+  </clipPath>
+  <g id="clipgroup-0" clip-path="url(#clip0)">
+    <path id="batch-1" d="M 2.55 2.55 L -2.55 2.55 L -2.55 -1.173 L -1.173 -1.173 L -1.173 -2.55 L 1.173 -2.55 L 1.173 -1.173 L 2.55 -1.173 Z" fill="green" stroke="none" stroke-width="0" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <circle id="dot-0" cx="0" cy="0" r="0.204" fill="orange"/>
+    <circle id="circle-0" cx="0" cy="0" r="0.51" fill="none" stroke="white" stroke-width="0.01"/>
+    <path id="label-0" d="M -0.596 0.441 L -0.486 0.441 M -0.596 0.441 L -0.596 0.541 M -0.486 0.441 L -0.486 0.541 M -0.596 0.541 L -0.486 0.541 M -0.486 0.541 L -0.486 0.641 M -0.596 0.641 L -0.486 0.641" fill="none" stroke="white" stroke-width="0.018" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle id="circle-1" cx="0" cy="0" r="1.02" fill="none" stroke="white" stroke-width="0.01"/>
+    <path id="label-1" d="M -0.957 0.802 L -0.847 0.802 M -0.957 0.802 L -0.957 0.902 M -0.847 0.802 L -0.847 0.902 M -0.957 0.902 L -0.847 0.902 M -0.957 0.902 L -0.957 1.002 M -0.847 0.902 L -0.847 1.002 M -0.957 1.002 L -0.847 1.002" fill="none" stroke="white" stroke-width="0.018" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle id="circle-2" cx="0" cy="0" r="1.53" fill="none" stroke="white" stroke-width="0.01"/>
+    <path id="label-2" d="M -1.317 1.162 L -1.207 1.162 M -1.207 1.162 L -1.207 1.262 M -1.207 1.262 L -1.207 1.362" fill="none" stroke="white" stroke-width="0.018" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle id="circle-3" cx="0" cy="0" r="2.04" fill="none" stroke="white" stroke-width="0.01"/>
+    <path id="label-3" d="M -1.678 1.523 L -1.568 1.523 M -1.678 1.523 L -1.678 1.623 M -1.678 1.623 L -1.568 1.623 M -1.678 1.623 L -1.678 1.723 M -1.568 1.623 L -1.568 1.723 M -1.678 1.723 L -1.568 1.723" fill="none" stroke="white" stroke-width="0.018" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle id="circle-4" cx="0" cy="0" r="2.55" fill="none" stroke="white" stroke-width="0.01"/>
+    <path id="label-4" d="M -2.038 1.883 L -1.928 1.883 M -2.038 1.883 L -2.038 1.983 M -2.038 1.983 L -1.928 1.983 M -1.928 1.983 L -1.928 2.083 M -2.038 2.083 L -1.928 2.083" fill="none" stroke="white" stroke-width="0.018" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+</svg>

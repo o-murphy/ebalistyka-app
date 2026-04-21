@@ -330,3 +330,24 @@ class Coriolis {
     return Vector(position.x, position.y + deltaY, position.z + deltaZ);
   }
 }
+
+/// Atmosphere-aware Mach conversion for [Velocity].
+///
+/// [inMach] uses the actual speed of sound from the given atmosphere.
+/// Without an argument it defaults to ICAO sea-level conditions,
+/// matching [Velocity.in_]\([Unit.mach]\) but accepting any [Atmo].
+extension VelocityMachExtension on Velocity {
+  double inMach([Atmo? atmo]) {
+    final c = (atmo ?? Atmo.icao()).mach.in_(Unit.mps);
+    return in_(Unit.mps) / c;
+  }
+}
+
+/// Creates a [Velocity] from a Mach number using the given atmosphere.
+/// Defaults to ICAO sea-level conditions.
+extension MachToVelocity on double {
+  Velocity toVelocityFromMach([Atmo? atmo]) {
+    final c = (atmo ?? Atmo.icao()).mach.in_(Unit.mps);
+    return Velocity.mps(this * c);
+  }
+}

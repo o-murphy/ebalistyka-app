@@ -202,8 +202,9 @@ class Ammo with Cloneable<Ammo> {
   double zeroLatitudeDeg = 0.0;
   double zeroAzimuthDeg = 0.0;
 
-  double zeroOffsetXRad = 0.0;
-  double zeroOffsetYRad = 0.0;
+  double zeroOffsetX = 0.0;
+  double zeroOffsetY = 0.0;
+  String zeroOffsetUnit = "mil";
 
   String? projectileName;
   String? vendor;
@@ -249,8 +250,9 @@ class Ammo with Cloneable<Ammo> {
     double? zeroPowderTemperatureC,
     double? zeroLatitudeDeg,
     double? zeroAzimuthDeg,
-    double? zeroOffsetXRad,
-    double? zeroOffsetYRad,
+    double? zeroOffsetX,
+    double? zeroOffsetY,
+    String? zeroOffsetUnit,
     String? projectileName,
     String? vendor,
     String? image,
@@ -294,8 +296,9 @@ class Ammo with Cloneable<Ammo> {
           zeroPowderTemperatureC ?? this.zeroPowderTemperatureC
       ..zeroLatitudeDeg = zeroLatitudeDeg ?? this.zeroLatitudeDeg
       ..zeroAzimuthDeg = zeroAzimuthDeg ?? this.zeroAzimuthDeg
-      ..zeroOffsetXRad = zeroOffsetXRad ?? this.zeroOffsetXRad
-      ..zeroOffsetYRad = zeroOffsetYRad ?? this.zeroOffsetYRad
+      ..zeroOffsetX = zeroOffsetX ?? this.zeroOffsetX
+      ..zeroOffsetY = zeroOffsetY ?? this.zeroOffsetY
+      ..zeroOffsetUnit = zeroOffsetUnit ?? this.zeroOffsetUnit
       ..projectileName = projectileName ?? this.projectileName
       ..vendor = vendor ?? this.vendor
       ..image = image ?? this.image;
@@ -453,6 +456,7 @@ class UnitSettings with Cloneable<UnitSettings> {
   String barrelLength = "inch";
   String time = "second";
   String torque = "newtonMeter";
+  String targetSize = "mil";
 
   final owner = ToOne<Owner>();
 
@@ -576,6 +580,18 @@ class ConvertorsState with Cloneable<ConvertorsState> {
   double anglesConvAngularValueMil = 1.0;
   String anglesConvAngularLastUnit = "mil";
   String anglesConvOutputLastUnit = "centimeter";
+  double velocityValueMps = 300.0;
+  String velocityLastUnit = "mps";
+  double velocityMachInputValue = 0.881;
+  bool velocityMachUseCustomAtmo = false;
+  double velocityAtmoTemperatureC = 15.0;
+  double velocityAtmoPressureHPa = 1013.25;
+  double velocityAtmoHumidityFrac = 0.0;
+  double velocityAtmoAltitudeMeter = 0.0;
+  double distanceConvTargetSizeInch = 8;
+  String distanceConvTargetSizeUnit = "inch";
+  double distanceConvTargetSizeAngularMil = 1;
+  String distanceConvTargetSizeAngularUnit = "mil";
 
   final owner = ToOne<Owner>();
 
@@ -597,6 +613,18 @@ class ConvertorsState with Cloneable<ConvertorsState> {
     double? anglesConvAngularValueMil,
     String? anglesConvAngularLastUnit,
     String? anglesConvOutputLastUnit,
+    double? velocityValueMps,
+    String? velocityLastUnit,
+    double? velocityMachInputValue,
+    bool? velocityMachUseCustomAtmo,
+    double? velocityAtmoTemperatureC,
+    double? velocityAtmoPressureHPa,
+    double? velocityAtmoHumidityFrac,
+    double? velocityAtmoAltitudeMeter,
+    double? distanceConvTargetSizeInch,
+    String? distanceConvTargetSizeUnit,
+    double? distanceConvTargetSizeAngularMil,
+    String? distanceConvTargetSizeAngularUnit,
   }) {
     return ConvertorsState()
       ..id = id ?? this.id
@@ -620,6 +648,64 @@ class ConvertorsState with Cloneable<ConvertorsState> {
       ..anglesConvAngularLastUnit =
           anglesConvAngularLastUnit ?? this.anglesConvAngularLastUnit
       ..anglesConvOutputLastUnit =
-          anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit;
+          anglesConvOutputLastUnit ?? this.anglesConvOutputLastUnit
+      ..velocityValueMps = velocityValueMps ?? this.velocityValueMps
+      ..velocityLastUnit = velocityLastUnit ?? this.velocityLastUnit
+      ..velocityMachInputValue =
+          velocityMachInputValue ?? this.velocityMachInputValue
+      ..velocityMachUseCustomAtmo =
+          velocityMachUseCustomAtmo ?? this.velocityMachUseCustomAtmo
+      ..velocityAtmoTemperatureC =
+          velocityAtmoTemperatureC ?? this.velocityAtmoTemperatureC
+      ..velocityAtmoPressureHPa =
+          velocityAtmoPressureHPa ?? this.velocityAtmoPressureHPa
+      ..velocityAtmoHumidityFrac =
+          velocityAtmoHumidityFrac ?? this.velocityAtmoHumidityFrac
+      ..velocityAtmoAltitudeMeter =
+          velocityAtmoAltitudeMeter ?? this.velocityAtmoAltitudeMeter
+      ..distanceConvTargetSizeInch =
+          distanceConvTargetSizeInch ?? this.distanceConvTargetSizeInch
+      ..distanceConvTargetSizeUnit =
+          distanceConvTargetSizeUnit ?? this.distanceConvTargetSizeUnit
+      ..distanceConvTargetSizeAngularMil =
+          distanceConvTargetSizeAngularMil ??
+          this.distanceConvTargetSizeAngularMil
+      ..distanceConvTargetSizeAngularUnit =
+          distanceConvTargetSizeAngularUnit ??
+          this.distanceConvTargetSizeAngularUnit;
+  }
+}
+
+@Entity()
+class ReticleSettings with Cloneable<ReticleSettings> {
+  @Id()
+  int id = 0;
+
+  double verticalAdjustment = 0.0;
+  String verticalAdjustmentUnit = 'mil';
+  double horizontalAdjustment = 0.0;
+  String horizontalAdjustmentUnit = 'mil';
+  String? targetImage;
+
+  final owner = ToOne<Owner>();
+
+  @override
+  ReticleSettings copyWith({
+    int? id,
+    double? verticalAdjustment,
+    String? verticalAdjustmentUnit,
+    double? horizontalAdjustment,
+    String? horizontalAdjustmentUnit,
+    String? targetImage,
+  }) {
+    return ReticleSettings()
+      ..id = id ?? this.id
+      ..verticalAdjustment = verticalAdjustment ?? this.verticalAdjustment
+      ..verticalAdjustmentUnit =
+          verticalAdjustmentUnit ?? this.verticalAdjustmentUnit
+      ..horizontalAdjustment = horizontalAdjustment ?? this.horizontalAdjustment
+      ..horizontalAdjustmentUnit =
+          horizontalAdjustmentUnit ?? this.horizontalAdjustmentUnit
+      ..targetImage = targetImage ?? this.targetImage;
   }
 }

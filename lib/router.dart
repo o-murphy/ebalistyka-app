@@ -6,7 +6,6 @@ import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'core/providers/recalc_coordinator.dart';
 
 import 'features/home/home_screen.dart';
 import 'features/home/sub_screens/home_sub_screens.dart';
@@ -30,6 +29,7 @@ abstract final class Routes {
 
   // Home stack — shot info
   static const shotDetails = '/home/shot-details';
+  static const reticleView = '/home/reticle-view';
 
   // Profile (profiles) stack
   static const profiles = '/home/profiles';
@@ -50,7 +50,10 @@ abstract final class Routes {
   static const sightSelect = '/home/profiles/sight-select';
   static const sightCreate = '/home/profiles/sight-select/create';
   static const sightCollection = '/home/profiles/sight-select/collection';
-  static const sightCreateReticlePicker =
+  static const reticleViewReticlePicker = '/home/reticle-view/reticle-picker';
+  static const reticleViewTargetPicker = '/home/reticle-view/target-picker';
+
+  static const sightReticlePicker =
       '/home/profiles/sight-select/create/reticle-picker';
 
   // Profile inline edits (from profile card)
@@ -100,6 +103,24 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'shot-details',
                   builder: (_, _) => const ShotDetailsScreen(),
+                ),
+                GoRoute(
+                  path: 'reticle-view',
+                  builder: (_, _) => const ReticleViewScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'reticle-picker',
+                      builder: (_, state) => ReticlePickerScreen(
+                        currentReticleId: state.extra as String?,
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'target-picker',
+                      builder: (_, state) => TargetPickerScreen(
+                        currentTargetId: state.extra as String?,
+                      ),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'profiles',
@@ -302,7 +323,7 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'target-distance',
-                  builder: (_, _) => const DistanceConvertorScreen(),
+                  builder: (_, _) => const TargetDistanceConvertorScreen(),
                 ),
                 GoRoute(
                   path: 'velocity',
@@ -372,23 +393,14 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(recalcCoordinatorProvider.notifier)
-          .onTabActivated(widget.shell.currentIndex);
-    });
   }
 
   void _onTabSelected(int i) {
     widget.shell.goBranch(i, initialLocation: true);
-    ref.read(recalcCoordinatorProvider.notifier).onTabActivated(i);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Initialise the coordinator — it sets up its own listeners.
-    ref.watch(recalcCoordinatorProvider);
-
     return Scaffold(
       body: SafeArea(child: widget.shell),
       bottomNavigationBar: NavigationBar(

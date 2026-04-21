@@ -1,6 +1,7 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -62,19 +63,25 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   @override
   Future<TrajectoryTablesUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue && next.value == null) {
+      if (!next.hasValue) return;
+      if (next.value == null) {
         state = const AsyncData(
           TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
         );
+      } else {
+        _recalculate();
       }
-    });
+    }, fireImmediately: true);
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {
       _rebuild();
-    });
+    }, fireImmediately: true);
+    ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
+      if (prev != null) _rebuild();
+    }, fireImmediately: true);
     return const TrajectoryTablesUiLoading();
   }
 
-  Future<void> recalculate() async {
+  Future<void> _recalculate() async {
     final ctx = ref.read(shotContextProvider).value;
     final tablesSettings = ref.read(tablesSettingsProvider);
     final units = ref.read(unitSettingsProvider);
@@ -120,7 +127,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       final result = await ref
           .read(ballisticsServiceProvider)
           .calculateTable(profile, conditions, opts);
-
+      if (!ref.mounted) return;
       _lastResult = result;
       _lastProfile = profile;
 
@@ -311,7 +318,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       final rangeVal = colDefs.first.$4(row);
       final rangeStr = rangeVal != null
           ? rangeVal.toFixedSafe(colDefs.first.$5)
-          : '—';
+          : nullStr;
 
       if (isZeroTable) {
         final arrow = (row.flag & bclibc.TrajFlag.zeroUp.value) != 0
@@ -349,7 +356,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       for (var pi = 0; pi < rows.length; pi++) {
         final row = rows[pi];
         final val = col.$4(row);
-        final valStr = val != null ? val.toFixedSafe(col.$5) : '—';
+        final valStr = val != null ? val.toFixedSafe(col.$5) : nullStr;
         final isZero = (row.flag & bclibc.TrajFlag.zero.value) != 0;
         final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
         cells.add(

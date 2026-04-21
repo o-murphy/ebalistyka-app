@@ -1,11 +1,10 @@
-import 'dart:math' as math;
-
-import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:bclibc_ffi/unit.dart';
-
 // ── Core conversion & validation logic ──────────────────────────────────────
 
-/// Utility for working with unit conversion and validation
+import 'dart:math' as math;
+
+import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+
 class UnitConversionHelper {
   final FieldConstraints constraints;
   final Unit displayUnit;
@@ -24,26 +23,29 @@ class UnitConversionHelper {
     return display.convert(displayUnit, _rawUnit);
   }
 
+  /// Priority is given to accuracyFor from the model, otherwise it calculates dynamically.
   int get accuracy {
-    if (_rawUnit == displayUnit) return constraints.accuracy;
-    final stepDisplay =
-        (toDisplay(constraints.minRaw + constraints.stepRaw) -
-                toDisplay(constraints.minRaw))
-            .abs();
-    if (stepDisplay <= 0) return constraints.accuracy;
-    final digits = (-math.log(stepDisplay) / math.ln10).ceil();
-    return digits < 0 ? 0 : digits;
+    try {
+      return constraints.accuracyFor(displayUnit);
+    } catch (_) {
+      if (_rawUnit == displayUnit) return constraints.accuracy;
+      final stepDisplay =
+          (toDisplay(constraints.minRaw + constraints.stepRaw) -
+                  toDisplay(constraints.minRaw))
+              .abs();
+      if (stepDisplay <= 0) return constraints.accuracy;
+      final digits = (-math.log(stepDisplay) / math.ln10).ceil();
+      return digits < 0 ? 0 : digits;
+    }
   }
 
   double get displayMin => toDisplay(constraints.minRaw);
   double get displayMax => toDisplay(constraints.maxRaw);
   double get stepRaw => constraints.stepRaw;
 
-  String formatDisplayValue(double value) {
-    return value.toStringAsFixed(accuracy);
-  }
+  String formatDisplayValue(double value) => value.toStringAsFixed(accuracy);
 
-  /// Validates display value and returns raw value
+  /// Validates a double value and returns raw.
   double? validateDisplayValue(double displayValue) {
     if (displayValue < displayMin - 1e-10 ||
         displayValue > displayMax + 1e-10) {
@@ -52,23 +54,18 @@ class UnitConversionHelper {
     return toRaw(displayValue).clamp(constraints.minRaw, constraints.maxRaw);
   }
 
-  /// Parses string. Returns (rawValue, errorText)
+  /// Parses the string. Returns (rawValue, errorText).
   (double?, String?) parseAndValidate(String text) {
     final trimmed = text.trim();
-
-    if (trimmed.isEmpty) {
-      return (null, null);
-    }
+    if (trimmed.isEmpty) return (null, null);
 
     final parsed = double.tryParse(trimmed.replaceAll(',', '.'));
-    if (parsed == null) {
-      return (null, 'Invalid number');
-    }
+    if (parsed == null) return (null, 'Invalid number');
 
     if (parsed < displayMin - 1e-10 || parsed > displayMax + 1e-10) {
       return (
         null,
-        '${formatDisplayValue(displayMin)} — ${formatDisplayValue(displayMax)}',
+        'Range error: ${formatDisplayValue(displayMin)} — ${formatDisplayValue(displayMax)}',
       );
     }
 

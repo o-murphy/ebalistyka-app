@@ -38,6 +38,32 @@ class FieldConstraints {
   }
 }
 
+/// Extension of [FieldConstraints] with ruler/graph tick configuration.
+class RulerConstraints {
+  RulerConstraints({required this.fc, double? tick, double? smallTick})
+    : tick = tick ?? fc.stepRaw,
+      smallTick =
+          smallTick ?? _defaultSmallTick(tick ?? fc.stepRaw, fc.accuracy);
+
+  final FieldConstraints fc;
+  final double tick;
+  final double smallTick;
+
+  static double _defaultSmallTick(double tick, int accuracy) {
+    final minStep = pow(10, -accuracy).toDouble();
+    final calculated = tick / 5;
+    return calculated > minStep ? calculated : minStep;
+  }
+
+  Unit get rawUnit => fc.rawUnit;
+  double get minRaw => fc.minRaw;
+  double get maxRaw => fc.maxRaw;
+  double get stepRaw => fc.stepRaw;
+  int get accuracy => fc.accuracy;
+
+  int accuracyFor(Unit displayUnit) => fc.accuracyFor(displayUnit);
+}
+
 // ─── Role definitions ─────────────────────────────────────────────────────────
 
 abstract final class FC {
@@ -68,10 +94,10 @@ abstract final class FC {
 
   /// Humidity in percent (0–100). rawUnit == displayUnit so toDisplay is identity.
   static const humidity = FieldConstraints(
-    rawUnit: Unit.percent,
+    rawUnit: Unit.fraction,
     minRaw: 0.0,
-    maxRaw: 100.0,
-    stepRaw: 1.0,
+    maxRaw: 1.0,
+    stepRaw: 0.01,
     accuracy: 0,
   );
 
@@ -308,12 +334,56 @@ abstract final class FC {
     stepRaw: 1.0,
     accuracy: 0,
   );
-  static const convertorTorque = torque;
-  static const convertorAngular = FieldConstraints(
-    rawUnit: Unit.mil,
-    minRaw: -90.0,
-    maxRaw: 90.0,
+  static const convertorVelocity = FieldConstraints(
+    rawUnit: Unit.mps,
+    minRaw: 0.0,
+    maxRaw: 3000.0,
     stepRaw: 1.0,
     accuracy: 1,
+  );
+
+  static const convertorTorque = torque;
+  static const convertorAngular = FieldConstraints(
+    rawUnit: Unit.degree,
+    minRaw: 0,
+    maxRaw: 360,
+    stepRaw: 1.0,
+    accuracy: 1,
+  );
+
+  static const targetSize = FieldConstraints(
+    rawUnit: Unit.mil,
+    minRaw: 0.001,
+    maxRaw: 100,
+    stepRaw: 0.1,
+    accuracy: 3,
+  );
+
+  static const convertorTargetPhysicalSize = FieldConstraints(
+    rawUnit: Unit.inch,
+    minRaw: 0.0,
+    maxRaw: 9999.0,
+    stepRaw: 0.1,
+    accuracy: 2,
+  );
+}
+
+abstract final class RC {
+  static final targetDistance = RulerConstraints(
+    fc: FC.targetDistance,
+    tick: 50,
+    smallTick: 10,
+  );
+
+  static final windSpeed = RulerConstraints(
+    fc: FC.windSpeed,
+    tick: 0.5,
+    smallTick: 0.1,
+  );
+
+  static final lookAngle = RulerConstraints(
+    fc: FC.lookAngle,
+    tick: 5,
+    smallTick: 1,
   );
 }

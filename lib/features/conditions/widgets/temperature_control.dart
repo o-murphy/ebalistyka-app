@@ -1,5 +1,6 @@
 import 'package:ebalistyka/shared/icons_definitions.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
+import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -23,22 +24,20 @@ class TempControl extends StatelessWidget {
 
   double get _display => rawValue.convert(_fc.rawUnit, displayUnit);
 
-  void _showDialog(BuildContext context) {
-    showUnitEditDialog(
-      context,
-      label: 'Temperature',
-      rawValue: rawValue,
-      constraints: _fc,
-      displayUnit: displayUnit,
-      onChanged: onChanged,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final sym = displayUnit.symbol;
     final inputAcc = _fc.accuracy;
+
+    final UnitPickerContext tempCtx = UnitPickerContext(
+      context,
+      label: 'Temperature',
+      rawValue: rawValue,
+      constraints: _fc,
+      displayUnit: displayUnit,
+      onChanged: (v) => onChanged(v!),
+    );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +50,7 @@ class TempControl extends StatelessWidget {
         ),
         const SizedBox(width: 32),
         GestureDetector(
-          onTap: () => _showDialog(context),
+          onTap: () => showUnitHybridPickerDialog(tempCtx),
           child: Column(
             children: [
               Icon(IconDef.temperature, color: cs.primary),

@@ -100,9 +100,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
   }
 
   Future<void> updateHumidity(double rawPercent) async {
-    await ref
-        .read(shotConditionsProvider.notifier)
-        .updateHumidity(rawPercent / 100.0);
+    await ref.read(shotConditionsProvider.notifier).updateHumidity(rawPercent);
   }
 
   Future<void> updatePressure(double rawHPa) async {
@@ -154,7 +152,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final tempRaw = conditions.temperatureC;
     final altRaw = conditions.altitudeMeter;
     final pressRaw = conditions.pressurehPa;
-    final humRaw = conditions.humidityFrac * 100.0;
+    final humRaw = conditions.humidityFrac;
 
     final powderSensOn = conditions.usePowderSensitivity;
     final useDiffPowderTemp = powderSensOn && conditions.useDiffPowderTemp;

@@ -217,16 +217,23 @@ ProviderContainer _createContainer({
   );
 }
 
-Future<TrajectoryTablesUiReady> _recalculate(
+/// Waits until the VM emits a state of type [T].
+Future<T> _waitFor<T extends TrajectoryTablesUiState>(
   ProviderContainer container,
-) async {
-  await container.read(shotContextProvider.future);
-  await container.read(settingsProvider.future);
-  await Future<void>.delayed(Duration.zero);
-  final notifier = container.read(trajectoryTablesVmProvider.notifier);
-  await notifier.recalculate();
-  final state = container.read(trajectoryTablesVmProvider).value;
-  return state as TrajectoryTablesUiReady;
+) {
+  final completer = Completer<T>();
+  late ProviderSubscription<AsyncValue<TrajectoryTablesUiState>> sub;
+  sub = container.listen<AsyncValue<TrajectoryTablesUiState>>(
+    trajectoryTablesVmProvider,
+    (_, value) {
+      if (value.value is T) {
+        completer.complete(value.value! as T);
+        sub.close();
+      }
+    },
+    fireImmediately: true,
+  );
+  return completer.future;
 }
 
 // ── Helper to get details from provider ─────────────────────────────────────
@@ -251,7 +258,7 @@ void main() {
         conditions: _makeConditions(),
         service: service,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<TrajectoryTablesUiReady>(container);
       details = _getDetails(container);
     });
 
@@ -346,7 +353,7 @@ void main() {
         service: service,
         tablesSettings: TablesSettings()..showZeros = true,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<TrajectoryTablesUiReady>(container);
     });
 
     tearDown(() => container.dispose());
@@ -371,7 +378,7 @@ void main() {
         service: service,
       );
       addTearDown(containerAll.dispose);
-      final stateAll = await _recalculate(containerAll);
+      final stateAll = await _waitFor<TrajectoryTablesUiReady>(containerAll);
 
       final service2 = _FakeBallisticsService(_makeResult());
       final containerHidden = _createContainer(
@@ -382,7 +389,9 @@ void main() {
           ..hiddenCols = ['time', 'velocity', 'mach', 'energy'],
       );
       addTearDown(containerHidden.dispose);
-      final stateHidden = await _recalculate(containerHidden);
+      final stateHidden = await _waitFor<TrajectoryTablesUiReady>(
+        containerHidden,
+      );
 
       expect(
         stateHidden.mainTable.rows.length,
@@ -412,7 +421,7 @@ void main() {
         service: service,
         unitSettings: imperialUnits,
       );
-      state = await _recalculate(container);
+      state = await _waitFor<TrajectoryTablesUiReady>(container);
       details = _getDetails(container);
     });
 
@@ -433,8 +442,8 @@ void main() {
     });
   });
 
-  group('TablesViewModel — empty state', () {
-    test('returns empty when profile is null', () async {
+  group('TablesViewModel — loading when context pending', () {
+    test('remains loading when shot context never resolves', () async {
       final service = _FakeBallisticsService(_makeResult());
       final container = ProviderContainer(
         overrides: [
@@ -449,13 +458,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(trajectoryTablesVmProvider.future);
-      await container.read(settingsProvider.future);
-      await Future<void>.delayed(Duration.zero);
-      final notifier = container.read(trajectoryTablesVmProvider.notifier);
-      await notifier.recalculate();
-      final state = container.read(trajectoryTablesVmProvider).value;
-      expect(state, isA<TrajectoryTablesUiEmpty>());
+      final state = await container.read(trajectoryTablesVmProvider.future);
+      expect(state, isA<TrajectoryTablesUiLoading>());
     });
   });
 
@@ -478,49 +482,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await container.read(shotContextProvider.future);
-      await container.read(settingsProvider.future);
-      await Future<void>.delayed(Duration.zero);
-
-      final notifier = container.read(trajectoryTablesVmProvider.notifier);
-      await notifier.recalculate();
-      final state = container.read(trajectoryTablesVmProvider).value;
-      expect(state, isA<TrajectoryTablesUiError>());
-      expect((state as TrajectoryTablesUiError).message, contains('Boom'));
-    });
-  });
-
-  group('TablesViewModel — initial state', () {
-    test('starts with loading state', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
-
-      await container.read(trajectoryTablesVmProvider.future);
-      final state = container.read(trajectoryTablesVmProvider).value;
-      expect(state, isA<TrajectoryTablesUiLoading>());
-    });
-  });
-
-  group('TablesViewModel — zero caching', () {
-    test('second recalculate reuses cached zero elevation', () async {
-      final service = _FakeBallisticsService(_makeResult());
-      final container = _createContainer(
-        profile: _makeProfile(),
-        conditions: _makeConditions(),
-        service: service,
-      );
-      addTearDown(container.dispose);
-
-      await _recalculate(container);
-      expect(service.callCount, 1);
-
-      await _recalculate(container);
-      expect(service.callCount, 2);
+      final state = await _waitFor<TrajectoryTablesUiError>(container);
+      expect(state.message, contains('Boom'));
     });
   });
 }

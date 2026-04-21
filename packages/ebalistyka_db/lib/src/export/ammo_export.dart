@@ -35,8 +35,9 @@ class AmmoExport {
     required this.zeroPowderTemperatureC,
     required this.zeroLatitudeDeg,
     required this.zeroAzimuthDeg,
-    required this.zeroOffsetXRad,
-    required this.zeroOffsetYRad,
+    required this.zeroOffsetX,
+    required this.zeroOffsetY,
+    required this.zeroOffsetUnit,
     this.powderSensitivityTC,
     this.powderSensitivityVMps,
     this.multiBcTableG1VMps,
@@ -74,8 +75,9 @@ class AmmoExport {
   final double zeroPowderTemperatureC;
   final double zeroLatitudeDeg;
   final double zeroAzimuthDeg;
-  final double zeroOffsetXRad;
-  final double zeroOffsetYRad;
+  final double zeroOffsetX;
+  final double zeroOffsetY;
+  final String zeroOffsetUnit;
   final Float64List? powderSensitivityTC;
   final Float64List? powderSensitivityVMps;
   final Float64List? multiBcTableG1VMps;
@@ -118,8 +120,9 @@ class AmmoExport {
     zeroPowderTemperatureC: a.zeroPowderTemperatureC,
     zeroLatitudeDeg: a.zeroLatitudeDeg,
     zeroAzimuthDeg: a.zeroAzimuthDeg,
-    zeroOffsetXRad: a.zeroOffsetXRad,
-    zeroOffsetYRad: a.zeroOffsetYRad,
+    zeroOffsetX: a.zeroOffsetX,
+    zeroOffsetY: a.zeroOffsetY,
+    zeroOffsetUnit: a.zeroOffsetUnit,
     powderSensitivityTC: a.powderSensitivityTC,
     powderSensitivityVMps: a.powderSensitivityVMps,
     multiBcTableG1VMps: a.multiBcTableG1VMps,
@@ -158,8 +161,9 @@ class AmmoExport {
     ..zeroPowderTemperatureC = zeroPowderTemperatureC
     ..zeroLatitudeDeg = zeroLatitudeDeg
     ..zeroAzimuthDeg = zeroAzimuthDeg
-    ..zeroOffsetXRad = zeroOffsetXRad
-    ..zeroOffsetYRad = zeroOffsetYRad
+    ..zeroOffsetX = zeroOffsetX
+    ..zeroOffsetY = zeroOffsetY
+    ..zeroOffsetUnit = zeroOffsetUnit
     ..powderSensitivityTC = powderSensitivityTC
     ..powderSensitivityVMps = powderSensitivityVMps
     ..multiBcTableG1VMps = multiBcTableG1VMps

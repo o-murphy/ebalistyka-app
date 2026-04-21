@@ -76,6 +76,12 @@ extension UnitSettingsExtension on UnitSettings {
   Unit get energyUnit =>
       Unit.values.firstWhere((u) => u.name == energy, orElse: () => Unit.joule);
   set energyUnit(Unit v) => energy = v.name;
+
+  Unit get targetSizeUnit => Unit.values.firstWhere(
+    (u) => u.name == targetSize,
+    orElse: () => Unit.mil,
+  );
+  set targetSizeUnit(Unit v) => targetSize = v.name;
 }
 
 extension TablesSettingsExtension on TablesSettings {
@@ -116,4 +122,19 @@ extension UnitSettingsFullExtension on UnitSettings {
     orElse: () => Unit.newtonMeter,
   );
   set torqueUnit(Unit v) => torque = v.name;
+}
+
+extension ReticleSettingsExtension on ReticleSettings {
+  Unit get verticalAdjustmentUnitValue => Unit.values.firstWhere(
+    (u) => u.name == verticalAdjustmentUnit,
+    orElse: () => Unit.mil,
+  );
+  set verticalAdjustmentUnitValue(Unit v) => verticalAdjustmentUnit = v.name;
+
+  Unit get horizontalAdjustmentUnitValue => Unit.values.firstWhere(
+    (u) => u.name == horizontalAdjustmentUnit,
+    orElse: () => Unit.mil,
+  );
+  set horizontalAdjustmentUnitValue(Unit v) =>
+      horizontalAdjustmentUnit = v.name;
 }

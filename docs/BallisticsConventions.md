@@ -1,5 +1,8 @@
 # Ballistics Sign Conventions
 
+> **Doc #8 — Status: REFERENCE 📖**  
+> Explains sign conventions for twist, wind direction, windage display. Read before touching physics/FFI code.
+
 This document explains the sign conventions used throughout the app for twist
 direction, wind direction, and windage display. These conventions are
 non-obvious because the C library (`bclibc`) and the app's UI use different

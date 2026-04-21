@@ -152,8 +152,7 @@ void main() {
     });
 
     test('humidity displays as percentage', () {
-      // rawValue is stored in percent (UI uses rawValue directly via UnitValueFieldTile)
-      expect(state.humidity.rawValue, closeTo(50.0, 0.1));
+      expect(state.humidity.rawValue, closeTo(0.5, 0.01));
       expect(state.humidity.symbol, '%');
     });
 

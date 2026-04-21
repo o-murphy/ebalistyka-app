@@ -72,7 +72,7 @@ class IconValueButtonRow extends StatelessWidget {
     this.spacing = 8.0,
   });
 
-  final List<IconValueButton> items;
+  final List<Widget> items;
   final double height;
   final double spacing;
 

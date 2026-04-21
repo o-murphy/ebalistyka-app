@@ -67,7 +67,6 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
       if (errorText == null) {
         _currentRawValue = rawValue;
       }
-      // Don't call onChanged yet, only on submit
     });
   }
 
@@ -79,7 +78,9 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
         _currentRawValue = rawValue;
         _updateControllerFromValue();
         _errorText = null;
+
         widget.onChanged(_currentRawValue);
+
         _focusNode.unfocus();
       } else {
         _errorText = errorText;
@@ -100,7 +101,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
     _updateControllerFromValue();
 
     _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
+      if (!_focusNode.hasFocus && mounted) {
         _submit();
       }
     });
@@ -143,6 +144,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
         decimal: true,
         signed: true,
       ),
+      textInputAction: TextInputAction.done,
       style: theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
       decoration: InputDecoration(
         labelText: widget.label,
@@ -156,7 +158,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
           vertical: 12,
         ),
       ),
-      onChanged: (_) => _validateAndUpdate(), // Validate on every change
+      onChanged: (_) => _validateAndUpdate(),
       onSubmitted: (_) => _submit(),
     );
   }

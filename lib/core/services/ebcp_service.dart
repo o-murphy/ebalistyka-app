@@ -124,6 +124,7 @@ abstract final class EbcpService {
         unitSettings != null &&
         tablesSettings != null &&
         conditions != null) {
+      final reticleSettings = ref.read(reticleSettingsProvider);
       items.add(
         EbcpItem.fromSettings(
           SettingsExport.fromEntities(
@@ -131,6 +132,7 @@ abstract final class EbcpService {
             unitSettings,
             tablesSettings,
             conditions,
+            reticleSettings,
           ),
         ),
       );
@@ -169,6 +171,9 @@ abstract final class EbcpService {
         await ref
             .read(shotConditionsProvider.notifier)
             .restore(settings.conditions);
+        await ref
+            .read(reticleSettingsNotifierProvider.notifier)
+            .restore(settings.reticle);
       }
     }
   }
