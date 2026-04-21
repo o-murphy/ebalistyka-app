@@ -8,7 +8,7 @@ import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Гібридний віджет, що поєднує Wheel Picker та текстове введення одночасно
+/// Hybrid widget combining Wheel Picker and text input at the same time
 class UnitHybridPicker extends StatefulWidget {
   const UnitHybridPicker({
     super.key,
@@ -34,7 +34,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
   String? _errorText;
   bool _isNullValue = false;
-  bool _isWheeling = false; // Прапорець, щоб уникнути циклічного оновлення
+  bool _isWheeling = false; // Check to avoid cyclic update
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     final List<double> values = [];
     double current = minDisplay;
     int guard = 0;
-    // Оптимізація: якщо значень забагато, збільшуємо крок для колеса
+    // Optimization: if there are too many values, increase the step for the wheel
     while (current <= maxDisplay + (stepDisplay / 2) && guard < 2000) {
       values.add(current);
       current += stepDisplay;
@@ -101,7 +101,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     return closest;
   }
 
-  // Обробка прокрутки колеса
+  // Handle scrolling the wheel
   void _onWheelChanged(int index) {
     if (_isWheeling) return;
     if (index < 0 || index >= _displayValues.length) return;
@@ -119,7 +119,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
       _currentRawValue = rawVal;
       _isNullValue = false;
       _errorText = null;
-      // Оновлюємо текст без тригера _onTextChanged
+      // Update the text without the _onTextChanged trigger
       _textController.value = _textController.value.copyWith(
         text: _helper.formatDisplayValue(displayVal),
         selection: TextSelection.collapsed(
@@ -130,7 +130,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     HapticFeedback.selectionClick();
   }
 
-  // Обробка введення тексту
+  // Processing text input
   void _onTextChanged(String text) {
     final (raw, error) = _helper.parseAndValidate(text);
     setState(() {
@@ -139,7 +139,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
         _isNullValue = raw == null;
         if (raw != null) {
           _currentRawValue = raw;
-          // Синхронізуємо колесо плавно
+          // Synchronize the wheel smoothly
           final newIdx = _findClosestIndex(raw);
           if (newIdx != _wheelIndex) {
             _wheelIndex = newIdx;
@@ -182,7 +182,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Заголовок
+          // Title
           Text(
             ctx.label,
             style: theme.textTheme.titleMedium?.copyWith(
@@ -190,8 +190,8 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12), // Зменшено відступ
-          // ПОЛЕ ВВОДУ (Клавіатура)
+          const SizedBox(height: 12), // Reduced indentation
+          // INPUT FIELD (Keyboard)
           TextField(
             controller: _textController,
             autofocus: true,
@@ -238,10 +238,12 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
             onChanged: _onTextChanged,
           ),
 
-          const SizedBox(height: 4), // Зменшено відступ між вводом та колесом
-          // КОЛЕСО (Візуальний вибір)
+          const SizedBox(
+            height: 4,
+          ), // Reduced the spacing between the input and the wheel
+          // WHEEL (Visual selection)
           SizedBox(
-            height: 240, // Дещо зменшено висоту
+            height: 240,
             child: Stack(
               children: [
                 Center(
@@ -289,14 +291,14 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
             ),
           ),
 
-          const SizedBox(height: 12), // Зменшено відступ перед кнопками
-          // Кнопки дій
+          const SizedBox(height: 12),
+
           Row(
             children: [
               Expanded(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Скасувати'),
+                  child: const Text('Dismiss'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -308,7 +310,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
                           ctx.onChanged(_isNullValue ? null : _currentRawValue);
                           Navigator.pop(context);
                         },
-                  child: const Text('Зберегти'),
+                  child: const Text('Save'),
                 ),
               ),
             ],

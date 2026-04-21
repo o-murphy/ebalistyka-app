@@ -39,7 +39,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
       displayUnit: ctx.displayUnit,
     );
 
-    // ВАЖЛИВО: Використовуємо initialRawValue для визначення початкового стану null
+    // IMPORTANT: Use initialRawValue to define the initial state null
     _editRaw = widget.initialRawValue ?? ctx.constraints.minRaw;
     _isNullValue = widget.initialRawValue == null;
 
@@ -220,7 +220,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
               Expanded(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Скасувати'),
+                  child: const Text('Dismiss'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -268,8 +268,8 @@ Future<void> showNullableUnitEditDialog(
   String? symbol,
   required ValueChanged<double?> onChanged,
 }) async {
-  // Створюємо контекст. Хоча всередині UnitPickerContext onChanged має тип ValueChanged<double>,
-  // ми обгортаємо наш nullable onChanged, щоб уникнути Type Error при передачі null.
+  // Create a context. Although internally UnitPickerContext onChanged has type ValueChanged<double>,
+  // we wrap our nullable onChanged to avoid a Type Error when passing null.
   final pickerContext = UnitPickerContext(
     context,
     label: label,

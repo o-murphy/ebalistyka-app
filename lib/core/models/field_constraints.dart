@@ -55,7 +55,6 @@ class RulerConstraints {
     return calculated > minStep ? calculated : minStep;
   }
 
-  // Проксі методи до fc для зручності
   Unit get rawUnit => fc.rawUnit;
   double get minRaw => fc.minRaw;
   double get maxRaw => fc.maxRaw;

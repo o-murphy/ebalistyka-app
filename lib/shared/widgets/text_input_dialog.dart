@@ -10,7 +10,7 @@ Future<String?> showTextInputDialog(
   String? initialValue,
   String labelText = 'Name',
   String confirmLabel = 'OK',
-  String cancelLabel = 'Cancel',
+  String cancelLabel = 'Dismiss',
 }) async {
   final controller = TextEditingController(text: initialValue ?? '');
   String? error;

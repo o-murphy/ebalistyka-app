@@ -149,9 +149,9 @@ class _SvgAssetTile extends ConsumerWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // SVG малюється в своєму натуральному розмірі, але обрізається кругом
+        // SVG is drawn at its natural size, but clipped around the circle
         ClipOval(child: SvgPicture.string(preparedSvg, fit: BoxFit.contain)),
-        // Рамка
+        // Frame
         Positioned.fill(
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -167,21 +167,21 @@ class _SvgAssetTile extends ConsumerWidget {
   String _prepareSvg(String svg, ColorScheme cs) {
     var result = resolveSvgColorRoles(svg, cs);
 
-    // Видаляємо width/height
+    // Delete width/height
     result = result.replaceFirst(RegExp(r'\bwidth="[^"]*"\s*'), '');
     result = result.replaceFirst(RegExp(r'\bheight="[^"]*"\s*'), '');
 
-    // Видаляємо metadata
+    // Delete metadata
     result = result.replaceAll(RegExp(r'<metadata\b[^/]*/>', dotAll: true), '');
     result = result.replaceAll(
       RegExp(r'<metadata\b[^>]*>.*?</metadata>', dotAll: true),
       '',
     );
 
-    // Застосовуємо обрізання viewBox до clipRadius
+    // Apply the viewBox clipping to the clipRadius
     result = _clipViewMils(result, clipRadius);
 
-    // Додаємо shape-rendering для кращої якості
+    // Add shape-rendering for better quality
     result = result.replaceFirst(
       RegExp(r'<svg\b'),
       '<svg shape-rendering="crispEdges"',
@@ -191,7 +191,7 @@ class _SvgAssetTile extends ConsumerWidget {
   }
 
   String _clipViewMils(String svg, double clipRadius) {
-    // Отримуємо поточний viewBox
+    // Get the current viewBox
     final viewBoxMatch = RegExp(r'viewBox="([^"]+)"').firstMatch(svg);
     if (viewBoxMatch == null) return svg;
 
@@ -203,19 +203,19 @@ class _SvgAssetTile extends ConsumerWidget {
     final currentWidth = double.tryParse(parts[2]) ?? 0;
     final currentHeight = double.tryParse(parts[3]) ?? 0;
 
-    // Обчислюємо центр оригінального viewBox
+    // Calculate the center of the original viewBox
     final centerX = minX + currentWidth / 2;
     final centerY = minY + currentHeight / 2;
 
-    // Новий розмір (діаметр)
+    // New size (diameter)
     final viewSize = 2 * clipRadius;
 
-    // Новий viewBox з центром в оригінальному центрі
+    // New viewBox centered at the original center
     final newMinX = centerX - clipRadius;
     final newMinY = centerY - clipRadius;
     final newViewBox = '$newMinX $newMinY $viewSize $viewSize';
 
-    // Завжди замінюємо на новий viewBox для однакового масштабування
+    // Always replace with a new viewBox for the same scaling
     return svg.replaceFirst(
       RegExp(r'viewBox="[^"]+"'),
       'viewBox="$newViewBox"',

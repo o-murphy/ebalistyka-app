@@ -23,7 +23,7 @@ class UnitConversionHelper {
     return display.convert(displayUnit, _rawUnit);
   }
 
-  /// Пріоритетно використовує accuracyFor з моделі, інакше рахує динамічно.
+  /// Priority is given to accuracyFor from the model, otherwise it calculates dynamically.
   int get accuracy {
     try {
       return constraints.accuracyFor(displayUnit);
@@ -45,7 +45,7 @@ class UnitConversionHelper {
 
   String formatDisplayValue(double value) => value.toStringAsFixed(accuracy);
 
-  /// Валідує double значення і повертає raw.
+  /// Validates a double value and returns raw.
   double? validateDisplayValue(double displayValue) {
     if (displayValue < displayMin - 1e-10 ||
         displayValue > displayMax + 1e-10) {
@@ -54,13 +54,13 @@ class UnitConversionHelper {
     return toRaw(displayValue).clamp(constraints.minRaw, constraints.maxRaw);
   }
 
-  /// Парсить рядок. Повертає (rawValue, errorText).
+  /// Parses the string. Returns (rawValue, errorText).
   (double?, String?) parseAndValidate(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return (null, null);
 
     final parsed = double.tryParse(trimmed.replaceAll(',', '.'));
-    if (parsed == null) return (null, 'Некоректне число');
+    if (parsed == null) return (null, 'Invalid number');
 
     if (parsed < displayMin - 1e-10 || parsed > displayMax + 1e-10) {
       return (

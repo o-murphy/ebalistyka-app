@@ -136,7 +136,7 @@ class ReticleView extends ConsumerWidget {
     // Build SVG elements for underlay
     final buffer = StringBuffer();
     buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg"');
-    buffer.writeln('     shape-rendering="crispEdges"'); // Цей рядок
+    buffer.writeln('     shape-rendering="crispEdges"');
     buffer.writeln(
       '     viewBox="-${milWidth / 2} -${milHeight / 2} $milWidth $milHeight">',
     );
@@ -209,8 +209,8 @@ class ReticleView extends ConsumerWidget {
   }
 
   static _SvgMeta _parseSvgMeta(String svg) {
-    // Отримання розмірів з viewBox
-    double milWidth = 30.0; // значення за замовчуванням
+    // Get dimensions from viewBox
+    double milWidth = 30.0;
     double milHeight = 30.0;
 
     final viewBoxMatch = RegExp(r'viewBox="([^"]+)"').firstMatch(svg);

@@ -131,7 +131,7 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Вгорі: Заголовок та Поточне значення
+          // Top: Title and Current Value
           if (widget.label != null)
             Text(
               widget.label!,
