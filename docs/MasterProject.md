@@ -1,7 +1,7 @@
 # eBalistyka — Master Project Document
 
 **Version:** 3.0
-**Status:** Living Document — updated 2026-04-20
+**Status:** Living Document — updated 2026-04-21
 **Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
 **Package:** `ebalistyka` · Bundle ID: `com.ballistics.ebalistyka`
 
@@ -301,11 +301,11 @@ Full read-only list of current shot parameters. Sections: Velocity, Energy, Stab
 
 ---
 
-### 5.2 Reticle Fullscreen Screen ⏳
+### 5.2 Reticle Fullscreen Screen ✅
 
 > Opened from the small reticle preview on Home → Page 1.
 
-Full-screen display of the scope reticle with calculated adjustments. Details TBD. Depends on `RETICLES_AND_IMAGES.md`.
+`ReticleViewScreen`: full-screen reticle in `ZoomableView` (pan/zoom/reset FAB), barrel drum adjustments (vertical/horizontal), target/reticle pickers, clicks settings. See `docs/5.RETICLES_AND_IMAGES.md`.
 
 ---
 
@@ -313,7 +313,7 @@ Full-screen display of the scope reticle with calculated adjustments. Details TB
 
 > Opened from **More** button on Home. Currently `showNotAvailableSnackBar`.
 
-Post-Alpha. Composition TBD.
+Beta. Composition TBD.
 
 ---
 
@@ -321,7 +321,7 @@ Post-Alpha. Composition TBD.
 
 > Opened from **Help** button on Home.
 
-All-in-one overlay that simultaneously highlights all key UI elements. Post-Alpha.
+All-in-one overlay that simultaneously highlights all key UI elements. Beta.
 
 ---
 
@@ -329,7 +329,7 @@ All-in-one overlay that simultaneously highlights all key UI elements. Post-Alph
 
 **SpinBox Selector** (`showUnitEditDialog`): `[−] field [+]` modal dialog. POS-terminal digit input. Used by `UnitValueField`, `QuickActionsPanel`, `TempControl`. ✅
 
-**RulerSelector** ⏳ (Post-Alpha): touch-drag ruler for QuickActionsPanel replacement.
+**RulerSelector** ✅: реалізовано у `QuickActionsPanel`.
 
 ---
 
@@ -389,7 +389,7 @@ Each convertor screen shows multiple output fields simultaneously with real-time
 
 **VelocityConvertorScreen:** mps / km·h / fps / mph / Mach input; Mach uses ICAO or custom atmosphere (temperature, pressure, humidity, altitude). ✅
 
-**DistanceConvertorScreen:** ⏳ stub — to be implemented.
+**DistanceConvertorScreen (`TargetDistanceConvertorScreen`):** ✅ implemented — Target size (physical + angular) → distance output; `ReticleView` integrated.
 
 **Other screens** (Length, Weight, Pressure, Temperature, MIL/MOA, Torque): ✅ implemented.
 
@@ -555,10 +555,10 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 | #   | Question                                                         | Status            |
 | --- | ---------------------------------------------------------------- | ----------------- |
 | 1   | Table export format: PDF or HTML?                                | ✅ HTML (implemented) |
-| 2   | Reticle fullscreen — static or interactive?                      | ⏳ TBD             |
+| 2   | Reticle fullscreen — static or interactive?                      | ✅ Interactive (`ZoomableView`, barrel drums) |
 | 3   | Localizations: UK + EN only or more?                             | ⏳ UK + EN for now |
-| 4   | Weapon/Sight/Ammo `image` field format (entity images)           | ⏳ TBD (file / base64 / asset) |
-| 5   | `DistanceConvertorScreen` — same multi-field pattern as others?  | ⏳ TBD             |
+| 4   | Weapon/Sight/Ammo `image` field format (entity images)           | ⏳ TBD (file / base64 / asset) — Beta |
+| 5   | `DistanceConvertorScreen` — same multi-field pattern as others?  | ✅ Implemented as `TargetDistanceConvertorScreen` |
 
 ---
 
@@ -650,28 +650,34 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 
 #### 🔴 Alpha blocker
 
-| Area | Notes |
-| ---- | ----- |
-| **DistanceConvertorScreen** | Currently stub; implement per ALPHA_UX.md |
+_Немає — всі alpha blockers закриті. Альфа готова._
 
-#### 🟠 Post-Alpha medium
+#### 🟠 Beta medium
 
 | Area | Notes |
 | ---- | ----- |
-| Reticle fullscreen view | Opens from Home Page 1 reticle tap; spec TBD |
+| Відображення поправок в кліках | Home AdjPanel, Tables, ReticleViewScreen |
+| ammo.zeroOffset | `zeroOffsetX/Y` у Ammo, UI у AmmoWizard |
+| Filter panel | Weapon/Ammo/Sight lists + collections |
+| Code quality / рефакторинг | Уніфікація компонентів, реюзабл widgets |
 | Tools Screen | Opened from Home "More" button; composition TBD |
 | Help Overlay | Coach marks; library TBD |
-| RulerSelector widget | Touch-drag ruler for QuickActionsPanel |
+| Нотатник | Note button on Home |
 
-#### 🔵 Post-Alpha lower
+#### 🔵 Beta lower
 
 | Area | Notes |
 | ---- | ----- |
 | Localization uk/en | ARB + flutter_localizations |
 | Settings → Legal links | Privacy Policy, Terms of Use, Changelog |
-| Remaining SVG reticles | Generate all IDs via `reticle_gen` |
 | Entity images (Weapon/Sight/Ammo) | Format TBD (file / base64 / asset) |
-| iOS C++ library bundling | `.a` static lib in Xcode |
+| Remaining SVG reticles | Generate all IDs via `reticle_gen` |
+| Android APK | Signing, release flavors |
+| macOS build | |
+| iOS build | C++ `.a` static lib in Xcode |
+| Windows signing | |
+| Auto-update | Desktop + mobile |
+| Database resilience | OB corruption handling |
 
 ---
 
@@ -738,7 +744,7 @@ All wizard screens, collection screens, selection flows, export/import (ebcp + a
 
 ### Phase 5.5 — Value Input Widgets ✅
 
-`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector pending (Post-Alpha).
+`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector ✅ реалізований у `QuickActionsPanel`.
 
 ---
 
@@ -760,9 +766,9 @@ Frozen header, zero-crossings, row detail dialog, details spoiler, `TableConfig`
 
 ---
 
-### Phase 9 — Convertors ✅ (7/8)
+### Phase 9 ✅ — Convertors (8/8)
 
-Grid ✅. 7 individual convertor screens ✅. `DistanceConvertorScreen` ⏳ — last alpha blocker.
+Grid ✅. All 8 convertor screens ✅. `TargetDistanceConvertorScreen` ✅ — реалізовано.
 
 ---
 
@@ -787,32 +793,39 @@ All 7 screens implemented. Weapon, Ammo (with all sub-editors), Sight wizards + 
 ### Reticles & Images 🔄 (RETICLES_AND_IMAGES.md — Doc #5)
 
 SVG display, color-role resolution, correction dot injection: ✅  
+`ReticleViewScreen` (fullscreen + ZoomableView + barrel drums): ✅  
 `reticle_gen` CLI: partial (default + MIL-XT done).  
-Fullscreen reticle view: pending.
+Wizard placeholders (Sight/Ammo): ⏳
 
 ---
 
-### Alpha UX 🔄 (ALPHA_UX.md — Doc #6)
+### Alpha UX ✅ (ALPHA_UX.md — Doc #6)
 
-One remaining item: `DistanceConvertorScreen`.
+Всі пункти виконані. Альфа готова.
 
 ---
 
 ### Phase 12 — Home Note / Help / More buttons ⏳
 
-After alpha. All three stubs.
+Beta. All three stubs.
 
 ---
 
-### Phase 13 — Post-Alpha Polish ⏳
+### Phase 13 — Beta ⏳ (BETA_UX.md — Doc #7)
 
-- Localization uk/en
-- Legal links (Privacy, Terms, Changelog)
-- RulerSelector widget
-- Reticle fullscreen view
+- Відображення поправок в кліках (Home/Tables/Reticle)
+- ammo.zeroOffset
+- Filter panel (Weapon/Ammo/Sight)
+- Code quality / реструктуризація
+- Нотатник
 - Help Overlay
 - Tools Screen
-- iOS C++ bundling
+- Localization uk/en
+- Legal links (Privacy, Terms, Changelog)
+- Entity images (Weapon/Sight/Ammo)
+- Android APK / macOS / iOS / Windows signing
+- Auto-update
+- Database resilience
 
 ---
 
@@ -876,15 +889,14 @@ Refactor 2      ✅  REFACTORING_PLAN_2 (Phases 1–5): feature-first, ShotDetai
 ObjectBox       ✅  OBJECTBOX_MIGRATION: JsonFileStorage → ObjectBox; all extensions
 Phase A7P       ✅  packages/a7p + A7pService + import/export UI
 Phase 11        ✅  All wizard screens (Weapon/Ammo/Sight) + collection screens + ProfilesScreen
-Reticles        ✅  SVG display + color roles + correction dot (HomeReticlePage)
-Convertors      ✅  7/8 individual convertor screens implemented
+Reticles        ✅  SVG display + color roles + correction dot + ReticleViewScreen (fullscreen)
+RulerSelector   ✅  QuickActionsPanel
+Convertors      ✅  8/8 individual convertor screens implemented (incl. TargetDistanceConvertor)
 
-─── Alpha Blockers ───
-DistanceConvtr  ⏳  DistanceConvertorScreen — implement (6.ALPHA_UX.md)
+─── ALPHA DONE ✅ ───
 
-─── Post-Alpha ───
-Phase 9.last    ⏳  DistanceConvertorScreen → marks alpha complete
+─── Beta ───
 Phase 12        ⏳  Home Note / Help / More buttons
-Reticles cont.  ⏳  Fullscreen reticle view; remaining SVG reticles via reticle_gen
-Phase 13        ⏳  Localization, RulerSelector, Help overlay, Tools screen, Legal links, iOS bundling
+Reticles cont.  ⏳  Wizard placeholders (Sight/Ammo); remaining SVG reticles via reticle_gen
+Phase 13        ⏳  Clicks display, zeroOffset, filters, code quality, localization, platforms, legal, tools
 ```
