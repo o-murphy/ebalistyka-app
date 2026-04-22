@@ -660,7 +660,7 @@
       "focalPlaneValue": "ffp",
       "horizontalClick": 0.1,
       "verticalClick": 0.1,
-      "reticleImage": "ZeroS",
+      "reticleImage": "MIL-XT",
       "notes": null,
       "verticalClickUnit": "mil",
       "horizontalClickUnit": "mil",
@@ -754,6 +754,24 @@
       "notes": null,
       "verticalClickUnit": "mil",
       "horizontalClickUnit": "mil",
+      "image": null
+    },
+    {
+      "id": 43,
+      "name": "ARGOS BTR GEN2 8-34×56 APLR2 FFP IR MOA",
+      "vendor": "Argos",
+      "sightHeightInch": 0.157,
+      "sightHorizontalOffsetInch": 0,
+      "minMagnification": 8,
+      "maxMagnification": 34,
+      "calibratedMagnification": null,
+      "focalPlaneValue": "sfp",
+      "horizontalClick": 0.25,
+      "verticalClick": 0.25,
+      "reticleImage": "MR-FFP-IR-MIL",
+      "notes": null,
+      "verticalClickUnit": "moa",
+      "horizontalClickUnit": "moa",
       "image": null
     }
   ],
@@ -2467,7 +2485,7 @@
     },
     {
       "id": 56,
-      "name": "12.7x108 Б-32",
+      "name": "12.7x108 B-32",
       "vendor": "USSR",
       "projectileName": "745GR B-32",
       "caliberInch": 0.511,
@@ -4343,7 +4361,7 @@
       "vendor": "Blaser",
       "projectileName": "196GR CDP",
       "caliberInch": 0.324,
-      "caliberName": "8х57 JS / IS / JRS / IRS",
+      "caliberName": "8x57 JS / IS / JRS / IRS",
       "weightGrain": 196,
       "lengthInch": 1.27,
       "dragTypeValue": "g1",
@@ -4369,7 +4387,7 @@
       "vendor": "Blaser",
       "projectileName": "196GR Vulkan",
       "caliberInch": 0.324,
-      "caliberName": "8х57 JS / IS / JRS / IRS",
+      "caliberName": "8x57 JS / IS / JRS / IRS",
       "weightGrain": 196,
       "lengthInch": 1.25,
       "dragTypeValue": "g1",
@@ -4395,7 +4413,7 @@
       "vendor": "RWS",
       "projectileName": "180GR SPEED TIP Professional",
       "caliberInch": 0.324,
-      "caliberName": "8х57 JS / IS / JRS / IRS",
+      "caliberName": "8x57 JS / IS / JRS / IRS",
       "weightGrain": 180,
       "lengthInch": 1.25,
       "dragTypeValue": "g1",
@@ -4753,7 +4771,7 @@
     },
     {
       "caliberInch": 0.324,
-      "caliberName": "8х57 JS / IS / JRS / IRS"
+      "caliberName": "8x57 JS / IS / JRS / IRS"
     },
     {
       "caliberInch": 0.338,

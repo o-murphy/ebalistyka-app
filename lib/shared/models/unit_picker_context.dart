@@ -17,7 +17,7 @@ class UnitPickerContext {
   final BuildContext buildContext;
   final String label;
   final double rawValue;
-  final FieldConstraints constraints;
+  final Constraints constraints;
   final Unit displayUnit;
   final String? symbol;
   final bool? allowNull;

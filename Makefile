@@ -1,4 +1,11 @@
-.PHONY: native ffigen reticles proto-a7p proto-setup test format clean objectbox objectbox-setup objectbox-clean run run-clean unit objectbox
+.PHONY: generate \
+		generate-reticles \
+		generate-icons \
+		generate-a7p \
+		build-bclibc ffigen \
+		proto-setup \
+        generate-objectbox objectbox-setup objectbox-clean \
+		test format clean run run-clean
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -13,15 +20,15 @@ else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Darwin)
     # getApplicationSupportDirectory() on macOS → ~/Library/Application Support/<bundle_id>
-    DB_DIR := $(HOME)/Library/Application Support/com.ballistics.ebalistyka
+    DB_DIR := $(HOME)/Library/Application Support/com.o.murphy.ebalistyka
   else
     # getApplicationSupportDirectory() on Linux → $XDG_DATA_HOME/<bundle_id>
-    DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.ballistics.ebalistyka
+    DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.o.murphy.ebalistyka
   endif
 endif
 
 # Build the native shared library via CMake (still builds from external/bclibc)
-native:
+build-bclibc:
 	cmake -S external/bclibc -B build/bclibc -DCMAKE_BUILD_TYPE=Release
 	cmake --build build/bclibc --parallel $(NPROC)
 
@@ -46,11 +53,14 @@ else
 	dart pub global activate protoc_plugin
 endif
 
-reticles:
+generate-reticles:
 	./scripts/gen_reticles.sh
 
+generate-icons:
+	dart run flutter_launcher_icons:main && dart run flutter_native_splash:create
+
 # Re-generate Dart protobuf bindings for packages/a7p
-proto-a7p:
+generate-a7p:
 	cd packages/a7p && protoc \
 		--dart_out=lib/src/proto \
 		-I proto \
@@ -61,7 +71,7 @@ proto-a7p:
 objectbox-setup:
 	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
 
-objectbox:
+generate-objectbox:
 	cd packages/ebalistyka_db && dart run build_runner build --delete-conflicting-outputs
 
 objectbox-clean:
@@ -70,8 +80,10 @@ objectbox-clean:
 objectbox-admin:
 	cd packages/ebalistyka_db && ./admin.sh
 
+generate: build-bclibc ffigen generate-objectbox generate-a7p generate-reticles generate-icons  
+
 # Run all tests (native must be built first)
-test: native
+test: build-bclibc
 	flutter analyze && flutter test 2>&1
 
 format:
@@ -92,10 +104,6 @@ else
 	-$(RM_DIR) "$(DB_DIR)"
 endif
 	flutter run
-
-# Run only unit tests (no native dependency)
-unit:
-	dart test test/core/solver/unit_test.dart
 
 clean:
 	$(RM_DIR) build/bclibc

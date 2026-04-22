@@ -153,18 +153,6 @@ class ReticleView extends ConsumerWidget {
     } else {
       const sw = 0.05;
 
-      if (showAdjLines ?? true) {
-        // Adjustment lines (targeting crosshair)
-        buffer.writeln(
-          '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
-        );
-        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
-        buffer.writeln(
-          '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
-        );
-        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
-      }
-
       // Target
       if (targetSvg != null) {
         final tMeta = _parseSvgMeta(targetSvg);
@@ -181,6 +169,18 @@ class ReticleView extends ConsumerWidget {
         buffer.writeln(
           '          fill="$lineColor" stroke="$lineColor" stroke-width="$sw"/>',
         );
+      }
+
+      if (showAdjLines ?? true) {
+        // Adjustment lines (targeting crosshair)
+        buffer.writeln(
+          '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
+        );
+        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+        buffer.writeln(
+          '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
+        );
+        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
       }
     }
 

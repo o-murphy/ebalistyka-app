@@ -20,6 +20,8 @@ Future<String?> showTextInputDialog(
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) {
+        final theme = Theme.of(ctx);
+
         void validate() {
           setState(
             () => error = controller.text.trim().isEmpty ? 'Required' : null,
@@ -33,29 +35,70 @@ Future<String?> showTextInputDialog(
           Navigator.of(ctx).pop(controller.text.trim());
         }
 
-        return AlertDialog(
-          title: Text(title),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            textCapitalization: TextCapitalization.words,
-            decoration: InputDecoration(
-              labelText: labelText,
-              border: const OutlineInputBorder(),
-              errorText: error,
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+            constraints: BoxConstraints(maxWidth: 600),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(28),
             ),
-            onChanged: (_) {
-              if (touched) validate();
-            },
-            onSubmitted: (_) => tryConfirm(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    labelText: labelText,
+                    filled: true,
+                    fillColor: theme.colorScheme.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    errorText: error,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                  ),
+                  onChanged: (_) {
+                    if (touched) validate();
+                  },
+                  onSubmitted: (_) => tryConfirm(),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(null),
+                        child: Text(cancelLabel),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: tryConfirm,
+                        child: Text(confirmLabel),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(null),
-              child: Text(cancelLabel),
-            ),
-            FilledButton(onPressed: tryConfirm, child: Text(confirmLabel)),
-          ],
         );
       },
     ),

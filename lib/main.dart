@@ -1,6 +1,7 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,6 +39,7 @@ void main() async {
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
+      await windowManager.setIcon('assets/icon.png');
       await windowManager.focus();
 
       await windowManager.setMinimumSize(
@@ -52,6 +54,7 @@ void main() async {
 
   final appSupport = await getApplicationSupportDirectory();
   final store = await initObjectBox(directory: appSupport.path);
+  debugPrint("DB path: ${appSupport.path}");
 
   runApp(
     ProviderScope(

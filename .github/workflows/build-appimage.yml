@@ -2,7 +2,7 @@ name: PR Build (Linux AppImage)
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
     paths:
       - "lib/**"
       - "linux/**"
@@ -14,20 +14,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  prepare-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+    steps:
+      - id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+            # Remove the first character if it's 'v'
+            if [[ "${VERSION}" == v* ]]; then
+              VERSION="${VERSION:1}"
+            fi
+            echo "value=${VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "value=0.1.0-dev" >> $GITHUB_OUTPUT
+          fi
+
+  build-amd64:
+    needs: prepare-version
     name: Linux amd64 (release)
     uses: ./.github/workflows/build.yml
     with:
       platform: linux
       arch: amd64
       build_type: release
-      build_name: '0.1.0-alpha'
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 30
+
+  build-arm64:
+    needs: prepare-version
+    name: Linux arm64 (release)
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: arm64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 30
 
   pr-summary:
     name: PR Build Summary
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [ build-amd64, build-arm64 ]
     if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
@@ -48,28 +78,30 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const prNumber = ${{ steps.pr.outputs.number }};
-            const success = '${{ needs.build.result }}' === 'success';
-            const artifactUrl = '${{ needs.build.outputs.artifact_url }}';
-            const artifactName = '${{ needs.build.outputs.artifact_name }}';
+            const prNumber = parseInt('${{ steps.pr.outputs.number }}');
+            const amd64Success = '${{ needs.build-amd64.result }}' === 'success';
+            const arm64Success = '${{ needs.build-arm64.result }}' === 'success';
+            const artifactUrl = '${{ needs.build-amd64.outputs.artifact_url || needs.build-arm64.outputs.artifact_url }}';
+            const artifactName = '${{ needs.build-amd64.outputs.artifact_name || needs.build-arm64.outputs.artifact_name }}';
             const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
 
             let body = `## Linux AppImage Build\n\n`;
-            if (success) {
+
+            if (amd64Success || arm64Success) {
               body += `✅ **Build successful!**\n\n`;
-              body += `📦 **[Download AppImage](${artifactUrl})**\n`;
-              body += `\`${artifactName}\` — available for 7 days\n\n`;
+              body += `- **amd64**: ${amd64Success ? '✅' : '❌'}\n`;
+              body += `- **arm64**: ${arm64Success ? '✅' : '❌'}\n\n`;
+              
+              if (artifactUrl) {
+                body += `📦 **[Download AppImage](${artifactUrl})**\n`;
+                body += `\`${artifactName}\` — available for 7 days\n\n`;
+              }
+              
               body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
               body += `### Test Instructions:\n`;
-              body += `\`\`\`bash\n# Download and run\nchmod +x ebalistyka-x86_64.AppImage\n./ebalistyka-x86_64.AppImage\n\n# Check if bclibc_ffi is loaded correctly\nldd ebalistyka-x86_64.AppImage | grep bclibc\n\`\`\`\n`;
-              body += `\n**Note**: Make sure the bclibc_ffi package is properly linked.\n`;
+              body += `\`\`\`bash\n# Download and run\nchmod +x ebalistyka-x86_64.AppImage\n./ebalistyka-x86_64.AppImage\n\`\`\`\n`;
             } else {
-              body += `❌ **Build failed!**\n\n`;
-              body += `[View logs](${runUrl})\n\n`;
-              body += `**Common issues:**\n`;
-              body += `- Check if bclibc_ffi CMakeLists.txt has correct paths\n`;
-              body += `- Verify external/bclibc submodule is initialized\n`;
-              body += `- Run \`git submodule update --init --recursive\`\n`;
+              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
             }
 
             try {
@@ -105,5 +137,9 @@ jobs:
       - name: Display build status
         if: steps.pr.outputs.number == ''
         run: |
-          echo "Build completed with status: ${{ needs.build.result }}"
+          echo "========================================="
+          echo "Build completed with status: ${{ needs.build-amd64.result }} / ${{ needs.build-arm64.result }}"
+          echo "========================================="
           echo "Skipping PR comment because this is not a pull request event"
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Run URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

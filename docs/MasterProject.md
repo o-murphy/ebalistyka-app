@@ -1,9 +1,9 @@
 # eBalistyka — Master Project Document
 
 **Version:** 3.0
-**Status:** Living Document — updated 2026-04-20
+**Status:** Living Document — updated 2026-04-21
 **Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
-**Package:** `ebalistyka` · Bundle ID: `com.ballistics.ebalistyka`
+**Package:** `ebalistyka` · Bundle ID: `com.o.murphy.ebalistyka`
 
 ---
 
@@ -79,14 +79,14 @@ Each primary screen has its **own independent navigation stack**. Sub-screens ar
 
 ### 3.3 Stacks per Screen
 
-| Primary screen | Sub-screen stack                                           |
-| -------------- | ---------------------------------------------------------- |
-| **Home**       | → Profiles (PageView) → Weapon/Ammo/Sight wizards          |
-| **Home**       | → Shot Details (Info screen)                               |
-| **Settings**   | → Units of Measurement                                     |
-| **Settings**   | → Adjustment Display                                       |
-| **Tables**     | → Table Configuration                                      |
-| **Convertors** | → Convertor Screen (individual converter)                  |
+| Primary screen | Sub-screen stack                                  |
+| -------------- | ------------------------------------------------- |
+| **Home**       | → Profiles (PageView) → Weapon/Ammo/Sight wizards |
+| **Home**       | → Shot Details (Info screen)                      |
+| **Settings**   | → Units of Measurement                            |
+| **Settings**   | → Adjustment Display                              |
+| **Tables**     | → Table Configuration                             |
+| **Convertors** | → Convertor Screen (individual converter)         |
 
 ### 3.4 Back Button Behavior
 
@@ -155,19 +155,19 @@ Control panel for shot parameters.
 
 **Selectors:**
 
-| Element                     | Action                                         |
-| --------------------------- | ---------------------------------------------- |
-| Rifle/Profile selection button | Opens ProfilesScreen (stack push)           |
-| Projectile (Ammo) display      | Info-only, edit via ProfilesScreen          |
+| Element                        | Action                             |
+| ------------------------------ | ---------------------------------- |
+| Rifle/Profile selection button | Opens ProfilesScreen (stack push)  |
+| Projectile (Ammo) display      | Info-only, edit via ProfilesScreen |
 
 **Navigation buttons:**
 
-| Element             | Action                                          |
-| ------------------- | ----------------------------------------------- |
-| Shot details button | Pushes Shot Details screen ✅                    |
-| New note button     | `showNotAvailableSnackBar` stub (→ Phase 12)    |
-| Help button         | `showNotAvailableSnackBar` stub (→ Phase 12)    |
-| More button         | `showNotAvailableSnackBar` stub (→ Phase 12)    |
+| Element             | Action                                       |
+| ------------------- | -------------------------------------------- |
+| Shot details button | Pushes Shot Details screen ✅                 |
+| New note button     | `showNotAvailableSnackBar` stub (→ Phase 12) |
+| Help button         | `showNotAvailableSnackBar` stub (→ Phase 12) |
+| More button         | `showNotAvailableSnackBar` stub (→ Phase 12) |
 
 **Read-only indicators** (values from Conditions screen):
 
@@ -274,18 +274,18 @@ Vertically scrollable set of compact tables (target ± 2 steps, 11 rows).
 
 > **Purpose:** Global app settings.
 
-| Section        | Element                                              | Status         |
-| -------------- | ---------------------------------------------------- | -------------- |
-| **Language**   | AlertDialog radio uk/en                              | ✅              |
-| **Appearance** | Theme — SegmentedButton (System/Light/Dark)          | ✅              |
-| **Appearance** | Units of Measurement → `/settings/units`             | ✅              |
-| **Ballistics** | Adjustment Display → `/settings/adjustment`          | ✅              |
-| **Ballistics** | Subsonic transition switch                           | ✅              |
-| **Ballistics** | Table distance step (dialog)                         | ✅              |
-| **Ballistics** | Chart distance step (dialog)                         | ✅              |
-| **Data**       | Export backup / Import backup (.ebcp, full data)     | ✅              |
-| **About**      | Version, GitHub link                                 | ✅              |
-| **About**      | Privacy Policy / Terms of Use / Changelog links      | ⏳ stub         |
+| Section        | Element                                          | Status |
+| -------------- | ------------------------------------------------ | ------ |
+| **Language**   | AlertDialog radio uk/en                          | ✅      |
+| **Appearance** | Theme — SegmentedButton (System/Light/Dark)      | ✅      |
+| **Appearance** | Units of Measurement → `/settings/units`         | ✅      |
+| **Ballistics** | Adjustment Display → `/settings/adjustment`      | ✅      |
+| **Ballistics** | Subsonic transition switch                       | ✅      |
+| **Ballistics** | Table distance step (dialog)                     | ✅      |
+| **Ballistics** | Chart distance step (dialog)                     | ✅      |
+| **Data**       | Export backup / Import backup (.ebcp, full data) | ✅      |
+| **About**      | Version, GitHub link                             | ✅      |
+| **About**      | Privacy Policy / Terms of Use / Changelog links  | ⏳ stub |
 
 ---
 
@@ -301,11 +301,11 @@ Full read-only list of current shot parameters. Sections: Velocity, Energy, Stab
 
 ---
 
-### 5.2 Reticle Fullscreen Screen ⏳
+### 5.2 Reticle Fullscreen Screen ✅
 
 > Opened from the small reticle preview on Home → Page 1.
 
-Full-screen display of the scope reticle with calculated adjustments. Details TBD. Depends on `RETICLES_AND_IMAGES.md`.
+`ReticleViewScreen`: full-screen reticle in `ZoomableView` (pan/zoom/reset FAB), barrel drum adjustments (vertical/horizontal), target/reticle pickers, clicks settings. See `docs/5.RETICLES_AND_IMAGES.md`.
 
 ---
 
@@ -313,7 +313,7 @@ Full-screen display of the scope reticle with calculated adjustments. Details TB
 
 > Opened from **More** button on Home. Currently `showNotAvailableSnackBar`.
 
-Post-Alpha. Composition TBD.
+Beta. Composition TBD.
 
 ---
 
@@ -321,7 +321,7 @@ Post-Alpha. Composition TBD.
 
 > Opened from **Help** button on Home.
 
-All-in-one overlay that simultaneously highlights all key UI elements. Post-Alpha.
+All-in-one overlay that simultaneously highlights all key UI elements. Beta.
 
 ---
 
@@ -329,7 +329,7 @@ All-in-one overlay that simultaneously highlights all key UI elements. Post-Alph
 
 **SpinBox Selector** (`showUnitEditDialog`): `[−] field [+]` modal dialog. POS-terminal digit input. Used by `UnitValueField`, `QuickActionsPanel`, `TempControl`. ✅
 
-**RulerSelector** ⏳ (Post-Alpha): touch-drag ruler for QuickActionsPanel replacement.
+**RulerSelector** ✅: implemented in `QuickActionsPanel`.
 
 ---
 
@@ -360,14 +360,14 @@ All-in-one overlay that simultaneously highlights all key UI elements. Post-Alph
 
 ### 5.9 Wizard Screens ✅
 
-| Screen                  | File                              | Notes |
-| ----------------------- | --------------------------------- | ----- |
-| `WeaponWizardScreen`    | `weapon_wizard_screen.dart`       | name, caliber, twist, barrelLength; caliber readonly from collection |
+| Screen                  | File                              | Notes                                                                  |
+| ----------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| `WeaponWizardScreen`    | `weapon_wizard_screen.dart`       | name, caliber, twist, barrelLength; caliber readonly from collection   |
 | `AmmoWizardScreen`      | `ammo_wizard_screen.dart`         | Full: drag model, BC table, MV, powder sens, zero conditions, coriolis |
-| `SightWizardScreen`     | `sight_wizard_screen.dart`        | name, height, clicks, magnification, focal plane |
-| `MultiBcEditorScreen`   | `multi_bc_editor_screen.dart`     | G1/G7 table (5 rows, sort desc by V) |
-| `CustomDragTableEditor` | `multi_bc_editor_screen.dart`     | 100 rows, readOnly default |
-| `PowderSensTableEditor` | `powder_sens_table_editor_screen` | T→V table (5 rows), auto-calc coefficient |
+| `SightWizardScreen`     | `sight_wizard_screen.dart`        | name, height, clicks, magnification, focal plane                       |
+| `MultiBcEditorScreen`   | `multi_bc_editor_screen.dart`     | G1/G7 table (5 rows, sort desc by V)                                   |
+| `CustomDragTableEditor` | `multi_bc_editor_screen.dart`     | 100 rows, readOnly default                                             |
+| `PowderSensTableEditor` | `powder_sens_table_editor_screen` | T→V table (5 rows), auto-calc coefficient                              |
 
 ---
 
@@ -389,7 +389,7 @@ Each convertor screen shows multiple output fields simultaneously with real-time
 
 **VelocityConvertorScreen:** mps / km·h / fps / mph / Mach input; Mach uses ICAO or custom atmosphere (temperature, pressure, humidity, altitude). ✅
 
-**DistanceConvertorScreen:** ⏳ stub — to be implemented.
+**DistanceConvertorScreen (`TargetDistanceConvertorScreen`):** ✅ implemented — Target size (physical + angular) → distance output; `ReticleView` integrated.
 
 **Other screens** (Length, Weight, Pressure, Temperature, MIL/MOA, Torque): ✅ implemented.
 
@@ -484,61 +484,61 @@ Owner (singleton, token="local")
 
 #### Core / storage
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `storeProvider`             | ObjectBox Store singleton                            |
-| `ownerProvider`             | Owner entity (token="local"), creates if missing     |
-| `appStateProvider`          | Main aggregate: all entities; OB stream; seed        |
-| `cartridgesProvider`        | selector → `List<Ammo>`                              |
-| `sightsProvider`            | selector → `List<Sight>`                             |
-| `weaponsProvider`           | selector → `List<Weapon>`                            |
+| Provider             | Purpose                                          |
+| -------------------- | ------------------------------------------------ |
+| `storeProvider`      | ObjectBox Store singleton                        |
+| `ownerProvider`      | Owner entity (token="local"), creates if missing |
+| `appStateProvider`   | Main aggregate: all entities; OB stream; seed    |
+| `cartridgesProvider` | selector → `List<Ammo>`                          |
+| `sightsProvider`     | selector → `List<Sight>`                         |
+| `weaponsProvider`    | selector → `List<Weapon>`                        |
 
 #### Settings & conditions
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `settingsProvider`          | `GeneralSettings` (OB stream)                        |
-| `unitSettingsProvider`      | `UnitSettings` (sync selector)                       |
-| `themeModeProvider`         | `ThemeMode` (sync selector)                          |
-| `tablesSettingsProvider`    | `TablesSettings` (OB stream)                         |
-| `shotConditionsProvider`    | `ShootingConditions` (OB stream)                     |
+| Provider                 | Purpose                          |
+| ------------------------ | -------------------------------- |
+| `settingsProvider`       | `GeneralSettings` (OB stream)    |
+| `unitSettingsProvider`   | `UnitSettings` (sync selector)   |
+| `themeModeProvider`      | `ThemeMode` (sync selector)      |
+| `tablesSettingsProvider` | `TablesSettings` (OB stream)     |
+| `shotConditionsProvider` | `ShootingConditions` (OB stream) |
 
 #### Profiles
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `profilesPagingProvider`    | Sync — ordered IDs + activeId; paging only           |
-| `profileCardProvider(id)`   | Family — card data (fingerprints); rebuild per card  |
-| `profilesActionsProvider`   | Actions: select/create/rename/duplicate/remove       |
+| Provider                  | Purpose                                             |
+| ------------------------- | --------------------------------------------------- |
+| `profilesPagingProvider`  | Sync — ordered IDs + activeId; paging only          |
+| `profileCardProvider(id)` | Family — card data (fingerprints); rebuild per card |
+| `profilesActionsProvider` | Actions: select/create/rename/duplicate/remove      |
 
 #### Shot context & calculation
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `shotContextProvider`       | `ShotContext { profile, conditions }` — for VMs      |
-| `homeVmProvider`            | `HomeUiState` (sealed: Loading/Ready/Error)          |
-| `shotDetailsVmProvider`     | `ShotDetailsUiState` (sealed)                        |
-| `trajectoryTablesVmProvider`| `TrajectoryTablesUiState` (sealed)                   |
-| `ballisticsServiceProvider` | FFI-backed `BallisticsService`                       |
-| `unitFormatterProvider`     | `UnitFormatter` (depends on `unitSettingsProvider`)  |
+| Provider                     | Purpose                                             |
+| ---------------------------- | --------------------------------------------------- |
+| `shotContextProvider`        | `ShotContext { profile, conditions }` — for VMs     |
+| `homeVmProvider`             | `HomeUiState` (sealed: Loading/Ready/Error)         |
+| `shotDetailsVmProvider`      | `ShotDetailsUiState` (sealed)                       |
+| `trajectoryTablesVmProvider` | `TrajectoryTablesUiState` (sealed)                  |
+| `ballisticsServiceProvider`  | FFI-backed `BallisticsService`                      |
+| `unitFormatterProvider`      | `UnitFormatter` (depends on `unitSettingsProvider`) |
 
 #### Convertors
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `convertorsProvider`        | `ConvertorsState` (OB stream)                        |
-| `convertorStateProvider`    | Sync selector (defaults while loading)               |
-| `velocityConvertorVmProvider` etc. | Per-convertor ViewModels                     |
+| Provider                           | Purpose                                |
+| ---------------------------------- | -------------------------------------- |
+| `convertorsProvider`               | `ConvertorsState` (OB stream)          |
+| `convertorStateProvider`           | Sync selector (defaults while loading) |
+| `velocityConvertorVmProvider` etc. | Per-convertor ViewModels               |
 
 #### SVG / Assets
 
-| Provider                    | Purpose                                              |
-| --------------------------- | ---------------------------------------------------- |
-| `reticleSvgProvider(id)`    | Loads SVG from `assets/svg/reticles/`                |
-| `weaponSvgProvider(id)`     | Loads SVG from `assets/svg/weapon/`                  |
-| `ammoSvgProvider(id)`       | Loads SVG from `assets/svg/ammo/`                    |
-| `reticleListProvider`       | All reticle IDs from asset manifest                  |
-| `builtinCollectionProvider` | Lazy-loaded `collection.json`                        |
+| Provider                    | Purpose                               |
+| --------------------------- | ------------------------------------- |
+| `reticleSvgProvider(id)`    | Loads SVG from `assets/svg/reticles/` |
+| `weaponSvgProvider(id)`     | Loads SVG from `assets/svg/weapon/`   |
+| `ammoSvgProvider(id)`       | Loads SVG from `assets/svg/ammo/`     |
+| `reticleListProvider`       | All reticle IDs from asset manifest   |
+| `builtinCollectionProvider` | Lazy-loaded `collection.json`         |
 
 ### 6.5 Storage
 
@@ -552,13 +552,13 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 
 ## 7. Open Questions
 
-| #   | Question                                                         | Status            |
-| --- | ---------------------------------------------------------------- | ----------------- |
-| 1   | Table export format: PDF or HTML?                                | ✅ HTML (implemented) |
-| 2   | Reticle fullscreen — static or interactive?                      | ⏳ TBD             |
-| 3   | Localizations: UK + EN only or more?                             | ⏳ UK + EN for now |
-| 4   | Weapon/Sight/Ammo `image` field format (entity images)           | ⏳ TBD (file / base64 / asset) |
-| 5   | `DistanceConvertorScreen` — same multi-field pattern as others?  | ⏳ TBD             |
+| #   | Question                                                        | Status                                           |
+| --- | --------------------------------------------------------------- | ------------------------------------------------ |
+| 1   | Table export format: PDF or HTML?                               | ✅ HTML (implemented)                             |
+| 2   | Reticle fullscreen — static or interactive?                     | ✅ Interactive (`ZoomableView`, barrel drums)     |
+| 3   | Localizations: UK + EN only or more?                            | ⏳ UK + EN for now                                |
+| 4   | Weapon/Sight/Ammo `image` field format (entity images)          | ⏳ TBD (file / base64 / asset) — Beta             |
+| 5   | `DistanceConvertorScreen` — same multi-field pattern as others? | ✅ Implemented as `TargetDistanceConvertorScreen` |
 
 ---
 
@@ -568,81 +568,81 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 
 #### Infrastructure & packages
 
-| Area | Notes |
-| ---- | ----- |
-| **App name / Bundle ID** | `eBalistyka` · `com.ballistics.ebalistyka` — all platforms |
-| **bclibc submodule** | `external/bclibc`; FFI via `packages/bclibc_ffi` |
-| **bclibc_ffi package** | Per-dimension enums, `Dimension<T,U>`, `Atmo`, `Unit.mach`, mach extensions; ffigen ^20 |
-| **ebalistyka_db package** | ObjectBox entities + codegen; `EbcpFile` + export DTOs; `json_serializable` |
-| **a7p package** | `A7pFile`, `A7pConverter`, `A7pValidator`; proto schema |
-| **reticle_gen package** | CLI SVG generator; `CanvasInterface`, `SVGCanvas`, `MilReticleCanvas`; partial |
-| **ObjectBox storage** | Single `Store`; stream-based reactive updates; `storeProvider` + `ownerProvider` |
-| **Feature-first structure** | `lib/features/`, `lib/core/`, `lib/shared/`, `lib/main.dart`, `lib/router.dart` |
-| **Navigation** | GoRouter + StatefulShellRoute; all routes; tab switch resets branch stack |
-| **BallisticsService** | Interface + FFI-backed impl; zero-elevation caching (`_buildZeroKey`) |
-| **UnitFormatter** | Pure-Dart formatter; 57+ tests |
+| Area                        | Notes                                                                                   |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| **App name / Bundle ID**    | `eBalistyka` · `com.o.murphy.ebalistyka` — all platforms                                |
+| **bclibc submodule**        | `external/bclibc`; FFI via `packages/bclibc_ffi`                                        |
+| **bclibc_ffi package**      | Per-dimension enums, `Dimension<T,U>`, `Atmo`, `Unit.mach`, mach extensions; ffigen ^20 |
+| **ebalistyka_db package**   | ObjectBox entities + codegen; `EbcpFile` + export DTOs; `json_serializable`             |
+| **a7p package**             | `A7pFile`, `A7pConverter`, `A7pValidator`; proto schema                                 |
+| **reticle_gen package**     | CLI SVG generator; `CanvasInterface`, `SVGCanvas`, `MilReticleCanvas`; partial          |
+| **ObjectBox storage**       | Single `Store`; stream-based reactive updates; `storeProvider` + `ownerProvider`        |
+| **Feature-first structure** | `lib/features/`, `lib/core/`, `lib/shared/`, `lib/main.dart`, `lib/router.dart`         |
+| **Navigation**              | GoRouter + StatefulShellRoute; all routes; tab switch resets branch stack               |
+| **BallisticsService**       | Interface + FFI-backed impl; zero-elevation caching (`_buildZeroKey`)                   |
+| **UnitFormatter**           | Pure-Dart formatter; 57+ tests                                                          |
 
 #### Screens
 
-| Screen | Status | Notes |
-| ------ | ------ | ----- |
-| Home (top block) | ✅ | Profile selector FAB, wind wheel, side controls, quick actions |
-| Home — Page 1 (Reticle) | ✅ | SVG reticle + color roles + correction dot + AdjPanel |
-| Home — Page 2 (Table) | ✅ | 5-col compact table, 11 rows, FC-based accuracy |
-| Home — Page 3 (Chart) | ✅ | Dual-curve chart, tap/pan snap, info grid |
-| Conditions | ✅ | All fields, all switches, powder sensitivity full flow |
-| Tables | ✅ | Frozen header, zero-crossings, detail dialog, spoiler, HTML export |
-| Tables → Configure | ✅ | Range/step, 20+ toggles, 11 columns, unit overrides |
-| Settings | ✅ | Theme, language, steps, export/import backup |
-| Settings → Units | ✅ | 11 categories |
-| Settings → Adjustment Display | ✅ | Format + 5 switches |
-| Convertors grid | ✅ | 8-tile responsive grid |
-| Convertors → Velocity | ✅ | mps/kmh/fps/mph/Mach; custom atmosphere for Mach |
-| Convertors → Length | ✅ | |
-| Convertors → Weight | ✅ | |
-| Convertors → Pressure | ✅ | |
-| Convertors → Temperature | ✅ | |
-| Convertors → MIL/MOA | ✅ | |
-| Convertors → Torque | ✅ | |
-| Convertors → Distance | ⏳ | stub |
-| Shot Details | ✅ | 4 sections via `ShotDetailsViewModel` |
-| ProfilesScreen | ✅ | PageView, paging, FAB, per-card callbacks, export/import |
-| WeaponWizardScreen | ✅ | Caliber readonly from collection; required highlighting |
-| AmmoWizardScreen | ✅ | Full: drag model, BC/custom table, MV, powder sens, zero cond, coriolis |
-| SightWizardScreen | ✅ | height, clicks, focal plane, magnification |
-| MultiBcEditorScreen | ✅ | G1/G7 (5 rows, sort desc by V) + CustomDragTable (100 rows) |
-| PowderSensTableEditorScreen | ✅ | T→V (5 rows), pairwise algorithm, auto-fills row 0 from wizard |
-| WeaponCollectionScreen | ✅ | |
-| AmmoCollectionScreen | ✅ | cartridge/bullet filter + caliber filter (tolerance 0.001") |
-| SightCollectionScreen | ✅ | |
-| MyAmmoScreen | ✅ | |
-| MySightsScreen | ✅ | |
+| Screen                        | Status | Notes                                                                   |
+| ----------------------------- | ------ | ----------------------------------------------------------------------- |
+| Home (top block)              | ✅      | Profile selector FAB, wind wheel, side controls, quick actions          |
+| Home — Page 1 (Reticle)       | ✅      | SVG reticle + color roles + correction dot + AdjPanel                   |
+| Home — Page 2 (Table)         | ✅      | 5-col compact table, 11 rows, FC-based accuracy                         |
+| Home — Page 3 (Chart)         | ✅      | Dual-curve chart, tap/pan snap, info grid                               |
+| Conditions                    | ✅      | All fields, all switches, powder sensitivity full flow                  |
+| Tables                        | ✅      | Frozen header, zero-crossings, detail dialog, spoiler, HTML export      |
+| Tables → Configure            | ✅      | Range/step, 20+ toggles, 11 columns, unit overrides                     |
+| Settings                      | ✅      | Theme, language, steps, export/import backup                            |
+| Settings → Units              | ✅      | 11 categories                                                           |
+| Settings → Adjustment Display | ✅      | Format + 5 switches                                                     |
+| Convertors grid               | ✅      | 8-tile responsive grid                                                  |
+| Convertors → Velocity         | ✅      | mps/kmh/fps/mph/Mach; custom atmosphere for Mach                        |
+| Convertors → Length           | ✅      |                                                                         |
+| Convertors → Weight           | ✅      |                                                                         |
+| Convertors → Pressure         | ✅      |                                                                         |
+| Convertors → Temperature      | ✅      |                                                                         |
+| Convertors → MIL/MOA          | ✅      |                                                                         |
+| Convertors → Torque           | ✅      |                                                                         |
+| Convertors → Distance         | ⏳      | stub                                                                    |
+| Shot Details                  | ✅      | 4 sections via `ShotDetailsViewModel`                                   |
+| ProfilesScreen                | ✅      | PageView, paging, FAB, per-card callbacks, export/import                |
+| WeaponWizardScreen            | ✅      | Caliber readonly from collection; required highlighting                 |
+| AmmoWizardScreen              | ✅      | Full: drag model, BC/custom table, MV, powder sens, zero cond, coriolis |
+| SightWizardScreen             | ✅      | height, clicks, focal plane, magnification                              |
+| MultiBcEditorScreen           | ✅      | G1/G7 (5 rows, sort desc by V) + CustomDragTable (100 rows)             |
+| PowderSensTableEditorScreen   | ✅      | T→V (5 rows), pairwise algorithm, auto-fills row 0 from wizard          |
+| WeaponCollectionScreen        | ✅      |                                                                         |
+| AmmoCollectionScreen          | ✅      | cartridge/bullet filter + caliber filter (tolerance 0.001")             |
+| SightCollectionScreen         | ✅      |                                                                         |
+| MyAmmoScreen                  | ✅      |                                                                         |
+| MySightsScreen                | ✅      |                                                                         |
 
 #### Widgets & services
 
-| Item | Status |
-| ---- | ------ |
-| `TrajectoryTable` | ✅ Sticky header, h-scroll sync, FC accuracy, subsonic highlight |
-| `TrajectoryChart` | ✅ CustomPainter, dual axis, subsonic line, tap/pan snap |
-| `WindIndicator` | ✅ Pan + tap + double-tap reset |
-| `QuickActionsPanel` | ✅ Wind speed, look angle, target distance |
-| `SvgAssetView` | ✅ Color role resolution, `AsyncValue<String>` |
-| `WeaponSvgView` / `AmmoSvgView` | ✅ |
-| `ProfileCard` | ✅ fingerprint-based rebuild, ammo/sight FABs |
-| `PowderSensSection` | ✅ Reusable (wizard + conditions modes) |
-| `CoriolisSection` | ✅ |
-| `EbcpService` | ✅ share, pick, buildFullExport, restoreFromExport |
-| `A7pService` | ✅ share, pick, auto-detect format |
-| `table_html_exporter` | ✅ |
+| Item                            | Status                                                          |
+| ------------------------------- | --------------------------------------------------------------- |
+| `TrajectoryTable`               | ✅ Sticky header, h-scroll sync, FC accuracy, subsonic highlight |
+| `TrajectoryChart`               | ✅ CustomPainter, dual axis, subsonic line, tap/pan snap         |
+| `WindIndicator`                 | ✅ Pan + tap + double-tap reset                                  |
+| `QuickActionsPanel`             | ✅ Wind speed, look angle, target distance                       |
+| `SvgAssetView`                  | ✅ Color role resolution, `AsyncValue<String>`                   |
+| `WeaponSvgView` / `AmmoSvgView` | ✅                                                               |
+| `ProfileCard`                   | ✅ fingerprint-based rebuild, ammo/sight FABs                    |
+| `PowderSensSection`             | ✅ Reusable (wizard + conditions modes)                          |
+| `CoriolisSection`               | ✅                                                               |
+| `EbcpService`                   | ✅ share, pick, buildFullExport, restoreFromExport               |
+| `A7pService`                    | ✅ share, pick, auto-detect format                               |
+| `table_html_exporter`           | ✅                                                               |
 
 #### A7P
 
-| Item | Status |
-| ---- | ------ |
+| Item           | Status                                      |
+| -------------- | ------------------------------------------- |
 | `packages/a7p` | ✅ `A7pFile`, `A7pConverter`, `A7pValidator` |
-| Proto schema | ✅ `packages/a7p/proto/profedit.proto` |
-| A7P import UI | ✅ FilePicker → auto-detect → import |
-| A7P export UI | ✅ Per-profile export sheet (.ebcp / .a7p) |
+| Proto schema   | ✅ `packages/a7p/proto/profedit.proto`       |
+| A7P import UI  | ✅ FilePicker → auto-detect → import         |
+| A7P export UI  | ✅ Per-profile export sheet (.ebcp / .a7p)   |
 
 ---
 
@@ -650,28 +650,34 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 
 #### 🔴 Alpha blocker
 
-| Area | Notes |
-| ---- | ----- |
-| **DistanceConvertorScreen** | Currently stub; implement per ALPHA_UX.md |
+_None — all alpha blockers closed. Alpha ready._
 
-#### 🟠 Post-Alpha medium
+#### 🟠 Beta medium
 
-| Area | Notes |
-| ---- | ----- |
-| Reticle fullscreen view | Opens from Home Page 1 reticle tap; spec TBD |
-| Tools Screen | Opened from Home "More" button; composition TBD |
-| Help Overlay | Coach marks; library TBD |
-| RulerSelector widget | Touch-drag ruler for QuickActionsPanel |
+| Area                          | Notes                                           |
+| ----------------------------- | ----------------------------------------------- |
+| Display corrections in clicks | Home AdjPanel, Tables, ReticleViewScreen        |
+| ammo.zeroOffset               | `zeroOffsetX/Y` in Ammo, UI in AmmoWizard         |
+| Filter panel                  | Weapon/Ammo/Sight lists + collections           |
+| Code quality / refactoring    | Unification of components, reusable widgets     |
+| Tools Screen                  | Opened from Home "More" button; composition TBD |
+| Help Overlay                  | Coach marks; library TBD                        |
+| Notepad                       | Note button on Home                             |
 
-#### 🔵 Post-Alpha lower
+#### 🔵 Beta lower
 
-| Area | Notes |
-| ---- | ----- |
-| Localization uk/en | ARB + flutter_localizations |
-| Settings → Legal links | Privacy Policy, Terms of Use, Changelog |
-| Remaining SVG reticles | Generate all IDs via `reticle_gen` |
-| Entity images (Weapon/Sight/Ammo) | Format TBD (file / base64 / asset) |
-| iOS C++ library bundling | `.a` static lib in Xcode |
+| Area                              | Notes                                   |
+| --------------------------------- | --------------------------------------- |
+| Localization uk/en                | ARB + flutter_localizations             |
+| Settings → Legal links            | Privacy Policy, Terms of Use, Changelog |
+| Entity images (Weapon/Sight/Ammo) | Format TBD (file / base64 / asset)      |
+| Remaining SVG reticles            | Generate all IDs via `reticle_gen`      |
+| Android APK                       | Signing, release flavors                |
+| macOS build                       |                                         |
+| iOS build                         | C++ `.a` static lib in Xcode            |
+| Windows signing                   |                                         |
+| Auto-update                       | Desktop + mobile                        |
+| Database resilience               | OB corruption handling                  |
 
 ---
 
@@ -738,7 +744,7 @@ All wizard screens, collection screens, selection flows, export/import (ebcp + a
 
 ### Phase 5.5 — Value Input Widgets ✅
 
-`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector pending (Post-Alpha).
+`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector ✅ done in `QuickActionsPanel`.
 
 ---
 
@@ -760,9 +766,9 @@ Frozen header, zero-crossings, row detail dialog, details spoiler, `TableConfig`
 
 ---
 
-### Phase 9 — Convertors ✅ (7/8)
+### Phase 9 ✅ — Convertors (8/8)
 
-Grid ✅. 7 individual convertor screens ✅. `DistanceConvertorScreen` ⏳ — last alpha blocker.
+Grid ✅. All 8 convertor screens ✅. `TargetDistanceConvertorScreen` ✅ — done.
 
 ---
 
@@ -787,32 +793,39 @@ All 7 screens implemented. Weapon, Ammo (with all sub-editors), Sight wizards + 
 ### Reticles & Images 🔄 (RETICLES_AND_IMAGES.md — Doc #5)
 
 SVG display, color-role resolution, correction dot injection: ✅  
+`ReticleViewScreen` (fullscreen + ZoomableView + barrel drums): ✅  
 `reticle_gen` CLI: partial (default + MIL-XT done).  
-Fullscreen reticle view: pending.
+Wizard placeholders (Sight/Ammo): ⏳
 
 ---
 
-### Alpha UX 🔄 (ALPHA_UX.md — Doc #6)
+### Alpha UX ✅ (ALPHA_UX.md — Doc #6)
 
-One remaining item: `DistanceConvertorScreen`.
+All items completed. Alpha is ready.
 
 ---
 
 ### Phase 12 — Home Note / Help / More buttons ⏳
 
-After alpha. All three stubs.
+Beta. All three stubs.
 
 ---
 
-### Phase 13 — Post-Alpha Polish ⏳
+### Phase 13 — Beta ⏳ (BETA_UX.md — Doc #7)
 
-- Localization uk/en
-- Legal links (Privacy, Terms, Changelog)
-- RulerSelector widget
-- Reticle fullscreen view
+- Display of corrections in clicks (Home/Tables/Reticle)
+- ammo.zeroOffset
+- Filter panel (Weapon/Ammo/Sight)
+- Code quality / restructuring
+- Notepad
 - Help Overlay
 - Tools Screen
-- iOS C++ bundling
+- Localization uk/en
+- Legal links (Privacy, Terms, Changelog)
+- Entity images (Weapon/Sight/Ammo)
+- Android APK / macOS / iOS / Windows signing
+- Auto-update
+- Database resilience
 
 ---
 
@@ -824,8 +837,8 @@ After alpha. All three stubs.
 flutter_riverpod:
 go_router:
 ffi:
-objectbox: ^4.0.0
-objectbox_flutter_libs: ^4.0.0
+objectbox: ^5.3.1
+objectbox_flutter_libs: ^5.3.1
 protobuf: ^6.0.0
 uuid: ^4.0.0
 path_provider: ^2.1.0
@@ -838,9 +851,9 @@ archive:
 flutter_svg:
 json_serializable:
 json_annotation:
-build_runner:              # dev
-objectbox_generator:       # dev
-ffigen: ^20.0.0            # dev (packages/bclibc_ffi)
+build_runner:                     # dev
+objectbox_generator: ^5.3.1       # dev
+ffigen: ^20.0.0                   # dev (packages/bclibc_ffi)
 ```
 
 ### Internal packages
@@ -876,15 +889,14 @@ Refactor 2      ✅  REFACTORING_PLAN_2 (Phases 1–5): feature-first, ShotDetai
 ObjectBox       ✅  OBJECTBOX_MIGRATION: JsonFileStorage → ObjectBox; all extensions
 Phase A7P       ✅  packages/a7p + A7pService + import/export UI
 Phase 11        ✅  All wizard screens (Weapon/Ammo/Sight) + collection screens + ProfilesScreen
-Reticles        ✅  SVG display + color roles + correction dot (HomeReticlePage)
-Convertors      ✅  7/8 individual convertor screens implemented
+Reticles        ✅  SVG display + color roles + correction dot + ReticleViewScreen (fullscreen)
+RulerSelector   ✅  QuickActionsPanel
+Convertors      ✅  8/8 individual convertor screens implemented (incl. TargetDistanceConvertor)
 
-─── Alpha Blockers ───
-DistanceConvtr  ⏳  DistanceConvertorScreen — implement (6.ALPHA_UX.md)
+─── ALPHA DONE ✅ ───
 
-─── Post-Alpha ───
-Phase 9.last    ⏳  DistanceConvertorScreen → marks alpha complete
+─── Beta ───
 Phase 12        ⏳  Home Note / Help / More buttons
-Reticles cont.  ⏳  Fullscreen reticle view; remaining SVG reticles via reticle_gen
-Phase 13        ⏳  Localization, RulerSelector, Help overlay, Tools screen, Legal links, iOS bundling
+Reticles cont.  ⏳  Wizard placeholders (Sight/Ammo); remaining SVG reticles via reticle_gen
+Phase 13        ⏳  Clicks display, zeroOffset, custom drag editor, filters, code quality, localization, platforms, legal, tools
 ```

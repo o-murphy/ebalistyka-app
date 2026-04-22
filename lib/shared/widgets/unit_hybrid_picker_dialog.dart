@@ -1,10 +1,9 @@
-import 'dart:math' as math;
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
-import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
-import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
+import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,17 +23,15 @@ class UnitHybridPicker extends StatefulWidget {
 }
 
 class _UnitHybridPickerState extends State<UnitHybridPicker> {
-  late FixedExtentScrollController _scrollController;
   late TextEditingController _textController;
   late UnitConversionHelper _helper;
 
-  List<double> _displayValues = [];
   late double _currentRawValue;
-  int _wheelIndex = 0;
-
   String? _errorText;
   bool _isNullValue = false;
-  bool _isWheeling = false; // Check to avoid cyclic update
+
+  bool _isUpdatingFromWheel = false;
+  bool _isUpdatingFromText = false;
 
   @override
   void initState() {
@@ -48,118 +45,99 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     _currentRawValue = widget.initialRawValue ?? ctx.constraints.minRaw;
     _isNullValue = widget.initialRawValue == null;
 
-    _generateDisplayValues();
-    _wheelIndex = _findClosestIndex(_currentRawValue);
-    _scrollController = FixedExtentScrollController(initialItem: _wheelIndex);
-
     final initialText = !_isNullValue
         ? _helper.formatDisplayValue(_helper.toDisplay(_currentRawValue))
         : '';
     _textController = TextEditingController(text: initialText);
   }
 
-  void _generateDisplayValues() {
-    final minDisplay = _helper.displayMin;
-    final maxDisplay = _helper.displayMax;
-
-    double stepDisplay;
-    if (widget.pickerContext.constraints is RulerConstraints) {
-      final rc = widget.pickerContext.constraints as RulerConstraints;
-      final val1 = _helper.toDisplay(rc.minRaw);
-      final val2 = _helper.toDisplay(rc.minRaw + rc.stepRaw);
-      stepDisplay = (val2 - val1).abs();
-    } else {
-      stepDisplay = 1 / math.pow(10, _helper.accuracy);
-    }
-
-    if (stepDisplay <= 0) stepDisplay = 1.0;
-
-    final List<double> values = [];
-    double current = minDisplay;
-    int guard = 0;
-    // Optimization: if there are too many values, increase the step for the wheel
-    while (current <= maxDisplay + (stepDisplay / 2) && guard < 2000) {
-      values.add(current);
-      current += stepDisplay;
-      guard++;
-    }
-    _displayValues = values;
-  }
-
-  int _findClosestIndex(double rawValue) {
-    if (_displayValues.isEmpty) return 0;
-    final targetDisplay = _helper.toDisplay(rawValue);
-    int closest = 0;
-    double minDiff = double.maxFinite;
-    for (int i = 0; i < _displayValues.length; i++) {
-      final diff = (targetDisplay - _displayValues[i]).abs();
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = i;
-      }
-    }
-    return closest;
-  }
-
-  // Handle scrolling the wheel
-  void _onWheelChanged(int index) {
-    if (_isWheeling) return;
-    if (index < 0 || index >= _displayValues.length) return;
-
-    final displayVal = _displayValues[index];
-    final rawVal = _helper
-        .toRaw(displayVal)
-        .clamp(
-          widget.pickerContext.constraints.minRaw,
-          widget.pickerContext.constraints.maxRaw,
-        );
-
-    setState(() {
-      _wheelIndex = index;
-      _currentRawValue = rawVal;
-      _isNullValue = false;
-      _errorText = null;
-      // Update the text without the _onTextChanged trigger
-      _textController.value = _textController.value.copyWith(
-        text: _helper.formatDisplayValue(displayVal),
-        selection: TextSelection.collapsed(
-          offset: _helper.formatDisplayValue(displayVal).length,
-        ),
-      );
-    });
-    HapticFeedback.selectionClick();
-  }
-
   // Processing text input
   void _onTextChanged(String text) {
+    if (_isUpdatingFromWheel) return;
+
+    final cursorPosition = _textController.selection.baseOffset;
+
+    _isUpdatingFromText = true;
     final (raw, error) = _helper.parseAndValidate(text);
-    setState(() {
+
+    bool needsUpdate = false;
+
+    if (error != _errorText) {
       _errorText = error;
-      if (error == null) {
-        _isNullValue = raw == null;
-        if (raw != null) {
-          _currentRawValue = raw;
-          // Synchronize the wheel smoothly
-          final newIdx = _findClosestIndex(raw);
-          if (newIdx != _wheelIndex) {
-            _wheelIndex = newIdx;
-            _isWheeling = true;
-            _scrollController
-                .animateToItem(
-                  newIdx,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
-                )
-                .then((_) => _isWheeling = false);
-          }
+      needsUpdate = true;
+    }
+
+    if (error == null) {
+      final newIsNullValue = raw == null;
+      if (newIsNullValue != _isNullValue) {
+        _isNullValue = newIsNullValue;
+        needsUpdate = true;
+      }
+
+      if (raw != null && raw != _currentRawValue) {
+        _currentRawValue = raw;
+        needsUpdate = true;
+
+        if (!_isUpdatingFromWheel) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isUpdatingFromWheel) {
+              setState(() {});
+            }
+          });
         }
       }
+    }
+
+    if (needsUpdate && mounted) {
+      setState(() {});
+    }
+
+    _isUpdatingFromText = false;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_textController.selection.baseOffset != cursorPosition &&
+          cursorPosition >= 0) {
+        _textController.selection = TextSelection.collapsed(
+          offset: cursorPosition.clamp(0, _textController.text.length),
+        );
+      }
     });
+  }
+
+  void _onWheelChanged(double rawValue) {
+    if (_isUpdatingFromText) return;
+
+    _isUpdatingFromWheel = true;
+
+    final newText = _helper.formatDisplayValue(_helper.toDisplay(rawValue));
+
+    if (_textController.text != newText) {
+      _textController.text = newText;
+    }
+
+    setState(() {
+      _currentRawValue = rawValue;
+      _isNullValue = false;
+      _errorText = null;
+    });
+
+    _isUpdatingFromWheel = false;
+  }
+
+  void _clearField() {
+    if (widget.pickerContext.allowNull != true) return;
+
+    _isUpdatingFromWheel = true;
+    _textController.clear();
+    setState(() {
+      _isNullValue = true;
+      _errorText = null;
+    });
+    _isUpdatingFromWheel = false;
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _textController.dispose();
     super.dispose();
   }
@@ -175,6 +153,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+      constraints: BoxConstraints(maxWidth: 300),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(28),
@@ -190,105 +169,29 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12), // Reduced indentation
+
+          const SizedBox(height: 12),
+
           // INPUT FIELD (Keyboard)
-          TextField(
+          UnitDialogInputField(
             controller: _textController,
-            autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-              signed: true,
-            ),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: _errorText != null
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.primary,
-            ),
-            decoration: InputDecoration(
-              errorText: _errorText,
-              errorMaxLines: 1,
-              hintText: ctx.allowNull == true ? nullStr : null,
-              filled: true,
-              fillColor: theme.colorScheme.surfaceContainerLow,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              suffixText: sym,
-              suffixIcon:
-                  ctx.allowNull == true && _textController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(IconDef.clear, size: 18),
-                      onPressed: () {
-                        _textController.clear();
-                        setState(() {
-                          _isNullValue = true;
-                          _errorText = null;
-                        });
-                      },
-                    )
-                  : null,
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 16,
-              ),
-            ),
+            constraints: ctx.constraints,
+            displayUnit: ctx.displayUnit,
             onChanged: _onTextChanged,
+            errorText: _errorText,
+            symbol: sym,
+            allowNull: ctx.allowNull == true,
+            onClear: _clearField,
           ),
 
-          const SizedBox(
-            height: 4,
-          ), // Reduced the spacing between the input and the wheel
+          const SizedBox(height: 4),
+
           // WHEEL (Visual selection)
-          SizedBox(
-            height: 240,
-            child: Stack(
-              children: [
-                Center(
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withValues(
-                        alpha: 0.12,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                ListWheelScrollView.useDelegate(
-                  controller: _scrollController,
-                  itemExtent: 40,
-                  perspective: 0.006,
-                  diameterRatio: 1.2,
-                  physics: const FixedExtentScrollPhysics(),
-                  onSelectedItemChanged: _onWheelChanged,
-                  childDelegate: ListWheelChildBuilderDelegate(
-                    childCount: _displayValues.length,
-                    builder: (context, index) {
-                      final isSelected = _wheelIndex == index;
-                      return Center(
-                        child: Text(
-                          _helper.formatDisplayValue(_displayValues[index]),
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.35,
-                                  ),
-                            fontWeight: isSelected
-                                ? FontWeight.w900
-                                : FontWeight.normal,
-                            fontSize: isSelected ? 20 : 16,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+          UnitWheelPickerWidget(
+            constraints: ctx.constraints,
+            initialRawValue: _currentRawValue,
+            displayUnit: ctx.displayUnit,
+            onChanged: _onWheelChanged,
           ),
 
           const SizedBox(height: 12),

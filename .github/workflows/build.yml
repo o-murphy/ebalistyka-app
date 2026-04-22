@@ -4,72 +4,76 @@ on:
   workflow_call:
     inputs:
       platform:
-        description: 'Target platform'
+        description: "Target platform"
         required: true
-        type: string  # linux | windows
+        type: string # linux | windows
       arch:
-        description: 'Target architecture'
+        description: "Target architecture"
         required: true
-        type: string  # amd64 | arm64
+        type: string # amd64 | arm64
       build_type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        type: string  # release | debug
+        type: string # release | debug
       build_name:
-        description: 'Version name (e.g. 0.1.0-alpha)'
+        description: "Version name (e.g. 0.1.0-dev)"
         required: false
         type: string
-        default: '0.1.0-alpha'
+        default: "0.1.0-dev"
       retention_days:
-        description: 'Artifact retention in days'
+        description: "Artifact retention in days"
         required: false
         type: number
         default: 30
     outputs:
       artifact_name:
-        description: 'Name of the uploaded artifact'
+        description: "Name of the uploaded artifact"
         value: ${{ jobs.build.outputs.artifact_name }}
       artifact_url:
-        description: 'URL to download the artifact'
+        description: "URL to download the artifact"
         value: ${{ jobs.build.outputs.artifact_url }}
 
   workflow_dispatch:
     inputs:
       platform:
-        description: 'Target platform'
+        description: "Target platform"
         required: true
-        default: 'linux'
+        default: "linux"
         type: choice
-        options: [linux, windows]
+        options: [ linux, windows ]
       arch:
-        description: 'Target architecture'
+        description: "Target architecture"
         required: true
-        default: 'amd64'
+        default: "amd64"
         type: choice
-        options: [amd64, arm64]
+        options: [ amd64, arm64 ]
       build_type:
-        description: 'Build type'
+        description: "Build type"
         required: true
-        default: 'release'
+        default: "release"
         type: choice
-        options: [release, debug]
+        options: [ release, debug ]
       build_name:
-        description: 'Version name (e.g. 0.1.0-alpha)'
+        description: "Version name (e.g. 0.1.0-dev)"
         required: false
-        default: '0.1.0-alpha'
+        default: "0.1.0-dev"
         type: string
 
 env:
-  FLUTTER_VERSION: '3.41.6'
+  FLUTTER_VERSION: "3.41.6"
 
 jobs:
   build:
     name: ${{ inputs.platform }}-${{ inputs.arch }} (${{ inputs.build_type }})
-    runs-on: ${{ fromJSON('{"linux-amd64":"ubuntu-latest","linux-arm64":"ubuntu-24.04-arm","windows-amd64":"windows-latest","windows-arm64":"windows-11-arm"}')[format('{0}-{1}', inputs.platform, inputs.arch)] }}
-
+    runs-on: ${{ (inputs.platform == 'linux' && inputs.arch == 'amd64' &&
+      'ubuntu-latest') || (inputs.platform == 'linux' && inputs.arch == 'arm64'
+      && 'ubuntu-24.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
+      'amd64' && 'windows-latest') || (inputs.platform == 'windows' &&
+      inputs.arch == 'arm64' && 'windows-11-arm') }}
+      
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
-      artifact_url: ${{ steps.upload.outputs.artifact-url }}
+      artifact_url: ${{ steps.artifact_url.outputs.url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -77,22 +81,16 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
           cache: true
-          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ inputs.platform }}-${{ inputs.arch }}
 
       - name: Install Linux build dependencies
         if: inputs.platform == 'linux'
-        run: |
-          sudo apt-get update -q
-          sudo apt-get install -y \
-            clang cmake ninja-build pkg-config \
-            libgtk-3-dev liblzma-dev libstdc++-12-dev \
-            libclang-dev \
-            fuse libfuse2
+        shell: bash
+        run: ./scripts/setup-linux-deps.sh
 
       - name: Set build metadata
         id: meta
@@ -110,6 +108,8 @@ jobs:
           echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
 
           BUILD_NAME="${{ inputs.build_name }}"
+          # Remove prefix 'v'
+          BUILD_NAME="${BUILD_NAME#v}"
           BUILD_NUMBER="${{ github.run_number }}"
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
@@ -145,28 +145,24 @@ jobs:
           path: |
             build/${{ inputs.platform }}/${{ steps.meta.outputs.flutter_arch }}/bclibc_ffi_build
             packages/bclibc_ffi/build
-          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-${{ steps.meta.outputs.bclibc_ffi_hash }}
+          key: bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{
+            steps.meta.outputs.bclibc_hash }}-${{
+            steps.meta.outputs.bclibc_ffi_hash }}
           restore-keys: |
             bclibc-${{ inputs.platform }}-${{ inputs.arch }}-${{ steps.meta.outputs.bclibc_hash }}-
             bclibc-${{ inputs.platform }}-${{ inputs.arch }}-
 
       - name: Install Flutter dependencies
+        shell: bash
         run: |
           flutter clean
           flutter pub get
 
-      - name: Generate FFI bindings
-        run: |
-          cd packages/bclibc_ffi
-          dart run ffigen --config ffigen.yaml
-
-      - name: Build Linux bundle
-        if: inputs.platform == 'linux'
-        run: flutter build linux --${{ inputs.build_type }} --build-name=${{ inputs.build_name }} --build-number=${{ github.run_number }}
-
-      - name: Build Windows bundle
-        if: inputs.platform == 'windows'
-        run: flutter build windows --${{ inputs.build_type }} --build-name=${{ inputs.build_name }} --build-number=${{ github.run_number }}
+      - name: Build bundle
+        shell: bash
+        run: flutter build ${{ inputs.platform }} --${{ inputs.build_type }}
+          --build-name="${{ inputs.build_name }}" --build-number=${{
+          github.run_number }}
 
       - name: Verify bundle
         shell: bash
@@ -203,3 +199,10 @@ jobs:
           path: artifacts/
           retention-days: ${{ inputs.retention_days || 30 }}
           if-no-files-found: error
+
+      - name: Generate artifact URL
+        id: artifact_url
+        shell: bash
+        run: |
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "url=${RUN_URL}#artifacts" >> $GITHUB_OUTPUT
