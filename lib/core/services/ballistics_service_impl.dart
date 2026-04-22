@@ -1,5 +1,5 @@
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';

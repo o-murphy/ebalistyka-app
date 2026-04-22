@@ -5,7 +5,7 @@
 //   flutter test test/core/services/ballistics_service_test.dart
 
 import 'package:test/test.dart';
-import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/services/ballistics_service_impl.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';

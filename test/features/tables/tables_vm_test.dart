@@ -9,7 +9,7 @@ import 'dart:async';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';

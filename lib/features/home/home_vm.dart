@@ -7,7 +7,7 @@ import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
-import 'package:ebalistyka/core/domain/ballistics_service.dart';
+import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/conditions_extensions.dart';

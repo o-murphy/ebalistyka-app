@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.1.0-alpha7] — 2026-04-22
+
+### Architecture
+- **Removed recalc_coordinator** - the widgets now listens objectbox streams with provider
+
+### Changed
+- **Complete UI for CRUD** - allows to create and manage user's ballistics data
+- **A7P as local package** - a7p serializer moved to `packages/a7p`
+  
+### Add
+- **Reticle generator CLI** - creates compatible reticles and target SVG image
+- **App launcher icons and splashscreen**
+
+### Features
+- **Export/Import** - allows export user's data in native or .A7P format
+- **Screen for Reticles** - retilcle view and screen to display and manage adjustments
+- **Unit convertors** - fully implemented all convertors
+
+### Fixes
+- **Twist and wind direction**
+
+### Docs
+- **Backlog** - updated backlog docs
+- **Docs timeline** - updated docs with time-based numeration
+
+
 ## [0.1.0-alpha] — 2026-04-12
 
 Initial alpha release. First functional build of the ballistic trajectory calculator.
