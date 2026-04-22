@@ -158,12 +158,6 @@ jobs:
           flutter clean
           flutter pub get
 
-      - name: Generate FFI bindings
-        shell: bash
-        run: |
-          cd packages/bclibc_ffi
-          dart run ffigen --config ffigen.yaml
-
       - name: Build bundle
         shell: bash
         run: flutter build ${{ inputs.platform }} --${{ inputs.build_type }}
