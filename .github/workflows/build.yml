@@ -65,10 +65,12 @@ env:
 jobs:
   build:
     name: ${{ inputs.platform }}-${{ inputs.arch }} (${{ inputs.build_type }})
-    runs-on: ${{
-      fromJSON('{"linux-amd64":"ubuntu-latest","linux-arm64":"ubuntu-24.04-arm","windows-amd64":"windows-latest","windows-arm64":"windows-11-arm"}')[format('{0}-{1}',
-      inputs.platform, inputs.arch)] }}
-
+    runs-on: ${{ (inputs.platform == 'linux' && inputs.arch == 'amd64' &&
+      'ubuntu-latest') || (inputs.platform == 'linux' && inputs.arch == 'arm64'
+      && 'ubuntu-24.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
+      'amd64' && 'windows-latest') || (inputs.platform == 'windows' &&
+      inputs.arch == 'arm64' && 'windows-11-arm') }}
+      
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
       artifact_url: ${{ steps.artifact_url.outputs.url }}
@@ -79,55 +81,16 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # For AMD64
-      - name: Setup Flutter (AMD64)
-        if: inputs.arch == 'amd64'
-        uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
           cache: true
-          architecture: x64
-
-      # For ARM64 setup from git
-      - name: Cache Flutter SDK (ARM64)
-        if: inputs.arch == 'arm64'
-        id: cache-flutter
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.tool_cache }}/flutter-arm64
-          key: flutter-arm64-${{ env.FLUTTER_VERSION }}
-          restore-keys: flutter-arm64-
-
-      - name: Setup Flutter (ARM64)
-        if: inputs.arch == 'arm64' && steps.cache-flutter.outputs.cache-hit != 'true'
-        run: |
-          FLUTTER_DIR="${{ runner.tool_cache }}/flutter-arm64"
-          mkdir -p "$FLUTTER_DIR"
-          git clone https://github.com/flutter/flutter.git "$FLUTTER_DIR"
-          cd "$FLUTTER_DIR"
-          git fetch --tags
-          git checkout "${{ env.FLUTTER_VERSION }}"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
-
-      - name: Use cached Flutter (ARM64)
-        if: inputs.arch == 'arm64' && steps.cache-flutter.outputs.cache-hit == 'true'
-        run: |
-          FLUTTER_DIR="${{ runner.tool_cache }}/flutter-arm64"
-          echo "$FLUTTER_DIR/bin" >> $GITHUB_PATH
-          echo "FLUTTER_ROOT=$FLUTTER_DIR" >> $GITHUB_ENV
-          flutter --version
 
       - name: Install Linux build dependencies
         if: inputs.platform == 'linux'
-        run: |
-          sudo apt-get update -q
-          sudo apt-get install -y \
-            clang cmake ninja-build pkg-config \
-            libgtk-3-dev liblzma-dev libstdc++-12-dev \
-            libclang-dev \
-            fuse libfuse2
+        shell: bash
+        run: ./scripts/setup-linux-deps.sh
 
       - name: Set build metadata
         id: meta
@@ -190,24 +153,22 @@ jobs:
             bclibc-${{ inputs.platform }}-${{ inputs.arch }}-
 
       - name: Install Flutter dependencies
+        shell: bash
         run: |
           flutter clean
           flutter pub get
 
       - name: Generate FFI bindings
+        shell: bash
         run: |
           cd packages/bclibc_ffi
           dart run ffigen --config ffigen.yaml
 
-      - name: Build Linux bundle
-        if: inputs.platform == 'linux'
-        run: flutter build linux --${{ inputs.build_type }} --build-name="${{
-          inputs.build_name }}" --build-number=${{ github.run_number }}
-
-      - name: Build Windows bundle
-        if: inputs.platform == 'windows'
-        run: flutter build windows --${{ inputs.build_type }} --build-name="${{
-          inputs.build_name }}" --build-number=${{ github.run_number }}
+      - name: Build bundle
+        shell: bash
+        run: flutter build ${{ inputs.platform }} --${{ inputs.build_type }}
+          --build-name="${{ inputs.build_name }}" --build-number=${{
+          github.run_number }}
 
       - name: Verify bundle
         shell: bash
@@ -247,6 +208,7 @@ jobs:
 
       - name: Generate artifact URL
         id: artifact_url
+        shell: bash
         run: |
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           echo "url=${RUN_URL}#artifacts" >> $GITHUB_OUTPUT
