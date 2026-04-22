@@ -98,6 +98,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+      constraints: BoxConstraints(maxWidth: 300),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(28),

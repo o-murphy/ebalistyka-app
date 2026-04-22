@@ -39,7 +39,8 @@ Future<String?> showTextInputDialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+            constraints: BoxConstraints(maxWidth: 600),
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(28),

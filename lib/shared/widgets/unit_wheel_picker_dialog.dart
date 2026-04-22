@@ -52,7 +52,8 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
     final displayValue = _helper.toDisplay(_currentRawValue);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+      constraints: BoxConstraints(maxWidth: 300),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(28),
