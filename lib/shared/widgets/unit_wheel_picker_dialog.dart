@@ -149,7 +149,6 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
           ),
           const SizedBox(height: 16),
 
-          // Посередині: Колесо
           SizedBox(
             height: 240,
             child: Stack(
