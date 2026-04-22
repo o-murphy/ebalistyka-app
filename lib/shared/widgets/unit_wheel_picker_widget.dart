@@ -30,18 +30,69 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
   List<double> _displayValues = [];
   late double _currentRawValue;
   int _currentIndex = 0;
+  final bool _isUpdatingFromWidget = false;
 
   @override
   void initState() {
     super.initState();
-    _helper = UnitConversionHelper(
-      constraints: widget.constraints,
-      displayUnit: widget.displayUnit,
-    );
+    _initHelper();
     _currentRawValue = widget.initialRawValue ?? widget.constraints.minRaw;
     _generateDisplayValues();
     _currentIndex = _findClosestIndex(_currentRawValue);
     _controller = FixedExtentScrollController(initialItem: _currentIndex);
+  }
+
+  void _initHelper() {
+    _helper = UnitConversionHelper(
+      constraints: widget.constraints,
+      displayUnit: widget.displayUnit,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant UnitWheelPickerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    bool needsRegenerate = false;
+    bool needsValueUpdate = false;
+
+    // Перевіряємо чи змінились constraints або displayUnit
+    if (oldWidget.constraints != widget.constraints ||
+        oldWidget.displayUnit != widget.displayUnit) {
+      _initHelper();
+      needsRegenerate = true;
+    }
+
+    // Перевіряємо чи змінилось значення
+    if (oldWidget.initialRawValue != widget.initialRawValue &&
+        widget.initialRawValue != null) {
+      _currentRawValue = widget.initialRawValue!;
+      needsValueUpdate = true;
+    }
+
+    if (needsRegenerate) {
+      _generateDisplayValues();
+      needsValueUpdate = true;
+    }
+
+    if (needsValueUpdate) {
+      final newIndex = _findClosestIndex(_currentRawValue);
+      if (_currentIndex != newIndex) {
+        _currentIndex = newIndex;
+        // Використовуємо SchedulerBinding для відкладеної зміни позиції
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_controller.hasClients) {
+            _controller.jumpToItem(_currentIndex);
+          }
+        });
+      }
+      // Використовуємо SchedulerBinding для відкладеного setState
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
   }
 
   void _generateDisplayValues() {
@@ -87,7 +138,9 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
   }
 
   void _handleSelectedItemChanged(int index) {
+    if (_isUpdatingFromWidget) return;
     if (index < 0 || index >= _displayValues.length) return;
+
     setState(() {
       _currentIndex = index;
       final displayValue = _displayValues[index];

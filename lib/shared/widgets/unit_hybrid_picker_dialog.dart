@@ -5,6 +5,7 @@ import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
 import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Hybrid widget combining Wheel Picker and text input at the same time
 class UnitHybridPicker extends StatefulWidget {
@@ -28,6 +29,13 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
   late double _currentRawValue;
   String? _errorText;
   bool _isNullValue = false;
+  
+  // Флаги для запобігання циклічних оновлень
+  bool _isUpdatingFromWheel = false;
+  bool _isUpdatingFromText = false;
+  
+  // Зберігаємо попереднє значення для порівняння
+  String _lastTextValue = '';
 
   @override
   void initState() {
@@ -44,41 +52,98 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     final initialText = !_isNullValue
         ? _helper.formatDisplayValue(_helper.toDisplay(_currentRawValue))
         : '';
+    _lastTextValue = initialText;
     _textController = TextEditingController(text: initialText);
   }
 
   // Processing text input
   void _onTextChanged(String text) {
+    // Ігноруємо зміни, якщо вони прийшли від колеса
+    if (_isUpdatingFromWheel) return;
+    
+    // Зберігаємо позицію курсора
+    final cursorPosition = _textController.selection.baseOffset;
+    
+    _isUpdatingFromText = true;
     final (raw, error) = _helper.parseAndValidate(text);
-    setState(() {
+    
+    // Оновлюємо стан тільки якщо щось реально змінилось
+    bool needsUpdate = false;
+    
+    if (error != _errorText) {
       _errorText = error;
-      if (error == null) {
-        _isNullValue = raw == null;
-        if (raw != null) {
-          _currentRawValue = raw;
+      needsUpdate = true;
+    }
+    
+    if (error == null) {
+      final newIsNullValue = raw == null;
+      if (newIsNullValue != _isNullValue) {
+        _isNullValue = newIsNullValue;
+        needsUpdate = true;
+      }
+      
+      if (raw != null && raw != _currentRawValue) {
+        _currentRawValue = raw;
+        needsUpdate = true;
+        
+        // Оновлюємо колесо тільки якщо значення дійсно змінилось
+        if (!_isUpdatingFromWheel) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isUpdatingFromWheel) {
+              setState(() {}); // Тільки для оновлення колеса
+            }
+          });
         }
+      }
+    }
+    
+    if (needsUpdate && mounted) {
+      setState(() {});
+    }
+    
+    _isUpdatingFromText = false;
+    _lastTextValue = text;
+    
+    // Відновлюємо позицію курсора після оновлення
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_textController.selection.baseOffset != cursorPosition && cursorPosition >= 0) {
+        _textController.selection = TextSelection.collapsed(offset: cursorPosition.clamp(0, _textController.text.length));
       }
     });
   }
 
   void _onWheelChanged(double rawValue) {
+    // Ігноруємо зміни, якщо вони прийшли від текстового поля
+    if (_isUpdatingFromText) return;
+    
+    _isUpdatingFromWheel = true;
+    
+    final newText = _helper.formatDisplayValue(_helper.toDisplay(rawValue));
+    
+    // Оновлюємо текст тільки якщо він дійсно змінився
+    if (_textController.text != newText) {
+      _textController.text = newText;
+    }
+    
     setState(() {
       _currentRawValue = rawValue;
       _isNullValue = false;
       _errorText = null;
-      _textController.text = _helper.formatDisplayValue(
-        _helper.toDisplay(rawValue),
-      );
     });
+    
+    _isUpdatingFromWheel = false;
   }
 
   void _clearField() {
     if (widget.pickerContext.allowNull != true) return;
+    
+    _isUpdatingFromWheel = true;
     _textController.clear();
     setState(() {
       _isNullValue = true;
       _errorText = null;
     });
+    _isUpdatingFromWheel = false;
   }
 
   @override
