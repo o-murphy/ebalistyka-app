@@ -3,7 +3,7 @@ description: "Install Flutter SDK with caching support for Linux/Windows amd64/a
 
 inputs:
   flutter-version:
-    description: "Flutter SDK version (e.g., \"3.41.6\", \"stable\", \"beta\", \"main\")"
+    description: 'Flutter SDK version (e.g., "3.41.6", "stable", "beta", "main")'
     required: false
     default: "stable"
   cache:
@@ -51,8 +51,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.get-path.outputs.flutter-path }}
-        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{
-          steps.resolve-version.outputs.branch }}
+        key: flutter-${{ runner.os }}-${{ runner.arch }}-${{ steps.resolve-version.outputs.branch }}
         restore-keys: |
           flutter-${{ runner.os }}-${{ runner.arch }}-
 
@@ -72,74 +71,49 @@ runs:
       run: |
         TARGET_DIR="${{ steps.get-path.outputs.flutter-path }}"
 
-        # Important: on Windows, convert the path for git clone so that it is understandable for the Windows version of git
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          # Remove any leading slashes and replace forward slashes with backslashes for reliability,
-          # or use a format that git-bash will definitely understand          mkdir -p "$TARGET_DIR"
-          cd "$TARGET_DIR"
-          cd ..
-          TARGET_DIR_FINAL=$(pwd -W | sed 's/\//\\/g')/flutter
-        else
-          TARGET_DIR_FINAL="$TARGET_DIR"
-        fi
+        echo "Creating directory: $TARGET_DIR"
+        mkdir -p "$TARGET_DIR"
 
-        echo "Cloning Flutter [${{ steps.resolve-version.outputs.branch }}] into $TARGET_DIR_FINAL..."
+        echo "Cloning Flutter [${{ steps.resolve-version.outputs.branch }}]..."
         git clone --depth ${{ steps.resolve-version.outputs.depth }} \
           --branch ${{ steps.resolve-version.outputs.branch }} \
           https://github.com/flutter/flutter.git "$TARGET_DIR"
 
-    - name: Setup Environment Variables
+    - name: Setup environment
       shell: bash
       run: |
         FLUTTER_PATH="${{ steps.get-path.outputs.flutter-path }}"
 
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          # Convert the path to an absolute Windows path via 'pwd -W'
-          cd "$FLUTTER_PATH" || mkdir -p "$FLUTTER_PATH" && cd "$FLUTTER_PATH"
-          FLUTTER_PATH=$(pwd -W | sed 's/\//\\/g')
-          echo "PUB_CACHE=${RUNNER_TEMP}\\pub-cache" >> $GITHUB_ENV
-        fi
-
-        echo "$FLUTTER_PATH/bin" >> $GITHUB_PATH
         echo "FLUTTER_HOME=$FLUTTER_PATH" >> $GITHUB_ENV
         echo "FLUTTER_ROOT=$FLUTTER_PATH" >> $GITHUB_ENV
+        echo "$FLUTTER_PATH/bin" >> $GITHUB_PATH
 
-    - name: Verify and Precache (Linux/macOS)
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "PUB_CACHE=$RUNNER_TEMP\\pub-cache" >> $GITHUB_ENV
+        else
+          echo "PUB_CACHE=$RUNNER_TEMP/pub-cache" >> $GITHUB_ENV
+        fi
+
+    - name: Verify Flutter (Unix)
       if: runner.os != 'Windows'
       shell: bash
       run: |
-        export PATH="${{ steps.get-path.outputs.flutter-path }}/bin:$PATH"
         flutter --version
         flutter doctor
         flutter precache
 
-    - name: Verify and Precache (Windows)
+    - name: Verify Flutter (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
         $flutterHome = $env:FLUTTER_HOME
-        $binPath = Join-Path $flutterHome "bin"
+        $flutterBat = Join-Path $flutterHome "bin/flutter.bat"
 
-        Write-Host "Debug: Checking path $binPath"
-        if (Test-Path $binPath) {
-            Write-Host "Directory exists. Listing contents:"
-            Get-ChildItem $binPath | Select-Object -First 10 Name
-        } else {
-            Write-Warning "Directory $binPath does not exist!"
-            Write-Host "Checking parent directory:"
-            $parent = Split-Path $binPath
-            if (Test-Path $parent) { Get-ChildItem $parent }
-        }
-
-        # Add to Path for current step
-        $env:Path = "$binPath;" + $env:Path
-
-        $flutterBat = Join-Path $binPath "flutter.bat"
-        if (Test-Path $flutterBat) {
-          & $flutterBat --version
-          & $flutterBat doctor
-          & $flutterBat precache
-        } else {
-          Write-Error "Flutter executable not found at $flutterBat."
+        if (!(Test-Path $flutterBat)) {
+          Write-Error "Flutter not found at $flutterBat"
           exit 1
         }
+
+        & $flutterBat --version
+        & $flutterBat doctor
+        & $flutterBat precache
