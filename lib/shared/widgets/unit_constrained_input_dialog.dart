@@ -1,7 +1,7 @@
-import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -101,24 +101,9 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
     final theme = Theme.of(context);
     final ctx = widget.pickerContext;
     final sym = ctx.symbol ?? ctx.displayUnit.symbol;
-    final accuracy = ctx.constraints.accuracyFor(ctx.displayUnit);
 
     final canSave =
         _errorText == null && (!_isNullValue || (ctx.allowNull == true));
-
-    String displayHeader;
-    Color headerColor;
-
-    if (_errorText != null) {
-      displayHeader = "Invalid";
-      headerColor = theme.colorScheme.error;
-    } else if (_isNullValue) {
-      displayHeader = nullStr;
-      headerColor = theme.colorScheme.onSurfaceVariant;
-    } else {
-      displayHeader = _helper.toDisplay(_editRaw).toStringAsFixed(accuracy);
-      headerColor = theme.colorScheme.primary;
-    }
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -135,34 +120,8 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                displayHeader,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: headerColor,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              if (_errorText == null && !_isNullValue) ...[
-                const SizedBox(width: 6),
-                Text(
-                  sym,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ],
-          ),
-
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,36 +132,15 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: TextField(
+                child: UnitDialogInputField(
                   controller: _controller,
-                  autofocus: true,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                    signed: true,
-                  ),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge,
-                  decoration: InputDecoration(
-                    errorText: _errorText,
-                    errorMaxLines: 2,
-                    hintText: ctx.allowNull == true ? nullStr : null,
-                    filled: true,
-                    fillColor: theme.colorScheme.surfaceContainerLow,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    suffixIcon:
-                        ctx.allowNull == true && _controller.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(IconDef.clear),
-                            onPressed: _clearField,
-                            iconSize: 18,
-                          )
-                        : null,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                  constraints: ctx.constraints,
+                  displayUnit: ctx.displayUnit,
                   onChanged: _onTextChanged,
+                  errorText: _errorText,
+                  symbol: sym,
+                  allowNull: ctx.allowNull == true,
+                  onClear: _clearField,
                 ),
               ),
               const SizedBox(width: 8),

@@ -17,7 +17,8 @@ Future<bool> showConfirmDialog(
   final result = await showDialog<bool>(
     context: context,
     builder: (ctx) {
-      final colorScheme = Theme.of(ctx).colorScheme;
+      final theme = Theme.of(ctx);
+      final colorScheme = theme.colorScheme;
       final confirmStyle = isDestructive
           ? FilledButton.styleFrom(
               backgroundColor: colorScheme.error,
@@ -28,20 +29,49 @@ Future<bool> showConfirmDialog(
               foregroundColor: colorScheme.onTertiary,
             );
 
-      return AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(cancelLabel),
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(28),
           ),
-          FilledButton(
-            style: confirmStyle,
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(confirmLabel),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(content, style: theme.textTheme.bodyMedium),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: Text(cancelLabel),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      style: confirmStyle,
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: Text(confirmLabel),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       );
     },
   );
