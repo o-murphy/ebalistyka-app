@@ -15,7 +15,7 @@ class UnitWheelPicker extends StatefulWidget {
     this.label,
   });
 
-  final FieldConstraints constraints;
+  final Constraints constraints;
   final double initialRawValue;
   final Unit displayUnit;
   final ValueChanged<double> onSave;

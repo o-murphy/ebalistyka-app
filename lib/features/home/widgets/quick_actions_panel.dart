@@ -39,7 +39,7 @@ class QuickActionsPanel extends ConsumerWidget {
       context,
       label: 'Wind speed',
       rawValue: windMps,
-      constraints: FC.windSpeed,
+      constraints: RC.windSpeed,
       displayUnit: units.velocityUnit,
       onChanged: (v) => notifier.updateWindSpeed(v!),
     );
@@ -48,7 +48,7 @@ class QuickActionsPanel extends ConsumerWidget {
       context,
       label: 'Look angle',
       rawValue: lookDeg,
-      constraints: FC.lookAngle,
+      constraints: RC.lookAngle,
       displayUnit: Unit.degree,
       onChanged: (v) => notifier.updateLookAngle(v!),
     );
@@ -57,7 +57,7 @@ class QuickActionsPanel extends ConsumerWidget {
       context,
       label: 'Target range',
       rawValue: distM,
-      constraints: FC.targetDistance,
+      constraints: RC.targetDistance,
       displayUnit: units.distanceUnit,
       onChanged: (v) => notifier.updateDistance(v!),
     );

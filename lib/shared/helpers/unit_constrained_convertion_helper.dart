@@ -6,7 +6,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 
 class UnitConversionHelper {
-  final FieldConstraints constraints;
+  final Constraints constraints;
   final Unit displayUnit;
 
   UnitConversionHelper({required this.constraints, required this.displayUnit});

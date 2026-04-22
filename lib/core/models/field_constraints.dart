@@ -1,12 +1,21 @@
 import 'dart:math';
 import 'package:bclibc_ffi/unit.dart';
 
+abstract interface class Constraints {
+  Unit get rawUnit;
+  double get minRaw;
+  double get maxRaw;
+  double get stepRaw;
+  int get accuracy;
+  int accuracyFor(Unit displayUnit);
+}
+
 /// Constraints for a physical quantity role — used by [UnitValueField]
 /// and for display formatting in tables, charts, and widgets.
 ///
 /// All values are in [rawUnit] (the storage/base unit).
 /// The UI converts to the selected display unit before showing.
-class FieldConstraints {
+class FieldConstraints implements Constraints {
   const FieldConstraints({
     required this.rawUnit,
     required this.minRaw,
@@ -15,18 +24,24 @@ class FieldConstraints {
     required this.accuracy,
   });
 
+  @override
   final Unit rawUnit;
+  @override
   final double minRaw;
+  @override
   final double maxRaw;
+  @override
   final double stepRaw;
 
   /// Decimal places when displayed in [rawUnit]. Used as fallback.
+  @override
   final int accuracy;
 
   /// Returns the number of decimal places appropriate for [displayUnit].
   ///
   /// Mirrors the logic used internally by [UnitValueField]: converts
   /// [stepRaw] to [displayUnit] and infers the required precision from it.
+  @override
   int accuracyFor(Unit displayUnit) {
     if (rawUnit == displayUnit) return accuracy;
     final lo = minRaw.convert(rawUnit, displayUnit);
@@ -39,13 +54,13 @@ class FieldConstraints {
 }
 
 /// Extension of [FieldConstraints] with ruler/graph tick configuration.
-class RulerConstraints {
+class RulerConstraints implements Constraints {
   RulerConstraints({required this.fc, double? tick, double? smallTick})
     : tick = tick ?? fc.stepRaw,
       smallTick =
           smallTick ?? _defaultSmallTick(tick ?? fc.stepRaw, fc.accuracy);
 
-  final FieldConstraints fc;
+  final Constraints fc;
   final double tick;
   final double smallTick;
 
@@ -55,12 +70,18 @@ class RulerConstraints {
     return calculated > minStep ? calculated : minStep;
   }
 
+  @override
   Unit get rawUnit => fc.rawUnit;
+  @override
   double get minRaw => fc.minRaw;
+  @override
   double get maxRaw => fc.maxRaw;
+  @override
   double get stepRaw => fc.stepRaw;
+  @override
   int get accuracy => fc.accuracy;
 
+  @override
   int accuracyFor(Unit displayUnit) => fc.accuracyFor(displayUnit);
 }
 
@@ -257,8 +278,8 @@ abstract final class FC {
   /// Scope adjustment angle. Raw stored in radians.
   static const adjustment = FieldConstraints(
     rawUnit: Unit.mil,
-    minRaw: -6.28,
-    maxRaw: 6.28,
+    minRaw: -30,
+    maxRaw: 30,
     stepRaw: 0.001,
     accuracy: 2, // suitable for MIL / MOA / MRAD (default unit)
   );
@@ -385,5 +406,29 @@ abstract final class RC {
     fc: FC.lookAngle,
     tick: 5,
     smallTick: 1,
+  );
+
+  static final temperature = RulerConstraints(
+    fc: FC.temperature,
+    tick: 1,
+    smallTick: 1,
+  );
+
+  static final altitude = RulerConstraints(
+    fc: FC.altitude,
+    tick: 100,
+    smallTick: 20,
+  );
+
+  static final pressure = RulerConstraints(
+    fc: FC.pressure,
+    tick: 1,
+    smallTick: 1,
+  );
+
+  static final humidity = RulerConstraints(
+    fc: FC.humidity,
+    tick: 0.01,
+    smallTick: 0.01,
   );
 }

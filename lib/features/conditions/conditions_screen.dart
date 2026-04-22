@@ -30,7 +30,7 @@ class ConditionsScreen extends ConsumerWidget {
       context,
       label: 'Altitude',
       rawValue: state.altitude.rawValue,
-      constraints: FC.altitude,
+      constraints: RC.altitude,
       displayUnit: state.altitude.displayUnit,
       onChanged: (v) => notifier.updateAltitude(v!),
     );
@@ -39,7 +39,7 @@ class ConditionsScreen extends ConsumerWidget {
       context,
       label: 'Humidity',
       rawValue: state.humidity.rawValue,
-      constraints: FC.humidity,
+      constraints: RC.humidity,
       displayUnit: state.humidity.displayUnit,
       symbol: '%',
       onChanged: (v) => notifier.updateHumidity(v!),
@@ -49,7 +49,7 @@ class ConditionsScreen extends ConsumerWidget {
       context,
       label: 'Pressure',
       rawValue: state.pressure.rawValue,
-      constraints: FC.pressure,
+      constraints: RC.pressure,
       displayUnit: state.pressure.displayUnit,
       onChanged: (v) => notifier.updatePressure(v!),
     );
