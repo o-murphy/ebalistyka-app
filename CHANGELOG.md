@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.0-alpha7] — 2026-04-22
+## [0.1.0+7] — 2026-04-22
 
 ### Architecture
 - **Removed recalc_coordinator** - the widgets now listens objectbox streams with provider
