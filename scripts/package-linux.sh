@@ -6,7 +6,7 @@
 # Usage: package-linux.sh <bundle_dir> <arch_suffix> <build_name> <build_number>
 #   bundle_dir   — path to Flutter build output (bundle/)
 #   arch_suffix  — x86_64 | aarch64
-#   build_name   — version string, e.g. 0.1.0-alpha
+#   build_name   — version string, e.g. 0.1.0
 #   build_number — CI run number or local counter
 #
 # Outputs both files into ./artifacts/

@@ -156,7 +156,7 @@ GitHub Actions workflows are provided for automated builds:
 
 ## License
 
-Copyright (C) 2024 o-murphy
+Copyright (C) 2026 Yaroshenko Dmytro (o-murphy)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License v3.0** as published by the Free Software Foundation.
 

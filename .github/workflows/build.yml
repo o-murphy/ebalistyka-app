@@ -16,10 +16,10 @@ on:
         required: true
         type: string # release | debug
       build_name:
-        description: "Version name (e.g. 0.1.0-alpha)"
+        description: "Version name (e.g. 0.1.0-dev)"
         required: false
         type: string
-        default: "0.1.0-alpha"
+        default: "0.1.0-dev"
       retention_days:
         description: "Artifact retention in days"
         required: false
@@ -54,9 +54,9 @@ on:
         type: choice
         options: [ release, debug ]
       build_name:
-        description: "Version name (e.g. 0.1.0-alpha)"
+        description: "Version name (e.g. 0.1.0-dev)"
         required: false
-        default: "0.1.0-alpha"
+        default: "0.1.0-dev"
         type: string
 
 env:
