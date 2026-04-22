@@ -56,14 +56,12 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
     bool needsRegenerate = false;
     bool needsValueUpdate = false;
 
-    // Перевіряємо чи змінились constraints або displayUnit
     if (oldWidget.constraints != widget.constraints ||
         oldWidget.displayUnit != widget.displayUnit) {
       _initHelper();
       needsRegenerate = true;
     }
 
-    // Перевіряємо чи змінилось значення
     if (oldWidget.initialRawValue != widget.initialRawValue &&
         widget.initialRawValue != null) {
       _currentRawValue = widget.initialRawValue!;
@@ -79,14 +77,13 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
       final newIndex = _findClosestIndex(_currentRawValue);
       if (_currentIndex != newIndex) {
         _currentIndex = newIndex;
-        // Використовуємо SchedulerBinding для відкладеної зміни позиції
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_controller.hasClients) {
             _controller.jumpToItem(_currentIndex);
           }
         });
       }
-      // Використовуємо SchedulerBinding для відкладеного setState
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           setState(() {});

@@ -23,7 +23,7 @@ jobs:
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             VERSION="${{ github.ref_name }}"
-            # Видаляємо перший символ якщо це 'v'
+            # Remove the first character if it's 'v'
             if [[ "${VERSION}" == v* ]]; then
               VERSION="${VERSION:1}"
             fi

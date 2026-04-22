@@ -657,7 +657,7 @@ _None — all alpha blockers closed. Alpha ready._
 | Area                          | Notes                                           |
 | ----------------------------- | ----------------------------------------------- |
 | Display corrections in clicks | Home AdjPanel, Tables, ReticleViewScreen        |
-| ammo.zeroOffset               | `zeroOffsetX/Y` у Ammo, UI у AmmoWizard         |
+| ammo.zeroOffset               | `zeroOffsetX/Y` in Ammo, UI in AmmoWizard         |
 | Filter panel                  | Weapon/Ammo/Sight lists + collections           |
 | Code quality / refactoring    | Unification of components, reusable widgets     |
 | Tools Screen                  | Opened from Home "More" button; composition TBD |
@@ -744,7 +744,7 @@ All wizard screens, collection screens, selection flows, export/import (ebcp + a
 
 ### Phase 5.5 — Value Input Widgets ✅
 
-`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector ✅ done у `QuickActionsPanel`.
+`showUnitEditDialog()` (`[−] field [+]` + validation). `SpinBoxSelector` = this dialog. RulerSelector ✅ done in `QuickActionsPanel`.
 
 ---
 

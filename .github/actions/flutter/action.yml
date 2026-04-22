@@ -72,11 +72,10 @@ runs:
       run: |
         TARGET_DIR="${{ steps.get-path.outputs.flutter-path }}"
 
-        # Важливо: на Windows перетворюємо шлях для git clone, щоб він був зрозумілий для Windows-версії git
+        # Important: on Windows, convert the path for git clone so that it is understandable for the Windows version of git
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          # Видаляємо можливий лідируючий слеш і замінюємо прямі слеші на зворотні для надійності, 
-          # або використовуємо формат, який git-bash точно зрозуміє
-          mkdir -p "$TARGET_DIR"
+          # Remove any leading slashes and replace forward slashes with backslashes for reliability,
+          # or use a format that git-bash will definitely understand          mkdir -p "$TARGET_DIR"
           cd "$TARGET_DIR"
           cd ..
           TARGET_DIR_FINAL=$(pwd -W | sed 's/\//\\/g')/flutter
@@ -95,7 +94,7 @@ runs:
         FLUTTER_PATH="${{ steps.get-path.outputs.flutter-path }}"
 
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          # Перетворюємо шлях на абсолютний Windows шлях через 'pwd -W'
+          # Convert the path to an absolute Windows path via 'pwd -W'
           cd "$FLUTTER_PATH" || mkdir -p "$FLUTTER_PATH" && cd "$FLUTTER_PATH"
           FLUTTER_PATH=$(pwd -W | sed 's/\//\\/g')
           echo "PUB_CACHE=${RUNNER_TEMP}\\pub-cache" >> $GITHUB_ENV
@@ -132,7 +131,7 @@ runs:
             if (Test-Path $parent) { Get-ChildItem $parent }
         }
 
-        # Додаємо до Path для поточного кроку
+        # Add to Path for current step
         $env:Path = "$binPath;" + $env:Path
 
         $flutterBat = Join-Path $binPath "flutter.bat"
