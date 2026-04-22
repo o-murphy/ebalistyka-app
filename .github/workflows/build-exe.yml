@@ -43,21 +43,10 @@ jobs:
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 30
 
-  build-arm64:
-    needs: prepare-version
-    name: Windows arm64 (release)
-    uses: ./.github/workflows/build.yml
-    with:
-      platform: windows
-      arch: arm64
-      build_type: release
-      build_name: ${{ needs.prepare-version.outputs.version }}
-      retention_days: 30
-
   pr-summary:
     name: PR Build Summary
     runs-on: ubuntu-latest
-    needs: [ build-amd64, build-arm64 ]
+    needs: [ build-amd64 ]
     if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
@@ -70,17 +59,15 @@ jobs:
           script: |
             const prNumber = context.issue.number;
             const amd64Success = '${{ needs.build-amd64.result }}' === 'success';
-            const arm64Success = '${{ needs.build-arm64.result }}' === 'success';
-            const artifactUrl = '${{ needs.build-amd64.outputs.artifact_url || needs.build-arm64.outputs.artifact_url }}';
-            const artifactName = '${{ needs.build-amd64.outputs.artifact_name || needs.build-arm64.outputs.artifact_name }}';
+            const artifactUrl = '${{ needs.build-amd64.outputs.artifact_url }}';
+            const artifactName = '${{ needs.build-amd64.outputs.artifact_name }}';
             const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
 
             let body = `## Windows EXE Build\n\n`;
 
-            if (amd64Success || arm64Success) {
+            if (amd64Success) {
               body += `✅ **Build successful!**\n\n`;
               body += `- **amd64**: ${amd64Success ? '✅' : '❌'}\n`;
-              body += `- **arm64**: ${arm64Success ? '✅' : '❌'}\n\n`;
               
               if (artifactUrl) {
                 body += `📦 **[Download EXE (amd64)](${artifactUrl})**\n`;
