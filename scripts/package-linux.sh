@@ -17,7 +17,7 @@ ARCH_SUFFIX="${2:?}"
 BUILD_NAME="${3:?}"
 BUILD_NUMBER="${4:?}"
 
-APPIMAGE_TOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH_SUFFIX}.AppImage"
+APPIMAGE_TOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${ARCH_SUFFIX}.AppImage"
 
 mkdir -p artifacts
 
