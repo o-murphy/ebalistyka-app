@@ -5,7 +5,6 @@ import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
 import 'package:ebalistyka/shared/widgets/unit_wheel_picker_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Hybrid widget combining Wheel Picker and text input at the same time
 class UnitHybridPicker extends StatefulWidget {
