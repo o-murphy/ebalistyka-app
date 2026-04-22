@@ -190,30 +190,6 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           ..powderSensitivity = Ratio.fraction(0.02)
           ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
-        Ammo()
-          ..name = '.338LM Hornady 250GR BTHP'
-          ..dragType = DragType.g7
-          ..weight = Weight.grain(250.0)
-          ..caliber = Distance.inch(0.338)
-          ..length = Distance.inch(1.567)
-          ..bcG7 = 0.322
-          ..mv = Velocity.mps(885.0)
-          ..mvTemperature = Temperature.celsius(15.0)
-          ..powderSensitivity = Ratio.fraction(0.02)
-          ..zeroDistance = Distance.meter(100.0)
-          ..owner.target = owner,
-        Ammo()
-          ..name = '.338LM Lapua 300GR SMK'
-          ..dragType = DragType.g7
-          ..weight = Weight.grain(300.0)
-          ..caliber = Distance.inch(0.338)
-          ..length = Distance.inch(1.700)
-          ..bcG7 = 0.381
-          ..mv = Velocity.mps(825.0)
-          ..mvTemperature = Temperature.celsius(15.0)
-          ..powderSensitivity = Ratio.fraction(0.123)
-          ..zeroDistance = Distance.meter(100.0)
-          ..owner.target = owner,
       ];
       _store.box<Ammo>().putMany(ammos);
 

@@ -3,7 +3,7 @@
 **Version:** 3.0
 **Status:** Living Document — updated 2026-04-21
 **Stack:** Flutter · Dart · Riverpod · ObjectBox · FFI (bclibc C++)
-**Package:** `ebalistyka` · Bundle ID: `com.ballistics.ebalistyka`
+**Package:** `ebalistyka` · Bundle ID: `com.o.murphy.ebalistyka`
 
 ---
 
@@ -570,7 +570,7 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 
 | Area                        | Notes                                                                                   |
 | --------------------------- | --------------------------------------------------------------------------------------- |
-| **App name / Bundle ID**    | `eBalistyka` · `com.ballistics.ebalistyka` — all platforms                              |
+| **App name / Bundle ID**    | `eBalistyka` · `com.o.murphy.ebalistyka` — all platforms                                |
 | **bclibc submodule**        | `external/bclibc`; FFI via `packages/bclibc_ffi`                                        |
 | **bclibc_ffi package**      | Per-dimension enums, `Dimension<T,U>`, `Atmo`, `Unit.mach`, mach extensions; ffigen ^20 |
 | **ebalistyka_db package**   | ObjectBox entities + codegen; `EbcpFile` + export DTOs; `json_serializable`             |
@@ -837,8 +837,8 @@ Beta. All three stubs.
 flutter_riverpod:
 go_router:
 ffi:
-objectbox: ^4.0.0
-objectbox_flutter_libs: ^4.0.0
+objectbox: ^5.3.1
+objectbox_flutter_libs: ^5.3.1
 protobuf: ^6.0.0
 uuid: ^4.0.0
 path_provider: ^2.1.0
@@ -851,9 +851,9 @@ archive:
 flutter_svg:
 json_serializable:
 json_annotation:
-build_runner:              # dev
-objectbox_generator:       # dev
-ffigen: ^20.0.0            # dev (packages/bclibc_ffi)
+build_runner:                     # dev
+objectbox_generator: ^5.3.1       # dev
+ffigen: ^20.0.0                   # dev (packages/bclibc_ffi)
 ```
 
 ### Internal packages

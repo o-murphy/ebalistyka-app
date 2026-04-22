@@ -13,10 +13,10 @@ else
   UNAME_S := $(shell uname -s)
   ifeq ($(UNAME_S),Darwin)
     # getApplicationSupportDirectory() on macOS → ~/Library/Application Support/<bundle_id>
-    DB_DIR := $(HOME)/Library/Application Support/com.ballistics.ebalistyka
+    DB_DIR := $(HOME)/Library/Application Support/com.o.murphy.ebalistyka
   else
     # getApplicationSupportDirectory() on Linux → $XDG_DATA_HOME/<bundle_id>
-    DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.ballistics.ebalistyka
+    DB_DIR := $(or $(XDG_DATA_HOME),$(HOME)/.local/share)/com.o.murphy.ebalistyka
   endif
 endif
 
