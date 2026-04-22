@@ -39,6 +39,7 @@ void main() async {
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
+      await windowManager.setIcon('assets/icon.png');
       await windowManager.focus();
 
       await windowManager.setMinimumSize(

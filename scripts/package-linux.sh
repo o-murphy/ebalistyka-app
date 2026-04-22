@@ -30,8 +30,8 @@ echo "✓ tar.gz: artifacts/$TAR_NAME"
 # ── 2. AppImage ───────────────────────────────────────────────────────────────
 # Portable single-file. Requires libfuse2 on the target machine.
 echo "Downloading appimagetool (${ARCH_SUFFIX})..."
-curl -fsSL "$APPIMAGE_TOOL_URL" -o /usr/local/bin/appimagetool
-chmod +x /usr/local/bin/appimagetool
+curl -fsSL "$APPIMAGE_TOOL_URL" -o /tmp/appimagetool
+chmod +x /tmp/appimagetool
 
 APPDIR="AppDir"
 rm -rf "$APPDIR"
@@ -41,23 +41,44 @@ mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
 
 cp -r "$BUNDLE_DIR/"* "$APPDIR/usr/share/ebalistyka/"
 
+# Icon lookup
+ICON_SOURCE=""
+if [ -f "assets/icon.png" ]; then
+  ICON_SOURCE="assets/icon.png"
+elif [ -f "assets/icon.svg" ]; then
+  # Convert SVG to PNG (if there is ImageMagick)
+  if command -v convert &> /dev/null; then
+    convert assets/icon.svg -resize 256x256 /tmp/ebalistyka_icon.png
+    ICON_SOURCE="/tmp/ebalistyka_icon.png"
+  else
+    echo "⚠️  ImageMagick not found, cannot convert SVG to PNG"
+  fi
+elif [ -f "../assets/icon.png" ]; then
+  ICON_SOURCE="../assets/icon.png"
+fi
+
+# Copy or create icon
+if [ -n "$ICON_SOURCE" ] && [ -f "$ICON_SOURCE" ]; then
+  cp "$ICON_SOURCE" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
+  echo "✓ Icon copied from $ICON_SOURCE"
+else
+  # Create minimal icon stub
+  printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82' \
+    > "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
+  echo "⚠️  No icon found, using fallback"
+fi
+
 # Desktop entry
 cat > "$APPDIR/usr/share/applications/ebalistyka.desktop" <<'EOF'
 [Desktop Entry]
 Name=eBalistyka
+Comment=Ballistic calculator
 Exec=ebalistyka
 Icon=ebalistyka
 Type=Application
-Categories=Utility;
+Categories=Utility;Science;
+StartupWMClass=ebalistyka
 EOF
-
-# Icon — use project icon if present, otherwise a minimal 1×1 fallback
-if [ -f "assets/icon.png" ]; then
-  cp "assets/icon.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
-else
-  printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82' \
-    > "$APPDIR/usr/share/icons/hicolor/256x256/apps/ebalistyka.png"
-fi
 
 # Symlinks required by AppImageKit
 ln -sf usr/share/applications/ebalistyka.desktop "$APPDIR/ebalistyka.desktop"
@@ -74,7 +95,7 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 APPIMAGE_NAME="ebalistyka-linux-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}.AppImage"
-ARCH="${ARCH_SUFFIX}" appimagetool "$APPDIR" "artifacts/$APPIMAGE_NAME"
+ARCH="${ARCH_SUFFIX}" /tmp/appimagetool "$APPDIR" "artifacts/$APPIMAGE_NAME"
 echo "✓ AppImage: artifacts/$APPIMAGE_NAME"
 
 echo ""

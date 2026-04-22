@@ -195,7 +195,9 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Changelog'),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () => _launchUrl(
+              "https://github.com/o-murphy/ebalistyka-app/blob/main/CHANGELOG.md",
+            ),
           ),
 
           const SizedBox(height: 16),

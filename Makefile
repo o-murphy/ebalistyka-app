@@ -1,4 +1,5 @@
-.PHONY: native ffigen reticles proto-a7p proto-setup test format clean objectbox objectbox-setup objectbox-clean run run-clean unit objectbox
+.PHONY: native ffigen reticles icons proto-a7p proto-setup test format clean \
+        objectbox objectbox-setup objectbox-clean run run-clean unit
 
 # Cross-platform helpers
 ifeq ($(OS),Windows_NT)
@@ -48,6 +49,9 @@ endif
 
 reticles:
 	./scripts/gen_reticles.sh
+
+icons:
+	dart run flutter_launcher_icons:main && dart run flutter_native_splash:create
 
 # Re-generate Dart protobuf bindings for packages/a7p
 proto-a7p:
