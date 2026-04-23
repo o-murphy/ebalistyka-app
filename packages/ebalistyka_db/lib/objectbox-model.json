@@ -639,7 +639,7 @@
     },
     {
       "id": "7:1704755846093761912",
-      "lastPropertyId": "17:7303471664831654006",
+      "lastPropertyId": "18:569742260924311558",
       "name": "TablesSettings",
       "properties": [
         {
@@ -709,6 +709,11 @@
         {
           "id": "17:7303471664831654006",
           "name": "showInPer100yd",
+          "type": 1
+        },
+        {
+          "id": "18:569742260924311558",
+          "name": "showInClicks",
           "type": 1
         }
       ],

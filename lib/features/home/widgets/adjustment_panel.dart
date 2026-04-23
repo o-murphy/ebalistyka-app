@@ -83,7 +83,8 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
 
         final unitStyle = tt.bodyMedium?.copyWith(
           color: cs.onSurface.withAlpha(140),
-          fontSize: 6 * scaleFactor,
+          fontWeight: FontWeight.w700,
+          fontSize: 8 * scaleFactor,
         );
 
         final padding = 8.0;

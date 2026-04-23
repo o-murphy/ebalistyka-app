@@ -800,7 +800,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(7, 1704755846093761912),
     name: 'TablesSettings',
-    lastPropertyId: const obx_int.IdUid(17, 7303471664831654006),
+    lastPropertyId: const obx_int.IdUid(18, 569742260924311558),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -881,6 +881,12 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(17, 7303471664831654006),
         name: 'showInPer100yd',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(18, 569742260924311558),
+        name: 'showInClicks',
         type: 1,
         flags: 0,
       ),
@@ -2322,7 +2328,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final hiddenColsOffset = fbb.writeList(
           object.hiddenCols.map(fbb.writeString).toList(growable: false),
         );
-        fbb.startTable(18);
+        fbb.startTable(19);
         fbb.addInt64(0, object.id);
         fbb.addBool(4, object.showZeros);
         fbb.addBool(5, object.showSubsonicTransition);
@@ -2336,6 +2342,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addBool(14, object.showMoa);
         fbb.addBool(15, object.showCmPer100m);
         fbb.addBool(16, object.showInPer100yd);
+        fbb.addBool(17, object.showInClicks);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2407,6 +2414,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             36,
+            false,
+          )
+          ..showInClicks = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            38,
             false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -3444,6 +3457,11 @@ class TablesSettings_ {
   /// See [TablesSettings.showInPer100yd].
   static final showInPer100yd = obx.QueryBooleanProperty<TablesSettings>(
     _entities[6].properties[12],
+  );
+
+  /// See [TablesSettings.showInClicks].
+  static final showInClicks = obx.QueryBooleanProperty<TablesSettings>(
+    _entities[6].properties[13],
   );
 }
 

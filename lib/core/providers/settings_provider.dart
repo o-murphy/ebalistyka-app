@@ -266,6 +266,7 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
     s.showMil = settings.showMil;
     s.showCmPer100m = settings.showCmPer100m;
     s.showInPer100yd = settings.showInPer100yd;
+    s.showInClicks = settings.showInClicks;
     _store.box<TablesSettings>().put(s);
   }
 }

@@ -147,7 +147,12 @@ class TableConfigScreen extends ConsumerWidget {
             onChanged: (v) => save((s) => s.showInPer100yd = v),
             dense: true,
           ),
-
+          SwitchListTile(
+            title: const Text('Clicks'),
+            value: cfg.showInClicks,
+            onChanged: (v) => save((s) => s.showInClicks = v),
+            dense: true,
+          ),
           const SizedBox(height: 16),
         ],
       ),

@@ -18,6 +18,7 @@ class TablesSettingsExport {
     required this.showMoa,
     required this.showCmPer100m,
     required this.showInPer100yd,
+    required this.showInClicks,
   });
 
   final double distanceStartMeter;
@@ -31,6 +32,7 @@ class TablesSettingsExport {
   final bool showMoa;
   final bool showCmPer100m;
   final bool showInPer100yd;
+  final bool showInClicks;
 
   factory TablesSettingsExport.fromJson(Map<String, dynamic> json) =>
       _$TablesSettingsExportFromJson(json);
@@ -50,6 +52,7 @@ class TablesSettingsExport {
         showMoa: s.showMoa,
         showCmPer100m: s.showCmPer100m,
         showInPer100yd: s.showInPer100yd,
+        showInClicks: s.showInClicks,
       );
 
   TablesSettings toEntity() => TablesSettings()
@@ -63,5 +66,6 @@ class TablesSettingsExport {
     ..showMrad = showMrad
     ..showMoa = showMoa
     ..showCmPer100m = showCmPer100m
-    ..showInPer100yd = showInPer100yd;
+    ..showInPer100yd = showInPer100yd
+    ..showInClicks = showInClicks;
 }

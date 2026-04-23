@@ -576,7 +576,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           absValue: clicks.abs(),
           isPositive: clicks >= 0,
           symbol: "Clicks",
-          decimals: 2,
+          decimals: 0,
         ),
       );
     }
@@ -603,7 +603,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
           absValue: clicks.abs(),
           isPositive: clicks >= 0,
           symbol: "Clicks",
-          decimals: 2,
+          decimals: 0,
         ),
       );
     }

@@ -3,6 +3,9 @@
 
 ## [Unreleased]
 
+
+## [0.1.0+9] - 2026-04-23
+
 ### Fixed
 - **Settings notifier** now works immediatelly
 - **Adjustment display panel** sizing and placing, text size clamp
@@ -15,10 +18,10 @@
 ### Features
 - **Improve home screen** condition indicators got text labels 
 - **Improve home paging** pages got text labels 
-- **Display adjustments in current clicks** on home screen and reticle view screen
+- **Display adjustments in current clicks** on home screen, tables screen, html report and reticle view screen
 
 
-## [0.1.0+8] - 2026-04-26
+## [0.1.0+8] - 2026-04-23
 
 ### Fixed
 - **Hotfix:** corrected twist rate validation — the field now accepts `0` as a valid value.
