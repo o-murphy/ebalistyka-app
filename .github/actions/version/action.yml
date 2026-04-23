@@ -1,0 +1,28 @@
+name: "Resolve version"
+description: "Extracts version from tag (v1.2.3 → 1.2.3) or returns a default for non-tag runs"
+
+inputs:
+  default:
+    description: "Version to use when not running on a tag"
+    required: false
+    default: "0.1.0-dev"
+
+outputs:
+  version:
+    description: "Resolved version string (without leading v)"
+    value: ${{ steps.resolve.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: resolve
+      shell: bash
+      run: |
+        if [[ "${{ github.ref_type }}" == "tag" ]]; then
+          VERSION="${{ github.ref_name }}"
+          [[ "${VERSION}" == v* ]] && VERSION="${VERSION:1}"
+        else
+          VERSION="${{ inputs.default }}"
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Resolved version: ${VERSION}"

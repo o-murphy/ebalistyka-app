@@ -17,20 +17,11 @@ jobs:
   prepare-version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.value }}
+      version: ${{ steps.v.outputs.version }}
     steps:
-      - id: version
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            VERSION="${{ github.ref_name }}"
-            # Remove the first character if it's 'v'
-            if [[ "${VERSION}" == v* ]]; then
-              VERSION="${VERSION:1}"
-            fi
-            echo "value=${VERSION}" >> $GITHUB_OUTPUT
-          else
-            echo "value=0.1.0-dev" >> $GITHUB_OUTPUT
-          fi
+      - uses: actions/checkout@v4
+      - id: v
+        uses: ./.github/actions/version
 
   build-amd64:
     needs: prepare-version
