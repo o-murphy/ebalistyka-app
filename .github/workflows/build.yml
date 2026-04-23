@@ -191,13 +191,26 @@ jobs:
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
             -BuildType "${{ inputs.build_type }}"
 
-      - name: Sync MSIX version
+      - name: Normalize MSIX version
         if: inputs.platform == 'windows'
         shell: pwsh
         run: |
-          $version = "${{ steps.meta.outputs.build_name }}.${{ steps.meta.outputs.build_number }}"
+          $name = "${{ steps.meta.outputs.build_name }}"
+          $number = "${{ steps.meta.outputs.build_number }}"
+
+          if ($name -match '^(\d+\.\d+\.\d+)') {
+            $base = $Matches[1]
+          } else {
+            Write-Error "Invalid build_name for MSIX: $name"
+            exit 1
+          }
+
+          $msixVersion = "$base.$number"
+
+          Write-Host "MSIX version: $msixVersion"
+
           (Get-Content pubspec.yaml) `
-            -replace 'msix_version:.*', "msix_version: $version" `
+            -replace 'msix_version:.*', "msix_version: $msixVersion" `
             | Set-Content pubspec.yaml
 
       - name: Package MSIX artifacts
