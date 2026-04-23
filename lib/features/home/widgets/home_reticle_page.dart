@@ -58,33 +58,42 @@ class HomeReticlePage extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Ліва частина - ReticleView (2/3)
               Expanded(
                 flex: 2,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => context.push(Routes.reticleView),
-                    child: ReticleView(
-                      reticleImageId: rs.reticleId,
-                      targetImageId: rs.targetId,
-                      targetSizeMil: rs.targetSizeMilAtDistance,
-                      offsetXMil: rs.adjustmentWindMil,
-                      offsetYMil: rs.adjustmentElevMil,
-                      clipRadius: 15,
+                  padding: const EdgeInsets.fromLTRB(12, 4, 8, 12),
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: 1.0,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => context.push(Routes.reticleView),
+                        child: ReticleView(
+                          reticleImageId: rs.reticleId,
+                          targetImageId: rs.targetId,
+                          targetSizeMil: rs.targetSizeMilAtDistance,
+                          offsetXMil: rs.adjustmentWindMil,
+                          offsetYMil: rs.adjustmentElevMil,
+                          clipRadius: 15,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
+              // Права частина - AdjustmentsDisplayPanel (1/3)
               Expanded(
                 flex: 1,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
-                  child: AdjPanel(
-                    adjustment: rs.adjustment,
-                    fmt: rs.adjustmentFormat,
-                    isEmpty: rs.adjustment.elevation.isEmpty,
-                    displayVertical: true,
+                  padding: const EdgeInsets.fromLTRB(8, 4, 12, 12),
+                  child: Center(
+                    child: AdjustmentsDisplayPanel(
+                      adjustment: rs.adjustment,
+                      fmt: rs.adjustmentFormat,
+                      isEmpty: rs.adjustment.elevation.isEmpty,
+                      displayVertical: true,
+                    ),
                   ),
                 ),
               ),

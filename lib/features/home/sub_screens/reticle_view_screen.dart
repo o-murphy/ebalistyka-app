@@ -166,7 +166,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                     children: [
                       ListSectionTile('Adjustments'),
                       Center(
-                        child: AdjPanel(
+                        child: AdjustmentsDisplayPanel(
                           adjustment: vmState.reticleState.adjustment,
                           fmt: vmState.reticleState.adjustmentFormat,
                           isEmpty:
