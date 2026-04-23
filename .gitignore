@@ -46,3 +46,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local certificates (never commit)
+/certs/
+certificate_base64.txt

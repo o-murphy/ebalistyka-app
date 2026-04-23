@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'        # v1.2.3       → full release
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'      # v1.2.3-beta  → prerelease
+  workflow_dispatch:
+
+jobs:
+  prepare-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        uses: ./.github/actions/version
+
+  build-linux-amd64:
+    needs: prepare-version
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: amd64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
+  build-linux-arm64:
+    needs: prepare-version
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: arm64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
+  build-windows-amd64:
+    needs: prepare-version
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: windows
+      arch: amd64
+      build_type: release
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+    secrets:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+
+  release:
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dl
+          merge-multiple: true
+
+      - name: Collect release assets
+        run: |
+          mkdir -p release
+          find dl -type f \( \
+            -name "*.tar.gz"      -o \
+            -name "*.AppImage"    -o \
+            -name "*.zsync"       -o \
+            -name "*.zip"         -o \
+            -name "*.msix"        -o \
+            -name "*.appinstaller" \
+          \) -exec cp {} release/ \;
+
+          echo "=== Release assets ==="
+          ls -lh release/
+
+      - name: Create GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: eBalistyka ${{ needs.prepare-version.outputs.version }}
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true
+          files: release/*

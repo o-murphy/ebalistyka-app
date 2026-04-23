@@ -17,20 +17,11 @@ jobs:
   prepare-version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.value }}
+      version: ${{ steps.v.outputs.version }}
     steps:
-      - id: version
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            VERSION="${{ github.ref_name }}"
-            # Remove the first character if it's 'v'
-            if [[ "${VERSION}" == v* ]]; then
-              VERSION="${VERSION:1}"
-            fi
-            echo "value=${VERSION}" >> $GITHUB_OUTPUT
-          else
-            echo "value=0.1.0-dev" >> $GITHUB_OUTPUT
-          fi
+      - uses: actions/checkout@v4
+      - id: v
+        uses: ./.github/actions/version
 
   build-amd64:
     needs: prepare-version
@@ -42,6 +33,9 @@ jobs:
       build_type: release
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 30
+    secrets:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
   pr-summary:
     name: PR Build Summary
