@@ -1,10 +1,10 @@
-# Package a Flutter Windows bundle into the artifacts/ directory.
+# Package a Flutter Windows bundle into the artifacts/portable/ directory.
 #
 # Usage:
 #   .\package-windows.ps1 -BundleDir <path> -BuildName <ver> -BuildNumber <n> [-BuildType release|debug]
 #
 # Collects: ebalistyka.exe, all DLLs, data/ directory, optional .pdb for debug.
-# Outputs into ./artifacts/
+# Outputs into ./artifacts/portable/
 
 param(
     [Parameter(Mandatory)][string]$BundleDir,
@@ -23,7 +23,8 @@ if (-not (Test-Path $BundleDir)) {
     exit 1
 }
 
-New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+$out = "artifacts\portable"
+New-Item -ItemType Directory -Force -Path $out | Out-Null
 
 # Executable
 $exePath = Join-Path $BundleDir "ebalistyka.exe"
@@ -32,7 +33,7 @@ if (-not (Test-Path $exePath)) {
     Get-ChildItem $BundleDir | ForEach-Object { Write-Host "  $($_.Name)" }
     exit 1
 }
-Copy-Item $exePath "artifacts\"
+Copy-Item $exePath "$out\"
 Write-Host "✓ ebalistyka.exe"
 
 # DLLs
@@ -41,12 +42,12 @@ if ($dlls.Count -eq 0) {
     Write-Error "No .dll files found in $BundleDir — native libraries not bundled"
     exit 1
 }
-$dlls | Copy-Item -Destination "artifacts\"
+$dlls | Copy-Item -Destination "$out\"
 Write-Host "✓ DLLs ($($dlls.Count) files):"
 $dlls | ForEach-Object { Write-Host "    $($_.Name)" }
 
 # Critical: bclibc_ffi
-if (-not (Test-Path "artifacts\bclibc_ffi.dll")) {
+if (-not (Test-Path "$out\bclibc_ffi.dll")) {
     Write-Error "bclibc_ffi.dll not found — app will crash on startup"
     exit 1
 }
@@ -54,21 +55,21 @@ Write-Host "✓ bclibc_ffi.dll present"
 
 # Data directory (Flutter assets, fonts, etc.)
 if (Test-Path "$BundleDir\data") {
-    Copy-Item -Path "$BundleDir\data" -Destination "artifacts\data" -Recurse
+    Copy-Item -Path "$BundleDir\data" -Destination "$out\data" -Recurse
     Write-Host "✓ data/"
 }
 
 # PDB for debug builds
 if ($BuildType -eq "debug" -and (Test-Path "$BundleDir\ebalistyka.pdb")) {
-    Copy-Item "$BundleDir\ebalistyka.pdb" "artifacts\"
+    Copy-Item "$BundleDir\ebalistyka.pdb" "$out\"
     Write-Host "✓ ebalistyka.pdb (debug symbols)"
 }
 
 # Version info
 $versionContent = "eBalistyka $BuildName (build $BuildNumber)`r`nWindows x86_64`r`n`r`nRun: ebalistyka.exe"
-Set-Content -Path "artifacts\VERSION.txt" -Value $versionContent
+Set-Content -Path "$out\VERSION.txt" -Value $versionContent
 Write-Host "✓ VERSION.txt"
 
 Write-Host ""
 Write-Host "Artifacts:"
-Get-ChildItem artifacts | Format-Table Name, Length -AutoSize
+Get-ChildItem $out | Format-Table Name, Length -AutoSize

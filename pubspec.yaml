@@ -143,8 +143,6 @@ msix_config:
   publisher_display_name: o-murphy
   identity_name: com.o.murphy.ebalistyka
   publisher: CN=o-murphy
-  msix_version: 0.1.0.8
-  logo_path: assets/splash_logo.png
-  # capabilities: internetClient, location, microphone, webcam
+  logo_path: assets/icon.png
+  sign_msix: true
   install_certificate: false
-  sign_msix: false

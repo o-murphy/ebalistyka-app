@@ -42,6 +42,9 @@ jobs:
       build_type: release
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 30
+    secrets:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
   pr-summary:
     name: PR Build Summary

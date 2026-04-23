@@ -25,6 +25,13 @@ on:
         required: false
         type: number
         default: 30
+    secrets:
+      CERTIFICATE_BASE64:
+        description: "PFX certificate encoded as Base64 (for MSIX signing)"
+        required: false
+      CERTIFICATE_PASSWORD:
+        description: "Password for the PFX certificate"
+        required: false
     outputs:
       artifact_name:
         description: "Name of the uploaded artifact"
@@ -191,36 +198,43 @@ jobs:
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
             -BuildType "${{ inputs.build_type }}"
 
-      - name: Normalize MSIX version
+      - name: Decode certificate
         if: inputs.platform == 'windows'
         shell: pwsh
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
         run: |
-          $name = "${{ steps.meta.outputs.build_name }}"
-          $number = "${{ steps.meta.outputs.build_number }}"
-
-          if ($name -match '^(\d+\.\d+\.\d+)') {
-            $base = $Matches[1]
-          } else {
-            Write-Error "Invalid build_name for MSIX: $name"
-            exit 1
+          if (-not $env:CERTIFICATE_BASE64) {
+            Write-Host "No CERTIFICATE_BASE64 secret — skipping cert decode"
+            exit 0
           }
-
-          $msixVersion = "$base.$number"
-
-          Write-Host "MSIX version: $msixVersion"
-
-          (Get-Content pubspec.yaml) `
-            -replace 'msix_version:.*', "msix_version: $msixVersion" `
-            | Set-Content pubspec.yaml
+          $bytes = [System.Convert]::FromBase64String($env:CERTIFICATE_BASE64)
+          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ebalistyka_cert.pfx", $bytes)
+          Write-Host "Certificate decoded to $env:RUNNER_TEMP\ebalistyka_cert.pfx"
 
       - name: Package MSIX artifacts
         if: inputs.platform == 'windows'
         shell: pwsh
+        env:
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         run: |
+          $certPath = "$env:RUNNER_TEMP\ebalistyka_cert.pfx"
+          $certPassword = $env:CERTIFICATE_PASSWORD
+          if (-not (Test-Path $certPath)) {
+            Write-Error "Certificate not found at $certPath — set CERTIFICATE_BASE64 and CERTIFICATE_PASSWORD secrets"
+            exit 1
+          }
+          $buildName = "${{ steps.meta.outputs.build_name }}"
+          if ($buildName -match '^(\d+\.\d+\.\d+)') { $base = $Matches[1] } else { $base = "0.1.0" }
+          $msixVersion = "$base.${{ steps.meta.outputs.build_number }}"
+
           .\scripts\package-msix.ps1 `
-            -BuildName "${{ steps.meta.outputs.build_name }}" `
+            -BuildName $buildName `
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
-            -BuildType "${{ inputs.build_type }}"
+            -BuildType "${{ inputs.build_type }}" `
+            -CertificatePath $certPath `
+            -CertificatePassword $certPassword `
+            -MsixVersion $msixVersion
 
       - name: Upload artifact
         id: upload
