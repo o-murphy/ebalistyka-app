@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **Settings notifier** now works immediatelly
+- **Adjustment display panel** sizing and placing, text size clamp
+- **Conditions screen icon**
+- **Reticle view display ratio**
+
+### Features
+- **Improve home screen** condition indicators got text labels 
+- **Improve home paging** pages got text labels 
+- **Display adjustments in current clicks** on home screen and reticle view screen
+
 ## [0.1.0+8] - 2026-04-26
 
 ### Fixed
