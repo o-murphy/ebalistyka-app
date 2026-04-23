@@ -142,6 +142,7 @@ msix_config:
   display_name: eBalistyka
   publisher_display_name: o-murphy
   identity_name: com.o.murphy.ebalistyka
+  publisher: CN=o-murphy
   msix_version: 0.1.0.8
   logo_path: assets/splash_logo.png
   # capabilities: internetClient, location, microphone, webcam
