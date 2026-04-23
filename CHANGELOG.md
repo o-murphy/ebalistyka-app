@@ -4,7 +4,7 @@
 ## [Unreleased]
 
 
-## [0.1.0] - 2026-04-23
+## [0.1.1] - 2026-04-23
 
 ### CI / Build
 - **Release workflow** — single `release.yml` triggers on `v*.*.*` tags; builds all platforms in parallel, publishes GitHub Release with all assets; manual dispatch supported for dry-run asset listing
