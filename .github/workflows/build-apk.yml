@@ -112,7 +112,7 @@ jobs:
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk  artifacts/ebalistyka_android_arm64.apk
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_arm32.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
           cp build/app/outputs/flutter-apk/app-x86_64-release.apk     artifacts/ebalistyka_android_x86_64.apk
 
       - name: Upload artifact
@@ -159,7 +159,7 @@ jobs:
               }
               body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
               body += `### Test Instructions:\n`;
-              body += `\`\`\`bash\n# arm64 (most modern phones)\nadb install ebalistyka_android_arm64.apk\n# arm32 (older phones)\nadb install ebalistyka_android_arm32.apk\n\`\`\`\n`;
+              body += `\`\`\`bash\n# arm64 (most modern phones)\nadb install ebalistyka_android_arm64.apk\n# arm32 (older phones)\nadb install ebalistyka_android_armeabi_v7a.apk\n\`\`\`\n`;
             } else {
               body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
             }
