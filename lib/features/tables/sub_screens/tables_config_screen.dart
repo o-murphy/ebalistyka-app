@@ -23,13 +23,21 @@ class TableConfigScreen extends ConsumerWidget {
     final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
 
     void save(void Function(TablesSettings) mutate) {
-      // Створюємо копію з мутаціями
       final updated = TablesSettings()
         ..id = cfg.id
         ..owner.target = cfg.owner.target
+        ..distanceStartMeter = cfg.distanceStartMeter
         ..distanceEndMeter = cfg.distanceEndMeter
+        ..distanceStepMeter = cfg.distanceStepMeter
+        ..showZeros = cfg.showZeros
+        ..showSubsonicTransition = cfg.showSubsonicTransition
+        ..hiddenCols = List<String>.from(cfg.hiddenCols)
+        ..showMrad = cfg.showMrad
+        ..showMoa = cfg.showMoa
         ..showMil = cfg.showMil
-        ..hiddenCols = List<String>.from(cfg.hiddenCols);
+        ..showCmPer100m = cfg.showCmPer100m
+        ..showInPer100yd = cfg.showInPer100yd
+        ..showInClicks = cfg.showInClicks;
 
       mutate(updated);
       notifier.saveSettings(updated);
