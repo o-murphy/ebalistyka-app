@@ -81,7 +81,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   bool get _isValid {
     if (_nameCtrl.text.trim().isEmpty) return false;
     if (_caliberRaw <= 0) return false;
-    if (_twistRaw <= 0) return false;
+    if (_twistRaw < 0) return false;
     return true;
   }
 
