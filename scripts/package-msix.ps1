@@ -98,7 +98,24 @@ if (-not $generated) {
 
 $targetName = "ebalistyka_windows_${Arch}.msix"
 Move-Item $generated.FullName "$msixOut\$targetName"
-Write-Host "\nMSIX: $msixOut\$targetName"
+Write-Host "MSIX: $msixOut\$targetName"
+
+# Export public certificate (.cer) so users can install it to Trusted People
+# before installing the MSIX (required for self-signed packages)
+try {
+    $certObj = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(
+        $CertificatePath, $securePassword,
+        [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::DefaultKeySet
+    )
+    $cerBytes = $certObj.Export(
+        [System.Security.Cryptography.X509Certificates.X509ContentType]::Cert
+    )
+    $cerPath = "$msixOut\ebalistyka_cert.cer"
+    [System.IO.File]::WriteAllBytes($cerPath, $cerBytes)
+    Write-Host "Certificate: $cerPath"
+} catch {
+    Write-Warning "Could not export .cer: $_"
+}
 
 # Generate .appinstaller for Windows native auto-update.
 # Users install via .appinstaller -- Windows checks for updates on each launch.
@@ -132,7 +149,9 @@ if ($repo) {
     ) -join "`r`n"
 
     $appinstallerPath = "$msixOut\ebalistyka.appinstaller"
-    [System.IO.File]::WriteAllText($appinstallerPath, $xml, [System.Text.Encoding]::UTF8)
+    # UTF-8 without BOM — Windows App Installer rejects BOM-prefixed XML
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($appinstallerPath, $xml, $utf8NoBom)
     Write-Host ".appinstaller: $appinstallerPath"
 } else {
     Write-Host "No GITHUB_REPO -- skipping .appinstaller"
