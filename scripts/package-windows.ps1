@@ -1,30 +1,27 @@
-# Package a Flutter Windows bundle into the artifacts/portable/ directory.
+# Package a Flutter Windows bundle into artifacts/portable/ebalistyka_windows_<arch>.zip
 #
 # Usage:
-#   .\package-windows.ps1 -BundleDir <path> -BuildName <ver> -BuildNumber <n> [-BuildType release|debug]
-#
-# Collects: ebalistyka.exe, all DLLs, data/ directory, optional .pdb for debug.
-# Outputs into ./artifacts/portable/
+#   .\package-windows.ps1 -BundleDir <path> -BuildName <ver> -BuildNumber <n> [-BuildType release|debug] [-Arch x86_64|aarch64]
 
 param(
     [Parameter(Mandatory)][string]$BundleDir,
     [Parameter(Mandatory)][string]$BuildName,
     [Parameter(Mandatory)][string]$BuildNumber,
-    [string]$BuildType = "release"
+    [string]$BuildType = "release",
+    [string]$Arch = "x86_64"
 )
 
 $ErrorActionPreference = "Stop"
 
 if (-not (Test-Path $BundleDir)) {
     Write-Error "Bundle directory not found: $BundleDir"
-    Write-Host "Searching for ebalistyka.exe under build/:"
     Get-ChildItem -Path build -Recurse -Filter "ebalistyka.exe" -ErrorAction SilentlyContinue |
         ForEach-Object { Write-Host "  $($_.FullName)" }
     exit 1
 }
 
-$out = "artifacts\portable"
-New-Item -ItemType Directory -Force -Path $out | Out-Null
+$staging = "artifacts\_staging_portable"
+New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
 # Executable
 $exePath = Join-Path $BundleDir "ebalistyka.exe"
@@ -33,7 +30,7 @@ if (-not (Test-Path $exePath)) {
     Get-ChildItem $BundleDir | ForEach-Object { Write-Host "  $($_.Name)" }
     exit 1
 }
-Copy-Item $exePath "$out\"
+Copy-Item $exePath "$staging\"
 Write-Host "✓ ebalistyka.exe"
 
 # DLLs
@@ -42,12 +39,11 @@ if ($dlls.Count -eq 0) {
     Write-Error "No .dll files found in $BundleDir — native libraries not bundled"
     exit 1
 }
-$dlls | Copy-Item -Destination "$out\"
+$dlls | Copy-Item -Destination "$staging\"
 Write-Host "✓ DLLs ($($dlls.Count) files):"
 $dlls | ForEach-Object { Write-Host "    $($_.Name)" }
 
-# Critical: bclibc_ffi
-if (-not (Test-Path "$out\bclibc_ffi.dll")) {
+if (-not (Test-Path "$staging\bclibc_ffi.dll")) {
     Write-Error "bclibc_ffi.dll not found — app will crash on startup"
     exit 1
 }
@@ -55,21 +51,25 @@ Write-Host "✓ bclibc_ffi.dll present"
 
 # Data directory (Flutter assets, fonts, etc.)
 if (Test-Path "$BundleDir\data") {
-    Copy-Item -Path "$BundleDir\data" -Destination "$out\data" -Recurse
+    Copy-Item -Path "$BundleDir\data" -Destination "$staging\data" -Recurse
     Write-Host "✓ data/"
 }
 
 # PDB for debug builds
 if ($BuildType -eq "debug" -and (Test-Path "$BundleDir\ebalistyka.pdb")) {
-    Copy-Item "$BundleDir\ebalistyka.pdb" "$out\"
+    Copy-Item "$BundleDir\ebalistyka.pdb" "$staging\"
     Write-Host "✓ ebalistyka.pdb (debug symbols)"
 }
 
-# Version info
-$versionContent = "eBalistyka $BuildName (build $BuildNumber)`r`nWindows x86_64`r`n`r`nRun: ebalistyka.exe"
-Set-Content -Path "$out\VERSION.txt" -Value $versionContent
-Write-Host "✓ VERSION.txt"
+# Zip
+$outDir = "artifacts\portable"
+New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+
+$zipPath = "$outDir\ebalistyka_windows_${Arch}.zip"
+Remove-Item $zipPath -ErrorAction SilentlyContinue
+Compress-Archive -Path "$staging\*" -DestinationPath $zipPath
+Remove-Item $staging -Recurse -Force
 
 Write-Host ""
-Write-Host "Artifacts:"
-Get-ChildItem $out | Format-Table Name, Length -AutoSize
+Write-Host "✓ $zipPath"
+Write-Host "Size: $([math]::Round((Get-Item $zipPath).Length / 1MB, 1)) MB"

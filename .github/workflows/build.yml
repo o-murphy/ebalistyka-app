@@ -165,11 +165,18 @@ jobs:
           flutter clean
           flutter pub get
 
+      - name: Set pubspec version
+        shell: bash
+        run: |
+          # Strip pre-release suffix: "0.1.0-dev" → "0.1.0"
+          BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
+          NUM=${{ steps.meta.outputs.build_number }}
+          sed -i "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
+          echo "pubspec version → ${BASE}+${NUM}"
+
       - name: Build bundle
         shell: bash
         run: flutter build ${{ inputs.platform }} --${{ inputs.build_type }}
-          --build-name="${{ inputs.build_name }}" --build-number=${{
-          github.run_number }}
 
       - name: Verify bundle
         shell: bash
@@ -196,7 +203,8 @@ jobs:
             -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
             -BuildName "${{ steps.meta.outputs.build_name }}" `
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
-            -BuildType "${{ inputs.build_type }}"
+            -BuildType "${{ inputs.build_type }}" `
+            -Arch "${{ steps.meta.outputs.arch_suffix }}"
 
       - name: Decode certificate
         if: inputs.platform == 'windows'
@@ -232,6 +240,7 @@ jobs:
             -BuildName $buildName `
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
             -BuildType "${{ inputs.build_type }}" `
+            -Arch "${{ steps.meta.outputs.arch_suffix }}" `
             -CertificatePath $certPath `
             -CertificatePassword $certPassword `
             -MsixVersion $msixVersion

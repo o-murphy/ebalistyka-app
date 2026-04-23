@@ -4,6 +4,7 @@ param(
     [string]$BuildName,
     [string]$BuildNumber,
     [string]$BuildType = "release",
+    [string]$Arch = "x86_64",
     [string]$CertificatePath = "certs\ebalistyka_cert.pfx",
     [string]$CertificatePassword = "YourStrongPassword123!",
     [string]$MsixVersion
@@ -36,8 +37,9 @@ if (-not (Test-Path $CertificatePath)) {
 # pubspec format: "0.1.0+9"  →  MSIX format: "0.1.0.9"
 if (-not $MsixVersion) {
     $pubspecContent = Get-Content pubspec.yaml -Raw
-    if ($pubspecContent -match '(?m)^version:\s+(\d+\.\d+\.\d+)\+(\d+)') {
-        $MsixVersion = "$($Matches[1]).$($Matches[2])"
+    if ($pubspecContent -match '(?m)^version:\s+(\d+\.\d+\.\d+)(?:\+(\d+))?') {
+        $build = if ($Matches[2]) { $Matches[2] } else { '0' }
+        $MsixVersion = "$($Matches[1]).$build"
     } else {
         Write-Error "Cannot parse version from pubspec.yaml"
         exit 1
@@ -92,7 +94,8 @@ if (-not $generated) {
     exit 1
 }
 
-Move-Item $generated.FullName "$msixOut\"
+$targetName = "ebalistyka_windows_${Arch}.msix"
+Move-Item $generated.FullName "$msixOut\$targetName"
 
 Write-Host ""
-Write-Host "MSIX stored in $msixOut\"
+Write-Host "MSIX stored in $msixOut\$targetName"

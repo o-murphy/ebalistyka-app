@@ -16,6 +16,7 @@ sudo apt-get install -y \
   libstdc++-12-dev \
   libclang-dev \
   fuse \
-  libfuse2
+  libfuse2 \
+  zsync
 
 echo "--- Setup complete success! ---"
