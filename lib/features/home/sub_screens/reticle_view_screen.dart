@@ -137,12 +137,14 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const minTopH = 350.0;
-        const maxTopH = 400.0;
-        final fullHeight = math.max(constraints.maxHeight, minTopH);
-        final topBlockHeight = math.min(
-          maxTopH,
-          math.max(fullHeight * 0.45, minTopH),
+        const double maxTopHeightRatio = 0.50; // 35% від загальної висоти
+        final double fullHeight = constraints.maxHeight;
+        final double maxAllowedHeight = fullHeight * maxTopHeightRatio;
+
+        // Верхній блок має бути квадратним (1:1), але не більше ніж 35% висоти
+        final double topBlockSize = math.min(
+          constraints.maxWidth, // ширина = висота для ratio 1:1
+          maxAllowedHeight,
         );
 
         return BaseScreen(
@@ -153,7 +155,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
             children: [
               _buildTopBlock(
                 context,
-                topBlockHeight,
+                topBlockSize,
                 vmState,
                 targetSizeMilAtDistance,
               ),
@@ -309,53 +311,55 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
   Widget _buildTopBlock(
     BuildContext context,
-    double height,
+    double size, // тепер це і ширина і висота
     HomeUiReady vmState,
     double targetSizeMil,
   ) {
-    return Container(
-      width: double.infinity,
-      height: height,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
+    return SizedBox(
+      width: double.infinity, // займає всю ширину
+      height: size, // висота дорівнює size (квадрат)
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(32),
+            bottomRight: Radius.circular(32),
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: ZoomableView(
-                  key: _zoomKey,
-                  minScale: 1.0,
-                  maxScale: 10.0,
-                  child: ReticleView(
-                    reticleImageId: _reticleImage,
-                    targetImageId: _targetImage,
-                    targetSizeMil: targetSizeMil,
-                    offsetXMil: vmState.reticleState.adjustmentWindMil,
-                    offsetYMil: vmState.reticleState.adjustmentElevMil,
-                    clipRadius: 20,
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: ZoomableView(
+                    key: _zoomKey,
+                    minScale: 1.0,
+                    maxScale: 10.0,
+                    child: ReticleView(
+                      reticleImageId: _reticleImage,
+                      targetImageId: _targetImage,
+                      targetSizeMil: targetSizeMil,
+                      offsetXMil: vmState.reticleState.adjustmentWindMil,
+                      offsetYMil: vmState.reticleState.adjustmentElevMil,
+                      clipRadius: 20,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 24,
-              right: 24,
-              child: FloatingActionButton(
-                onPressed: () => _zoomKey.currentState?.resetZoom(),
-                mini: true,
-                heroTag: null,
-                child: const Icon(IconDef.magnificationMin),
+              Positioned(
+                bottom: 24,
+                right: 24,
+                child: FloatingActionButton(
+                  onPressed: () => _zoomKey.currentState?.resetZoom(),
+                  mini: true,
+                  heroTag: null,
+                  child: const Icon(IconDef.magnificationMin),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
