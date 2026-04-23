@@ -71,6 +71,7 @@ dev_dependencies:
 
   flutter_native_splash: ^2.4.4
   flutter_launcher_icons: ^0.14.3
+  msix: ^3.16.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -136,3 +137,11 @@ flutter_launcher_icons:
     icon_size: 256
   macos:
     generate: true
+
+msix_config:
+  display_name: eBalistyka
+  publisher_display_name: o-murphy
+  identity_name: com.o.murphy.ebalistyka
+  msix_version: 0.1.0.8
+  logo_path: assets/splash_logo.png
+  # capabilities: internetClient, location, microphone, webcam

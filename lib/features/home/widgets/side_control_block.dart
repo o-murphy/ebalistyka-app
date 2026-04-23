@@ -44,7 +44,7 @@ class SideControlBlock extends StatelessWidget {
                   Text(
                     infoRows[i].$3,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 9,
                       color: cs.onSurface.withValues(alpha: 0.85),
                     ),
                     textAlign: TextAlign.center,

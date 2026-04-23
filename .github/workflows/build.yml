@@ -70,7 +70,7 @@ jobs:
       && 'ubuntu-24.04-arm') || (inputs.platform == 'windows' && inputs.arch ==
       'amd64' && 'windows-latest') || (inputs.platform == 'windows' &&
       inputs.arch == 'arm64' && 'windows-11-arm') }}
-      
+
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
       artifact_url: ${{ steps.artifact_url.outputs.url }}
@@ -187,6 +187,24 @@ jobs:
         run: |
           .\scripts\package-windows.ps1 `
             -BundleDir "${{ steps.meta.outputs.bundle_dir }}" `
+            -BuildName "${{ steps.meta.outputs.build_name }}" `
+            -BuildNumber "${{ steps.meta.outputs.build_number }}" `
+            -BuildType "${{ inputs.build_type }}"
+
+      - name: Sync MSIX version
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          $version = "${{ steps.meta.outputs.build_name }}.${{ steps.meta.outputs.build_number }}"
+          (Get-Content pubspec.yaml) `
+            -replace 'msix_version:.*', "msix_version: $version" `
+            | Set-Content pubspec.yaml
+
+      - name: Package MSIX artifacts
+        if: inputs.platform == 'windows'
+        shell: pwsh
+        run: |
+          .\scripts\package-msix.ps1 `
             -BuildName "${{ steps.meta.outputs.build_name }}" `
             -BuildNumber "${{ steps.meta.outputs.build_number }}" `
             -BuildType "${{ inputs.build_type }}"
