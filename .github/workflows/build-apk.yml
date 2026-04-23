@@ -71,7 +71,7 @@ jobs:
       - name: Cache pub packages
         uses: actions/cache@v4
         with:
-          path: ${{ env.PUB_CACHE }}
+          path: ${{ runner.temp }}/pub-cache
           key: pub-android-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-android-
 
@@ -106,13 +106,14 @@ jobs:
           echo "pubspec version → ${BASE}+${NUM}"
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --split-per-abi
 
-      - name: Package APK
+      - name: Package APKs
         run: |
           mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk \
-             artifacts/ebalistyka_android.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk  artifacts/ebalistyka_android_arm64.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_arm32.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk     artifacts/ebalistyka_android_x86_64.apk
 
       - name: Upload artifact
         id: upload
@@ -158,7 +159,7 @@ jobs:
               }
               body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
               body += `### Test Instructions:\n`;
-              body += `\`\`\`bash\n# Sideload via adb (USB debugging enabled)\nadb install ebalistyka_android.apk\n\`\`\`\n`;
+              body += `\`\`\`bash\n# arm64 (most modern phones)\nadb install ebalistyka_android_arm64.apk\n# arm32 (older phones)\nadb install ebalistyka_android_arm32.apk\n\`\`\`\n`;
             } else {
               body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
             }

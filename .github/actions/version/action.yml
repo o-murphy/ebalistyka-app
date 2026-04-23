@@ -3,9 +3,9 @@ description: "Extracts version from tag (v1.2.3 → 1.2.3) or returns a default 
 
 inputs:
   default:
-    description: "Version to use when not running on a tag"
+    description: "Fallback version suffix when not running on a tag (ignored if pubspec.yaml is present)"
     required: false
-    default: "0.1.0-dev"
+    default: "dev"
 
 outputs:
   version:
@@ -22,7 +22,9 @@ runs:
           VERSION="${{ github.ref_name }}"
           [[ "${VERSION}" == v* ]] && VERSION="${VERSION:1}"
         else
-          VERSION="${{ inputs.default }}"
+          # Read base version from pubspec.yaml so non-tag builds reflect current code
+          PUBSPEC=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          VERSION="${PUBSPEC}-${{ inputs.default }}"
         fi
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
         echo "Resolved version: ${VERSION}"
