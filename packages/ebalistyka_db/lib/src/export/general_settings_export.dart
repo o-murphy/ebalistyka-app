@@ -15,6 +15,7 @@ class GeneralSettingsExport {
     required this.homeShowMoa,
     required this.homeShowCmPer100m,
     required this.homeShowInPer100yd,
+    required this.homeShowInClicks,
     required this.homeChartDistanceStep,
     required this.homeTableDistanceStep,
     required this.homeShowSubsonicTransition,
@@ -28,6 +29,7 @@ class GeneralSettingsExport {
   final bool homeShowMoa;
   final bool homeShowCmPer100m;
   final bool homeShowInPer100yd;
+  final bool homeShowInClicks;
   final double homeChartDistanceStep;
   final double homeTableDistanceStep;
   final bool homeShowSubsonicTransition;
@@ -47,6 +49,7 @@ class GeneralSettingsExport {
         homeShowMoa: s.homeShowMoa,
         homeShowCmPer100m: s.homeShowCmPer100m,
         homeShowInPer100yd: s.homeShowInPer100yd,
+        homeShowInClicks: s.homeShowInClicks,
         homeChartDistanceStep: s.homeChartDistanceStep,
         homeTableDistanceStep: s.homeTableDistanceStep,
         homeShowSubsonicTransition: s.homeShowSubsonicTransition,
@@ -60,6 +63,7 @@ class GeneralSettingsExport {
     ..homeShowMrad = homeShowMrad
     ..homeShowMoa = homeShowMoa
     ..homeShowCmPer100m = homeShowCmPer100m
+    ..homeShowInClicks = homeShowInClicks
     ..homeShowInPer100yd = homeShowInPer100yd
     ..homeChartDistanceStep = homeChartDistanceStep
     ..homeTableDistanceStep = homeTableDistanceStep

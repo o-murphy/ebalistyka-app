@@ -13,14 +13,14 @@ import 'router.dart';
 // Constants for window sizes
 const _windowMinWidth = 320.0;
 const _windowMinHeight = 600.0;
-const _windowMaxWidth = 1000.0;
-const _windowMaxHeight = 1080.0;
+// const _windowMaxWidth = 1000.0;
+// const _windowMaxHeight = 1080.0;
 const _windowInitialWidth = 375.0;
 const _windowInitialHeight = 812.0;
 
 // Constants for content restrictions
-const _contentMaxWidth = _windowMaxWidth;
-const _contentMaxHeight = _windowMaxHeight;
+// const _contentMaxWidth = _windowMaxWidth;
+// const _contentMaxHeight = _windowMaxHeight;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +31,7 @@ void main() async {
     const windowOptions = WindowOptions(
       size: Size(_windowInitialWidth, _windowInitialHeight),
       minimumSize: Size(_windowMinWidth, _windowMinHeight),
-      maximumSize: Size(_windowMaxWidth, _windowMaxHeight),
+      // maximumSize: Size(_windowMaxWidth, _windowMaxHeight),
       center: true,
       title: 'eBalistyka',
     );
@@ -44,9 +44,9 @@ void main() async {
       await windowManager.setMinimumSize(
         const Size(_windowMinWidth, _windowMinHeight),
       );
-      await windowManager.setMaximumSize(
-        const Size(_windowMaxWidth, _windowMaxHeight),
-      );
+      // await windowManager.setMaximumSize(
+      //   const Size(_windowMaxWidth, _windowMaxHeight),
+      // );
       await windowManager.setMaximizable(false);
     });
   }
@@ -106,10 +106,10 @@ class MyApp extends ConsumerWidget {
         if (isDesktop) {
           return Center(
             child: Container(
-              constraints: const BoxConstraints(
-                maxWidth: _contentMaxWidth,
-                maxHeight: _contentMaxHeight,
-              ),
+              // constraints: const BoxConstraints(
+              //   maxWidth: _contentMaxWidth,
+              //   maxHeight: _contentMaxHeight,
+              // ),
               child: child,
             ),
           );

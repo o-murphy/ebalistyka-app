@@ -77,7 +77,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const bottomHeight = 40.0; // Fixed height of paging indicator
+        const bottomHeight = 60.0; // Fixed height of paging indicator
         const minTopH = 350.0;
         const maxTopH = 400.0;
         const minCentralH = 300.0;
@@ -101,6 +101,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         final needsScroll =
             scrollableHeight > constraints.maxHeight - bottomHeight;
 
+        final cs = Theme.of(context).colorScheme;
+
         getWindDirCtx(deg) => UnitPickerContext(
           context,
           label: 'Wind direction',
@@ -112,6 +114,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ref.read(homeVmProvider.notifier).updateWindDirection(normalized);
           },
         );
+
+        String pageName = switch (_currentPage) {
+          0 => "Holdovers",
+          1 => "Trajectory info",
+          2 => "Trajectory chart",
+          _ => "",
+        };
 
         return Stack(
           children: [
@@ -128,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     height: topBlockHeight,
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      color: cs.surfaceContainer,
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(32),
                         bottomRight: Radius.circular(32),
@@ -211,8 +220,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.info_outline,
                                         bottomIcon: Icons.note_add_outlined,
                                         infoRows: [
-                                          (IconDef.temperature, tempStr),
-                                          (IconDef.altitude, altStr),
+                                          (
+                                            IconDef.temperature,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Temp.",
+                                            tempStr,
+                                          ),
+                                          (
+                                            IconDef.altitude,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Altitude",
+                                            altStr,
+                                          ),
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
@@ -244,8 +269,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.question_mark_outlined,
                                         bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
-                                          (IconDef.humidity, humidStr),
-                                          (IconDef.velocity, pressStr),
+                                          (
+                                            IconDef.humidity,
+                                            // Colors.blue,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Humidity",
+                                            humidStr,
+                                          ),
+                                          (
+                                            IconDef.velocity,
+                                            // Colors.red,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Pressure",
+                                            pressStr,
+                                          ),
                                         ],
                                         onTopPressed: () =>
                                             showNotAvailableSnackBar(
@@ -335,18 +376,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: Container(
                   height: bottomHeight,
                   alignment: Alignment.center,
-                  color: Theme.of(context).colorScheme.surface,
-                  child: PageDotsIndicator(
-                    current: _currentPage,
-                    count: 3,
-                    onPageChanged: (page) {
-                      _pageController.animateToPage(
-                        page,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                      setState(() => _currentPage = page);
-                    },
+                  color: cs.surface,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(pageName),
+                      PageDotsIndicator(
+                        current: _currentPage,
+                        count: 3,
+                        onPageChanged: (page) {
+                          _pageController.animateToPage(
+                            page,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() => _currentPage = page);
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

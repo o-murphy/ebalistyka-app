@@ -80,6 +80,12 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
             onChanged: (v) => notifier.setAdjustmentToggle('showInPer100yd', v),
             dense: true,
           ),
+          SwitchListTile(
+            title: const Text('Clicks'),
+            value: settings.homeShowInClicks,
+            onChanged: (v) => notifier.setAdjustmentToggle('showInClicks', v),
+            dense: true,
+          ),
           const SizedBox(height: 16),
         ],
       ),

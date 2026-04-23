@@ -23,8 +23,16 @@ class TableConfigScreen extends ConsumerWidget {
     final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
 
     void save(void Function(TablesSettings) mutate) {
-      mutate(cfg);
-      notifier.save(cfg);
+      // Створюємо копію з мутаціями
+      final updated = TablesSettings()
+        ..id = cfg.id
+        ..owner.target = cfg.owner.target
+        ..distanceEndMeter = cfg.distanceEndMeter
+        ..showMil = cfg.showMil
+        ..hiddenCols = List<String>.from(cfg.hiddenCols);
+
+      mutate(updated);
+      notifier.saveSettings(updated);
     }
 
     void toggleCol(String colId, bool visible) {
@@ -139,7 +147,12 @@ class TableConfigScreen extends ConsumerWidget {
             onChanged: (v) => save((s) => s.showInPer100yd = v),
             dense: true,
           ),
-
+          SwitchListTile(
+            title: const Text('Clicks'),
+            value: cfg.showInClicks,
+            onChanged: (v) => save((s) => s.showInClicks = v),
+            dense: true,
+          ),
           const SizedBox(height: 16),
         ],
       ),

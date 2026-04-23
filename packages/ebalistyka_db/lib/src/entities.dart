@@ -342,6 +342,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
   bool homeShowMoa = false;
   bool homeShowCmPer100m = false;
   bool homeShowInPer100yd = false;
+  bool homeShowInClicks = false;
   double homeChartDistanceStep = 10;
   double homeTableDistanceStep = 10;
   bool homeShowSubsonicTransition = false;
@@ -359,6 +360,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
     bool? homeShowMoa,
     bool? homeShowCmPer100m,
     bool? homeShowInPer100yd,
+    bool? homeShowInClicks,
     double? homeChartDistanceStep,
     double? homeTableDistanceStep,
     bool? homeShowSubsonicTransition,
@@ -374,6 +376,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
       ..homeShowMoa = homeShowMoa ?? this.homeShowMoa
       ..homeShowCmPer100m = homeShowCmPer100m ?? this.homeShowCmPer100m
       ..homeShowInPer100yd = homeShowInPer100yd ?? this.homeShowInPer100yd
+      ..homeShowInClicks = homeShowInClicks ?? this.homeShowInClicks
       ..homeChartDistanceStep =
           homeChartDistanceStep ?? this.homeChartDistanceStep
       ..homeTableDistanceStep =
@@ -400,6 +403,7 @@ class TablesSettings with Cloneable<TablesSettings> {
   bool showMoa = false;
   bool showCmPer100m = false;
   bool showInPer100yd = false;
+  bool showInClicks = false;
 
   final owner = ToOne<Owner>();
 
@@ -417,6 +421,7 @@ class TablesSettings with Cloneable<TablesSettings> {
     bool? showMoa,
     bool? showCmPer100m,
     bool? showInPer100yd,
+    bool? showInClicks,
   }) {
     return TablesSettings()
       ..id = id ?? this.id
@@ -431,7 +436,8 @@ class TablesSettings with Cloneable<TablesSettings> {
       ..showMrad = showMrad ?? this.showMrad
       ..showMoa = showMoa ?? this.showMoa
       ..showCmPer100m = showCmPer100m ?? this.showCmPer100m
-      ..showInPer100yd = showInPer100yd ?? this.showInPer100yd;
+      ..showInPer100yd = showInPer100yd ?? this.showInPer100yd
+      ..showInClicks = showInClicks ?? this.showInClicks;
   }
 }
 

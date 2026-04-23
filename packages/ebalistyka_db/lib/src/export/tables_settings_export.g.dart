@@ -22,6 +22,7 @@ TablesSettingsExport _$TablesSettingsExportFromJson(
   showMoa: json['showMoa'] as bool,
   showCmPer100m: json['showCmPer100m'] as bool,
   showInPer100yd: json['showInPer100yd'] as bool,
+  showInClicks: json['showInClicks'] as bool,
 );
 
 Map<String, dynamic> _$TablesSettingsExportToJson(
@@ -38,4 +39,5 @@ Map<String, dynamic> _$TablesSettingsExportToJson(
   'showMoa': instance.showMoa,
   'showCmPer100m': instance.showCmPer100m,
   'showInPer100yd': instance.showInPer100yd,
+  'showInClicks': instance.showInClicks,
 };

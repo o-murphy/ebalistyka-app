@@ -246,6 +246,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         prev.homeShowMil != next.homeShowMil ||
         prev.homeShowCmPer100m != next.homeShowCmPer100m ||
         prev.homeShowInPer100yd != next.homeShowInPer100yd ||
+        prev.homeShowInClicks != next.homeShowInClicks ||
         prev.homeShowSubsonicTransition != next.homeShowSubsonicTransition;
   }
 
@@ -294,13 +295,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required double hRaw,
     required Unit hUnit,
   }) async {
-    final s = ref.read(reticleSettingsNotifierProvider).value;
-    if (s == null) return;
-    s.verticalAdjustmentUnitValue = vUnit;
-    s.verticalAdjustment = Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit);
-    s.horizontalAdjustmentUnitValue = hUnit;
-    s.horizontalAdjustment = Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit);
-    await ref.read(reticleSettingsNotifierProvider.notifier).save(s);
+    final notifier = ref.read(reticleSettingsNotifierProvider.notifier);
+    notifier.setVerticalAdjustmentUnit(vUnit);
+    notifier.setVerticalAdjustment(
+      Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit),
+    );
+    notifier.setHorizontalAdjustmentUnit(hUnit);
+    notifier.setHorizontalAdjustment(
+      Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit),
+    );
   }
 
   Future<void> updateTargetImage(String? imageId) async {
@@ -376,10 +379,26 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       Unit.mil,
     );
 
+    double horizontalClickSizeMil = 0.0;
+    double verticalClickSizeMil = 0.0;
+    final sight = profile.sight.target;
+    if (sight != null) {
+      horizontalClickSizeMil = Angular(
+        sight.horizontalClick,
+        sight.horizontalClickUnitValue,
+      ).in_(Unit.mil);
+      verticalClickSizeMil = Angular(
+        sight.verticalClick,
+        sight.verticalClickUnitValue,
+      ).in_(Unit.mil);
+    }
+
     final adjustment = _buildAdjustment(
       hit,
       targetM,
       result.holdRad,
+      horizontalClickSizeMil,
+      verticalClickSizeMil,
       settings,
       elevOffsetMil: vAdjMil,
       windOffsetMil: hAdjMil,
@@ -512,6 +531,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     bclibc.HitResult hit,
     double targetM,
     double holdRad,
+    double horizontalClickSizeMil,
+    double verticalClickSizeMil,
     GeneralSettings settings, {
     double elevOffsetMil = 0.0,
     double windOffsetMil = 0.0,
@@ -535,7 +556,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       if (settings.homeShowInPer100yd) (Unit.inPer100Yd, 'in/100yd'),
     ];
 
-    final elevValues = dispUnits.map((u) {
+    List<AdjustmentValue> elevValues = dispUnits.map((u) {
       final val = elevAngle.in_(u.$1);
       return AdjustmentValue(
         absValue: val.abs(),
@@ -544,6 +565,21 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         decimals: FC.adjustment.accuracyFor(u.$1),
       );
     }).toList();
+
+    if (settings.homeShowInClicks) {
+      final val = elevAngle.in_(Unit.mil);
+      final clicks = verticalClickSizeMil > 0.0
+          ? val / verticalClickSizeMil
+          : 0.0;
+      elevValues.add(
+        AdjustmentValue(
+          absValue: clicks.abs(),
+          isPositive: clicks >= 0,
+          symbol: "Clicks",
+          decimals: 0,
+        ),
+      );
+    }
 
     final windValues = windAngle != null
         ? dispUnits.map((u) {
@@ -556,6 +592,21 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
             );
           }).toList()
         : <AdjustmentValue>[];
+
+    if (settings.homeShowInClicks && windAngle != null) {
+      final val = windAngle.in_(Unit.mil);
+      final clicks = horizontalClickSizeMil > 0.0
+          ? val / horizontalClickSizeMil
+          : 0.0;
+      windValues.add(
+        AdjustmentValue(
+          absValue: clicks.abs(),
+          isPositive: clicks >= 0,
+          symbol: "Clicks",
+          decimals: 0,
+        ),
+      );
+    }
 
     return AdjustmentData(elevation: elevValues, windage: windValues);
   }

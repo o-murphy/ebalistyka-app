@@ -469,7 +469,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(3, 8073167112424079668),
     name: 'GeneralSettings',
-    lastPropertyId: const obx_int.IdUid(14, 9052054885912932392),
+    lastPropertyId: const obx_int.IdUid(15, 6080940577768880529),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -552,6 +552,12 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(5, 5387131100306356366),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(15, 6080940577768880529),
+        name: 'homeShowInClicks',
+        type: 1,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -794,7 +800,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(7, 1704755846093761912),
     name: 'TablesSettings',
-    lastPropertyId: const obx_int.IdUid(17, 7303471664831654006),
+    lastPropertyId: const obx_int.IdUid(18, 569742260924311558),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -875,6 +881,12 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(17, 7303471664831654006),
         name: 'showInPer100yd',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(18, 569742260924311558),
+        name: 'showInClicks',
         type: 1,
         flags: 0,
       ),
@@ -1900,7 +1912,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final adjustmentDisplayFormatValueOffset = fbb.writeString(
           object.adjustmentDisplayFormatValue,
         );
-        fbb.startTable(15);
+        fbb.startTable(16);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, languageCodeOffset);
         fbb.addOffset(2, themeModeOffset);
@@ -1914,6 +1926,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(10, object.homeTableDistanceStep);
         fbb.addBool(11, object.homeShowSubsonicTransition);
         fbb.addInt64(13, object.owner.targetId);
+        fbb.addBool(14, object.homeShowInClicks);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1978,6 +1991,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             26,
+            false,
+          )
+          ..homeShowInClicks = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            32,
             false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -2309,7 +2328,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final hiddenColsOffset = fbb.writeList(
           object.hiddenCols.map(fbb.writeString).toList(growable: false),
         );
-        fbb.startTable(18);
+        fbb.startTable(19);
         fbb.addInt64(0, object.id);
         fbb.addBool(4, object.showZeros);
         fbb.addBool(5, object.showSubsonicTransition);
@@ -2323,6 +2342,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addBool(14, object.showMoa);
         fbb.addBool(15, object.showCmPer100m);
         fbb.addBool(16, object.showInPer100yd);
+        fbb.addBool(17, object.showInClicks);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -2394,6 +2414,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             36,
+            false,
+          )
+          ..showInClicks = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            38,
             false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -3206,6 +3232,11 @@ class GeneralSettings_ {
   static final owner = obx.QueryRelationToOne<GeneralSettings, Owner>(
     _entities[2].properties[12],
   );
+
+  /// See [GeneralSettings.homeShowInClicks].
+  static final homeShowInClicks = obx.QueryBooleanProperty<GeneralSettings>(
+    _entities[2].properties[13],
+  );
 }
 
 /// [Owner] entity fields to define ObjectBox queries.
@@ -3426,6 +3457,11 @@ class TablesSettings_ {
   /// See [TablesSettings.showInPer100yd].
   static final showInPer100yd = obx.QueryBooleanProperty<TablesSettings>(
     _entities[6].properties[12],
+  );
+
+  /// See [TablesSettings.showInClicks].
+  static final showInClicks = obx.QueryBooleanProperty<TablesSettings>(
+    _entities[6].properties[13],
   );
 }
 

@@ -248,6 +248,12 @@ class WindPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     );
+
+    canvas.save();
+    canvas.translate(markerCenter.dx, markerCenter.dy);
+
+    // canvas.rotate(angle);
+
     final fingerPrintIcon = IconDef.fingerPrint;
     final iconTp = TextPainter(
       text: TextSpan(
@@ -260,13 +266,16 @@ class WindPainter extends CustomPainter {
       ),
       textDirection: TextDirection.ltr,
     )..layout();
+
     iconTp.paint(
       canvas,
       Offset(
-        markerCenter.dx - iconTp.width / 2,
-        markerCenter.dy - iconTp.height / 2,
+        -iconTp.width / 2, // БЕЗ markerCenter.dx
+        -iconTp.height / 2, // БЕЗ markerCenter.dy
       ),
     );
+
+    canvas.restore();
 
     double degrees = (angle * 180 / pi + 90) % 360;
     if (degrees < 0) degrees += 360;

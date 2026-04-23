@@ -409,7 +409,7 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
         destinations: const [
           NavigationDestination(icon: Icon(IconDef.home), label: 'Home'),
           NavigationDestination(
-            icon: Icon(IconDef.tables),
+            icon: Icon(IconDef.conditions),
             label: 'Conditions',
           ),
           NavigationDestination(icon: Icon(IconDef.tables), label: 'Tables'),

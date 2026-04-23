@@ -1,6 +1,7 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -190,9 +191,26 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     );
 
     final zeroDistM = profile.ammo.target!.zeroDistanceMeter;
+
+    double horizontalClickSizeMil = 0.0;
+    double verticalClickSizeMil = 0.0;
+    final sight = profile.sight.target;
+    if (sight != null) {
+      horizontalClickSizeMil = Angular(
+        sight.horizontalClick,
+        sight.horizontalClickUnitValue,
+      ).in_(Unit.mil);
+      verticalClickSizeMil = Angular(
+        sight.verticalClick,
+        sight.verticalClickUnitValue,
+      ).in_(Unit.mil);
+    }
+
     final mainTable = _buildTable(
       filtered,
       units,
+      horizontalClickSizeMil,
+      verticalClickSizeMil,
       tablesSettings,
       zeroDistM: zeroDistM,
     );
@@ -204,6 +222,8 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
         zeroCrossings = _buildTable(
           zeros,
           units,
+          horizontalClickSizeMil,
+          verticalClickSizeMil,
           tablesSettings,
           isZeroTable: true,
         );
@@ -220,12 +240,15 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   FormattedTableData _buildTable(
     List<bclibc.TrajectoryData> rows,
     UnitSettings units,
+    double horizontalClickSizeMil,
+    double verticalClickSizeMil,
     TablesSettings tablesSettings, {
     bool isZeroTable = false,
     double? zeroDistM,
   }) {
     final hidden = tablesSettings.hiddenCols;
     final adjUnits = tablesSettings.enabledAdjUnits;
+    final showAdjClicks = tablesSettings.showInClicks;
 
     final distUnit = units.distanceUnit;
     final velUnit = units.velocityUnit;
@@ -278,10 +301,20 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
           for (final u in adjUnits)
             (
               'adjDrop_${u.name}',
-              'Drop° ${u.symbol}',
+              'Drop°',
               (_) => u.symbol,
               (bclibc.TrajectoryData r) => r.dropAngle.in_(u),
               FC.adjustment.accuracyFor(u),
+            ),
+          if (showAdjClicks)
+            (
+              'dropClicks',
+              'Drop',
+              (_) => "clicks",
+              (bclibc.TrajectoryData r) => verticalClickSizeMil > 0.0
+                  ? r.dropAngle.in_(Unit.mil) / verticalClickSizeMil
+                  : 0.0,
+              0,
             ),
           if (!hidden.contains('wind'))
             (
@@ -294,10 +327,20 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
           for (final u in adjUnits)
             (
               'adjWind_${u.name}',
-              'Wind° ${u.symbol}',
+              'Wind°',
               (_) => u.symbol,
               (bclibc.TrajectoryData r) => r.windageAngle.in_(u),
               FC.adjustment.accuracyFor(u),
+            ),
+          if (showAdjClicks)
+            (
+              'windClicks',
+              'Wind',
+              (_) => "clicks",
+              (bclibc.TrajectoryData r) => horizontalClickSizeMil > 0.0
+                  ? r.windageAngle.in_(Unit.mil) / horizontalClickSizeMil
+                  : 0.0,
+              0,
             ),
           if (!hidden.contains('mach'))
             ('mach', 'Mach', (_) => '', (r) => r.mach, 2),

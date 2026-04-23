@@ -376,7 +376,7 @@
     },
     {
       "id": "3:8073167112424079668",
-      "lastPropertyId": "14:9052054885912932392",
+      "lastPropertyId": "15:6080940577768880529",
       "name": "GeneralSettings",
       "properties": [
         {
@@ -447,6 +447,11 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Owner"
+        },
+        {
+          "id": "15:6080940577768880529",
+          "name": "homeShowInClicks",
+          "type": 1
         }
       ],
       "relations": []
@@ -634,7 +639,7 @@
     },
     {
       "id": "7:1704755846093761912",
-      "lastPropertyId": "17:7303471664831654006",
+      "lastPropertyId": "18:569742260924311558",
       "name": "TablesSettings",
       "properties": [
         {
@@ -704,6 +709,11 @@
         {
           "id": "17:7303471664831654006",
           "name": "showInPer100yd",
+          "type": 1
+        },
+        {
+          "id": "18:569742260924311558",
+          "name": "showInClicks",
           "type": 1
         }
       ],
