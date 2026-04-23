@@ -145,3 +145,5 @@ msix_config:
   msix_version: 0.1.0.8
   logo_path: assets/splash_logo.png
   # capabilities: internetClient, location, microphone, webcam
+  install_certificate: false
+  sign_msix: false
