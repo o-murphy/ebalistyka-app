@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SideControlBlock extends StatelessWidget {
   final IconData topIcon;
   final IconData bottomIcon;
-  final List<(IconData, String)> infoRows;
+  final List<(IconData, Color, String, String)> infoRows;
   final VoidCallback onTopPressed;
   final VoidCallback onBottomPressed;
 
@@ -39,14 +39,19 @@ class SideControlBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (int i = 0; i < infoRows.length; i++) ...[
-                Icon(
-                  infoRows[i].$1,
-                  size: 18,
-                  color: cs.onSurface.withValues(alpha: 0.65),
-                ),
-                if (infoRows[i].$2.isNotEmpty)
+                Icon(infoRows[i].$1, size: 18, color: infoRows[i].$2),
+                if (infoRows[i].$3.isNotEmpty)
                   Text(
-                    infoRows[i].$2,
+                    infoRows[i].$3,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: cs.onSurface.withValues(alpha: 0.85),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                if (infoRows[i].$4.isNotEmpty)
+                  Text(
+                    infoRows[i].$4,
                     style: TextStyle(
                       fontSize: 11,
                       color: cs.onSurface.withValues(alpha: 0.85),

@@ -101,6 +101,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         final needsScroll =
             scrollableHeight > constraints.maxHeight - bottomHeight;
 
+        final cs = Theme.of(context).colorScheme;
+
         getWindDirCtx(deg) => UnitPickerContext(
           context,
           label: 'Wind direction',
@@ -135,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     height: topBlockHeight,
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      color: cs.surfaceContainer,
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(32),
                         bottomRight: Radius.circular(32),
@@ -218,8 +220,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.info_outline,
                                         bottomIcon: Icons.note_add_outlined,
                                         infoRows: [
-                                          (IconDef.temperature, tempStr),
-                                          (IconDef.altitude, altStr),
+                                          (
+                                            IconDef.temperature,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Temp.",
+                                            tempStr,
+                                          ),
+                                          (
+                                            IconDef.altitude,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Altitude",
+                                            altStr,
+                                          ),
                                         ],
                                         onTopPressed: () =>
                                             context.push(Routes.shotDetails),
@@ -251,8 +269,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         topIcon: Icons.question_mark_outlined,
                                         bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
-                                          (IconDef.humidity, humidStr),
-                                          (IconDef.velocity, pressStr),
+                                          (
+                                            IconDef.humidity,
+                                            // Colors.blue,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Humidity",
+                                            humidStr,
+                                          ),
+                                          (
+                                            IconDef.velocity,
+                                            // Colors.red,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            "Pressure",
+                                            pressStr,
+                                          ),
                                         ],
                                         onTopPressed: () =>
                                             showNotAvailableSnackBar(
@@ -342,7 +376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 child: Container(
                   height: bottomHeight,
                   alignment: Alignment.center,
-                  color: Theme.of(context).colorScheme.surface,
+                  color: cs.surface,
                   child: Column(
                     children: [
                       const SizedBox(height: 8),
