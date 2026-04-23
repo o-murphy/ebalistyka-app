@@ -87,6 +87,7 @@ runs:
         echo "FLUTTER_HOME=$FLUTTER_PATH" >> $GITHUB_ENV
         echo "FLUTTER_ROOT=$FLUTTER_PATH" >> $GITHUB_ENV
         echo "$FLUTTER_PATH/bin" >> $GITHUB_PATH
+        echo "FLUTTER_GIT_URL=https://github.com/flutter/flutter.git" >> $GITHUB_ENV
 
         if [[ "${{ runner.os }}" == "Windows" ]]; then
           echo "PUB_CACHE=$RUNNER_TEMP\\pub-cache" >> $GITHUB_ENV

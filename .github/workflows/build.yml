@@ -243,7 +243,8 @@ jobs:
             -Arch "${{ steps.meta.outputs.arch_suffix }}" `
             -CertificatePath $certPath `
             -CertificatePassword $certPassword `
-            -MsixVersion $msixVersion
+            -MsixVersion $msixVersion `
+            -GithubRepo "${{ github.repository }}"
 
       - name: Upload artifact
         id: upload
