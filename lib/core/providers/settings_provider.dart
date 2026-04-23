@@ -19,9 +19,6 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
     void reload() {
       final settings = _loadOrCreate(owner);
       state = AsyncData(settings);
-      print(
-        '🔄 Settings reloaded: homeShowInClicks = ${settings.homeShowInClicks}',
-      );
     }
 
     final subscription = _store
@@ -110,9 +107,6 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
         s.homeShowSubsonicTransition = value;
         break;
       case 'showInClicks':
-        print(
-          '🔧 Toggle clicked: $key, new value: $value, old value: ${s.homeShowInClicks}',
-        );
         s.homeShowInClicks = value;
         break;
     }
@@ -133,7 +127,6 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
     void reload() {
       final settings = _loadOrCreate(owner);
       state = AsyncData(settings);
-      print('🔄 UnitSettings reloaded');
     }
 
     final subscription = _store
@@ -224,7 +217,6 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
     void reload() {
       final settings = _loadOrCreate(owner);
       state = AsyncData(settings);
-      print('🔄 TablesSettings reloaded');
     }
 
     final subscription = _store
@@ -268,7 +260,7 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
     s.distanceStepMeter = settings.distanceStepMeter;
     s.showZeros = settings.showZeros;
     s.showSubsonicTransition = settings.showSubsonicTransition;
-    s.hiddenCols = List<String>.from(settings.hiddenCols ?? []);
+    s.hiddenCols = List<String>.from(settings.hiddenCols);
     s.showMrad = settings.showMrad;
     s.showMoa = settings.showMoa;
     s.showMil = settings.showMil;
@@ -291,7 +283,6 @@ class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
     void reload() {
       final settings = _loadOrCreate(owner);
       state = AsyncData(settings);
-      print('🔄 ReticleSettings reloaded');
     }
 
     final subscription = _store

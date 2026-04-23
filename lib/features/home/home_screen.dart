@@ -77,7 +77,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const bottomHeight = 40.0; // Fixed height of paging indicator
+        const bottomHeight = 60.0; // Fixed height of paging indicator
         const minTopH = 350.0;
         const maxTopH = 400.0;
         const minCentralH = 300.0;
@@ -112,6 +112,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ref.read(homeVmProvider.notifier).updateWindDirection(normalized);
           },
         );
+
+        String pageName = switch (_currentPage) {
+          0 => "Holdovers",
+          1 => "Trajectory info",
+          2 => "Trajectory chart",
+          _ => "",
+        };
 
         return Stack(
           children: [
@@ -336,17 +343,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   height: bottomHeight,
                   alignment: Alignment.center,
                   color: Theme.of(context).colorScheme.surface,
-                  child: PageDotsIndicator(
-                    current: _currentPage,
-                    count: 3,
-                    onPageChanged: (page) {
-                      _pageController.animateToPage(
-                        page,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                      setState(() => _currentPage = page);
-                    },
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(pageName),
+                      PageDotsIndicator(
+                        current: _currentPage,
+                        count: 3,
+                        onPageChanged: (page) {
+                          _pageController.animateToPage(
+                            page,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() => _currentPage = page);
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
