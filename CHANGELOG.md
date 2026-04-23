@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [Unreleased]
 
 ### Fixed
@@ -8,10 +9,14 @@
 - **Conditions screen icon**
 - **Reticle view display ratio**
 
+### Changed
+- **Max window size** limitations are disabled 
+
 ### Features
 - **Improve home screen** condition indicators got text labels 
 - **Improve home paging** pages got text labels 
 - **Display adjustments in current clicks** on home screen and reticle view screen
+
 
 ## [0.1.0+8] - 2026-04-26
 
