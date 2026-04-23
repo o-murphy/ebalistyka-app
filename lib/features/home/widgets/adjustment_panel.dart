@@ -127,6 +127,8 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
           );
         }
 
+        final int rowCount = adjustment.elevation.length + 1;
+
         final content = displayVertical
             ? Column(
                 mainAxisSize: MainAxisSize.min,
@@ -134,10 +136,10 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
                 children: [
                   buildSection('Drop', _elevDir(), adjustment.elevation),
                   SizedBox(height: dividerSpacing),
-                  Divider(
+                  Container(
                     height: 1,
-                    thickness: 1,
-                    color: cs.onSurface.withAlpha(65),
+                    width: 80 * scaleFactor,
+                    color: cs.outline.withAlpha(100),
                   ),
                   SizedBox(height: dividerSpacing),
                   buildSection('Windage', _windDir(), adjustment.windage),
@@ -148,6 +150,11 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
                 children: [
                   buildSection('Drop', _elevDir(), adjustment.elevation),
                   SizedBox(width: dividerSpacing),
+                  Container(
+                    height: 20 * rowCount * scaleFactor,
+                    width: 1,
+                    color: cs.outline.withAlpha(100),
+                  ),
                   SizedBox(width: dividerSpacing),
                   buildSection('Windage', _windDir(), adjustment.windage),
                 ],
