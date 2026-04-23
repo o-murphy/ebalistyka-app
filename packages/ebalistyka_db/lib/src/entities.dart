@@ -342,6 +342,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
   bool homeShowMoa = false;
   bool homeShowCmPer100m = false;
   bool homeShowInPer100yd = false;
+  bool homeShowInClicks = false;
   double homeChartDistanceStep = 10;
   double homeTableDistanceStep = 10;
   bool homeShowSubsonicTransition = false;
@@ -359,6 +360,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
     bool? homeShowMoa,
     bool? homeShowCmPer100m,
     bool? homeShowInPer100yd,
+    bool? homeShowInClicks,
     double? homeChartDistanceStep,
     double? homeTableDistanceStep,
     bool? homeShowSubsonicTransition,
@@ -374,6 +376,7 @@ class GeneralSettings with Cloneable<GeneralSettings> {
       ..homeShowMoa = homeShowMoa ?? this.homeShowMoa
       ..homeShowCmPer100m = homeShowCmPer100m ?? this.homeShowCmPer100m
       ..homeShowInPer100yd = homeShowInPer100yd ?? this.homeShowInPer100yd
+      ..homeShowInClicks = homeShowInClicks ?? this.homeShowInClicks
       ..homeChartDistanceStep =
           homeChartDistanceStep ?? this.homeChartDistanceStep
       ..homeTableDistanceStep =

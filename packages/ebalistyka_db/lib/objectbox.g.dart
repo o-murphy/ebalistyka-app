@@ -469,7 +469,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(3, 8073167112424079668),
     name: 'GeneralSettings',
-    lastPropertyId: const obx_int.IdUid(14, 9052054885912932392),
+    lastPropertyId: const obx_int.IdUid(15, 6080940577768880529),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -552,6 +552,12 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(5, 5387131100306356366),
         relationField: 'owner',
         relationTarget: 'Owner',
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(15, 6080940577768880529),
+        name: 'homeShowInClicks',
+        type: 1,
+        flags: 0,
       ),
     ],
     relations: <obx_int.ModelRelation>[],
@@ -1900,7 +1906,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final adjustmentDisplayFormatValueOffset = fbb.writeString(
           object.adjustmentDisplayFormatValue,
         );
-        fbb.startTable(15);
+        fbb.startTable(16);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, languageCodeOffset);
         fbb.addOffset(2, themeModeOffset);
@@ -1914,6 +1920,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addFloat64(10, object.homeTableDistanceStep);
         fbb.addBool(11, object.homeShowSubsonicTransition);
         fbb.addInt64(13, object.owner.targetId);
+        fbb.addBool(14, object.homeShowInClicks);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -1978,6 +1985,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
             buffer,
             rootOffset,
             26,
+            false,
+          )
+          ..homeShowInClicks = const fb.BoolReader().vTableGet(
+            buffer,
+            rootOffset,
+            32,
             false,
           );
         object.owner.targetId = const fb.Int64Reader().vTableGet(
@@ -3205,6 +3218,11 @@ class GeneralSettings_ {
   /// See [GeneralSettings.owner].
   static final owner = obx.QueryRelationToOne<GeneralSettings, Owner>(
     _entities[2].properties[12],
+  );
+
+  /// See [GeneralSettings.homeShowInClicks].
+  static final homeShowInClicks = obx.QueryBooleanProperty<GeneralSettings>(
+    _entities[2].properties[13],
   );
 }
 

@@ -4,7 +4,7 @@
 		generate-a7p \
 		build-bclibc ffigen \
 		proto-setup \
-        generate-objectbox objectbox-setup objectbox-clean \
+        objectbox-generate objectbox-setup objectbox-clean \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -71,7 +71,7 @@ generate-a7p:
 objectbox-setup:
 	cd packages/ebalistyka_db && bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)
 
-generate-objectbox:
+objectbox-generate:
 	cd packages/ebalistyka_db && dart run build_runner build --delete-conflicting-outputs
 
 objectbox-clean:
@@ -80,7 +80,7 @@ objectbox-clean:
 objectbox-admin:
 	cd packages/ebalistyka_db && ./admin.sh
 
-generate: build-bclibc ffigen generate-objectbox generate-a7p generate-reticles generate-icons  
+generate: build-bclibc ffigen objectbox-generate generate-a7p generate-reticles generate-icons  
 
 # Run all tests (native must be built first)
 test: build-bclibc
