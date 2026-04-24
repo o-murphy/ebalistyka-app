@@ -30,14 +30,14 @@ class AppState {
 
   AppState copyWith({
     List<Weapon>? weapons,
-    List<Ammo>? cartridges,
+    List<Ammo>? ammo,
     List<Sight>? sights,
     List<Profile>? profiles,
     Profile? activeProfile,
     bool clearActiveProfile = false,
   }) => AppState(
     weapons: weapons ?? this.weapons,
-    ammo: cartridges ?? this.ammo,
+    ammo: ammo ?? this.ammo,
     sights: sights ?? this.sights,
     profiles: profiles ?? this.profiles,
     activeProfile: clearActiveProfile
@@ -102,7 +102,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .query(Weapon_.owner.equals(owner.id))
         .build()
         .find();
-    var cartridges = _store
+    var ammo = _store
         .box<Ammo>()
         .query(Ammo_.owner.equals(owner.id))
         .build()
@@ -119,10 +119,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .find();
 
     // ── Seed on first run ──────────────────────────────────────────────────────
-    if (weapons.isEmpty &&
-        cartridges.isEmpty &&
-        sights.isEmpty &&
-        profiles.isEmpty) {
+    if (weapons.isEmpty && ammo.isEmpty && sights.isEmpty && profiles.isEmpty) {
       debugPrint('AppStateNotifier: seeding initial data...');
       _seed(owner);
       weapons = _store
@@ -130,7 +127,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           .query(Weapon_.owner.equals(owner.id))
           .build()
           .find();
-      cartridges = _store
+      ammo = _store
           .box<Ammo>()
           .query(Ammo_.owner.equals(owner.id))
           .build()
@@ -156,13 +153,13 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         : (profiles.isNotEmpty ? profiles.first : null);
 
     debugPrint(
-      'AppStateNotifier: ${weapons.length} weapons, ${cartridges.length} ammo, '
+      'AppStateNotifier: ${weapons.length} weapons, ${ammo.length} ammo, '
       '${sights.length} sights, ${profiles.length} profiles',
     );
 
     return AppState(
       weapons: weapons,
-      ammo: cartridges,
+      ammo: ammo,
       sights: sights,
       profiles: profiles,
       activeProfile: activeProfile,
@@ -513,22 +510,10 @@ final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
 
-final weaponsProvider = Provider<List<Weapon>>((ref) {
-  return ref.watch(appStateProvider).value?.weapons ?? [];
-});
-
 final ammoProvider = Provider<List<Ammo>>((ref) {
   return ref.watch(appStateProvider).value?.ammo ?? [];
 });
 
 final sightsProvider = Provider<List<Sight>>((ref) {
   return ref.watch(appStateProvider).value?.sights ?? [];
-});
-
-final profilesProvider = Provider<List<Profile>>((ref) {
-  return ref.watch(appStateProvider).value?.profiles ?? [];
-});
-
-final activeProfileProvider = Provider<Profile?>((ref) {
-  return ref.watch(appStateProvider).value?.activeProfile;
 });

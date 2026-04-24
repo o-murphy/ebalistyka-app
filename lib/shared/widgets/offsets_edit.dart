@@ -27,6 +27,7 @@ Widget offsetsTile({
   required void Function(Unit) onXUnitChanged,
 }) {
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       // ── Zeroing offset ────────────────────────────────────────
       listInputLabel(context, 'Vertical offset'),
@@ -38,9 +39,7 @@ Widget offsetsTile({
         unitLabel: unitLabel,
         onChanged: (v) {
           if (v != null) onYChanged(v);
-          // if (v != null) setState(() => xOffzet = v);
         },
-        // onUnitChanged: (u) => setState(() => _offsetYUnit = u),
         onUnitChanged: onYUnitChanged,
       ),
       listInputLabel(context, 'Horizontal offset'),
@@ -52,9 +51,7 @@ Widget offsetsTile({
         unitLabel: unitLabel,
         onChanged: (v) {
           if (v != null) onYChanged(v);
-          // if (v != null) setState(() => xOffzet = v);
         },
-        // onUnitChanged: (u) => setState(() => _offsetXUnit = u),
         onUnitChanged: onXUnitChanged,
       ),
     ],
