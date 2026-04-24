@@ -3,6 +3,28 @@
 
 ## [Unreleased]
 
+### Android
+- **Initial Android support** — app runs on Android; submodule and FFI build integrated into CI
+- **Impeller disabled** — Flutter's Impeller renderer tessellates SVG circles as polygons; forced Skia via `EnableImpeller=false` in `AndroidManifest.xml` until upstream fix
+- **AndroidManifest** — added storage permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_*`), `requestLegacyExternalStorage`, FileProvider for `share_plus`, `<queries>` for `file_picker` and `url_launcher`
+- **File import** — `file_picker` falls back to `FileType.any` on Android (custom extensions unsupported by Android MIME resolver); extension validated after selection with user-visible error on mismatch
+- **URL launch** — `_launchUrl` now falls back to `LaunchMode.platformDefault` if `externalApplication` fails; `https`/`http` queries added to manifest for Android 11+ package visibility
+
+### Fixed
+- **SVG circles rendered as polygons** — `dotLine` / `dotGrid` in `reticle_gen` now emit `<circle>` SVG elements instead of `<path>` arc commands; all reticle and target SVGs regenerated
+- **RenderFlex overflow on home screen** — removed hardcoded `SizedBox(height: 8)` spacer; `Column` now uses `mainAxisAlignment: MainAxisAlignment.center`
+- **PageDotsIndicator overflow** — `IconButton` tap target forced to `MaterialTapTargetSize.shrinkWrap` so actual height matches the declared 32 px constraint
+
+### CI / Build
+- **`build-apk.yml` reusable** — workflow now supports `workflow_call` (same pattern as `build.yml`); accepts `build_name`, `build_type`, `retention_days` inputs and signing secrets; PR trigger and summary comment preserved
+- **`release.yml`** — inline Android job replaced with `uses: build-apk.yml`; `*.apk` added to release asset collection
+- **Android APK signing** — `build.gradle.kts` reads `android/key.properties` and configures a `release` signing config; falls back to debug key when file is absent
+- **`scripts/build-android.sh`** — new script: sets pubspec version, decodes keystore from `ANDROID_KEYSTORE_BASE64` env var, builds split-per-ABI APKs, packages to `artifacts/`
+- **`scripts/generate-android-keystore.sh`** — generates JKS keystore via `keytool`, writes `android/key.properties` for local builds, copies keystore + base64 + secrets summary to `certs/`
+
+### Docs
+- **README** — added `## Android notes` section documenting Impeller workaround and file import behaviour
+
 
 ## [0.1.1] - 2026-04-23
 
