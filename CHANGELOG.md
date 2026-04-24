@@ -50,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - reads signing config from `android/key.properties`
   - falls back to debug signing if missing
 
+#### Reticle gen
+- Updated reticles generator
+
 ### Fixed
 
 #### UI
