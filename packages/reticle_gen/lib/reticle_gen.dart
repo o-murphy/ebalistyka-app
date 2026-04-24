@@ -4,23 +4,35 @@ import 'dart:math' as math;
 import 'package:xml/xml.dart';
 import 'dart:io';
 
+enum CirclesBatchMode { none, path, approx }
+
+const circlesBatchMode = CirclesBatchMode.none;
+
 extension SvgExport on XmlElement {
   void export([String? filePath]) {
     File(filePath ?? 'temp.svg').writeAsStringSync(toXmlString(pretty: true));
   }
 }
 
-/// Formats [v] as a compact SVG number, rounded to 3 decimal places.
+/// Formats [v] as a compact SVG number, rounded to 4 decimal places.
 /// Trailing zeros after the decimal point are stripped (e.g. 1.500 → "1.5").
 String _fmtNum(double v) {
-  final rounded = (v * 1000).roundToDouble() / 1000;
-  if (rounded == rounded.truncateToDouble()) {
-    return rounded.toInt().toString();
-  }
-  return rounded
-      .toStringAsFixed(3)
+  // better approach
+  return v
+      .toStringAsFixed(4)
       .replaceAll(RegExp(r'0+$'), '')
       .replaceAll(RegExp(r'\.$'), '');
+
+  // // can increese error
+  // final rounded = (v * 1000).roundToDouble() / 1000;
+
+  // if (rounded == rounded.truncateToDouble()) {
+  //   return rounded.toInt().toString();
+  // }
+  // return rounded
+  //     .toStringAsFixed(3)
+  //     .replaceAll(RegExp(r'0+$'), '')
+  //     .replaceAll(RegExp(r'\.$'), '');
 }
 
 /// Accumulates SVG path commands into a `d` attribute string.
@@ -30,8 +42,10 @@ String _fmtNum(double v) {
 class PathBuilder {
   final StringBuffer _buffer = StringBuffer();
 
-  void moveTo(double x, double y) => _buffer.write('M ${_n(x)} ${_n(y)} ');
-  void lineTo(double x, double y) => _buffer.write('L ${_n(x)} ${_n(y)} ');
+  void moveTo(double x, double y) =>
+      _buffer.write('M ${_fmtNum(x)} ${_fmtNum(y)} ');
+  void lineTo(double x, double y) =>
+      _buffer.write('L ${_fmtNum(x)} ${_fmtNum(y)} ');
   void close() => _buffer.write('Z ');
   void arcTo(
     double rx,
@@ -42,13 +56,13 @@ class PathBuilder {
     double x,
     double y,
   ) => _buffer.write(
-    'A ${_n(rx)} ${_n(ry)} ${_n(rotation)} '
-    '${largeArc ? 1 : 0} ${sweep ? 1 : 0} ${_n(x)} ${_n(y)} ',
+    'A ${_fmtNum(rx)} ${_fmtNum(ry)} ${_fmtNum(rotation)} '
+    '${largeArc ? 1 : 0} ${sweep ? 1 : 0} ${_fmtNum(x)} ${_fmtNum(y)} ',
   );
 
   /// Appends a full circle as four clockwise quarter-arcs.
   /// Four arcs avoid the 180° ambiguity of two-arc approaches.
-  void dotCircle(double cx, double cy, double r) {
+  void arcCircle(double cx, double cy, double r) {
     moveTo(cx - r, cy);
     arcTo(r, r, 0, false, true, cx, cy + r);
     arcTo(r, r, 0, false, true, cx + r, cy);
@@ -57,11 +71,27 @@ class PathBuilder {
     close();
   }
 
+  void approxCircle(double cx, double cy, double r, {int segments = 12}) {
+    final step = 2 * math.pi / segments;
+
+    for (int i = 0; i <= segments; i++) {
+      final a = i * step;
+      final x = cx + r * math.cos(a);
+      final y = cy + r * math.sin(a);
+
+      if (i == 0) {
+        moveTo(x, y);
+      } else {
+        lineTo(x, y);
+      }
+    }
+
+    close();
+  }
+
   bool get isEmpty => _buffer.isEmpty;
   String get d => _buffer.toString().trimRight();
   void clear() => _buffer.clear();
-
-  static String _n(double v) => _fmtNum(v);
 }
 
 abstract interface class SVGDrawerInterface {
@@ -115,34 +145,42 @@ class _StrokeFont {
           pb
             ..moveTo(ox, oy)
             ..lineTo(ox + w, oy);
+          break;
         case _segM:
           pb
             ..moveTo(ox, oy + hh)
             ..lineTo(ox + w, oy + hh);
+          break;
         case _segB:
           pb
             ..moveTo(ox, oy + h)
             ..lineTo(ox + w, oy + h);
+          break;
         case _segUl:
           pb
             ..moveTo(ox, oy)
             ..lineTo(ox, oy + hh);
+          break;
         case _segUr:
           pb
             ..moveTo(ox + w, oy)
             ..lineTo(ox + w, oy + hh);
+          break;
         case _segLl:
           pb
             ..moveTo(ox, oy + hh)
             ..lineTo(ox, oy + h);
+          break;
         case _segLr:
           pb
             ..moveTo(ox + w, oy + hh)
             ..lineTo(ox + w, oy + h);
+          break;
         case _segCv:
           pb
             ..moveTo(ox + w / 2, oy)
             ..lineTo(ox + w / 2, oy + h);
+          break;
       }
     }
   }
@@ -207,6 +245,10 @@ class MilReticleSVGCanvas {
 
   void _hint(String h) {
     _idHint ??= h;
+  }
+
+  int _circleSegments(double r) {
+    return math.min(64, (2 * math.pi * r * factor / 4).ceil());
   }
 
   static void _warn(String method, String reason) =>
@@ -301,27 +343,51 @@ class MilReticleSVGCanvas {
     double cx,
     double cy,
     double r, {
-    String? fill,
+    String? fill = "none",
     String? stroke,
     double? strokeWidth,
   }) {
-    _target.children.add(
-      XmlElement(XmlName('circle'), [
-        XmlAttribute(XmlName('id'), nextId('circle')),
-        XmlAttribute(XmlName('cx'), _fmtNum(cx)),
-        XmlAttribute(XmlName('cy'), _fmtNum(cy)),
-        XmlAttribute(XmlName('r'), _fmtNum(r)),
-        XmlAttribute(XmlName('fill'), fill ?? "none"),
-        if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
-        if (strokeWidth != null)
-          XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
-      ]),
-    );
+    switch (circlesBatchMode) {
+      case CirclesBatchMode.path:
+        final pb = PathBuilder();
+        pb.arcCircle(cx, cy, r);
+        if (!pb.isEmpty) {
+          path(pb.d, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
+        }
+        break;
+      case CirclesBatchMode.approx:
+        final pb = PathBuilder();
+        pb.approxCircle(cx, cy, r, segments: _circleSegments(r));
+        if (!pb.isEmpty) {
+          path(
+            pb.d,
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: strokeWidth,
+            strokeLineJoin: 'round',
+            strokeLineCap: 'round',
+          );
+        }
+        break;
+      case CirclesBatchMode.none:
+        _target.children.add(
+          XmlElement(XmlName('circle'), [
+            XmlAttribute(XmlName('id'), nextId('circle')),
+            XmlAttribute(XmlName('cx'), _fmtNum(cx)),
+            XmlAttribute(XmlName('cy'), _fmtNum(cy)),
+            XmlAttribute(XmlName('r'), _fmtNum(r)),
+            XmlAttribute(XmlName('fill'), fill ?? "none"),
+            if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
+            if (strokeWidth != null)
+              XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+          ]),
+        );
+    }
   }
 
   void path(
-    String d,
-    String fill, {
+    String d, {
+    String? fill = "none",
     String? stroke,
     double? strokeWidth,
     String? strokeLineJoin = 'miter',
@@ -331,7 +397,7 @@ class MilReticleSVGCanvas {
       XmlElement(XmlName('path'), [
         XmlAttribute(XmlName('id'), nextId('path')),
         XmlAttribute(XmlName('d'), d),
-        XmlAttribute(XmlName('fill'), fill),
+        if (fill != null) XmlAttribute(XmlName('fill'), fill),
         if (stroke != null) XmlAttribute(XmlName('stroke'), stroke),
         if (strokeWidth != null)
           XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
@@ -507,7 +573,7 @@ class MilReticleSVGCanvas {
     }
     if (!pb.isEmpty) {
       _hint('hruler');
-      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+      path(pb.d, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 
@@ -534,7 +600,7 @@ class MilReticleSVGCanvas {
     }
     if (!pb.isEmpty) {
       _hint('vruler');
-      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+      path(pb.d, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 
@@ -552,7 +618,7 @@ class MilReticleSVGCanvas {
       ..moveTo(cx, cy - half)
       ..lineTo(cx, cy + half);
     _hint('cross');
-    path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+    path(pb.d, stroke: stroke, strokeWidth: strokeWidth);
   }
 
   void dashLine(
@@ -590,7 +656,7 @@ class MilReticleSVGCanvas {
     }
     if (!pb.isEmpty) {
       _hint('dashline');
-      path(pb.d, 'none', stroke: stroke, strokeWidth: strokeWidth);
+      path(pb.d, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 
@@ -646,15 +712,49 @@ class MilReticleSVGCanvas {
     }
     final ux = dx / length;
     final uy = dy / length;
-    for (var t = 0.0; t <= length + 1e-9; t += spacing) {
-      circle(
-        x1 + t * ux,
-        y1 + t * uy,
-        r,
-        fill: fill,
-        stroke: stroke,
-        strokeWidth: strokeWidth,
-      );
+
+    switch (circlesBatchMode) {
+      case CirclesBatchMode.path:
+        final pb = PathBuilder();
+        for (var t = 0.0; t <= length + 1e-9; t += spacing) {
+          pb.arcCircle(x1 + t * ux, y1 + t * uy, r);
+        }
+        if (!pb.isEmpty) {
+          path(pb.d, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
+        }
+        break;
+      case CirclesBatchMode.approx:
+        final pb = PathBuilder();
+        for (var t = 0.0; t <= length + 1e-9; t += spacing) {
+          pb.approxCircle(
+            x1 + t * ux,
+            y1 + t * uy,
+            r,
+            segments: _circleSegments(r),
+          );
+        }
+        if (!pb.isEmpty) {
+          path(
+            pb.d,
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: strokeWidth,
+            strokeLineJoin: 'round',
+            strokeLineCap: 'round',
+          );
+        }
+        break;
+      case CirclesBatchMode.none:
+        for (var t = 0.0; t <= length + 1e-9; t += spacing) {
+          circle(
+            x1 + t * ux,
+            y1 + t * uy,
+            r,
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: strokeWidth,
+          );
+        }
     }
   }
 
@@ -712,12 +812,56 @@ class MilReticleSVGCanvas {
     String? stroke,
     double? strokeWidth,
   }) {
-    if (xStep <= 0 || yStep <= 0) return;
-    _hint('dotgrid');
-    for (double y = y1; y <= y2 + 1e-9; y += yStep) {
-      for (double x = x1; x <= x2 + 1e-9; x += xStep) {
-        circle(x, y, r, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
-      }
+    switch (circlesBatchMode) {
+      case CirclesBatchMode.path:
+        if (xStep <= 0 || yStep <= 0) return;
+        _hint('dotgrid');
+        final pb = PathBuilder();
+        for (double y = y1; y <= y2 + 1e-9; y += yStep) {
+          for (double x = x1; x <= x2 + 1e-9; x += xStep) {
+            pb.arcCircle(x, y, r);
+          }
+        }
+        if (!pb.isEmpty) {
+          path(pb.d, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
+        }
+        break;
+      case CirclesBatchMode.approx:
+        if (xStep <= 0 || yStep <= 0) return;
+        _hint('dotgrid');
+        final pb = PathBuilder();
+        for (double y = y1; y <= y2 + 1e-9; y += yStep) {
+          for (double x = x1; x <= x2 + 1e-9; x += xStep) {
+            pb.approxCircle(x, y, r, segments: _circleSegments(r));
+          }
+        }
+        if (!pb.isEmpty) {
+          path(
+            pb.d,
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: strokeWidth,
+            strokeLineJoin: 'round',
+            strokeLineCap: 'round',
+          );
+        }
+        break;
+      case CirclesBatchMode.none:
+        if (xStep <= 0 || yStep <= 0) return;
+        _hint('dotgrid');
+        for (double y = y1; y <= y2 + 1e-9; y += yStep) {
+          for (double x = x1; x <= x2 + 1e-9; x += xStep) {
+            circle(
+              x,
+              y,
+              r,
+              fill: fill,
+              stroke: stroke,
+              strokeWidth: strokeWidth,
+            );
+          }
+        }
+        break;
     }
   }
 
@@ -730,7 +874,10 @@ class MilReticleSVGCanvas {
     double yStep,
     void Function(double x, double y) draw,
   ) {
-    if (xStep == 0 || yStep == 0) return;
+    if (xStep == 0 || yStep == 0) {
+      _warn('repeat', 'step must not be zero');
+      return;
+    }
     for (
       double y = y1;
       yStep > 0 ? y <= y2 + 1e-9 : y >= y2 - 1e-9;
@@ -750,7 +897,7 @@ class MilReticleSVGCanvas {
     String stroke,
     double strokeWidth,
     void Function(PathBuilder pb) build, {
-    String fill = 'none',
+    String? fill = "none",
     String? strokeLineJoin = 'miter',
     String? strokeLineCap = 'miter',
   }) {
@@ -760,7 +907,7 @@ class MilReticleSVGCanvas {
       _hint('batch');
       path(
         pb.d,
-        fill,
+        fill: fill,
         stroke: stroke,
         strokeWidth: strokeWidth,
         strokeLineJoin: strokeLineJoin,

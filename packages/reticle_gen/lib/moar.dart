@@ -192,7 +192,6 @@ class MoarReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(-40, 0)
                   ..lineTo(-(A / 2 + M), 0))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: H,
           )
@@ -211,7 +210,6 @@ class MoarReticleDrawer implements SVGDrawerInterface {
                   ..lineTo(-40, -B / 2)
                   ..close())
                 .d,
-            'none',
             stroke: color,
             strokeWidth: I,
           );

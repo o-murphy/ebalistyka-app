@@ -174,7 +174,6 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(-30, 0)
                   ..lineTo(-(A / 2 + I), 0))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: B,
           )
@@ -191,7 +190,6 @@ class MilRF1ReticleDrawer implements SVGDrawerInterface {
                   ..lineTo(-(A / 2 + 1), -D / 2)
                   ..lineTo(-30, -D / 2))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: C,
           )
