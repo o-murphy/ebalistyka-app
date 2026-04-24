@@ -1,36 +1,87 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+---
+
 
 ## [Unreleased]
 
-### Android
-- **Initial Android support** — app runs on Android; submodule and FFI build integrated into CI
-- **Impeller disabled** — Flutter's Impeller renderer tessellates SVG circles as polygons; forced Skia via `EnableImpeller=false` in `AndroidManifest.xml` until upstream fix
-- **AndroidManifest** — added storage permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_*`), `requestLegacyExternalStorage`, FileProvider for `share_plus`, `<queries>` for `file_picker` and `url_launcher`
-- **File import** — `file_picker` falls back to `FileType.any` on Android (custom extensions unsupported by Android MIME resolver); extension validated after selection with user-visible error on mismatch
-- **URL launch** — `_launchUrl` now falls back to `LaunchMode.platformDefault` if `externalApplication` fails; `https`/`http` queries added to manifest for Android 11+ package visibility
+### Added
+
+#### Android
+- Initial Android support — application builds and runs on Android
+- CI integration for Android builds, including FFI and submodules
+- File import support via `file_picker` with Android fallback (`FileType.any`)
+- FileProvider configuration for `share_plus`
+- `<queries>` configuration for `file_picker` and `url_launcher` (Android 11+)
+
+#### CI / Build
+- Reusable `build-apk.yml` workflow:
+  - supports `workflow_call`
+  - accepts `build_name`, `build_type`, `retention_days`
+  - supports signing via secrets
+- `scripts/build-android.sh`:
+  - sets app version from CI
+  - decodes keystore from `ANDROID_KEYSTORE_BASE64`
+  - builds split-per-ABI APKs
+  - outputs artifacts to `artifacts/`
+- `scripts/generate-android-keystore.sh`:
+  - generates JKS keystore
+  - creates `android/key.properties`
+  - exports base64 + metadata to `certs/`
+
+### Changed
+
+#### Android
+- Impeller renderer disabled (`EnableImpeller=false`) due to incorrect SVG circle tessellation (temporary workaround until upstream fix)
+- `AndroidManifest.xml` updated:
+  - added storage permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_*`)
+  - enabled `requestLegacyExternalStorage`
+  - added URL visibility queries (`http`, `https`)
+
+#### CI / Build
+- `release.yml` now uses reusable `build-apk.yml` instead of inline Android job
+- APK files (`*.apk`) are now included as release assets
+- `build.gradle.kts`:
+  - reads signing config from `android/key.properties`
+  - falls back to debug signing if missing
 
 ### Fixed
-- **Window scaling** — uses system scale for initial app window size
-- **AdjustmentDisplay** — takes into account zeroOffsets and adjustments
-- **SVG circles rendered as polygons** — `dotLine` / `dotGrid` in `reticle_gen` now emit `<circle>` SVG elements instead of `<path>` arc commands; all reticle and target SVGs regenerated
-- **RenderFlex overflow on home screen** — removed hardcoded `SizedBox(height: 8)` spacer; `Column` now uses `mainAxisAlignment: MainAxisAlignment.center`
-- **PageDotsIndicator overflow** — `IconButton` tap target forced to `MaterialTapTargetSize.shrinkWrap` so actual height matches the declared 32 px constraint
-- **Bug in HomeScreen -> AmmoWizard route** — await new state form route
-- **Add analysis rule** - discarded_futures: true, fixed all relative issues
 
-### CI / Build
-- **`build-apk.yml` reusable** — workflow now supports `workflow_call` (same pattern as `build.yml`); accepts `build_name`, `build_type`, `retention_days` inputs and signing secrets; PR trigger and summary comment preserved
-- **`release.yml`** — inline Android job replaced with `uses: build-apk.yml`; `*.apk` added to release asset collection
-- **Android APK signing** — `build.gradle.kts` reads `android/key.properties` and configures a `release` signing config; falls back to debug key when file is absent
-- **`scripts/build-android.sh`** — new script: sets pubspec version, decodes keystore from `ANDROID_KEYSTORE_BASE64` env var, builds split-per-ABI APKs, packages to `artifacts/`
-- **`scripts/generate-android-keystore.sh`** — generates JKS keystore via `keytool`, writes `android/key.properties` for local builds, copies keystore + base64 + secrets summary to `certs/`
+#### UI
+- Window scaling now respects system scale on startup
+- Fixed `RenderFlex` overflow on Home screen
+- Fixed `PageDotsIndicator` overflow (tap target size mismatch)
+- `AdjustmentDisplay` now correctly applies zero offsets and adjustments
+
+#### SVG / Rendering
+- Fixed SVG circles rendered as polygons:
+  - `reticle_gen` now uses `<circle>` instead of arc `<path>`
+  - regenerated all reticle and target assets
+
+#### Navigation
+- Fixed missing `await` in `HomeScreen → AmmoWizard` route
+
+#### Code Quality
+- Enabled `discarded_futures: true`
+- Fixed all related lint issues
 
 ### Reliability
-- **Database resilience** — `_openStore` in `main.dart` catches ObjectBox open failures; deletes `data.mdb` / `lock.mdb` and re-initialises a fresh store; shows a SnackBar warning only when prior data existed (skipped on first install)
+- Improved database resilience:
+  - ObjectBox open failure is now handled
+  - corrupted `data.mdb` / `lock.mdb` are deleted automatically
+  - store is reinitialized safely
+  - user is notified via SnackBar only if data previously existed
 
 ### Docs
-- **README** — added `## Android notes` section documenting Impeller workaround and file import behaviour
+- README updated:
+  - added **Android notes** section
+  - documented Impeller workaround
+  - documented file import limitations on Android
 
 
 ## [0.1.1] - 2026-04-23
