@@ -10,6 +10,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -697,7 +698,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
             icon: IconDef.altitude,
             onChanged: (v) => setState(() => _zeroAltRaw = v),
           ),
-          // TODO: Zeroing atmo params
 
           // ── Powder sensitivity ──────────────────────────────────────────────
           if (_usePowderSensitivity) ...[
@@ -741,6 +741,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
               onTap: _navigateToPowderSensTable,
             ),
           ],
+
+          // ── Zeroing offset ────────────────────────────────────────
+          listInputLabel(context, 'Offset clicks'),
+
+          listInputLabel(context, 'Vertical offset'),
+
+          listInputLabel(context, 'Horizontal offset'),
 
           // ── Zeroing coriolis ────────────────────────────────────────
           const Divider(height: 1),

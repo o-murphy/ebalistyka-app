@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
@@ -279,7 +280,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
           // ── Clicks ────────────────────────────────────────────────
           const Divider(height: 1),
           const ListSectionTile('Clicks'),
-          _clickLabel(context, 'Vertical click'),
+          listInputLabel(context, 'Vertical click'),
           UnitInputWithPicker(
             value: _vClickRaw,
             constraints: FC.adjustment,
@@ -291,7 +292,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
             },
             onUnitChanged: (u) => setState(() => _vClickUnit = u),
           ),
-          _clickLabel(context, 'Horizontal click'),
+          listInputLabel(context, 'Horizontal click'),
           UnitInputWithPicker(
             value: _hClickRaw,
             constraints: FC.adjustment,
@@ -304,18 +305,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
             onUnitChanged: (u) => setState(() => _hClickUnit = u),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _clickLabel(BuildContext context, String label) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
       ),
     );
   }

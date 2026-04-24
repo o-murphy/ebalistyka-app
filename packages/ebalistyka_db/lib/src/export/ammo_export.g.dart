@@ -34,7 +34,8 @@ AmmoExport _$AmmoExportFromJson(Map<String, dynamic> json) => AmmoExport(
   zeroAzimuthDeg: (json['zeroAzimuthDeg'] as num).toDouble(),
   zeroOffsetX: (json['zeroOffsetX'] as num).toDouble(),
   zeroOffsetY: (json['zeroOffsetY'] as num).toDouble(),
-  zeroOffsetUnit: json['zeroOffsetUnit'] as String,
+  zeroOffsetXUnit: json['zeroOffsetXUnit'] as String,
+  zeroOffsetYUnit: json['zeroOffsetYUnit'] as String,
   powderSensitivityTC: const Float64ListConverter().fromJson(
     json['powderSensitivityTC'] as List?,
   ),
@@ -92,7 +93,8 @@ Map<String, dynamic> _$AmmoExportToJson(AmmoExport instance) =>
       'zeroAzimuthDeg': instance.zeroAzimuthDeg,
       'zeroOffsetX': instance.zeroOffsetX,
       'zeroOffsetY': instance.zeroOffsetY,
-      'zeroOffsetUnit': instance.zeroOffsetUnit,
+      'zeroOffsetXUnit': instance.zeroOffsetXUnit,
+      'zeroOffsetYUnit': instance.zeroOffsetYUnit,
       'powderSensitivityTC': ?const Float64ListConverter().toJson(
         instance.powderSensitivityTC,
       ),

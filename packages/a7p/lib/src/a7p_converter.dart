@@ -154,7 +154,8 @@ abstract final class A7pConverter {
       zeroAzimuthDeg: 0.0,
       zeroOffsetX: 0.0,
       zeroOffsetY: 0.0,
-      zeroOffsetUnit: "mil",
+      zeroOffsetXUnit: "mil",
+      zeroOffsetYUnit: "mil",
     );
   }
 

@@ -283,7 +283,8 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       ..zeroAzimuthDeg = original.zeroAzimuthDeg
       ..zeroOffsetX = original.zeroOffsetX
       ..zeroOffsetY = original.zeroOffsetY
-      ..zeroOffsetUnit = original.zeroOffsetUnit
+      ..zeroOffsetXUnit = original.zeroOffsetXUnit
+      ..zeroOffsetYUnit = original.zeroOffsetYUnit
       ..projectileName = original.projectileName
       ..vendor = original.vendor
       ..owner.target = _owner;

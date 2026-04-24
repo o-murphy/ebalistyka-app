@@ -37,7 +37,8 @@ class AmmoExport {
     required this.zeroAzimuthDeg,
     required this.zeroOffsetX,
     required this.zeroOffsetY,
-    required this.zeroOffsetUnit,
+    required this.zeroOffsetXUnit,
+    required this.zeroOffsetYUnit,
     this.powderSensitivityTC,
     this.powderSensitivityVMps,
     this.multiBcTableG1VMps,
@@ -77,7 +78,8 @@ class AmmoExport {
   final double zeroAzimuthDeg;
   final double zeroOffsetX;
   final double zeroOffsetY;
-  final String zeroOffsetUnit;
+  final String zeroOffsetXUnit;
+  final String zeroOffsetYUnit;
   final Float64List? powderSensitivityTC;
   final Float64List? powderSensitivityVMps;
   final Float64List? multiBcTableG1VMps;
@@ -122,7 +124,8 @@ class AmmoExport {
     zeroAzimuthDeg: a.zeroAzimuthDeg,
     zeroOffsetX: a.zeroOffsetX,
     zeroOffsetY: a.zeroOffsetY,
-    zeroOffsetUnit: a.zeroOffsetUnit,
+    zeroOffsetXUnit: a.zeroOffsetXUnit,
+    zeroOffsetYUnit: a.zeroOffsetYUnit,
     powderSensitivityTC: a.powderSensitivityTC,
     powderSensitivityVMps: a.powderSensitivityVMps,
     multiBcTableG1VMps: a.multiBcTableG1VMps,
@@ -163,7 +166,8 @@ class AmmoExport {
     ..zeroAzimuthDeg = zeroAzimuthDeg
     ..zeroOffsetX = zeroOffsetX
     ..zeroOffsetY = zeroOffsetY
-    ..zeroOffsetUnit = zeroOffsetUnit
+    ..zeroOffsetXUnit = zeroOffsetXUnit
+    ..zeroOffsetYUnit = zeroOffsetYUnit
     ..powderSensitivityTC = powderSensitivityTC
     ..powderSensitivityVMps = powderSensitivityVMps
     ..multiBcTableG1VMps = multiBcTableG1VMps

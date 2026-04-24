@@ -14,6 +14,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -181,7 +182,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       const SizedBox(height: 8),
                       const Divider(height: 1),
                       const ListSectionTile('Barrel drums'),
-                      _clickLabel(context, 'Vertical adjustment'),
+                      listInputLabel(context, 'Vertical adjustment'),
                       AdjustmentInputWithClicks(
                         rawValue: _vAdjRaw,
                         constraints: FC.adjustment,
@@ -200,7 +201,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           _saveAdj();
                         },
                       ),
-                      _clickLabel(context, 'Horizontal adjustment'),
+                      listInputLabel(context, 'Horizontal adjustment'),
                       AdjustmentInputWithClicks(
                         rawValue: _hAdjRaw,
                         constraints: FC.adjustment,
@@ -268,7 +269,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ),
                       const Divider(height: 1),
                       const ListSectionTile('Clicks'),
-                      _clickLabel(context, 'Vertical click'),
+                      listInputLabel(context, 'Vertical click'),
                       UnitInputWithPicker(
                         value: _vClickRaw,
                         constraints: FC.adjustment,
@@ -286,7 +287,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           _saveSight();
                         },
                       ),
-                      _clickLabel(context, 'Horizontal click'),
+                      listInputLabel(context, 'Horizontal click'),
                       UnitInputWithPicker(
                         value: _hClickRaw,
                         constraints: FC.adjustment,
@@ -376,18 +377,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
       r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
     ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
-  }
-
-  Widget _clickLabel(BuildContext context, String label) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
   }
 }
 

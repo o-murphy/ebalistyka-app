@@ -421,13 +421,19 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final ammo = profile.ammo.target;
     if (ammo != null) {
-      final zeroOffsetUnit = ammo.zeroOffsetUnitValue;
-      zeroOffsetXMil = Angular(ammo.zeroOffsetY, zeroOffsetUnit).in_(Unit.mil);
-      zeroOffsetYMil = Angular(ammo.zeroOffsetX, zeroOffsetUnit).in_(Unit.mil);
+      zeroOffsetXMil = Angular(
+        ammo.zeroOffsetY,
+        ammo.zeroOffsetYUnitValue,
+      ).in_(Unit.mil);
+      zeroOffsetYMil = Angular(
+        ammo.zeroOffsetX,
+        ammo.zeroOffsetXUnitValue,
+      ).in_(Unit.mil);
       zeroOffsetMessageLine = _buildZeroOffsetMessageLine(
         zeroOffsetYMil: zeroOffsetYMil,
         zeroOffsetXMil: zeroOffsetXMil,
-        zeroOffsetUnit: zeroOffsetUnit,
+        zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
+        zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
       );
     }
 
@@ -510,7 +516,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }
 
   String? _buildZeroOffsetMessageLine({
-    required Unit zeroOffsetUnit,
+    required Unit zeroOffsetYUnit,
+    required Unit zeroOffsetXUnit,
     required double zeroOffsetYMil,
     required double zeroOffsetXMil,
   }) {
@@ -519,11 +526,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final parts = <String>[];
 
     if (zeroOffsetYMil != 0.0) {
-      parts.add(_angularPart(zeroOffsetYMil, zeroOffsetUnit, 'vertical'));
+      parts.add(_angularPart(zeroOffsetYMil, zeroOffsetYUnit, 'vertical'));
     }
 
     if (zeroOffsetXMil != 0.0) {
-      parts.add(_angularPart(zeroOffsetXMil, zeroOffsetUnit, 'horizontal'));
+      parts.add(_angularPart(zeroOffsetXMil, zeroOffsetXUnit, 'horizontal'));
     }
 
     return 'Zero offset: ${parts.join(' / ')}';

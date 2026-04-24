@@ -66,11 +66,17 @@ extension AmmoExtension on Ammo {
   Angular get zeroAzimuth => Angular.degree(zeroAzimuthDeg);
   set zeroAzimuth(Angular v) => zeroAzimuthDeg = v.in_(Unit.degree);
 
-  Unit get zeroOffsetUnitValue => Unit.values.firstWhere(
-    (u) => u.name == zeroOffsetUnit,
+  Unit get zeroOffsetXUnitValue => Unit.values.firstWhere(
+    (u) => u.name == zeroOffsetXUnit,
     orElse: () => Unit.mil,
   );
-  set zeroOffsetUnitValue(Unit v) => zeroOffsetUnit = v.name;
+  set zeroOffsetXUnitValue(Unit v) => zeroOffsetXUnit = v.name;
+
+  Unit get zeroOffsetYUnitValue => Unit.values.firstWhere(
+    (u) => u.name == zeroOffsetYUnit,
+    orElse: () => Unit.mil,
+  );
+  set zeroOffsetYUnitValue(Unit v) => zeroOffsetXUnit = v.name;
 
   // ── Drag model helpers ────────────────────────────────────────────────────────
 
