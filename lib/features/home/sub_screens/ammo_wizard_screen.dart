@@ -10,14 +10,13 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
-import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,14 +81,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late Unit _offsetXUnit;
   late double _offsetYRaw;
   late Unit _offsetYUnit;
-
-  static const _offsetUnits = [
-    Unit.mil,
-    Unit.moa,
-    Unit.mRad,
-    Unit.cmPer100m,
-    Unit.inPer100Yd,
-  ];
 
   @override
   void initState() {
@@ -778,29 +769,19 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ],
 
           // ── Zeroing offset ────────────────────────────────────────
-          listInputLabel(context, 'Vertical offset'),
-          UnitInputWithPicker(
-            value: _offsetYRaw,
-            constraints: FC.adjustment,
-            displayUnit: _offsetYUnit,
-            options: _offsetUnits,
+          offsetsTile(
+            context: context,
+            yLabel: 'Vertical offset',
+            xLabel: 'Horizontal offset',
             unitLabel: 'Click unit',
-            onChanged: (v) {
-              if (v != null) setState(() => _offsetYRaw = v);
-            },
-            onUnitChanged: (u) => setState(() => _offsetYUnit = u),
-          ),
-          listInputLabel(context, 'Horizontal offset'),
-          UnitInputWithPicker(
-            value: _offsetXRaw,
-            constraints: FC.adjustment,
-            displayUnit: _offsetXUnit,
-            options: _offsetUnits,
-            unitLabel: 'Click unit',
-            onChanged: (v) {
-              if (v != null) setState(() => _offsetXRaw = v);
-            },
-            onUnitChanged: (u) => setState(() => _offsetXUnit = u),
+            yRaw: _offsetYRaw,
+            xRaw: _offsetXRaw,
+            yUnits: _offsetYUnit,
+            xUnits: _offsetXUnit,
+            onYChanged: (v) => setState(() => _offsetYRaw = v),
+            onXChanged: (v) => setState(() => _offsetXRaw = v),
+            onYUnitChanged: (u) => setState(() => _offsetYUnit = u),
+            onXUnitChanged: (u) => setState(() => _offsetXUnit = u),
           ),
 
           // ── Zeroing coriolis ────────────────────────────────────────

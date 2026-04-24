@@ -18,6 +18,7 @@ import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:ebalistyka/shared/widgets/adjustment_input_with_clicks.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
@@ -51,14 +52,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   late Unit _vClickUnit;
   late double _hClickRaw;
   late Unit _hClickUnit;
-
-  static const _adjUnits = [
-    Unit.mil,
-    Unit.moa,
-    Unit.mRad,
-    Unit.cmPer100m,
-    Unit.inPer100Yd,
-  ];
 
   @override
   void initState() {
@@ -188,7 +181,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         constraints: FC.adjustment,
                         displayUnit: _vAdjUnit,
                         clickSizeRaw: _vClickRaw,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {
                           if (v != null) {
@@ -207,7 +200,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         constraints: FC.adjustment,
                         displayUnit: _hAdjUnit,
                         clickSizeRaw: _hClickRaw,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {
                           if (v != null) {
@@ -274,7 +267,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         value: _vClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vClickUnit,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Click unit',
                         onChanged: (v) {
                           if (v != null) {
@@ -292,7 +285,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         value: _hClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hClickUnit,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Click unit',
                         onChanged: (v) {
                           if (v != null) {
