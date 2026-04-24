@@ -44,6 +44,10 @@ class HomeReticlePage extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
               rs.adjustedMessageLine!,
+              textAlign: TextAlign.center,
+              softWrap:
+                  true, // Автоматичний перенос слів (ввімкнено за замовчуванням)
+              overflow: TextOverflow.visible, // Або clip, fade, ellipsis
               style: tt.labelMedium?.copyWith(color: cs.tertiary),
             ),
           ),

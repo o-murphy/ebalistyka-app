@@ -41,7 +41,10 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
     if (existing != null) return existing;
     final s = GeneralSettings()
       ..owner.target = owner
-      ..homeShowMil = true;
+      ..homeShowMil = true
+      ..homeShowMoa = true
+      ..homeShowCmPer100m = true
+      ..homeShowInClicks = true;
     _store.box<GeneralSettings>().put(s); // put() returns int, no await needed
     return s;
   }
@@ -240,7 +243,10 @@ class TablesSettingsNotifier extends AsyncNotifier<TablesSettings> {
     final s = TablesSettings()
       ..owner.target = owner
       ..distanceEndMeter = 1000.0
-      ..showMil = true;
+      ..showMil = true
+      ..showMoa = true
+      ..showCmPer100m = true
+      ..showInClicks = true;
     _store.box<TablesSettings>().put(s); // put() returns int, no await needed
     return s;
   }
@@ -345,6 +351,18 @@ class ReticleSettingsNotifier extends AsyncNotifier<ReticleSettings> {
     final s = _loadOrCreate(_owner);
     s.horizontalAdjustmentUnit = unit.name;
     _store.box<ReticleSettings>().put(s); // remove await
+  }
+
+  Future<void> setVerticalAdjustmentUnitRaw(String name) async {
+    final s = _loadOrCreate(_owner);
+    s.verticalAdjustmentUnit = name;
+    _store.box<ReticleSettings>().put(s);
+  }
+
+  Future<void> setHorizontalAdjustmentUnitRaw(String name) async {
+    final s = _loadOrCreate(_owner);
+    s.horizontalAdjustmentUnit = name;
+    _store.box<ReticleSettings>().put(s);
   }
 }
 

@@ -18,6 +18,7 @@ import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
+import 'package:ebalistyka/shared/widgets/adjustment_input_with_clicks.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,10 +35,11 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   final _zoomKey = GlobalKey<_ZoomableViewState>();
 
   // Barrel drums (ReticleSettings) — raw in FC.adjustment.rawUnit (mil)
+  // null unit = clicks mode
   late double _vAdjRaw;
-  late Unit _vAdjUnit;
+  Unit? _vAdjUnit;
   late double _hAdjRaw;
-  late Unit _hAdjUnit;
+  Unit? _hAdjUnit;
 
   // ReticleSettings
   String? _targetImage;
@@ -61,16 +63,19 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   void initState() {
     super.initState();
     final reticle = ref.read(reticleSettingsProvider);
-    _vAdjUnit = reticle.verticalAdjustmentUnitValue;
-    _vAdjRaw = Angular(
-      reticle.verticalAdjustment,
-      _vAdjUnit,
-    ).in_(FC.adjustment.rawUnit);
-    _hAdjUnit = reticle.horizontalAdjustmentUnitValue;
-    _hAdjRaw = Angular(
-      reticle.horizontalAdjustment,
-      _hAdjUnit,
-    ).in_(FC.adjustment.rawUnit);
+    final vUnit = reticle.verticalAdjustmentUnitValue;
+    _vAdjUnit = reticle.verticalAdjInClicks ? null : vUnit;
+    _vAdjRaw = reticle.verticalAdjInClicks
+        ? reticle.verticalAdjustment
+        : Angular(reticle.verticalAdjustment, vUnit).in_(FC.adjustment.rawUnit);
+    final hUnit = reticle.horizontalAdjustmentUnitValue;
+    _hAdjUnit = reticle.horizontalAdjInClicks ? null : hUnit;
+    _hAdjRaw = reticle.horizontalAdjInClicks
+        ? reticle.horizontalAdjustment
+        : Angular(
+            reticle.horizontalAdjustment,
+            hUnit,
+          ).in_(FC.adjustment.rawUnit);
     _targetImage = reticle.targetImage;
 
     final ctx = ref.read(shotContextProvider).value;
@@ -178,10 +183,11 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       const Divider(height: 1),
                       const ListSectionTile('Barrel drums'),
                       _clickLabel(context, 'Vertical adjustment'),
-                      UnitInputWithPicker(
-                        value: _vAdjRaw,
+                      AdjustmentInputWithClicks(
+                        rawValue: _vAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vAdjUnit,
+                        clickSizeRaw: _vClickRaw,
                         options: _adjUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {
@@ -196,10 +202,11 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         },
                       ),
                       _clickLabel(context, 'Horizontal adjustment'),
-                      UnitInputWithPicker(
-                        value: _hAdjRaw,
+                      AdjustmentInputWithClicks(
+                        rawValue: _hAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hAdjUnit,
+                        clickSizeRaw: _hClickRaw,
                         options: _adjUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {

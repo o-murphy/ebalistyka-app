@@ -291,19 +291,29 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   Future<void> updateReticleAdjustments({
     required double vRaw,
-    required Unit vUnit,
+    required Unit? vUnit,
     required double hRaw,
-    required Unit hUnit,
+    required Unit? hUnit,
   }) async {
     final notifier = ref.read(reticleSettingsNotifierProvider.notifier);
-    notifier.setVerticalAdjustmentUnit(vUnit);
-    notifier.setVerticalAdjustment(
-      Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit),
-    );
-    notifier.setHorizontalAdjustmentUnit(hUnit);
-    notifier.setHorizontalAdjustment(
-      Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit),
-    );
+    if (vUnit == null) {
+      notifier.setVerticalAdjustmentUnitRaw('clicks');
+      notifier.setVerticalAdjustment(vRaw);
+    } else {
+      notifier.setVerticalAdjustmentUnit(vUnit);
+      notifier.setVerticalAdjustment(
+        Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit),
+      );
+    }
+    if (hUnit == null) {
+      notifier.setHorizontalAdjustmentUnitRaw('clicks');
+      notifier.setHorizontalAdjustment(hRaw);
+    } else {
+      notifier.setHorizontalAdjustmentUnit(hUnit);
+      notifier.setHorizontalAdjustment(
+        Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit),
+      );
+    }
   }
 
   Future<void> updateTargetImage(String? imageId) async {
@@ -363,21 +373,24 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetDistanceM: targetM,
     );
 
-    final adjustedMessageLine = _buildAdjustedMessageLine(reticle);
     final cartridgeInfoLine = _buildCartridgeInfoLine(
       profile,
       conditions,
       formatter,
     );
 
-    final vAdjMil = reticle.verticalAdjustment.convert(
-      reticle.verticalAdjustmentUnitValue,
-      Unit.mil,
-    );
-    final hAdjMil = reticle.horizontalAdjustment.convert(
-      reticle.horizontalAdjustmentUnitValue,
-      Unit.mil,
-    );
+    final vAdjMil = reticle.verticalAdjInClicks
+        ? reticle.verticalAdjustment
+        : reticle.verticalAdjustment.convert(
+            reticle.verticalAdjustmentUnitValue,
+            Unit.mil,
+          );
+    final hAdjMil = reticle.horizontalAdjInClicks
+        ? reticle.horizontalAdjustment
+        : reticle.horizontalAdjustment.convert(
+            reticle.horizontalAdjustmentUnitValue,
+            Unit.mil,
+          );
 
     double horizontalClickSizeMil = 0.0;
     double verticalClickSizeMil = 0.0;
@@ -392,6 +405,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         sight.verticalClickUnitValue,
       ).in_(Unit.mil);
     }
+
+    final adjustedMessageLine = _buildAdjustedMessageLine(
+      reticle,
+      vClickSizeMil: verticalClickSizeMil,
+      hClickSizeMil: horizontalClickSizeMil,
+    );
 
     final adjustment = _buildAdjustment(
       hit,
@@ -468,28 +487,45 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
-  String? _buildAdjustedMessageLine(ReticleSettings reticle) {
+  String? _buildAdjustedMessageLine(
+    ReticleSettings reticle, {
+    required double vClickSizeMil,
+    required double hClickSizeMil,
+  }) {
     final vAdj = reticle.verticalAdjustment;
     final hAdj = reticle.horizontalAdjustment;
     if (vAdj == 0.0 && hAdj == 0.0) return null;
 
-    final vUnit = reticle.verticalAdjustmentUnitValue;
-    final hUnit = reticle.horizontalAdjustmentUnitValue;
     final parts = <String>[];
 
     if (vAdj != 0.0) {
-      final acc = FC.adjustment.accuracyFor(vUnit);
-      parts.add(
-        '${vAdj > 0 ? '+' : ''}${vAdj.toFixedSafe(acc)} ${_unitLabel(vUnit)} vertical',
-      );
+      final part = reticle.verticalAdjInClicks && vClickSizeMil > 0
+          ? _clicksPart(vAdj, vClickSizeMil, 'vertical')
+          : _angularPart(vAdj, reticle.verticalAdjustmentUnitValue, 'vertical');
+      parts.add(part);
     }
     if (hAdj != 0.0) {
-      final acc = FC.adjustment.accuracyFor(hUnit);
-      parts.add(
-        '${hAdj > 0 ? '+' : ''}${hAdj.toFixedSafe(acc)} ${_unitLabel(hUnit)} horizontal',
-      );
+      final part = reticle.horizontalAdjInClicks && hClickSizeMil > 0
+          ? _clicksPart(hAdj, hClickSizeMil, 'horizontal')
+          : _angularPart(
+              hAdj,
+              reticle.horizontalAdjustmentUnitValue,
+              'horizontal',
+            );
+      parts.add(part);
     }
     return 'Drum adjustment: ${parts.join(' / ')}';
+  }
+
+  static String _clicksPart(double rawMil, double clickSizeMil, String dir) {
+    final clicks = rawMil / clickSizeMil;
+    final v = clicks.toStringAsFixed(0);
+    return '${clicks > 0 ? '+' : ''}$v click $dir';
+  }
+
+  static String _angularPart(double adjInUnit, Unit unit, String dir) {
+    final acc = FC.adjustment.accuracyFor(unit);
+    return '${adjInUnit > 0 ? '+' : ''}${adjInUnit.toFixedSafe(acc)} ${_unitLabel(unit)} $dir';
   }
 
   static String _unitLabel(Unit u) => switch (u) {
