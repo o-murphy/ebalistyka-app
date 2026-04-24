@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
@@ -35,7 +37,7 @@ class TorqueConvertorViewModel extends Notifier<TorqueConvertorUiState> {
     final convertorsState = ref.read(convertorStateProvider);
 
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateTorqueValue(null);
+      unawaited(ref.read(convertorsProvider.notifier).updateTorqueValue(null));
       return;
     }
 
@@ -44,12 +46,16 @@ class TorqueConvertorViewModel extends Notifier<TorqueConvertorUiState> {
       Unit.newtonMeter,
     );
     if (newtonMeterValue >= 0) {
-      ref.read(convertorsProvider.notifier).updateTorqueValue(newtonMeterValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateTorqueValue(newtonMeterValue),
+      );
     }
   }
 
   void changeInputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateTorqueUnit(newUnit);
+    unawaited(ref.read(convertorsProvider.notifier).updateTorqueUnit(newUnit));
   }
 
   double? _getDisplayValue(double? rawNewtonMeter, Unit inputUnit) {

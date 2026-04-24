@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -40,7 +42,7 @@ class TableConfigScreen extends ConsumerWidget {
         ..showInClicks = cfg.showInClicks;
 
       mutate(updated);
-      notifier.saveSettings(updated);
+      unawaited(notifier.saveSettings(updated));
     }
 
     void toggleCol(String colId, bool visible) {

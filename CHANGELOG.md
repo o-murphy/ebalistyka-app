@@ -16,6 +16,8 @@
 - **SVG circles rendered as polygons** — `dotLine` / `dotGrid` in `reticle_gen` now emit `<circle>` SVG elements instead of `<path>` arc commands; all reticle and target SVGs regenerated
 - **RenderFlex overflow on home screen** — removed hardcoded `SizedBox(height: 8)` spacer; `Column` now uses `mainAxisAlignment: MainAxisAlignment.center`
 - **PageDotsIndicator overflow** — `IconButton` tap target forced to `MaterialTapTargetSize.shrinkWrap` so actual height matches the declared 32 px constraint
+- **Bug in HomeScreen -> AmmoWizard route** — await new state form route
+- **Add analysis rule** - discarded_futures: true, fixed all relative issues
 
 ### CI / Build
 - **`build-apk.yml` reusable** — workflow now supports `workflow_call` (same pattern as `build.yml`); accepts `build_name`, `build_type`, `retention_days` inputs and signing secrets; PR trigger and summary comment preserved

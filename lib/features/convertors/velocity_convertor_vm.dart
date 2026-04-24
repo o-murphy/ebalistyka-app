@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
@@ -49,18 +51,24 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
   void updateRawValue(double? rawValueInInputUnit) {
     final s = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateVelocityValue(null);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updateVelocityValue(null),
+      );
       return;
     }
     if (s.velocityUnit == Unit.mach) {
       // Store the mach number; mps is derived on the fly from mach + atmo.
-      ref
-          .read(convertorsProvider.notifier)
-          .updateVelocityMachInputValue(rawValueInInputUnit);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateVelocityMachInputValue(rawValueInInputUnit),
+      );
     } else {
       final mpsValue = rawValueInInputUnit.convert(s.velocityUnit, Unit.mps);
       if (mpsValue >= 0) {
-        ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
+        unawaited(
+          ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue),
+        );
       }
     }
   }
@@ -74,54 +82,70 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     if (newUnit == Unit.mach && s.velocityUnit != Unit.mach) {
       // Switching TO mach: sync mach from current stored mps.
       final machValue = s.velocityValue.inMach(atmo);
-      ref
-          .read(convertorsProvider.notifier)
-          .updateVelocityMachInputValue(machValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateVelocityMachInputValue(machValue),
+      );
     } else if (newUnit != Unit.mach && s.velocityUnit == Unit.mach) {
       // Switching FROM mach: sync mps from stored mach + current atmo.
       final mpsValue = s.velocityMachInputValue
           .toVelocityFromMach(atmo)
           .in_(Unit.mps);
-      ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updateVelocityValue(mpsValue),
+      );
     }
 
-    ref.read(convertorsProvider.notifier).updateVelocityUnit(newUnit);
+    unawaited(
+      ref.read(convertorsProvider.notifier).updateVelocityUnit(newUnit),
+    );
   }
 
   void toggleCustomAtmo(bool value) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateVelocityMachUseCustomAtmo(value);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityMachUseCustomAtmo(value),
+    );
   }
 
   void updateAtmoTemperature(double rawValue) {
     final units = ref.read(unitSettingsProvider);
     final celsiusValue = rawValue.convert(units.temperatureUnit, Unit.celsius);
-    ref
-        .read(convertorsProvider.notifier)
-        .updateVelocityAtmoTemperature(Temperature.celsius(celsiusValue));
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityAtmoTemperature(Temperature.celsius(celsiusValue)),
+    );
   }
 
   void updateAtmoPressure(double rawValue) {
     final units = ref.read(unitSettingsProvider);
     final hPaValue = rawValue.convert(units.pressureUnit, Unit.hPa);
-    ref
-        .read(convertorsProvider.notifier)
-        .updateVelocityAtmoPressure(Pressure.hPa(hPaValue));
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityAtmoPressure(Pressure.hPa(hPaValue)),
+    );
   }
 
   void updateAtmoHumidity(double rawFrac) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateVelocityAtmoHumidityFrac(rawFrac);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityAtmoHumidityFrac(rawFrac),
+    );
   }
 
   void updateAtmoAltitude(double rawValue) {
     final units = ref.read(unitSettingsProvider);
     final meterValue = rawValue.convert(units.distanceUnit, Unit.meter);
-    ref
-        .read(convertorsProvider.notifier)
-        .updateVelocityAtmoAltitude(Distance.meter(meterValue));
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateVelocityAtmoAltitude(Distance.meter(meterValue)),
+    );
   }
 
   Atmo _buildAtmo(ConvertorsState s) => s.velocityMachUseCustomAtmo

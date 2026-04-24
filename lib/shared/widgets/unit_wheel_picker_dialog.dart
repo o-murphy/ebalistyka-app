@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
@@ -105,16 +107,18 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
 }
 
 void showUnitWheelPickerDialog(UnitPickerContext pickerContext) {
-  showDialog(
-    context: pickerContext.buildContext,
-    builder: (context) => Dialog(
-      backgroundColor: Colors.transparent,
-      child: UnitWheelPicker(
-        label: pickerContext.label,
-        constraints: pickerContext.constraints,
-        initialRawValue: pickerContext.rawValue,
-        displayUnit: pickerContext.displayUnit,
-        onSave: pickerContext.onChanged,
+  unawaited(
+    showDialog(
+      context: pickerContext.buildContext,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: UnitWheelPicker(
+          label: pickerContext.label,
+          constraints: pickerContext.constraints,
+          initialRawValue: pickerContext.rawValue,
+          displayUnit: pickerContext.displayUnit,
+          onSave: pickerContext.onChanged,
+        ),
       ),
     ),
   );

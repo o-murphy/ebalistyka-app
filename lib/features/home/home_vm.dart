@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
@@ -159,17 +160,18 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
   Future<HomeUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue) _recalculate();
+      if (next.hasValue) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
-      if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();
+      if (_generalNeedsRecalc(prev?.value, next.value!))
+        unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
-      if (prev != null) _recalculate();
+      if (prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
-      if (prev != null) _recalculate();
+      if (prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     return const HomeUiNoData(type: EmptyStateType.noProfile);
   }

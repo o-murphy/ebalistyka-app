@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
@@ -185,14 +187,16 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
 // ── Public dialog functions ─────────────────────────────────────────────────
 
 void showUnitEditDialog(UnitPickerContext pickerContext) {
-  showDialog<void>(
-    context: pickerContext.buildContext,
-    builder: (ctx) => Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: _UnitEditDialogContent(
-        pickerContext: pickerContext,
-        initialRawValue: pickerContext.rawValue,
+  unawaited(
+    showDialog<void>(
+      context: pickerContext.buildContext,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: _UnitEditDialogContent(
+          pickerContext: pickerContext,
+          initialRawValue: pickerContext.rawValue,
+        ),
       ),
     ),
   );

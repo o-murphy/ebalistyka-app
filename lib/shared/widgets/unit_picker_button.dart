@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
@@ -50,32 +52,34 @@ class UnitPickerButton extends StatelessWidget {
   }
 
   void _showPicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
-            ),
-            const Divider(height: 1),
-            ...options.map(
-              (unit) => ListTile(
-                title: Text("${unit.label} (${unit.symbol})"),
-                trailing: current == unit ? const Icon(IconDef.apply) : null,
-                onTap: () {
-                  onChanged(unit);
-                  Navigator.pop(ctx);
-                },
+    unawaited(
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        builder: (ctx) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
               ),
-            ),
-            const SizedBox(height: 8),
-          ],
+              const Divider(height: 1),
+              ...options.map(
+                (unit) => ListTile(
+                  title: Text("${unit.label} (${unit.symbol})"),
+                  trailing: current == unit ? const Icon(IconDef.apply) : null,
+                  onTap: () {
+                    onChanged(unit);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );

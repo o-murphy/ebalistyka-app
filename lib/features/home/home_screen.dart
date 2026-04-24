@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/consts.dart';
@@ -61,7 +62,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
       final wasLoading = prev?.isLoading == true;
       final isReady = next.value is HomeUiReady;
-      if (wasLoading && isReady) _calcDoneCtrl.forward(from: 0);
+      if (wasLoading && isReady) unawaited(_calcDoneCtrl.forward(from: 0));
     });
 
     final vmAsync = ref.watch(homeVmProvider);
@@ -112,7 +113,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           displayUnit: Unit.degree,
           onChanged: (v) {
             final normalized = (((v! % 360) + 360) % 360);
-            ref.read(homeVmProvider.notifier).updateWindDirection(normalized);
+            unawaited(
+              ref.read(homeVmProvider.notifier).updateWindDirection(normalized),
+            );
           },
         );
 
@@ -193,8 +196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           )
                                           .firstOrNull;
                                       if (ammo == null) return;
-                                      final result =
-                                          await context.push<Ammo?>(
+                                      final result = await context.push<Ammo?>(
                                         Routes.profileEditAmmo,
                                         extra: (ammo, weapon?.caliberInch),
                                       );
@@ -259,9 +261,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       child: WindIndicator(
                                         initialAngle: windInitialAngle,
                                         onAngleChanged: (degrees, _) {
-                                          ref
-                                              .read(homeVmProvider.notifier)
-                                              .updateWindDirection(degrees);
+                                          unawaited(
+                                            ref
+                                                .read(homeVmProvider.notifier)
+                                                .updateWindDirection(degrees),
+                                          );
                                         },
                                         onDirectionTap: (deg) =>
                                             showUnitEditDialog(
@@ -391,10 +395,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         current: _currentPage,
                         count: 3,
                         onPageChanged: (page) {
-                          _pageController.animateToPage(
-                            page,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
+                          unawaited(
+                            _pageController.animateToPage(
+                              page,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            ),
                           );
                           setState(() => _currentPage = page);
                         },

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -227,23 +229,27 @@ void _showLanguageDialog(
   Future<void> Function(String) onSelect,
 ) {
   const langs = [('en', 'English'), ('uk', 'Українська')];
-  showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Language'),
-      content: RadioGroup<String>(
-        groupValue: current,
-        onChanged: (v) {
-          if (v != null) {
-            onSelect(v);
-            Navigator.pop(ctx);
-          }
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: langs
-              .map((l) => RadioListTile<String>(value: l.$1, title: Text(l.$2)))
-              .toList(),
+  unawaited(
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Language'),
+        content: RadioGroup<String>(
+          groupValue: current,
+          onChanged: (v) {
+            if (v != null) {
+              unawaited(onSelect(v));
+              Navigator.pop(ctx);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: langs
+                .map(
+                  (l) => RadioListTile<String>(value: l.$1, title: Text(l.$2)),
+                )
+                .toList(),
+          ),
         ),
       ),
     ),

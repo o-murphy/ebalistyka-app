@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -79,16 +81,20 @@ class TargetAtDistanceConvertorViewModel
       Unit.inch,
     );
     if (inchValue >= 0) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateDistanceConvTargetSize(inchValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateDistanceConvTargetSize(inchValue),
+      );
     }
   }
 
   void changeSizeUnit(Unit newUnit) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateDistanceConvTargetSizeUnit(newUnit);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateDistanceConvTargetSizeUnit(newUnit),
+    );
   }
 
   void updateAngularValue(double? rawInInputUnit) {
@@ -99,16 +105,20 @@ class TargetAtDistanceConvertorViewModel
       Unit.mil,
     );
     if (milValue > 0) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateDistanceConvTargetSizeAngular(milValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateDistanceConvTargetSizeAngular(milValue),
+      );
     }
   }
 
   void changeAngularUnit(Unit newUnit) {
-    ref
-        .read(convertorsProvider.notifier)
-        .updateDistanceConvTargetSizeAngularUnit(newUnit);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateDistanceConvTargetSizeAngularUnit(newUnit),
+    );
   }
 
   FieldConstraints getSizeConstraintsForUnit(Unit unit) {

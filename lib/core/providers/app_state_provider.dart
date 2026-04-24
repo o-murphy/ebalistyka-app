@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
@@ -87,7 +88,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     ];
     ref.onDispose(() {
       for (final s in subs) {
-        s.cancel();
+        unawaited(s.cancel());
       }
     });
 
@@ -509,4 +510,3 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
-

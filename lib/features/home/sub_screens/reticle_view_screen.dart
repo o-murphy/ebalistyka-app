@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
@@ -186,12 +187,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vAdjRaw = v);
-                            _saveAdj();
+                            unawaited(_saveAdj());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _vAdjUnit = u);
-                          _saveAdj();
+                          unawaited(_saveAdj());
                         },
                       ),
                       listInputLabel(context, 'Horizontal adjustment'),
@@ -205,12 +206,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hAdjRaw = v);
-                            _saveAdj();
+                            unawaited(_saveAdj());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _hAdjUnit = u);
-                          _saveAdj();
+                          unawaited(_saveAdj());
                         },
                       ),
                       const Divider(height: 1),
@@ -272,12 +273,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vClickRaw = v);
-                            _saveSight();
+                            unawaited(_saveSight());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _vClickUnit = u);
-                          _saveSight();
+                          unawaited(_saveSight());
                         },
                       ),
                       listInputLabel(context, 'Horizontal click'),
@@ -290,12 +291,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hClickRaw = v);
-                            _saveSight();
+                            unawaited(_saveSight());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _hClickUnit = u);
-                          _saveSight();
+                          unawaited(_saveSight());
                         },
                       ),
                     ],
@@ -437,7 +438,7 @@ class _ZoomableViewState extends State<ZoomableView>
             curve: Curves.easeInOut,
           ),
         );
-    _animationController.forward(from: 0);
+    unawaited(_animationController.forward(from: 0));
   }
 
   void _handleDoubleTap() {
