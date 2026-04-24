@@ -510,10 +510,3 @@ final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
 
-final ammoProvider = Provider<List<Ammo>>((ref) {
-  return ref.watch(appStateProvider).value?.ammo ?? [];
-});
-
-final sightsProvider = Provider<List<Sight>>((ref) {
-  return ref.watch(appStateProvider).value?.sights ?? [];
-});

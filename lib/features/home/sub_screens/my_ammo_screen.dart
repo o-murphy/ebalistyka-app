@@ -132,8 +132,8 @@ class MyAmmoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
-    final cartridges = ref.watch(ammoProvider);
     final appState = ref.watch(appStateProvider).value;
+    final cartridges = appState?.ammo ?? [];
     final profile = profileId != null
         ? appState?.profiles
               .where((p) => p.id.toString() == profileId)

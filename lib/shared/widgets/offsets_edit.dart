@@ -30,9 +30,9 @@ Widget offsetsTile({
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       // ── Zeroing offset ────────────────────────────────────────
-      listInputLabel(context, 'Vertical offset'),
+      listInputLabel(context, yLabel),
       UnitInputWithPicker(
-        value: xRaw,
+        value: yRaw,
         constraints: FC.adjustment,
         displayUnit: yUnits,
         options: offsetUnits,
@@ -42,7 +42,7 @@ Widget offsetsTile({
         },
         onUnitChanged: onYUnitChanged,
       ),
-      listInputLabel(context, 'Horizontal offset'),
+      listInputLabel(context, xLabel),
       UnitInputWithPicker(
         value: xRaw,
         constraints: FC.adjustment,
@@ -50,7 +50,7 @@ Widget offsetsTile({
         options: offsetUnits,
         unitLabel: unitLabel,
         onChanged: (v) {
-          if (v != null) onYChanged(v);
+          if (v != null) onXChanged(v);
         },
         onUnitChanged: onXUnitChanged,
       ),

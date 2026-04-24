@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -173,7 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 const SizedBox(width: 8),
                                 if (vmState is HomeUiReady)
                                   IconButton.filledTonal(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       final appState = ref
                                           .read(appStateProvider)
                                           .value;
@@ -191,11 +192,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                                 profile?.weapon.targetId,
                                           )
                                           .firstOrNull;
-                                      if (ammo != null) {
-                                        context.push(
-                                          Routes.profileEditAmmo,
-                                          extra: (ammo, weapon?.caliberInch),
-                                        );
+                                      if (ammo == null) return;
+                                      final result =
+                                          await context.push<Ammo?>(
+                                        Routes.profileEditAmmo,
+                                        extra: (ammo, weapon?.caliberInch),
+                                      );
+                                      if (result != null && context.mounted) {
+                                        await ref
+                                            .read(appStateProvider.notifier)
+                                            .saveAmmo(result);
                                       }
                                     },
                                     icon: const Icon(IconDef.ammo),

@@ -91,8 +91,8 @@ class MySightsCollectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
-    final sights = ref.watch(sightsProvider);
     final appState = ref.watch(appStateProvider).value;
+    final sights = appState?.sights ?? [];
     final profile = profileId != null
         ? appState?.profiles
               .where((p) => p.id.toString() == profileId)

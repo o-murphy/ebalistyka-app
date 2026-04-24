@@ -161,9 +161,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (next.hasValue) _recalculate();
     }, fireImmediately: true);
-    ref.listen<AsyncValue<AppState>>(appStateProvider, (prev, next) {
-      if (next.hasValue && prev?.value != null) _recalculate();
-    }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
       if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();
@@ -424,11 +421,11 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     final ammo = profile.ammo.target;
     if (ammo != null) {
-      zeroOffsetXMil = Angular(
+      zeroOffsetYMil = Angular(
         ammo.zeroOffsetY,
         ammo.zeroOffsetYUnitValue,
       ).in_(Unit.mil);
-      zeroOffsetYMil = Angular(
+      zeroOffsetXMil = Angular(
         ammo.zeroOffsetX,
         ammo.zeroOffsetXUnitValue,
       ).in_(Unit.mil);
