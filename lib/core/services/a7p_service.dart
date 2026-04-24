@@ -43,8 +43,8 @@ abstract final class A7pService {
   /// Throws [A7pParseException] if the file is invalid.
   static Future<ProfileExport?> pickAndParse() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['a7p'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['a7p'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
@@ -69,8 +69,8 @@ abstract final class A7pService {
   /// Throws [A7pParseException] on invalid .a7p files or [Exception] on other errors.
   static Future<List<ProfileExport>?> pickAndParseProfiles() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['ebcp', 'a7p'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;

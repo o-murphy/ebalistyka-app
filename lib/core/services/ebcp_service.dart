@@ -44,8 +44,8 @@ abstract final class EbcpService {
   /// Returns `null` if the user cancels or the file is invalid.
   static Future<EbcpFile?> pickAndParse() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['ebcp'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;

@@ -646,12 +646,9 @@ class MilReticleSVGCanvas {
     }
     final ux = dx / length;
     final uy = dy / length;
-    final pb = PathBuilder();
     for (var t = 0.0; t <= length + 1e-9; t += spacing) {
-      pb.dotCircle(x1 + t * ux, y1 + t * uy, r);
-    }
-    if (!pb.isEmpty) {
-      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
+      circle(x1 + t * ux, y1 + t * uy, r,
+          fill: fill, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 
@@ -711,14 +708,10 @@ class MilReticleSVGCanvas {
   }) {
     if (xStep <= 0 || yStep <= 0) return;
     _hint('dotgrid');
-    final pb = PathBuilder();
     for (double y = y1; y <= y2 + 1e-9; y += yStep) {
       for (double x = x1; x <= x2 + 1e-9; x += xStep) {
-        pb.dotCircle(x, y, r);
+        circle(x, y, r, fill: fill, stroke: stroke, strokeWidth: strokeWidth);
       }
-    }
-    if (!pb.isEmpty) {
-      path(pb.d, fill, stroke: stroke, strokeWidth: strokeWidth);
     }
   }
 
