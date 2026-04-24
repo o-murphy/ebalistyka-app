@@ -136,7 +136,7 @@ class ReticleView extends ConsumerWidget {
     // Build SVG elements for underlay
     final buffer = StringBuffer();
     buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg"');
-    buffer.writeln('     shape-rendering="crispEdges"');
+    buffer.writeln('     shape-rendering="geometricPrecision"');
     buffer.writeln(
       '     viewBox="-${milWidth / 2} -${milHeight / 2} $milWidth $milHeight">',
     );

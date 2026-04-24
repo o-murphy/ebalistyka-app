@@ -224,7 +224,7 @@ class MilReticleSVGCanvas {
         XmlName('viewBox'),
         '${_fmtNum(minX)} ${_fmtNum(minY)} ${_fmtNum(milWidth)} ${_fmtNum(milHeight)}',
       ),
-      XmlAttribute(XmlName('shape-rendering'), 'crispEdges'),
+      XmlAttribute(XmlName('shape-rendering'), 'geometricPrecision'),
     ]);
     _idCounters.clear();
     _clipCounter = 0;

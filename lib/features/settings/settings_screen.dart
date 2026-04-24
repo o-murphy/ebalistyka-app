@@ -281,11 +281,7 @@ class _ThemeSelector extends StatelessWidget {
 }
 
 Future<void> _launchUrl(String url) async {
-  final Uri uri = Uri.parse(url);
-  if (!await launchUrl(
-    uri,
-    mode: LaunchMode.externalApplication, // Opens in an external browser
-  )) {
-    throw Exception('Could not launch $url');
-  }
+  final uri = Uri.parse(url);
+  if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+  await launchUrl(uri, mode: LaunchMode.platformDefault);
 }

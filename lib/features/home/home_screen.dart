@@ -378,8 +378,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   alignment: Alignment.center,
                   color: cs.surface,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 8),
                       Text(pageName),
                       PageDotsIndicator(
                         current: _currentPage,
