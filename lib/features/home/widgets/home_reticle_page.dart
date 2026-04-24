@@ -39,9 +39,28 @@ class HomeReticlePage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: _SemicolonWrappingText(
+            vmState.reticleState.cartridgeInfoLine,
+            style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
+          ),
+        ),
+        if (rs.zeroOffsetMessageLine != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              rs.zeroOffsetMessageLine!,
+              textAlign: TextAlign.center,
+              softWrap:
+                  true, // Автоматичний перенос слів (ввімкнено за замовчуванням)
+              overflow: TextOverflow.visible, // Або clip, fade, ellipsis
+              style: tt.labelMedium?.copyWith(color: cs.tertiary),
+            ),
+          ),
         if (rs.adjustedMessageLine != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               rs.adjustedMessageLine!,
               textAlign: TextAlign.center,
@@ -51,13 +70,7 @@ class HomeReticlePage extends ConsumerWidget {
               style: tt.labelMedium?.copyWith(color: cs.tertiary),
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: _SemicolonWrappingText(
-            vmState.reticleState.cartridgeInfoLine,
-            style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
-          ),
-        ),
+
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -45,6 +45,8 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
       return Center(child: Text('Enable units...', style: tt.bodySmall));
     }
 
+    print(adjustment.elevation);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;

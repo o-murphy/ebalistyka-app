@@ -55,6 +55,7 @@ class ReticleUiState {
   final String? targetId;
   final double targetSizeMilAtDistance;
   final String? adjustedMessageLine;
+  final String? zeroOffsetMessageLine;
   final String cartridgeInfoLine;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
@@ -66,6 +67,7 @@ class ReticleUiState {
     this.targetId,
     this.targetSizeMilAtDistance = 0.0,
     this.adjustedMessageLine,
+    this.zeroOffsetMessageLine,
     this.cartridgeInfoLine = '',
     required this.adjustment,
     this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
@@ -394,6 +396,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
     double horizontalClickSizeMil = 0.0;
     double verticalClickSizeMil = 0.0;
+    String? adjustedMessageLine;
+
     final sight = profile.sight.target;
     if (sight != null) {
       horizontalClickSizeMil = Angular(
@@ -404,31 +408,51 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         sight.verticalClick,
         sight.verticalClickUnitValue,
       ).in_(Unit.mil);
+      adjustedMessageLine = _buildAdjustedMessageLine(
+        reticle,
+        vClickSizeMil: verticalClickSizeMil,
+        hClickSizeMil: horizontalClickSizeMil,
+      );
     }
 
-    final adjustedMessageLine = _buildAdjustedMessageLine(
-      reticle,
-      vClickSizeMil: verticalClickSizeMil,
-      hClickSizeMil: horizontalClickSizeMil,
-    );
+    double zeroOffsetYMil = 0.0;
+    double zeroOffsetXMil = 0.0;
+    String? zeroOffsetMessageLine;
 
-    final adjustment = _buildAdjustment(
-      hit,
-      targetM,
-      result.holdRad,
-      horizontalClickSizeMil,
-      verticalClickSizeMil,
-      settings,
-      elevOffsetMil: vAdjMil,
-      windOffsetMil: hAdjMil,
-    );
-    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil;
+    final ammo = profile.ammo.target;
+    if (ammo != null) {
+      final zeroOffsetUnit = ammo.zeroOffsetUnitValue;
+      zeroOffsetXMil = Angular(ammo.zeroOffsetY, zeroOffsetUnit).in_(Unit.mil);
+      verticalClickSizeMil = Angular(
+        ammo.zeroOffsetY,
+        zeroOffsetUnit,
+      ).in_(Unit.mil);
+      zeroOffsetMessageLine = _buildZeroOffsetMessageLine(
+        zeroOffsetYMil: zeroOffsetYMil,
+        zeroOffsetXMil: zeroOffsetXMil,
+        zeroOffsetUnit: zeroOffsetUnit,
+      );
+    }
+
+    final elevMil =
+        Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil + zeroOffsetYMil;
     final targetPoint = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windMil =
         (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
-        hAdjMil;
+        hAdjMil +
+        zeroOffsetXMil;
+
+    final adjustment = _buildAdjustment(
+      hit,
+      targetM,
+      Angular(elevMil, Unit.mil),
+      Angular(windMil, Unit.mil),
+      horizontalClickSizeMil,
+      verticalClickSizeMil,
+      settings,
+    );
 
     final targetSvg = await ref
         .read(targetSvgProvider(reticle.targetImage).future)
@@ -443,6 +467,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetId: reticle.targetImage,
       targetSizeMilAtDistance: targetSizeMilAtDistance,
       adjustedMessageLine: adjustedMessageLine,
+      zeroOffsetMessageLine: zeroOffsetMessageLine,
       cartridgeInfoLine: cartridgeInfoLine,
       adjustment: adjustment,
       adjustmentFormat: settings.adjustmentDisplayFormat,
@@ -485,6 +510,15 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
     ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
+  }
+
+  String? _buildZeroOffsetMessageLine({
+    required Unit zeroOffsetUnit,
+    required double zeroOffsetYMil,
+    required double zeroOffsetXMil,
+  }) {
+    // return 'Zero offset: <placeholder>';
+    return null;
   }
 
   String? _buildAdjustedMessageLine(
@@ -566,24 +600,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   AdjustmentData _buildAdjustment(
     bclibc.HitResult hit,
     double targetM,
-    double holdRad,
+    Angular elevAngle,
+    Angular windAngle,
     double horizontalClickSizeMil,
     double verticalClickSizeMil,
-    GeneralSettings settings, {
-    double elevOffsetMil = 0.0,
-    double windOffsetMil = 0.0,
-  }) {
-    final elevAngle = Angular(
-      Angular.radian(holdRad).in_(Unit.mil) + elevOffsetMil,
-      Unit.mil,
-    );
-    final point = hit.trajectory.isNotEmpty
-        ? hit.getAtDistance(Distance.meter(targetM))
-        : null;
-    final windAngle = point != null
-        ? Angular(point.windageAngle.in_(Unit.mil) + windOffsetMil, Unit.mil)
-        : null;
-
+    GeneralSettings settings,
+  ) {
     final dispUnits = <(Unit, String)>[
       if (settings.homeShowMrad) (Unit.mRad, 'MRAD'),
       if (settings.homeShowMoa) (Unit.moa, 'MOA'),
@@ -617,19 +639,17 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       );
     }
 
-    final windValues = windAngle != null
-        ? dispUnits.map((u) {
-            final corr = windAngle.in_(u.$1);
-            return AdjustmentValue(
-              absValue: corr.abs(),
-              isPositive: corr >= 0,
-              symbol: u.$2,
-              decimals: FC.adjustment.accuracyFor(u.$1),
-            );
-          }).toList()
-        : <AdjustmentValue>[];
+    final windValues = dispUnits.map((u) {
+      final corr = windAngle.in_(u.$1);
+      return AdjustmentValue(
+        absValue: corr.abs(),
+        isPositive: corr >= 0,
+        symbol: u.$2,
+        decimals: FC.adjustment.accuracyFor(u.$1),
+      );
+    }).toList();
 
-    if (settings.homeShowInClicks && windAngle != null) {
+    if (settings.homeShowInClicks) {
       final val = windAngle.in_(Unit.mil);
       final clicks = horizontalClickSizeMil > 0.0
           ? val / horizontalClickSizeMil
