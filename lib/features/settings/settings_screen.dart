@@ -133,9 +133,16 @@ class SettingsScreen extends ConsumerWidget {
                     icon: const Icon(IconDef.import),
                     label: const Text('Import backup'),
                     onPressed: () async {
-                      final file = await EbcpService.pickAndParse();
-                      if (file == null) return;
-                      await EbcpService.restoreFromExport(file, ref);
+                      try {
+                        final file = await EbcpService.pickAndParse();
+                        if (file == null || !context.mounted) return;
+                        await EbcpService.restoreFromExport(file, ref);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Import failed: $e')),
+                        );
+                      }
                     },
                   ),
                 ),

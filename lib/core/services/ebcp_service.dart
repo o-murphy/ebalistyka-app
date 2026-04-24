@@ -51,6 +51,10 @@ abstract final class EbcpService {
     if (result == null || result.files.isEmpty) return null;
 
     final file = result.files.single;
+    if (!file.name.toLowerCase().endsWith('.ebcp')) {
+      throw FormatException('Expected an .ebcp file, got: ${file.name}');
+    }
+
     final Uint8List bytes;
     if (file.bytes != null) {
       bytes = file.bytes!;

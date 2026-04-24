@@ -50,6 +50,10 @@ abstract final class A7pService {
     if (result == null || result.files.isEmpty) return null;
 
     final file = result.files.single;
+    if (!file.name.toLowerCase().endsWith('.a7p')) {
+      throw FormatException('Expected an .a7p file, got: ${file.name}');
+    }
+
     final Uint8List bytes;
     if (file.bytes != null) {
       bytes = file.bytes!;
@@ -85,17 +89,19 @@ abstract final class A7pService {
       throw const A7pParseException('cannot read file bytes');
     }
 
-    final name = (file.name).toLowerCase();
+    final name = file.name.toLowerCase();
     if (name.endsWith('.a7p')) {
       final payload = A7pFile.decode(bytes);
       return [A7pConverter.fromPayload(payload, validate: false)];
-    } else {
+    } else if (name.endsWith('.ebcp')) {
       final ebcp = EbcpFile.fromEbcp(bytes);
       if (ebcp == null) return [];
       return ebcp.items
           .map((i) => i.asProfile())
           .whereType<ProfileExport>()
           .toList();
+    } else {
+      throw FormatException('Expected an .a7p or .ebcp file, got: ${file.name}');
     }
   }
 }

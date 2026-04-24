@@ -140,6 +140,26 @@ GitHub Actions workflows are provided for automated builds:
 
 ---
 
+## Android notes
+
+### Impeller disabled
+
+Flutter's Impeller renderer (enabled by default on Android since Flutter 3.16) tessellates SVG paths — including circles — into coarse polygons, which makes reticle and target SVGs look jagged. Until Flutter/Impeller resolves path tessellation quality for small shapes, Impeller is **explicitly disabled** for Android in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<meta-data
+    android:name="io.flutter.embedding.android.EnableImpeller"
+    android:value="false" />
+```
+
+This forces the app to use **Skia**, which renders SVG circles smoothly. Re-enable Impeller only after verifying that circle/arc quality is acceptable on your target Android version.
+
+### File import
+
+On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) because Android does not know their MIME types. The import dialogs open with `FileType.any` and validate the extension after the user selects a file. Selecting a wrong file type shows an error message.
+
+---
+
 ## Dependencies
 
 | Package | Role |

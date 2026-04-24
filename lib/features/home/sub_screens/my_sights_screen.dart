@@ -49,18 +49,25 @@ class MySightsCollectionScreen extends ConsumerWidget {
             icon: IconDef.import,
             title: 'Import from file',
             onTap: () async {
-              final ebcp = await EbcpService.pickAndParse();
-              if (ebcp == null || !context.mounted) return;
-              final sights = ebcp.items
-                  .map((i) => i.asSight())
-                  .whereType<SightExport>()
-                  .toList();
-              if (sights.isEmpty) {
-                showNotAvailableSnackBar(context, 'No sights found in file');
-                return;
-              }
-              for (final s in sights) {
-                await ref.read(appStateProvider.notifier).importSight(s);
+              try {
+                final ebcp = await EbcpService.pickAndParse();
+                if (ebcp == null || !context.mounted) return;
+                final sights = ebcp.items
+                    .map((i) => i.asSight())
+                    .whereType<SightExport>()
+                    .toList();
+                if (sights.isEmpty) {
+                  showNotAvailableSnackBar(context, 'No sights found in file');
+                  return;
+                }
+                for (final s in sights) {
+                  await ref.read(appStateProvider.notifier).importSight(s);
+                }
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Import failed: $e')),
+                );
               }
             },
           ),
