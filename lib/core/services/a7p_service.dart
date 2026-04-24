@@ -101,7 +101,9 @@ abstract final class A7pService {
           .whereType<ProfileExport>()
           .toList();
     } else {
-      throw FormatException('Expected an .a7p or .ebcp file, got: ${file.name}');
+      throw FormatException(
+        'Expected an .a7p or .ebcp file, got: ${file.name}',
+      );
     }
   }
 }

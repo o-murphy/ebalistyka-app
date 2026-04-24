@@ -22,6 +22,9 @@
 - **`scripts/build-android.sh`** — new script: sets pubspec version, decodes keystore from `ANDROID_KEYSTORE_BASE64` env var, builds split-per-ABI APKs, packages to `artifacts/`
 - **`scripts/generate-android-keystore.sh`** — generates JKS keystore via `keytool`, writes `android/key.properties` for local builds, copies keystore + base64 + secrets summary to `certs/`
 
+### Reliability
+- **Database resilience** — `_openStore` in `main.dart` catches ObjectBox open failures; deletes `data.mdb` / `lock.mdb` and re-initialises a fresh store; shows a SnackBar warning only when prior data existed (skipped on first install)
+
 ### Docs
 - **README** — added `## Android notes` section documenting Impeller workaround and file import behaviour
 

@@ -647,8 +647,14 @@ class MilReticleSVGCanvas {
     final ux = dx / length;
     final uy = dy / length;
     for (var t = 0.0; t <= length + 1e-9; t += spacing) {
-      circle(x1 + t * ux, y1 + t * uy, r,
-          fill: fill, stroke: stroke, strokeWidth: strokeWidth);
+      circle(
+        x1 + t * ux,
+        y1 + t * uy,
+        r,
+        fill: fill,
+        stroke: stroke,
+        strokeWidth: strokeWidth,
+      );
     }
   }
 

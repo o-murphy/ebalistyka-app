@@ -15,6 +15,9 @@ final dbProvider = Provider<Store>((ref) {
   throw UnimplementedError('dbProvider must be overridden with an open Store');
 });
 
+/// Set to [true] when the store was corrupted on startup and had to be reset.
+final dbWasResetProvider = Provider<bool>((_) => false);
+
 /// Returns the singleton local [Owner] (token = "local").
 ///
 /// Creates it on first run. All local entities are linked to this owner —
