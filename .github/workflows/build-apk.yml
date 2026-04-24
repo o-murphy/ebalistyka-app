@@ -1,6 +1,58 @@
-name: PR Build (Android APK)
+name: Build Android APK
 
 on:
+  workflow_call:
+    inputs:
+      build_name:
+        description: "Version name (e.g. v1.2.3 or 0.1.0-dev)"
+        required: false
+        type: string
+        default: "0.1.0-dev"
+      build_type:
+        description: "Build type"
+        required: false
+        type: string
+        default: "release"
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        description: "Base64-encoded Android keystore (.jks / .p12)"
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        description: "Keystore store password"
+        required: false
+      ANDROID_KEY_ALIAS:
+        description: "Key alias inside the keystore"
+        required: false
+      ANDROID_KEY_PASSWORD:
+        description: "Key password"
+        required: false
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+
+  workflow_dispatch:
+    inputs:
+      build_name:
+        description: "Version name (e.g. 0.1.0-dev)"
+        required: false
+        default: "0.1.0-dev"
+        type: string
+      build_type:
+        description: "Build type"
+        required: false
+        default: "release"
+        type: choice
+        options: [ release, debug ]
+
   pull_request:
     branches: [ main, develop ]
     paths:
@@ -9,29 +61,19 @@ on:
       - "external/**"
       - "packages/bclibc_ffi/**"
       - "pubspec.yaml"
+      - "scripts/build-android.sh"
       - ".github/workflows/build-apk.yml"
-  workflow_dispatch:
 
 env:
   FLUTTER_VERSION: "3.41.6"
 
 jobs:
-  prepare-version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.v.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: v
-        uses: ./.github/actions/version
-
   build:
-    needs: prepare-version
-    name: Android fat APK (release)
+    name: Android APK (${{ inputs.build_type || 'release' }})
     runs-on: ubuntu-latest
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
-      artifact_url: ${{ steps.artifact_url.outputs.url }}
+      artifact_url:  ${{ steps.artifact_url.outputs.url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -57,16 +99,16 @@ jobs:
         id: meta
         shell: bash
         run: |
-          BUILD_NAME="${{ needs.prepare-version.outputs.version }}"
+          BUILD_NAME="${{ inputs.build_name || '0.1.0-dev' }}"
           BUILD_NAME="${BUILD_NAME#v}"
           BUILD_NUMBER="${{ github.run_number }}"
           BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
           BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
-          echo "build_name=$BUILD_NAME"         >> $GITHUB_OUTPUT
-          echo "build_number=$BUILD_NUMBER"     >> $GITHUB_OUTPUT
-          echo "bclibc_hash=$BCLIBC_HASH"       >> $GITHUB_OUTPUT
+          echo "build_name=$BUILD_NAME"           >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER"       >> $GITHUB_OUTPUT
+          echo "bclibc_hash=$BCLIBC_HASH"         >> $GITHUB_OUTPUT
           echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
-          echo "artifact_name=ebalistyka-android-release-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-android-${{ inputs.build_type || 'release' }}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Cache pub packages
         uses: actions/cache@v4
@@ -98,22 +140,16 @@ jobs:
           flutter clean
           flutter pub get
 
-      - name: Set pubspec version
+      - name: Build & sign APKs
+        env:
+          ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
-          NUM=${{ steps.meta.outputs.build_number }}
-          sed -i "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
-          echo "pubspec version → ${BASE}+${NUM}"
-
-      - name: Build APK
-        run: flutter build apk --release --split-per-abi
-
-      - name: Package APKs
-        run: |
-          mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk  artifacts/ebalistyka_android_arm64.apk
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-          cp build/app/outputs/flutter-apk/app-x86_64-release.apk     artifacts/ebalistyka_android_x86_64.apk
+          bash scripts/build-android.sh \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
 
       - name: Upload artifact
         id: upload
@@ -121,7 +157,7 @@ jobs:
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: artifacts/
-          retention-days: 30
+          retention-days: ${{ inputs.retention_days || 30 }}
           if-no-files-found: error
 
       - name: Generate artifact URL

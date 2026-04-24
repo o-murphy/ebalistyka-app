@@ -50,3 +50,10 @@ app.*.map.json
 # Local certificates (never commit)
 /certs/
 certificate_base64.txt
+
+# Android signing — never commit keystore or key.properties
+android/key.properties
+android/*.keystore
+android/*.jks
+android/*.p12
+android/keystore_base64.txt
