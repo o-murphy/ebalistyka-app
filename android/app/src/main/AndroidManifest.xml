@@ -41,6 +41,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Disable Impeller: flutter_svg circles tessellate as polygons under Impeller -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
         <!-- FileProvider for share_plus and file_picker -->
         <provider
             android:name="androidx.core.content.FileProvider"
