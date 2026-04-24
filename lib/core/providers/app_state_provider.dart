@@ -12,21 +12,21 @@ import 'package:riverpod/riverpod.dart';
 
 class AppState {
   final List<Weapon> weapons;
-  final List<Ammo> cartridges;
+  final List<Ammo> ammo;
   final List<Sight> sights;
   final List<Profile> profiles;
   final Profile? activeProfile;
 
   const AppState({
     required this.weapons,
-    required this.cartridges,
+    required this.ammo,
     required this.sights,
     required this.profiles,
     this.activeProfile,
   });
 
   factory AppState.empty() =>
-      const AppState(weapons: [], cartridges: [], sights: [], profiles: []);
+      const AppState(weapons: [], ammo: [], sights: [], profiles: []);
 
   AppState copyWith({
     List<Weapon>? weapons,
@@ -37,7 +37,7 @@ class AppState {
     bool clearActiveProfile = false,
   }) => AppState(
     weapons: weapons ?? this.weapons,
-    cartridges: cartridges ?? this.cartridges,
+    ammo: cartridges ?? this.ammo,
     sights: sights ?? this.sights,
     profiles: profiles ?? this.profiles,
     activeProfile: clearActiveProfile
@@ -162,7 +162,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
     return AppState(
       weapons: weapons,
-      cartridges: cartridges,
+      ammo: cartridges,
       sights: sights,
       profiles: profiles,
       activeProfile: activeProfile,
@@ -517,8 +517,8 @@ final weaponsProvider = Provider<List<Weapon>>((ref) {
   return ref.watch(appStateProvider).value?.weapons ?? [];
 });
 
-final cartridgesProvider = Provider<List<Ammo>>((ref) {
-  return ref.watch(appStateProvider).value?.cartridges ?? [];
+final ammoProvider = Provider<List<Ammo>>((ref) {
+  return ref.watch(appStateProvider).value?.ammo ?? [];
 });
 
 final sightsProvider = Provider<List<Sight>>((ref) {

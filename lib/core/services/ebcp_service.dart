@@ -98,7 +98,7 @@ abstract final class EbcpService {
             .where((w) => w.id == profile.weapon.targetId)
             .firstOrNull;
         if (weapon == null) continue;
-        final ammo = appState.cartridges
+        final ammo = appState.ammo
             .where((a) => a.id == profile.ammo.targetId)
             .firstOrNull;
         final sight = appState.sights
@@ -111,7 +111,7 @@ abstract final class EbcpService {
         );
       }
 
-      for (final ammo in appState.cartridges) {
+      for (final ammo in appState.ammo) {
         if (!linkedAmmoIds.contains(ammo.id)) {
           items.add(EbcpItem.fromAmmo(AmmoExport.fromEntity(ammo)));
         }

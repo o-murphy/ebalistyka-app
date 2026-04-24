@@ -178,7 +178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           .read(appStateProvider)
                                           .value;
                                       final profile = appState?.activeProfile;
-                                      final ammo = appState?.cartridges
+                                      final ammo = appState?.ammo
                                           .where(
                                             (a) =>
                                                 a.id == profile?.ammo.targetId,

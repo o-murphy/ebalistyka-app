@@ -176,7 +176,7 @@ ProfileCardData _buildCardData(
   final weapon = appState.weapons
       .where((w) => w.id == profile.weapon.targetId)
       .firstOrNull;
-  final ammo = appState.cartridges
+  final ammo = appState.ammo
       .where((a) => a.id == profile.ammo.targetId)
       .firstOrNull;
   final sight = appState.sights

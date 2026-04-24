@@ -171,7 +171,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         .where((w) => w.id == profile.weapon.targetId)
         .firstOrNull;
     if (weapon == null) return;
-    final ammo = appState.cartridges
+    final ammo = appState.ammo
         .where((a) => a.id == profile.ammo.targetId)
         .firstOrNull;
     final sight = appState.sights
@@ -288,7 +288,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     final weapon = appState.weapons
         .where((w) => w.id == profile.weapon.targetId)
         .firstOrNull;
-    final ammo = appState.cartridges
+    final ammo = appState.ammo
         .where((a) => a.id == profile.ammo.targetId)
         .firstOrNull;
 

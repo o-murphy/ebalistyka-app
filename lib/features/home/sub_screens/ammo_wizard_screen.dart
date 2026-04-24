@@ -17,6 +17,7 @@ import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,6 +78,19 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   final _powderSensKey = GlobalKey();
   final _coriolisKey = GlobalKey();
 
+  late double _offsetXRaw;
+  late Unit _offsetXUnit;
+  late double _offsetYRaw;
+  late Unit _offsetYUnit;
+
+  static const _offsetUnits = [
+    Unit.mil,
+    Unit.moa,
+    Unit.mRad,
+    Unit.cmPer100m,
+    Unit.inPer100Yd,
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -129,6 +143,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _zeroUseCoriolis = a?.zeroUseCoriolis ?? false;
     _zeroLatitudeRaw = a?.zeroLatitudeDeg ?? 0.0;
     _zeroAzimuthRaw = a?.zeroAzimuthDeg ?? 0.0;
+
+    _offsetYUnit = a?.zeroOffsetYUnitValue ?? Unit.mil;
+    _offsetYRaw = a != null
+        ? Angular(a.zeroOffsetY, _offsetYUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+
+    _offsetXUnit = a?.zeroOffsetXUnitValue ?? Unit.mil;
+    _offsetXRaw = a != null
+        ? Angular(a.zeroOffsetX, _offsetXUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
   }
 
   @override
@@ -322,6 +346,17 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.zeroUseCoriolis = _zeroUseCoriolis;
     ammo.zeroLatitudeDeg = _zeroLatitudeRaw;
     ammo.zeroAzimuthDeg = _zeroAzimuthRaw;
+
+    ammo.zeroOffsetYUnitValue = _offsetYUnit;
+    ammo.zeroOffsetY = Angular(
+      _offsetYRaw,
+      FC.adjustment.rawUnit,
+    ).in_(_offsetYUnit);
+    ammo.zeroOffsetXUnitValue = _offsetXUnit;
+    ammo.zeroOffsetX = Angular(
+      _offsetXRaw,
+      FC.adjustment.rawUnit,
+    ).in_(_offsetXUnit);
     return ammo;
   }
 
@@ -743,11 +778,30 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
           ],
 
           // ── Zeroing offset ────────────────────────────────────────
-          listInputLabel(context, 'Offset clicks'),
-
           listInputLabel(context, 'Vertical offset'),
-
+          UnitInputWithPicker(
+            value: _offsetYRaw,
+            constraints: FC.adjustment,
+            displayUnit: _offsetYUnit,
+            options: _offsetUnits,
+            unitLabel: 'Click unit',
+            onChanged: (v) {
+              if (v != null) setState(() => _offsetYRaw = v);
+            },
+            onUnitChanged: (u) => setState(() => _offsetYUnit = u),
+          ),
           listInputLabel(context, 'Horizontal offset'),
+          UnitInputWithPicker(
+            value: _offsetXRaw,
+            constraints: FC.adjustment,
+            displayUnit: _offsetXUnit,
+            options: _offsetUnits,
+            unitLabel: 'Click unit',
+            onChanged: (v) {
+              if (v != null) setState(() => _offsetXRaw = v);
+            },
+            onUnitChanged: (u) => setState(() => _offsetXUnit = u),
+          ),
 
           // ── Zeroing coriolis ────────────────────────────────────────
           const Divider(height: 1),
