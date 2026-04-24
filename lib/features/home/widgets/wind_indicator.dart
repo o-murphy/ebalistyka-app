@@ -267,13 +267,7 @@ class WindPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     )..layout();
 
-    iconTp.paint(
-      canvas,
-      Offset(
-        -iconTp.width / 2, // БЕЗ markerCenter.dx
-        -iconTp.height / 2, // БЕЗ markerCenter.dy
-      ),
-    );
+    iconTp.paint(canvas, Offset(-iconTp.width / 2, -iconTp.height / 2));
 
     canvas.restore();
 

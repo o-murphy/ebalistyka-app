@@ -11,6 +11,8 @@
 - **URL launch** — `_launchUrl` now falls back to `LaunchMode.platformDefault` if `externalApplication` fails; `https`/`http` queries added to manifest for Android 11+ package visibility
 
 ### Fixed
+- **Window scaling** — uses system scale for initial app window size
+- **AdjustmentDisplay** — takes into account zeroOffsets and adjustments
 - **SVG circles rendered as polygons** — `dotLine` / `dotGrid` in `reticle_gen` now emit `<circle>` SVG elements instead of `<path>` arc commands; all reticle and target SVGs regenerated
 - **RenderFlex overflow on home screen** — removed hardcoded `SizedBox(height: 8)` spacer; `Column` now uses `mainAxisAlignment: MainAxisAlignment.center`
 - **PageDotsIndicator overflow** — `IconButton` tap target forced to `MaterialTapTargetSize.shrinkWrap` so actual height matches the declared 32 px constraint

@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
@@ -44,12 +44,23 @@ void main() async {
   if (isDesktop) {
     await windowManager.ensureInitialized();
 
-    const windowOptions = WindowOptions(
-      size: Size(_windowInitialWidth, _windowInitialHeight),
-      minimumSize: Size(_windowMinWidth, _windowMinHeight),
-      // maximumSize: Size(_windowMaxWidth, _windowMaxHeight),
+    final double ratio =
+        PlatformDispatcher.instance.views.first.devicePixelRatio;
+
+    final size = Size(
+      _windowInitialWidth * ratio,
+      _windowInitialHeight * ratio,
+    );
+    final minSize = Size(_windowMinWidth * ratio, _windowMinHeight * ratio);
+
+    WindowOptions windowOptions = WindowOptions(
+      size: size,
+      minimumSize: minSize,
       center: true,
       title: 'eBalistyka',
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -57,12 +68,7 @@ void main() async {
       await windowManager.setIcon('assets/icon.png');
       await windowManager.focus();
 
-      await windowManager.setMinimumSize(
-        const Size(_windowMinWidth, _windowMinHeight),
-      );
-      // await windowManager.setMaximumSize(
-      //   const Size(_windowMaxWidth, _windowMaxHeight),
-      // );
+      await windowManager.setMinimumSize(minSize);
       await windowManager.setMaximizable(false);
     });
   }

@@ -45,27 +45,21 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
       return Center(child: Text('Enable units...', style: tt.bodySmall));
     }
 
-    print(adjustment.elevation);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
         final availableHeight = constraints.maxHeight;
 
-        // Базові розміри для одного рядка тексту
         final baseWidth = 180.0;
         final baseHeight = 120.0;
 
-        // Розраховуємо scaleFactor на основі доступного простору
         final widthScale = availableWidth / baseWidth;
         final heightScale = availableHeight / baseHeight;
 
-        // Для вертикального режиму важливіше висота
         final scaleFactor = displayVertical
             ? heightScale.clamp(0.7, 2.0)
             : widthScale.clamp(0.7, 2.0);
 
-        // Стилі з масштабуванням
         final headerStyle = tt.titleSmall?.copyWith(
           color: cs.onSurface.withAlpha(180),
           fontWeight: FontWeight.w600,
@@ -163,7 +157,6 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
                 ],
               );
 
-        // Використовуємо Center та FittedBox без додаткових контейнерів
         return Center(
           child: FittedBox(
             fit: BoxFit.scaleDown,

@@ -52,9 +52,8 @@ class HomeReticlePage extends ConsumerWidget {
             child: Text(
               rs.zeroOffsetMessageLine!,
               textAlign: TextAlign.center,
-              softWrap:
-                  true, // Автоматичний перенос слів (ввімкнено за замовчуванням)
-              overflow: TextOverflow.visible, // Або clip, fade, ellipsis
+              softWrap: true,
+              overflow: TextOverflow.visible,
               style: tt.labelMedium?.copyWith(color: cs.tertiary),
             ),
           ),
@@ -64,9 +63,8 @@ class HomeReticlePage extends ConsumerWidget {
             child: Text(
               rs.adjustedMessageLine!,
               textAlign: TextAlign.center,
-              softWrap:
-                  true, // Автоматичний перенос слів (ввімкнено за замовчуванням)
-              overflow: TextOverflow.visible, // Або clip, fade, ellipsis
+              softWrap: true,
+              overflow: TextOverflow.visible,
               style: tt.labelMedium?.copyWith(color: cs.tertiary),
             ),
           ),
@@ -75,7 +73,6 @@ class HomeReticlePage extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Ліва частина - ReticleView (2/3)
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -99,7 +96,6 @@ class HomeReticlePage extends ConsumerWidget {
                   ),
                 ),
               ),
-              // Права частина - AdjustmentsDisplayPanel (1/3)
               Expanded(
                 flex: 1,
                 child: Padding(

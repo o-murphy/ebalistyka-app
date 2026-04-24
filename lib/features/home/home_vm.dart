@@ -423,10 +423,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     if (ammo != null) {
       final zeroOffsetUnit = ammo.zeroOffsetUnitValue;
       zeroOffsetXMil = Angular(ammo.zeroOffsetY, zeroOffsetUnit).in_(Unit.mil);
-      verticalClickSizeMil = Angular(
-        ammo.zeroOffsetY,
-        zeroOffsetUnit,
-      ).in_(Unit.mil);
+      zeroOffsetYMil = Angular(ammo.zeroOffsetX, zeroOffsetUnit).in_(Unit.mil);
       zeroOffsetMessageLine = _buildZeroOffsetMessageLine(
         zeroOffsetYMil: zeroOffsetYMil,
         zeroOffsetXMil: zeroOffsetXMil,
@@ -444,7 +441,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         hAdjMil +
         zeroOffsetXMil;
 
-    final adjustment = _buildAdjustment(
+    final adjustmentData = _buildAdjustment(
       hit,
       targetM,
       Angular(elevMil, Unit.mil),
@@ -469,7 +466,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       adjustedMessageLine: adjustedMessageLine,
       zeroOffsetMessageLine: zeroOffsetMessageLine,
       cartridgeInfoLine: cartridgeInfoLine,
-      adjustment: adjustment,
+      adjustment: adjustmentData,
       adjustmentFormat: settings.adjustmentDisplayFormat,
       adjustmentElevMil: elevMil,
       adjustmentWindMil: windMil,
@@ -517,8 +514,19 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required double zeroOffsetYMil,
     required double zeroOffsetXMil,
   }) {
-    // return 'Zero offset: <placeholder>';
-    return null;
+    if (zeroOffsetYMil == 0.0 && zeroOffsetXMil == 0.0) return null;
+
+    final parts = <String>[];
+
+    if (zeroOffsetYMil != 0.0) {
+      parts.add(_angularPart(zeroOffsetYMil, zeroOffsetUnit, 'vertical'));
+    }
+
+    if (zeroOffsetXMil != 0.0) {
+      parts.add(_angularPart(zeroOffsetXMil, zeroOffsetUnit, 'horizontal'));
+    }
+
+    return 'Zero offset: ${parts.join(' / ')}';
   }
 
   String? _buildAdjustedMessageLine(
@@ -528,6 +536,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   }) {
     final vAdj = reticle.verticalAdjustment;
     final hAdj = reticle.horizontalAdjustment;
+
     if (vAdj == 0.0 && hAdj == 0.0) return null;
 
     final parts = <String>[];

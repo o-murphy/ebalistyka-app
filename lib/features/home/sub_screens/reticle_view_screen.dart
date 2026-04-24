@@ -142,13 +142,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const double maxTopHeightRatio = 0.50; // 35% від загальної висоти
+        const double maxTopHeightRatio = 0.50;
         final double fullHeight = constraints.maxHeight;
         final double maxAllowedHeight = fullHeight * maxTopHeightRatio;
 
-        // Верхній блок має бути квадратним (1:1), але не більше ніж 35% висоти
         final double topBlockSize = math.min(
-          constraints.maxWidth, // ширина = висота для ratio 1:1
+          constraints.maxWidth,
           maxAllowedHeight,
         );
 
@@ -318,13 +317,13 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
   Widget _buildTopBlock(
     BuildContext context,
-    double size, // тепер це і ширина і висота
+    double size,
     HomeUiReady vmState,
     double targetSizeMil,
   ) {
     return SizedBox(
-      width: double.infinity, // займає всю ширину
-      height: size, // висота дорівнює size (квадрат)
+      width: double.infinity,
+      height: size,
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
