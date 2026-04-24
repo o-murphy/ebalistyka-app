@@ -161,6 +161,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (next.hasValue) _recalculate();
     }, fireImmediately: true);
+    ref.listen<AsyncValue<AppState>>(appStateProvider, (prev, next) {
+      if (next.hasValue && prev?.value != null) _recalculate();
+    }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
       if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();

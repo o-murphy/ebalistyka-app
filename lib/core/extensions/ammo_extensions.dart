@@ -76,7 +76,7 @@ extension AmmoExtension on Ammo {
     (u) => u.name == zeroOffsetYUnit,
     orElse: () => Unit.mil,
   );
-  set zeroOffsetYUnitValue(Unit v) => zeroOffsetXUnit = v.name;
+  set zeroOffsetYUnitValue(Unit v) => zeroOffsetYUnit = v.name;
 
   // ── Drag model helpers ────────────────────────────────────────────────────────
 
