@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.1.2] - 2026-04-26
+
 ### Added
 
 #### Android
