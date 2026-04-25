@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
-      artifact_url:  ${{ steps.artifact_url.outputs.url }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -172,10 +172,6 @@ jobs:
           retention-days: ${{ inputs.retention_days || 30 }}
           if-no-files-found: error
 
-      - name: Generate artifact URL
-        id: artifact_url
-        run: |
-          echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts" >> $GITHUB_OUTPUT
 
   pr-summary:
     needs: [ build ]

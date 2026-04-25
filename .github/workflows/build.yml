@@ -80,7 +80,7 @@ jobs:
 
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
-      artifact_url: ${{ steps.artifact_url.outputs.url }}
+      artifact_url: ${{ steps.upload.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -258,9 +258,3 @@ jobs:
           retention-days: ${{ inputs.retention_days || 30 }}
           if-no-files-found: error
 
-      - name: Generate artifact URL
-        id: artifact_url
-        shell: bash
-        run: |
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "url=${RUN_URL}#artifacts" >> $GITHUB_OUTPUT

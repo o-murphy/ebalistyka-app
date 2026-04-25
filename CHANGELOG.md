@@ -49,6 +49,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `build.gradle.kts`:
   - reads signing config from `android/key.properties`
   - falls back to debug signing if missing
+- Reusable `pr-summary.yml` workflow — posts/updates per-platform build result comment on PRs; replaces duplicated inline scripts in `build-apk.yml`, `build-exe.yml`, `build-appimage.yml`
+- PR artifact links now use `upload-artifact@v4` direct URL instead of a generic run page link
+- Version resolution unified across all workflows via `.github/actions/version`:
+  - tag builds → version from tag
+  - PR / `workflow_dispatch` → base version from `pubspec.yaml` (no suffix)
+- `build-apk.yml`: added `prepare-version` job for direct PR and dispatch triggers (previously fell back to hardcoded `0.1.0-dev`)
+- MSIX version revision set to `0` for release tags (`v*.*.*`, `v*.*.*-*`) per Microsoft Store requirement; non-release builds keep `run_number` as revision
 
 #### Reticle gen
 - Updated reticles generator
