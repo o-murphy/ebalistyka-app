@@ -16,10 +16,10 @@ on:
         required: true
         type: string # release | debug
       build_name:
-        description: "Version name (e.g. 0.1.0-dev)"
+        description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
         type: string
-        default: "0.1.0-dev"
+        default: ""
       retention_days:
         description: "Artifact retention in days"
         required: false
@@ -61,9 +61,9 @@ on:
         type: choice
         options: [ release, debug ]
       build_name:
-        description: "Version name (e.g. 0.1.0-dev)"
+        description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
-        default: "0.1.0-dev"
+        default: ""
         type: string
 
 env:
@@ -115,7 +115,9 @@ jobs:
           echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
 
           BUILD_NAME="${{ inputs.build_name }}"
-          # Remove prefix 'v'
+          if [ -z "$BUILD_NAME" ]; then
+            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          fi
           BUILD_NAME="${BUILD_NAME#v}"
           BUILD_NUMBER="${{ github.run_number }}"
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
@@ -234,7 +236,8 @@ jobs:
           }
           $buildName = "${{ steps.meta.outputs.build_name }}"
           if ($buildName -match '^(\d+\.\d+\.\d+)') { $base = $Matches[1] } else { $base = "0.1.0" }
-          $msixVersion = "$base.${{ steps.meta.outputs.build_number }}"
+          $revision = if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v\d+\.\d+\.\d+') { '0' } else { '${{ steps.meta.outputs.build_number }}' }
+          $msixVersion = "$base.$revision"
 
           .\scripts\package-msix.ps1 `
             -BuildName $buildName `

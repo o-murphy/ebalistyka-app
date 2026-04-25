@@ -55,6 +55,9 @@ jobs:
 
   build-android:
     needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-apk.yml
     with:
       build_name: ${{ needs.prepare-version.outputs.version }}

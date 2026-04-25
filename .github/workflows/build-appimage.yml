@@ -1,4 +1,4 @@
-name: PR Build (Linux AppImage)
+name: Build Linux AppImage + Portable
 
 on:
   pull_request:
@@ -45,92 +45,28 @@ jobs:
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 30
 
-  pr-summary:
-    name: PR Build Summary
-    runs-on: ubuntu-latest
-    needs: [ build-amd64, build-arm64 ]
+  pr-summary-amd64:
+    needs: [ build-amd64 ]
     if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
       issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Linux amd64
+      build_result: ${{ needs.build-amd64.result }}
+      artifact_name: ${{ needs.build-amd64.outputs.artifact_name }}
+      artifact_url: ${{ needs.build-amd64.outputs.artifact_url }}
 
-    steps:
-      - name: Get PR number
-        id: pr
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          else
-            echo "number=" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Comment on PR
-        if: steps.pr.outputs.number != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const prNumber = parseInt('${{ steps.pr.outputs.number }}');
-            const amd64Success = '${{ needs.build-amd64.result }}' === 'success';
-            const arm64Success = '${{ needs.build-arm64.result }}' === 'success';
-            const artifactUrl = '${{ needs.build-amd64.outputs.artifact_url || needs.build-arm64.outputs.artifact_url }}';
-            const artifactName = '${{ needs.build-amd64.outputs.artifact_name || needs.build-arm64.outputs.artifact_name }}';
-            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-
-            let body = `## Linux AppImage Build\n\n`;
-
-            if (amd64Success || arm64Success) {
-              body += `✅ **Build successful!**\n\n`;
-              body += `- **amd64**: ${amd64Success ? '✅' : '❌'}\n`;
-              body += `- **arm64**: ${arm64Success ? '✅' : '❌'}\n\n`;
-              
-              if (artifactUrl) {
-                body += `📦 **[Download AppImage](${artifactUrl})**\n`;
-                body += `\`${artifactName}\` — available for 7 days\n\n`;
-              }
-              
-              body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
-              body += `### Test Instructions:\n`;
-              body += `\`\`\`bash\n# Download and run\nchmod +x ebalistyka-x86_64.AppImage\n./ebalistyka-x86_64.AppImage\n\`\`\`\n`;
-            } else {
-              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
-            }
-
-            try {
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-              });
-
-              const existing = comments.find(c =>
-                c.user.type === 'Bot' && c.body.includes('## Linux AppImage Build')
-              );
-
-              if (existing) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: existing.id,
-                  body,
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body,
-                });
-              }
-            } catch (error) {
-              console.log('Error posting comment:', error.message);
-            }
-
-      - name: Display build status
-        if: steps.pr.outputs.number == ''
-        run: |
-          echo "========================================="
-          echo "Build completed with status: ${{ needs.build-amd64.result }} / ${{ needs.build-arm64.result }}"
-          echo "========================================="
-          echo "Skipping PR comment because this is not a pull request event"
-          echo "Triggered by: ${{ github.event_name }}"
-          echo "Run URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+  pr-summary-arm64:
+    needs: [ build-arm64 ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Linux arm64
+      build_result: ${{ needs.build-arm64.result }}
+      artifact_name: ${{ needs.build-arm64.outputs.artifact_name }}
+      artifact_url: ${{ needs.build-arm64.outputs.artifact_url }}

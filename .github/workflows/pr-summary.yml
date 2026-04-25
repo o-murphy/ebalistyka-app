@@ -1,0 +1,78 @@
+name: PR Build Summary
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: "Platform label shown in the comment (e.g. Android, Linux amd64)"
+        required: true
+        type: string
+      build_result:
+        description: "Build result: success | failure | cancelled | skipped"
+        required: true
+        type: string
+      artifact_name:
+        required: false
+        type: string
+        default: ""
+      artifact_url:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  comment:
+    name: Post PR comment (${{ inputs.platform }})
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Post or update PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const platform = '${{ inputs.platform }}';
+            const success = '${{ inputs.build_result }}' === 'success';
+            const artifactUrl = '${{ inputs.artifact_url }}';
+            const artifactName = '${{ inputs.artifact_name }}';
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const marker = `<!-- pr-summary:${platform} -->`;
+
+            let body = `${marker}\n## ${platform} Build\n\n`;
+            if (success) {
+              body += `✅ **Build successful!**\n\n`;
+              if (artifactUrl) {
+                body += `📦 **[Download](${artifactUrl})**  \n`;
+                body += `\`${artifactName}\`\n\n`;
+              }
+              body += `**PR**: #${context.issue.number} · **Commit**: \`${context.sha}\`\n`;
+            } else {
+              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

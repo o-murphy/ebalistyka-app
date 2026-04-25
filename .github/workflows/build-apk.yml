@@ -4,10 +4,10 @@ on:
   workflow_call:
     inputs:
       build_name:
-        description: "Version name (e.g. v1.2.3 or 0.1.0-dev)"
+        description: "Version name (e.g. v1.2.3)"
         required: false
         type: string
-        default: "0.1.0-dev"
+        default: ""
       build_type:
         description: "Build type"
         required: false
@@ -42,9 +42,9 @@ on:
   workflow_dispatch:
     inputs:
       build_name:
-        description: "Version name (e.g. 0.1.0-dev)"
+        description: "Version name override (leave empty to use pubspec.yaml)"
         required: false
-        default: "0.1.0-dev"
+        default: ""
         type: string
       build_type:
         description: "Build type"
@@ -68,7 +68,19 @@ env:
   FLUTTER_VERSION: "3.41.6"
 
 jobs:
+  prepare-version:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_call'
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        uses: ./.github/actions/version
+
   build:
+    needs: [ prepare-version ]
+    if: always()
     name: Android APK (${{ inputs.build_type || 'release' }})
     runs-on: ubuntu-latest
     outputs:
@@ -99,7 +111,7 @@ jobs:
         id: meta
         shell: bash
         run: |
-          BUILD_NAME="${{ inputs.build_name || '0.1.0-dev' }}"
+          BUILD_NAME="${{ inputs.build_name || needs.prepare-version.outputs.version }}"
           BUILD_NAME="${BUILD_NAME#v}"
           BUILD_NUMBER="${{ github.run_number }}"
           BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
@@ -166,66 +178,14 @@ jobs:
           echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts" >> $GITHUB_OUTPUT
 
   pr-summary:
-    name: PR Build Summary
-    runs-on: ubuntu-latest
     needs: [ build ]
     if: always() && github.event_name == 'pull_request'
     permissions:
       pull-requests: write
       issues: write
-
-    steps:
-      - name: Comment on PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const prNumber = context.issue.number;
-            const success = '${{ needs.build.result }}' === 'success';
-            const artifactUrl = '${{ needs.build.outputs.artifact_url }}';
-            const artifactName = '${{ needs.build.outputs.artifact_name }}';
-            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-
-            let body = `## Android APK Build\n\n`;
-
-            if (success) {
-              body += `✅ **Build successful!**\n\n`;
-              if (artifactUrl) {
-                body += `📦 **[Download APK](${artifactUrl})**\n`;
-                body += `\`${artifactName}\` — available for 30 days\n\n`;
-              }
-              body += `**PR**: #${prNumber} · **Commit**: \`${{ github.sha }}\`\n\n`;
-              body += `### Test Instructions:\n`;
-              body += `\`\`\`bash\n# arm64 (most modern phones)\nadb install ebalistyka_android_arm64.apk\n# arm32 (older phones)\nadb install ebalistyka_android_armeabi_v7a.apk\n\`\`\`\n`;
-            } else {
-              body += `❌ **Build failed!**\n\n[View logs](${runUrl})\n`;
-            }
-
-            try {
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-              });
-
-              const existing = comments.find(c =>
-                c.user.type === 'Bot' && c.body.includes('## Android APK Build')
-              );
-
-              if (existing) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: existing.id,
-                  body,
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body,
-                });
-              }
-            } catch (error) {
-              console.log('Error posting comment:', error.message);
-            }
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Android
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}

@@ -1,12 +1,17 @@
 # ebalistyka
 
-[![Build (Linux AppImage)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
-[![Build (Windows EXE)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.41.6-02569B?logo=flutter)](https://flutter.dev)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange)
+![Version](https://img.shields.io/badge/version-0.1.2-orange)
 ![Status: Alpha](https://img.shields.io/badge/status-alpha-orange)
-![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey)
+![Linux](https://img.shields.io/badge/Linux-x86__64%20%7C%20arm64-grey?logo=linux&logoColor=black&labelColor=FCC624)
+![Windows](https://img.shields.io/badge/x86__64-grey?logo=windows&logoColor=black&label=Windows&labelColor=0078D4)
+![Android](https://img.shields.io/badge/Android-arm64%20%7C%20armv7%20%7C%20x86__64-grey?logo=android&logoColor=white&labelColor=3DDC84)
+
+[![Build (Linux)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-appimage.yml)
+[![Build (Windows)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-exe.yml)
+[![Build (Android)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml/badge.svg)](https://github.com/o-murphy/ebalistyka-app/actions/workflows/build-apk.yml)
+
 
 > [!WARNING]
 > **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
@@ -19,16 +24,28 @@ _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic
 
 ## Screenshots
 
-> [!NOTE]
-> Screenshots can be updated on changes.
-
-| Home | Conditions | Trajectory Tables |
-|------|-----------|-------------------|
-| ![Home](docs/screenshots/home.png) | ![Conditions](docs/screenshots/conditions.png) | ![Tables](docs/screenshots/tables.png) |
-
-| Convertors | Settings |
-|------------|----------|
-| ![Convertors](docs/screenshots/convertors.png) | ![Settings](docs/screenshots/settings.png) |
+<table>
+  <tr>
+    <td align="center"><b>Home</b></td>
+    <td align="center"><b>Conditions</b></td>
+    <td align="center"><b>Trajectory Tables</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.png" width="200"/></td>
+    <td><img src="docs/screenshots/conditions.png" width="200"/></td>
+    <td><img src="docs/screenshots/tables_trajectory.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Convertors</b></td>
+    <td align="center"><b>My Profiles</b></td>
+    <td align="center"><b>Reticle</b></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/convertors.png" width="200"/></td>
+    <td><img src="docs/screenshots/my_profiles.png" width="200"/></td>
+    <td><img src="docs/screenshots/reticle.png" width="200"/></td>
+  </tr>
+</table>
 
 ---
 
@@ -184,3 +201,8 @@ See [LICENSE](LICENSE) for the full text. See [CHANGELOG](CHANGELOG.md) for rele
 
 > [!NOTE]
 > `bclibc` (the ballistic solver engine, located in `external/bclibc`) is licensed separately under the **GNU Lesser General Public License v3.0**. See [`external/bclibc/LICENSE`](external/bclibc/LICENSE).
+
+> [!WARNING]
+> **Risk notice.** This application performs approximate simulations of complex physical processes. Calculation results must not be considered as completely or reliably reflecting actual projectile behaviour. Results may be used for educational purposes only and must not be relied upon in any context where an incorrect calculation could cause financial harm or put a human life at risk.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
