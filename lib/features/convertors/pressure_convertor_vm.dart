@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
@@ -41,7 +43,9 @@ class PressureConvertorViewModel extends Notifier<PressureConvertorUiState> {
     final convertorsState = ref.read(convertorStateProvider);
 
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updatePressureValue(null);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updatePressureValue(null),
+      );
       return;
     }
 
@@ -50,12 +54,16 @@ class PressureConvertorViewModel extends Notifier<PressureConvertorUiState> {
       Unit.mmHg,
     );
     if (mmHgValue >= 0) {
-      ref.read(convertorsProvider.notifier).updatePressureValue(mmHgValue);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updatePressureValue(mmHgValue),
+      );
     }
   }
 
   void changeInputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updatePressureUnit(newUnit);
+    unawaited(
+      ref.read(convertorsProvider.notifier).updatePressureUnit(newUnit),
+    );
   }
 
   double? _getDisplayValue(double? rawMmHg, Unit inputUnit) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -133,9 +135,16 @@ class SettingsScreen extends ConsumerWidget {
                     icon: const Icon(IconDef.import),
                     label: const Text('Import backup'),
                     onPressed: () async {
-                      final file = await EbcpService.pickAndParse();
-                      if (file == null) return;
-                      await EbcpService.restoreFromExport(file, ref);
+                      try {
+                        final file = await EbcpService.pickAndParse();
+                        if (file == null || !context.mounted) return;
+                        await EbcpService.restoreFromExport(file, ref);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Import failed: $e')),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -220,23 +229,27 @@ void _showLanguageDialog(
   Future<void> Function(String) onSelect,
 ) {
   const langs = [('en', 'English'), ('uk', 'Українська')];
-  showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Language'),
-      content: RadioGroup<String>(
-        groupValue: current,
-        onChanged: (v) {
-          if (v != null) {
-            onSelect(v);
-            Navigator.pop(ctx);
-          }
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: langs
-              .map((l) => RadioListTile<String>(value: l.$1, title: Text(l.$2)))
-              .toList(),
+  unawaited(
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Language'),
+        content: RadioGroup<String>(
+          groupValue: current,
+          onChanged: (v) {
+            if (v != null) {
+              unawaited(onSelect(v));
+              Navigator.pop(ctx);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: langs
+                .map(
+                  (l) => RadioListTile<String>(value: l.$1, title: Text(l.$2)),
+                )
+                .toList(),
+          ),
         ),
       ),
     ),
@@ -281,11 +294,7 @@ class _ThemeSelector extends StatelessWidget {
 }
 
 Future<void> _launchUrl(String url) async {
-  final Uri uri = Uri.parse(url);
-  if (!await launchUrl(
-    uri,
-    mode: LaunchMode.externalApplication, // Opens in an external browser
-  )) {
-    throw Exception('Could not launch $url');
-  }
+  final uri = Uri.parse(url);
+  if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+  await launchUrl(uri, mode: LaunchMode.platformDefault);
 }

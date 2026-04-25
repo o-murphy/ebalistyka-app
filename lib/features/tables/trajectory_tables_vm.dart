@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
@@ -70,7 +72,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
           TrajectoryTablesUiEmpty(type: EmptyStateType.noProfile),
         );
       } else {
-        _recalculate();
+        unawaited(_recalculate());
       }
     }, fireImmediately: true);
     ref.listen<TablesSettings>(tablesSettingsProvider, (prev, next) {

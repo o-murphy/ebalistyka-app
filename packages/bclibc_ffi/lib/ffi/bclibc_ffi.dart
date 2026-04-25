@@ -30,6 +30,7 @@ ffi.DynamicLibrary _openLibrary() {
   }
 
   if (Platform.isLinux) return ffi.DynamicLibrary.open(lib('libbclibc_ffi.so'));
+  if (Platform.isAndroid) return ffi.DynamicLibrary.open('libbclibc_ffi.so');
   if (Platform.isWindows) return ffi.DynamicLibrary.open(lib('bclibc_ffi.dll'));
   if (Platform.isMacOS) {
     return ffi.DynamicLibrary.open(lib('libbclibc_ffi.dylib'));

@@ -7,6 +7,9 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'      # v1.2.3-beta  → prerelease
   workflow_dispatch:
 
+env:
+  FLUTTER_VERSION: "3.41.6"
+
 jobs:
   prepare-version:
     runs-on: ubuntu-latest
@@ -50,8 +53,24 @@ jobs:
       CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
       CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
 
+  build-android:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-apk.yml
+    with:
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      build_type: release
+      retention_days: 1
+    secrets:
+      ANDROID_KEYSTORE_BASE64:   ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
+
   release:
-    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64]
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -72,7 +91,9 @@ jobs:
             -name "*.zsync"       -o \
             -name "*.zip"         -o \
             -name "*.msix"        -o \
-            -name "*.appinstaller" \
+            -name "*.appinstaller" -o \
+            -name "*.cer"         -o \
+            -name "*.apk" \
           \) -exec cp {} release/ \;
 
           echo "=== Release assets ==="

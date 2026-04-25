@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:a7p/a7p.dart';
 import 'package:ebalistyka/core/services/a7p_service.dart';
 import 'package:ebalistyka/core/services/ebcp_service.dart';
@@ -52,10 +54,12 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       });
       if (_pageController.hasClients) {
         if (animate) {
-          _pageController.animateToPage(
-            page,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+          unawaited(
+            _pageController.animateToPage(
+              page,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            ),
           );
         } else {
           _pageController.jumpToPage(page);
@@ -171,7 +175,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         .where((w) => w.id == profile.weapon.targetId)
         .firstOrNull;
     if (weapon == null) return;
-    final ammo = appState.cartridges
+    final ammo = appState.ammo
         .where((a) => a.id == profile.ammo.targetId)
         .firstOrNull;
     final sight = appState.sights
@@ -288,7 +292,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     final weapon = appState.weapons
         .where((w) => w.id == profile.weapon.targetId)
         .firstOrNull;
-    final ammo = appState.cartridges
+    final ammo = appState.ammo
         .where((a) => a.id == profile.ammo.targetId)
         .firstOrNull;
 
@@ -483,10 +487,12 @@ class _ProfilePageView extends StatelessWidget {
           current: currentPage,
           count: orderedIds.length,
           onPageChanged: (page) {
-            pageController.animateToPage(
-              page,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+            unawaited(
+              pageController.animateToPage(
+                page,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              ),
             );
           },
         ),

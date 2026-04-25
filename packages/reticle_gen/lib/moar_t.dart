@@ -149,7 +149,6 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(-35, 0)
                   ..lineTo(-(A / 2 + M), 0))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: J,
           )
@@ -166,7 +165,6 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
                   ..lineTo(-(A / 2 + 3), -B / 2)
                   ..lineTo(-35, -B / 2))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: I,
           );
@@ -177,7 +175,6 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(0, 35)
                   ..lineTo(0, A / 2 + M))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: J,
           )
@@ -189,7 +186,6 @@ class MoarTReticleDrawer implements SVGDrawerInterface {
                   ..lineTo(-B / 2, A / 2 + 3)
                   ..lineTo(-B / 2, 35))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: I,
           )

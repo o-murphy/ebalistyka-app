@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:riverpod/riverpod.dart';
@@ -82,7 +84,11 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   void updateDistanceValue(double? rawValueInInputUnit) {
     final convertorsState = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateAnglesConvDistanceValue(null);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateAnglesConvDistanceValue(null),
+      );
       return;
     }
     final metersValue = rawValueInInputUnit.convert(
@@ -90,16 +96,22 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       Unit.meter,
     );
     if (metersValue >= 0) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateAnglesConvDistanceValue(metersValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateAnglesConvDistanceValue(metersValue),
+      );
     }
   }
 
   void updateAngularValue(double? rawValueInInputUnit) {
     final convertorsState = ref.read(convertorStateProvider);
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateAnglesConvAngularValue(null);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateAnglesConvAngularValue(null),
+      );
       return;
     }
     final milValue = rawValueInInputUnit.convert(
@@ -107,22 +119,34 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       Unit.mil,
     );
     if (milValue >= 0) {
-      ref
-          .read(convertorsProvider.notifier)
-          .updateAnglesConvAngularValue(milValue);
+      unawaited(
+        ref
+            .read(convertorsProvider.notifier)
+            .updateAnglesConvAngularValue(milValue),
+      );
     }
   }
 
   void changeDistanceUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateAnglesConvDistanceUnit(newUnit);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateAnglesConvDistanceUnit(newUnit),
+    );
   }
 
   void changeAngularUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateAnglesConvAngularUnit(newUnit);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateAnglesConvAngularUnit(newUnit),
+    );
   }
 
   void changeOutputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateAnglesConvOutputUnit(newUnit);
+    unawaited(
+      ref.read(convertorsProvider.notifier).updateAnglesConvOutputUnit(newUnit),
+    );
   }
 
   FieldConstraints getDistanceConstraintsForUnit(Unit unit) {

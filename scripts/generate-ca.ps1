@@ -21,10 +21,13 @@ $cert = New-SelfSignedCertificate -Type CodeSigningCert `
     -KeyLength 2048 `
     -NotAfter (Get-Date).AddYears(10)
 
+$cerPath  = Join-Path (Resolve-Path ".") "$OutputDir\ebalistyka_cert.cer"
 $securePassword = ConvertTo-SecureString -String $Password -Force -AsPlainText
 Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $securePassword | Out-Null
+Export-Certificate   -Cert $cert -FilePath $cerPath  -Type CERT | Out-Null
 
-Write-Host "Certificate: $pfxPath"
+Write-Host "Certificate (PFX): $pfxPath"
+Write-Host "Certificate (CER): $cerPath  ← distribute to users for trust store install"
 
 # Export Base64 for CI secrets
 $pfxBytes = [System.IO.File]::ReadAllBytes($pfxPath)

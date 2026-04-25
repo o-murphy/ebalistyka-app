@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:ebalistyka/shared/consts.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -60,7 +62,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
       final wasLoading = prev?.isLoading == true;
       final isReady = next.value is HomeUiReady;
-      if (wasLoading && isReady) _calcDoneCtrl.forward(from: 0);
+      if (wasLoading && isReady) unawaited(_calcDoneCtrl.forward(from: 0));
     });
 
     final vmAsync = ref.watch(homeVmProvider);
@@ -111,7 +113,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           displayUnit: Unit.degree,
           onChanged: (v) {
             final normalized = (((v! % 360) + 360) % 360);
-            ref.read(homeVmProvider.notifier).updateWindDirection(normalized);
+            unawaited(
+              ref.read(homeVmProvider.notifier).updateWindDirection(normalized),
+            );
           },
         );
 
@@ -173,12 +177,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 const SizedBox(width: 8),
                                 if (vmState is HomeUiReady)
                                   IconButton.filledTonal(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       final appState = ref
                                           .read(appStateProvider)
                                           .value;
                                       final profile = appState?.activeProfile;
-                                      final ammo = appState?.cartridges
+                                      final ammo = appState?.ammo
                                           .where(
                                             (a) =>
                                                 a.id == profile?.ammo.targetId,
@@ -191,11 +195,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                                 profile?.weapon.targetId,
                                           )
                                           .firstOrNull;
-                                      if (ammo != null) {
-                                        context.push(
-                                          Routes.profileEditAmmo,
-                                          extra: (ammo, weapon?.caliberInch),
-                                        );
+                                      if (ammo == null) return;
+                                      final result = await context.push<Ammo?>(
+                                        Routes.profileEditAmmo,
+                                        extra: (ammo, weapon?.caliberInch),
+                                      );
+                                      if (result != null && context.mounted) {
+                                        await ref
+                                            .read(appStateProvider.notifier)
+                                            .saveAmmo(result);
                                       }
                                     },
                                     icon: const Icon(IconDef.ammo),
@@ -253,9 +261,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       child: WindIndicator(
                                         initialAngle: windInitialAngle,
                                         onAngleChanged: (degrees, _) {
-                                          ref
-                                              .read(homeVmProvider.notifier)
-                                              .updateWindDirection(degrees);
+                                          unawaited(
+                                            ref
+                                                .read(homeVmProvider.notifier)
+                                                .updateWindDirection(degrees),
+                                          );
                                         },
                                         onDirectionTap: (deg) =>
                                             showUnitEditDialog(
@@ -378,17 +388,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   alignment: Alignment.center,
                   color: cs.surface,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 8),
                       Text(pageName),
                       PageDotsIndicator(
                         current: _currentPage,
                         count: 3,
                         onPageChanged: (page) {
-                          _pageController.animateToPage(
-                            page,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
+                          unawaited(
+                            _pageController.animateToPage(
+                              page,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            ),
                           );
                           setState(() => _currentPage = page);
                         },

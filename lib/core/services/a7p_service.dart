@@ -43,13 +43,17 @@ abstract final class A7pService {
   /// Throws [A7pParseException] if the file is invalid.
   static Future<ProfileExport?> pickAndParse() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['a7p'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['a7p'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
 
     final file = result.files.single;
+    if (!file.name.toLowerCase().endsWith('.a7p')) {
+      throw FormatException('Expected an .a7p file, got: ${file.name}');
+    }
+
     final Uint8List bytes;
     if (file.bytes != null) {
       bytes = file.bytes!;
@@ -69,8 +73,8 @@ abstract final class A7pService {
   /// Throws [A7pParseException] on invalid .a7p files or [Exception] on other errors.
   static Future<List<ProfileExport>?> pickAndParseProfiles() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['ebcp', 'a7p'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['ebcp', 'a7p'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
@@ -85,17 +89,21 @@ abstract final class A7pService {
       throw const A7pParseException('cannot read file bytes');
     }
 
-    final name = (file.name).toLowerCase();
+    final name = file.name.toLowerCase();
     if (name.endsWith('.a7p')) {
       final payload = A7pFile.decode(bytes);
       return [A7pConverter.fromPayload(payload, validate: false)];
-    } else {
+    } else if (name.endsWith('.ebcp')) {
       final ebcp = EbcpFile.fromEbcp(bytes);
       if (ebcp == null) return [];
       return ebcp.items
           .map((i) => i.asProfile())
           .whereType<ProfileExport>()
           .toList();
+    } else {
+      throw FormatException(
+        'Expected an .a7p or .ebcp file, got: ${file.name}',
+      );
     }
   }
 }

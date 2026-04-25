@@ -1,7 +1,100 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+---
+
 
 ## [Unreleased]
+
+
+## [0.1.2] - 2026-04-26
+
+### Added
+
+#### Android
+- Initial Android support — application builds and runs on Android
+- CI integration for Android builds, including FFI and submodules
+- File import support via `file_picker` with Android fallback (`FileType.any`)
+- FileProvider configuration for `share_plus`
+- `<queries>` configuration for `file_picker` and `url_launcher` (Android 11+)
+
+#### CI / Build
+- Reusable `build-apk.yml` workflow:
+  - supports `workflow_call`
+  - accepts `build_name`, `build_type`, `retention_days`
+  - supports signing via secrets
+- `scripts/build-android.sh`:
+  - sets app version from CI
+  - decodes keystore from `ANDROID_KEYSTORE_BASE64`
+  - builds split-per-ABI APKs
+  - outputs artifacts to `artifacts/`
+- `scripts/generate-android-keystore.sh`:
+  - generates JKS keystore
+  - creates `android/key.properties`
+  - exports base64 + metadata to `certs/`
+
+### Changed
+
+#### Android
+- Impeller renderer disabled (`EnableImpeller=false`) due to incorrect SVG circle tessellation (temporary workaround until upstream fix)
+- `AndroidManifest.xml` updated:
+  - added storage permissions (`READ_EXTERNAL_STORAGE`, `READ_MEDIA_*`)
+  - enabled `requestLegacyExternalStorage`
+  - added URL visibility queries (`http`, `https`)
+
+#### CI / Build
+- `release.yml` now uses reusable `build-apk.yml` instead of inline Android job
+- APK files (`*.apk`) are now included as release assets
+- `build.gradle.kts`:
+  - reads signing config from `android/key.properties`
+  - falls back to debug signing if missing
+- Reusable `pr-summary.yml` workflow — posts/updates per-platform build result comment on PRs; replaces duplicated inline scripts in `build-apk.yml`, `build-exe.yml`, `build-appimage.yml`
+- PR artifact links now use `upload-artifact@v4` direct URL instead of a generic run page link
+- Version resolution unified across all workflows via `.github/actions/version`:
+  - tag builds → version from tag
+  - PR / `workflow_dispatch` → base version from `pubspec.yaml` (no suffix)
+- `build-apk.yml`: added `prepare-version` job for direct PR and dispatch triggers (previously fell back to hardcoded `0.1.0-dev`)
+- MSIX version revision set to `0` for release tags (`v*.*.*`, `v*.*.*-*`) per Microsoft Store requirement; non-release builds keep `run_number` as revision
+
+#### Reticle gen
+- Updated reticles generator
+
+### Fixed
+
+#### UI
+- Window scaling now respects system scale on startup
+- Fixed `RenderFlex` overflow on Home screen
+- Fixed `PageDotsIndicator` overflow (tap target size mismatch)
+- `AdjustmentDisplay` now correctly applies zero offsets and adjustments
+
+#### SVG / Rendering
+- Fixed SVG circles rendered as polygons:
+  - `reticle_gen` now uses `<circle>` instead of arc `<path>`
+  - regenerated all reticle and target assets
+
+#### Navigation
+- Fixed missing `await` in `HomeScreen → AmmoWizard` route
+
+#### Code Quality
+- Enabled `discarded_futures: true`
+- Fixed all related lint issues
+
+### Reliability
+- Improved database resilience:
+  - ObjectBox open failure is now handled
+  - corrupted `data.mdb` / `lock.mdb` are deleted automatically
+  - store is reinitialized safely
+  - user is notified via SnackBar only if data previously existed
+
+### Docs
+- README updated:
+  - added **Android notes** section
+  - documented Impeller workaround
+  - documented file import limitations on Android
 
 
 ## [0.1.1] - 2026-04-23

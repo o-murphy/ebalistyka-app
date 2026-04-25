@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
@@ -43,7 +45,7 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
     final convertorsState = ref.read(convertorStateProvider);
 
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateLengthValue(null);
+      unawaited(ref.read(convertorsProvider.notifier).updateLengthValue(null));
       return;
     }
 
@@ -52,12 +54,14 @@ class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
       Unit.inch,
     );
     if (inchesValue >= 0) {
-      ref.read(convertorsProvider.notifier).updateLengthValue(inchesValue);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updateLengthValue(inchesValue),
+      );
     }
   }
 
   void changeInputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateLengthUnit(newUnit);
+    unawaited(ref.read(convertorsProvider.notifier).updateLengthUnit(newUnit));
   }
 
   double? _getDisplayValue(double? rawInches, Unit inputUnit) {

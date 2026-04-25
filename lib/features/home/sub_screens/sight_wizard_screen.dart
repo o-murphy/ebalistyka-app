@@ -6,8 +6,8 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
-import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,14 +49,6 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late double _maxMagRaw;
 
   late String? _reticleImage;
-
-  static const _clickUnits = [
-    Unit.mil,
-    Unit.moa,
-    Unit.mRad,
-    Unit.cmPer100m,
-    Unit.inPer100Yd,
-  ];
 
   @override
   void initState() {
@@ -279,43 +271,21 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
           // ── Clicks ────────────────────────────────────────────────
           const Divider(height: 1),
           const ListSectionTile('Clicks'),
-          _clickLabel(context, 'Vertical click'),
-          UnitInputWithPicker(
-            value: _vClickRaw,
-            constraints: FC.adjustment,
-            displayUnit: _vClickUnit,
-            options: _clickUnits,
+          offsetsTile(
+            context: context,
+            yLabel: 'Vertical click',
+            xLabel: 'Horizontal click',
             unitLabel: 'Click unit',
-            onChanged: (v) {
-              if (v != null) setState(() => _vClickRaw = v);
-            },
-            onUnitChanged: (u) => setState(() => _vClickUnit = u),
-          ),
-          _clickLabel(context, 'Horizontal click'),
-          UnitInputWithPicker(
-            value: _hClickRaw,
-            constraints: FC.adjustment,
-            displayUnit: _hClickUnit,
-            options: _clickUnits,
-            unitLabel: 'Click unit',
-            onChanged: (v) {
-              if (v != null) setState(() => _hClickRaw = v);
-            },
-            onUnitChanged: (u) => setState(() => _hClickUnit = u),
+            yRaw: _vClickRaw,
+            xRaw: _hClickRaw,
+            yUnits: _vClickUnit,
+            xUnits: _hClickUnit,
+            onYChanged: (v) => setState(() => _vClickRaw = v),
+            onXChanged: (v) => setState(() => _hClickRaw = v),
+            onYUnitChanged: (u) => setState(() => _vClickUnit = u),
+            onXUnitChanged: (u) => setState(() => _hClickUnit = u),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _clickLabel(BuildContext context, String label) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
       ),
     );
   }

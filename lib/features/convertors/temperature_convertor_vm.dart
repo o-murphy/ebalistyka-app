@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
@@ -34,7 +36,9 @@ class TemperatureConvertorViewModel
     final convertorsState = ref.read(convertorStateProvider);
 
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateTemperatureValue(null);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updateTemperatureValue(null),
+      );
       return;
     }
 
@@ -42,13 +46,17 @@ class TemperatureConvertorViewModel
       convertorsState.temperatureUnit,
       Unit.fahrenheit,
     );
-    ref
-        .read(convertorsProvider.notifier)
-        .updateTemperatureValue(fahrenheitValue);
+    unawaited(
+      ref
+          .read(convertorsProvider.notifier)
+          .updateTemperatureValue(fahrenheitValue),
+    );
   }
 
   void changeInputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateTemperatureUnit(newUnit);
+    unawaited(
+      ref.read(convertorsProvider.notifier).updateTemperatureUnit(newUnit),
+    );
   }
 
   double? _getDisplayValue(double? rawFahrenheit, Unit inputUnit) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
@@ -55,6 +56,7 @@ class ReticleUiState {
   final String? targetId;
   final double targetSizeMilAtDistance;
   final String? adjustedMessageLine;
+  final String? zeroOffsetMessageLine;
   final String cartridgeInfoLine;
   final AdjustmentData adjustment;
   final AdjustmentDisplayFormat adjustmentFormat;
@@ -66,6 +68,7 @@ class ReticleUiState {
     this.targetId,
     this.targetSizeMilAtDistance = 0.0,
     this.adjustedMessageLine,
+    this.zeroOffsetMessageLine,
     this.cartridgeInfoLine = '',
     required this.adjustment,
     this.adjustmentFormat = AdjustmentDisplayFormat.arrows,
@@ -157,17 +160,18 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   @override
   Future<HomeUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
-      if (next.hasValue) _recalculate();
+      if (next.hasValue) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
-      if (_generalNeedsRecalc(prev?.value, next.value!)) _recalculate();
+      if (_generalNeedsRecalc(prev?.value, next.value!))
+        unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
-      if (prev != null) _recalculate();
+      if (prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     ref.listen<ReticleSettings>(reticleSettingsProvider, (prev, next) {
-      if (prev != null) _recalculate();
+      if (prev != null) unawaited(_recalculate());
     }, fireImmediately: true);
     return const HomeUiNoData(type: EmptyStateType.noProfile);
   }
@@ -291,19 +295,29 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
 
   Future<void> updateReticleAdjustments({
     required double vRaw,
-    required Unit vUnit,
+    required Unit? vUnit,
     required double hRaw,
-    required Unit hUnit,
+    required Unit? hUnit,
   }) async {
     final notifier = ref.read(reticleSettingsNotifierProvider.notifier);
-    notifier.setVerticalAdjustmentUnit(vUnit);
-    notifier.setVerticalAdjustment(
-      Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit),
-    );
-    notifier.setHorizontalAdjustmentUnit(hUnit);
-    notifier.setHorizontalAdjustment(
-      Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit),
-    );
+    if (vUnit == null) {
+      notifier.setVerticalAdjustmentUnitRaw('clicks');
+      notifier.setVerticalAdjustment(vRaw);
+    } else {
+      notifier.setVerticalAdjustmentUnit(vUnit);
+      notifier.setVerticalAdjustment(
+        Angular(vRaw, FC.adjustment.rawUnit).in_(vUnit),
+      );
+    }
+    if (hUnit == null) {
+      notifier.setHorizontalAdjustmentUnitRaw('clicks');
+      notifier.setHorizontalAdjustment(hRaw);
+    } else {
+      notifier.setHorizontalAdjustmentUnit(hUnit);
+      notifier.setHorizontalAdjustment(
+        Angular(hRaw, FC.adjustment.rawUnit).in_(hUnit),
+      );
+    }
   }
 
   Future<void> updateTargetImage(String? imageId) async {
@@ -363,24 +377,29 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetDistanceM: targetM,
     );
 
-    final adjustedMessageLine = _buildAdjustedMessageLine(reticle);
     final cartridgeInfoLine = _buildCartridgeInfoLine(
       profile,
       conditions,
       formatter,
     );
 
-    final vAdjMil = reticle.verticalAdjustment.convert(
-      reticle.verticalAdjustmentUnitValue,
-      Unit.mil,
-    );
-    final hAdjMil = reticle.horizontalAdjustment.convert(
-      reticle.horizontalAdjustmentUnitValue,
-      Unit.mil,
-    );
+    final vAdjMil = reticle.verticalAdjInClicks
+        ? reticle.verticalAdjustment
+        : reticle.verticalAdjustment.convert(
+            reticle.verticalAdjustmentUnitValue,
+            Unit.mil,
+          );
+    final hAdjMil = reticle.horizontalAdjInClicks
+        ? reticle.horizontalAdjustment
+        : reticle.horizontalAdjustment.convert(
+            reticle.horizontalAdjustmentUnitValue,
+            Unit.mil,
+          );
 
     double horizontalClickSizeMil = 0.0;
     double verticalClickSizeMil = 0.0;
+    String? adjustedMessageLine;
+
     final sight = profile.sight.target;
     if (sight != null) {
       horizontalClickSizeMil = Angular(
@@ -391,25 +410,54 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         sight.verticalClick,
         sight.verticalClickUnitValue,
       ).in_(Unit.mil);
+      adjustedMessageLine = _buildAdjustedMessageLine(
+        reticle,
+        vClickSizeMil: verticalClickSizeMil,
+        hClickSizeMil: horizontalClickSizeMil,
+      );
     }
 
-    final adjustment = _buildAdjustment(
-      hit,
-      targetM,
-      result.holdRad,
-      horizontalClickSizeMil,
-      verticalClickSizeMil,
-      settings,
-      elevOffsetMil: vAdjMil,
-      windOffsetMil: hAdjMil,
-    );
-    final elevMil = Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil;
+    double zeroOffsetYMil = 0.0;
+    double zeroOffsetXMil = 0.0;
+    String? zeroOffsetMessageLine;
+
+    final ammo = profile.ammo.target;
+    if (ammo != null) {
+      zeroOffsetYMil = Angular(
+        ammo.zeroOffsetY,
+        ammo.zeroOffsetYUnitValue,
+      ).in_(Unit.mil);
+      zeroOffsetXMil = Angular(
+        ammo.zeroOffsetX,
+        ammo.zeroOffsetXUnitValue,
+      ).in_(Unit.mil);
+      zeroOffsetMessageLine = _buildZeroOffsetMessageLine(
+        zeroOffsetYMil: zeroOffsetYMil,
+        zeroOffsetXMil: zeroOffsetXMil,
+        zeroOffsetYUnit: ammo.zeroOffsetYUnitValue,
+        zeroOffsetXUnit: ammo.zeroOffsetXUnitValue,
+      );
+    }
+
+    final elevMil =
+        Angular.radian(result.holdRad).in_(Unit.mil) + vAdjMil + zeroOffsetYMil;
     final targetPoint = hit.trajectory.isNotEmpty
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windMil =
         (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
-        hAdjMil;
+        hAdjMil +
+        zeroOffsetXMil;
+
+    final adjustmentData = _buildAdjustment(
+      hit,
+      targetM,
+      Angular(elevMil, Unit.mil),
+      Angular(windMil, Unit.mil),
+      horizontalClickSizeMil,
+      verticalClickSizeMil,
+      settings,
+    );
 
     final targetSvg = await ref
         .read(targetSvgProvider(reticle.targetImage).future)
@@ -424,8 +472,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       targetId: reticle.targetImage,
       targetSizeMilAtDistance: targetSizeMilAtDistance,
       adjustedMessageLine: adjustedMessageLine,
+      zeroOffsetMessageLine: zeroOffsetMessageLine,
       cartridgeInfoLine: cartridgeInfoLine,
-      adjustment: adjustment,
+      adjustment: adjustmentData,
       adjustmentFormat: settings.adjustmentDisplayFormat,
       adjustmentElevMil: elevMil,
       adjustmentWindMil: windMil,
@@ -468,28 +517,67 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
   }
 
-  String? _buildAdjustedMessageLine(ReticleSettings reticle) {
+  String? _buildZeroOffsetMessageLine({
+    required Unit zeroOffsetYUnit,
+    required Unit zeroOffsetXUnit,
+    required double zeroOffsetYMil,
+    required double zeroOffsetXMil,
+  }) {
+    if (zeroOffsetYMil == 0.0 && zeroOffsetXMil == 0.0) return null;
+
+    final parts = <String>[];
+
+    if (zeroOffsetYMil != 0.0) {
+      parts.add(_angularPart(zeroOffsetYMil, zeroOffsetYUnit, 'vertical'));
+    }
+
+    if (zeroOffsetXMil != 0.0) {
+      parts.add(_angularPart(zeroOffsetXMil, zeroOffsetXUnit, 'horizontal'));
+    }
+
+    return 'Zero offset: ${parts.join(' / ')}';
+  }
+
+  String? _buildAdjustedMessageLine(
+    ReticleSettings reticle, {
+    required double vClickSizeMil,
+    required double hClickSizeMil,
+  }) {
     final vAdj = reticle.verticalAdjustment;
     final hAdj = reticle.horizontalAdjustment;
+
     if (vAdj == 0.0 && hAdj == 0.0) return null;
 
-    final vUnit = reticle.verticalAdjustmentUnitValue;
-    final hUnit = reticle.horizontalAdjustmentUnitValue;
     final parts = <String>[];
 
     if (vAdj != 0.0) {
-      final acc = FC.adjustment.accuracyFor(vUnit);
-      parts.add(
-        '${vAdj > 0 ? '+' : ''}${vAdj.toFixedSafe(acc)} ${_unitLabel(vUnit)} vertical',
-      );
+      final part = reticle.verticalAdjInClicks && vClickSizeMil > 0
+          ? _clicksPart(vAdj, vClickSizeMil, 'vertical')
+          : _angularPart(vAdj, reticle.verticalAdjustmentUnitValue, 'vertical');
+      parts.add(part);
     }
     if (hAdj != 0.0) {
-      final acc = FC.adjustment.accuracyFor(hUnit);
-      parts.add(
-        '${hAdj > 0 ? '+' : ''}${hAdj.toFixedSafe(acc)} ${_unitLabel(hUnit)} horizontal',
-      );
+      final part = reticle.horizontalAdjInClicks && hClickSizeMil > 0
+          ? _clicksPart(hAdj, hClickSizeMil, 'horizontal')
+          : _angularPart(
+              hAdj,
+              reticle.horizontalAdjustmentUnitValue,
+              'horizontal',
+            );
+      parts.add(part);
     }
     return 'Drum adjustment: ${parts.join(' / ')}';
+  }
+
+  static String _clicksPart(double rawMil, double clickSizeMil, String dir) {
+    final clicks = rawMil / clickSizeMil;
+    final v = clicks.toStringAsFixed(0);
+    return '${clicks > 0 ? '+' : ''}$v click $dir';
+  }
+
+  static String _angularPart(double adjInUnit, Unit unit, String dir) {
+    final acc = FC.adjustment.accuracyFor(unit);
+    return '${adjInUnit > 0 ? '+' : ''}${adjInUnit.toFixedSafe(acc)} ${_unitLabel(unit)} $dir';
   }
 
   static String _unitLabel(Unit u) => switch (u) {
@@ -530,24 +618,12 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   AdjustmentData _buildAdjustment(
     bclibc.HitResult hit,
     double targetM,
-    double holdRad,
+    Angular elevAngle,
+    Angular windAngle,
     double horizontalClickSizeMil,
     double verticalClickSizeMil,
-    GeneralSettings settings, {
-    double elevOffsetMil = 0.0,
-    double windOffsetMil = 0.0,
-  }) {
-    final elevAngle = Angular(
-      Angular.radian(holdRad).in_(Unit.mil) + elevOffsetMil,
-      Unit.mil,
-    );
-    final point = hit.trajectory.isNotEmpty
-        ? hit.getAtDistance(Distance.meter(targetM))
-        : null;
-    final windAngle = point != null
-        ? Angular(point.windageAngle.in_(Unit.mil) + windOffsetMil, Unit.mil)
-        : null;
-
+    GeneralSettings settings,
+  ) {
     final dispUnits = <(Unit, String)>[
       if (settings.homeShowMrad) (Unit.mRad, 'MRAD'),
       if (settings.homeShowMoa) (Unit.moa, 'MOA'),
@@ -581,19 +657,17 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       );
     }
 
-    final windValues = windAngle != null
-        ? dispUnits.map((u) {
-            final corr = windAngle.in_(u.$1);
-            return AdjustmentValue(
-              absValue: corr.abs(),
-              isPositive: corr >= 0,
-              symbol: u.$2,
-              decimals: FC.adjustment.accuracyFor(u.$1),
-            );
-          }).toList()
-        : <AdjustmentValue>[];
+    final windValues = dispUnits.map((u) {
+      final corr = windAngle.in_(u.$1);
+      return AdjustmentValue(
+        absValue: corr.abs(),
+        isPositive: corr >= 0,
+        symbol: u.$2,
+        decimals: FC.adjustment.accuracyFor(u.$1),
+      );
+    }).toList();
 
-    if (settings.homeShowInClicks && windAngle != null) {
+    if (settings.homeShowInClicks) {
       final val = windAngle.in_(Unit.mil);
       final clicks = horizontalClickSizeMil > 0.0
           ? val / horizontalClickSizeMil

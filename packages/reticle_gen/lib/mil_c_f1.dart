@@ -199,7 +199,6 @@ class MilCf1ReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(-(A / 2 + I), 0)
                   ..lineTo(-(A / 2 + 1), -D / 2))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: C,
           )

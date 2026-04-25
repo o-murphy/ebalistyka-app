@@ -44,13 +44,17 @@ abstract final class EbcpService {
   /// Returns `null` if the user cancels or the file is invalid.
   static Future<EbcpFile?> pickAndParse() async {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['ebcp'],
+      type: Platform.isAndroid ? FileType.any : FileType.custom,
+      allowedExtensions: Platform.isAndroid ? null : ['ebcp'],
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;
 
     final file = result.files.single;
+    if (!file.name.toLowerCase().endsWith('.ebcp')) {
+      throw FormatException('Expected an .ebcp file, got: ${file.name}');
+    }
+
     final Uint8List bytes;
     if (file.bytes != null) {
       bytes = file.bytes!;
@@ -94,7 +98,7 @@ abstract final class EbcpService {
             .where((w) => w.id == profile.weapon.targetId)
             .firstOrNull;
         if (weapon == null) continue;
-        final ammo = appState.cartridges
+        final ammo = appState.ammo
             .where((a) => a.id == profile.ammo.targetId)
             .firstOrNull;
         final sight = appState.sights
@@ -107,7 +111,7 @@ abstract final class EbcpService {
         );
       }
 
-      for (final ammo in appState.cartridges) {
+      for (final ammo in appState.ammo) {
         if (!linkedAmmoIds.contains(ammo.id)) {
           items.add(EbcpItem.fromAmmo(AmmoExport.fromEntity(ammo)));
         }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
@@ -39,7 +41,7 @@ class WeightConvertorViewModel extends Notifier<WeightConvertorUiState> {
     final convertorsState = ref.read(convertorStateProvider);
 
     if (rawValueInInputUnit == null) {
-      ref.read(convertorsProvider.notifier).updateWeightValue(null);
+      unawaited(ref.read(convertorsProvider.notifier).updateWeightValue(null));
       return;
     }
 
@@ -48,12 +50,14 @@ class WeightConvertorViewModel extends Notifier<WeightConvertorUiState> {
       Unit.grain,
     );
     if (grainsValue >= 0) {
-      ref.read(convertorsProvider.notifier).updateWeightValue(grainsValue);
+      unawaited(
+        ref.read(convertorsProvider.notifier).updateWeightValue(grainsValue),
+      );
     }
   }
 
   void changeInputUnit(Unit newUnit) {
-    ref.read(convertorsProvider.notifier).updateWeightUnit(newUnit);
+    unawaited(ref.read(convertorsProvider.notifier).updateWeightUnit(newUnit));
   }
 
   double? _getDisplayValue(double? rawGrains, Unit inputUnit) {

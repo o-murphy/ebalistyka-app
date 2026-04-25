@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
@@ -224,14 +226,16 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
 }
 
 void showUnitHybridPickerDialog(UnitPickerContext pickerContext) {
-  showDialog(
-    context: pickerContext.buildContext,
-    builder: (context) => Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
-      child: UnitHybridPicker(
-        pickerContext: pickerContext,
-        initialRawValue: pickerContext.rawValue,
+  unawaited(
+    showDialog(
+      context: pickerContext.buildContext,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+        child: UnitHybridPicker(
+          pickerContext: pickerContext,
+          initialRawValue: pickerContext.rawValue,
+        ),
       ),
     ),
   );

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
@@ -14,10 +15,13 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
+import 'package:ebalistyka/shared/widgets/adjustment_input_with_clicks.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,10 +38,11 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   final _zoomKey = GlobalKey<_ZoomableViewState>();
 
   // Barrel drums (ReticleSettings) — raw in FC.adjustment.rawUnit (mil)
+  // null unit = clicks mode
   late double _vAdjRaw;
-  late Unit _vAdjUnit;
+  Unit? _vAdjUnit;
   late double _hAdjRaw;
-  late Unit _hAdjUnit;
+  Unit? _hAdjUnit;
 
   // ReticleSettings
   String? _targetImage;
@@ -49,28 +54,23 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   late double _hClickRaw;
   late Unit _hClickUnit;
 
-  static const _adjUnits = [
-    Unit.mil,
-    Unit.moa,
-    Unit.mRad,
-    Unit.cmPer100m,
-    Unit.inPer100Yd,
-  ];
-
   @override
   void initState() {
     super.initState();
     final reticle = ref.read(reticleSettingsProvider);
-    _vAdjUnit = reticle.verticalAdjustmentUnitValue;
-    _vAdjRaw = Angular(
-      reticle.verticalAdjustment,
-      _vAdjUnit,
-    ).in_(FC.adjustment.rawUnit);
-    _hAdjUnit = reticle.horizontalAdjustmentUnitValue;
-    _hAdjRaw = Angular(
-      reticle.horizontalAdjustment,
-      _hAdjUnit,
-    ).in_(FC.adjustment.rawUnit);
+    final vUnit = reticle.verticalAdjustmentUnitValue;
+    _vAdjUnit = reticle.verticalAdjInClicks ? null : vUnit;
+    _vAdjRaw = reticle.verticalAdjInClicks
+        ? reticle.verticalAdjustment
+        : Angular(reticle.verticalAdjustment, vUnit).in_(FC.adjustment.rawUnit);
+    final hUnit = reticle.horizontalAdjustmentUnitValue;
+    _hAdjUnit = reticle.horizontalAdjInClicks ? null : hUnit;
+    _hAdjRaw = reticle.horizontalAdjInClicks
+        ? reticle.horizontalAdjustment
+        : Angular(
+            reticle.horizontalAdjustment,
+            hUnit,
+          ).in_(FC.adjustment.rawUnit);
     _targetImage = reticle.targetImage;
 
     final ctx = ref.read(shotContextProvider).value;
@@ -137,13 +137,12 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const double maxTopHeightRatio = 0.50; // 35% від загальної висоти
+        const double maxTopHeightRatio = 0.50;
         final double fullHeight = constraints.maxHeight;
         final double maxAllowedHeight = fullHeight * maxTopHeightRatio;
 
-        // Верхній блок має бути квадратним (1:1), але не більше ніж 35% висоти
         final double topBlockSize = math.min(
-          constraints.maxWidth, // ширина = висота для ratio 1:1
+          constraints.maxWidth,
           maxAllowedHeight,
         );
 
@@ -177,40 +176,42 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       const SizedBox(height: 8),
                       const Divider(height: 1),
                       const ListSectionTile('Barrel drums'),
-                      _clickLabel(context, 'Vertical adjustment'),
-                      UnitInputWithPicker(
-                        value: _vAdjRaw,
+                      listInputLabel(context, 'Vertical adjustment'),
+                      AdjustmentInputWithClicks(
+                        rawValue: _vAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vAdjUnit,
-                        options: _adjUnits,
+                        clickSizeRaw: _vClickRaw,
+                        options: offsetUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vAdjRaw = v);
-                            _saveAdj();
+                            unawaited(_saveAdj());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _vAdjUnit = u);
-                          _saveAdj();
+                          unawaited(_saveAdj());
                         },
                       ),
-                      _clickLabel(context, 'Horizontal adjustment'),
-                      UnitInputWithPicker(
-                        value: _hAdjRaw,
+                      listInputLabel(context, 'Horizontal adjustment'),
+                      AdjustmentInputWithClicks(
+                        rawValue: _hAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hAdjUnit,
-                        options: _adjUnits,
+                        clickSizeRaw: _hClickRaw,
+                        options: offsetUnits,
                         unitLabel: 'Adjustment unit',
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hAdjRaw = v);
-                            _saveAdj();
+                            unawaited(_saveAdj());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _hAdjUnit = u);
-                          _saveAdj();
+                          unawaited(_saveAdj());
                         },
                       ),
                       const Divider(height: 1),
@@ -262,40 +263,40 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ),
                       const Divider(height: 1),
                       const ListSectionTile('Clicks'),
-                      _clickLabel(context, 'Vertical click'),
+                      listInputLabel(context, 'Vertical click'),
                       UnitInputWithPicker(
                         value: _vClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vClickUnit,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Click unit',
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vClickRaw = v);
-                            _saveSight();
+                            unawaited(_saveSight());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _vClickUnit = u);
-                          _saveSight();
+                          unawaited(_saveSight());
                         },
                       ),
-                      _clickLabel(context, 'Horizontal click'),
+                      listInputLabel(context, 'Horizontal click'),
                       UnitInputWithPicker(
                         value: _hClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hClickUnit,
-                        options: _adjUnits,
+                        options: offsetUnits,
                         unitLabel: 'Click unit',
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hClickRaw = v);
-                            _saveSight();
+                            unawaited(_saveSight());
                           }
                         },
                         onUnitChanged: (u) {
                           setState(() => _hClickUnit = u);
-                          _saveSight();
+                          unawaited(_saveSight());
                         },
                       ),
                     ],
@@ -311,13 +312,13 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
   Widget _buildTopBlock(
     BuildContext context,
-    double size, // тепер це і ширина і висота
+    double size,
     HomeUiReady vmState,
     double targetSizeMil,
   ) {
     return SizedBox(
-      width: double.infinity, // займає всю ширину
-      height: size, // висота дорівнює size (квадрат)
+      width: double.infinity,
+      height: size,
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
@@ -370,18 +371,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
       r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
     ).firstMatch(svg);
     return m != null ? double.tryParse(m.group(1)!) ?? 0.5 : 0.0;
-  }
-
-  Widget _clickLabel(BuildContext context, String label) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 0, 0),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
   }
 }
 
@@ -449,7 +438,7 @@ class _ZoomableViewState extends State<ZoomableView>
             curve: Curves.easeInOut,
           ),
         );
-    _animationController.forward(from: 0);
+    unawaited(_animationController.forward(from: 0));
   }
 
   void _handleDoubleTap() {

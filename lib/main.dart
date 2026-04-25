@@ -1,5 +1,7 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:ebalistyka_db/ebalistyka_db.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
@@ -22,18 +24,43 @@ const _windowInitialHeight = 812.0;
 // const _contentMaxWidth = _windowMaxWidth;
 // const _contentMaxHeight = _windowMaxHeight;
 
+Future<(Store, bool)> _openStore(String directory) async {
+  final hadData = await File('$directory/data.mdb').exists();
+  try {
+    return (await initObjectBox(directory: directory), false);
+  } catch (e) {
+    debugPrint('ObjectBox open failed — resetting DB: $e');
+    for (final name in const ['data.mdb', 'lock.mdb']) {
+      final f = File('$directory/$name');
+      if (await f.exists()) await f.delete();
+    }
+    return (await initObjectBox(directory: directory), hadData);
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (isDesktop) {
     await windowManager.ensureInitialized();
 
-    const windowOptions = WindowOptions(
-      size: Size(_windowInitialWidth, _windowInitialHeight),
-      minimumSize: Size(_windowMinWidth, _windowMinHeight),
-      // maximumSize: Size(_windowMaxWidth, _windowMaxHeight),
+    final double ratio =
+        PlatformDispatcher.instance.views.first.devicePixelRatio;
+
+    final size = Size(
+      _windowInitialWidth * ratio,
+      _windowInitialHeight * ratio,
+    );
+    final minSize = Size(_windowMinWidth * ratio, _windowMinHeight * ratio);
+
+    WindowOptions windowOptions = WindowOptions(
+      size: size,
+      minimumSize: minSize,
       center: true,
       title: 'eBalistyka',
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
     );
 
     windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -41,23 +68,21 @@ void main() async {
       await windowManager.setIcon('assets/icon.png');
       await windowManager.focus();
 
-      await windowManager.setMinimumSize(
-        const Size(_windowMinWidth, _windowMinHeight),
-      );
-      // await windowManager.setMaximumSize(
-      //   const Size(_windowMaxWidth, _windowMaxHeight),
-      // );
+      await windowManager.setMinimumSize(minSize);
       await windowManager.setMaximizable(false);
     });
   }
 
   final appSupport = await getApplicationSupportDirectory();
-  final store = await initObjectBox(directory: appSupport.path);
+  final (store, dbWasReset) = await _openStore(appSupport.path);
   debugPrint("DB path: ${appSupport.path}");
 
   runApp(
     ProviderScope(
-      overrides: [dbProvider.overrideWithValue(store)],
+      overrides: [
+        dbProvider.overrideWithValue(store),
+        dbWasResetProvider.overrideWithValue(dbWasReset),
+      ],
       child: const MyApp(),
     ),
   );
@@ -71,6 +96,37 @@ class _AppScrollBehavior extends MaterialScrollBehavior {
     PointerDeviceKind.trackpad,
     PointerDeviceKind.stylus,
   };
+}
+
+class _DbResetBanner extends ConsumerStatefulWidget {
+  const _DbResetBanner({required this.child});
+  final Widget child;
+
+  @override
+  ConsumerState<_DbResetBanner> createState() => _DbResetBannerState();
+}
+
+class _DbResetBannerState extends ConsumerState<_DbResetBanner> {
+  @override
+  void initState() {
+    super.initState();
+    if (ref.read(dbWasResetProvider)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Database was corrupted and has been reset. All data has been cleared.',
+            ),
+            duration: Duration(seconds: 6),
+          ),
+        );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class MyApp extends ConsumerWidget {
@@ -103,18 +159,11 @@ class MyApp extends ConsumerWidget {
       themeMode: themeMode,
       scrollBehavior: _AppScrollBehavior(),
       builder: (context, child) {
+        final inner = _DbResetBanner(child: child!);
         if (isDesktop) {
-          return Center(
-            child: Container(
-              // constraints: const BoxConstraints(
-              //   maxWidth: _contentMaxWidth,
-              //   maxHeight: _contentMaxHeight,
-              // ),
-              child: child,
-            ),
-          );
+          return Center(child: Container(child: inner));
         }
-        return child!;
+        return inner;
       },
     );
   }

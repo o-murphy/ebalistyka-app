@@ -146,7 +146,6 @@ class MilXtReticleDrawer implements SVGDrawerInterface {
                   ..moveTo(-11, minHalfI)
                   ..lineTo(-10.2, 0))
                 .d,
-            'none',
             stroke: color,
             strokeWidth: A,
           )

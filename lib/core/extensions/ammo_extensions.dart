@@ -66,6 +66,18 @@ extension AmmoExtension on Ammo {
   Angular get zeroAzimuth => Angular.degree(zeroAzimuthDeg);
   set zeroAzimuth(Angular v) => zeroAzimuthDeg = v.in_(Unit.degree);
 
+  Unit get zeroOffsetXUnitValue => Unit.values.firstWhere(
+    (u) => u.name == zeroOffsetXUnit,
+    orElse: () => Unit.mil,
+  );
+  set zeroOffsetXUnitValue(Unit v) => zeroOffsetXUnit = v.name;
+
+  Unit get zeroOffsetYUnitValue => Unit.values.firstWhere(
+    (u) => u.name == zeroOffsetYUnit,
+    orElse: () => Unit.mil,
+  );
+  set zeroOffsetYUnitValue(Unit v) => zeroOffsetYUnit = v.name;
+
   // ── Drag model helpers ────────────────────────────────────────────────────────
 
   /// True when G1/G7 with multiple BC breakpoints (velocity-dependent BC).

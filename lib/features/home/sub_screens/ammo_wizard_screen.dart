@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -13,6 +14,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -76,6 +78,11 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   final _powderSensKey = GlobalKey();
   final _coriolisKey = GlobalKey();
 
+  late double _offsetXRaw;
+  late Unit _offsetXUnit;
+  late double _offsetYRaw;
+  late Unit _offsetYUnit;
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +135,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     _zeroUseCoriolis = a?.zeroUseCoriolis ?? false;
     _zeroLatitudeRaw = a?.zeroLatitudeDeg ?? 0.0;
     _zeroAzimuthRaw = a?.zeroAzimuthDeg ?? 0.0;
+
+    _offsetYUnit = a?.zeroOffsetYUnitValue ?? Unit.mil;
+    _offsetYRaw = a != null
+        ? Angular(a.zeroOffsetY, _offsetYUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+
+    _offsetXUnit = a?.zeroOffsetXUnitValue ?? Unit.mil;
+    _offsetXRaw = a != null
+        ? Angular(a.zeroOffsetX, _offsetXUnit).in_(FC.adjustment.rawUnit)
+        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
   }
 
   @override
@@ -192,10 +209,12 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = key.currentContext;
       if (ctx != null) {
-        Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+        unawaited(
+          Scrollable.ensureVisible(
+            ctx,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          ),
         );
       }
     });
@@ -321,6 +340,17 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
     ammo.zeroUseCoriolis = _zeroUseCoriolis;
     ammo.zeroLatitudeDeg = _zeroLatitudeRaw;
     ammo.zeroAzimuthDeg = _zeroAzimuthRaw;
+
+    ammo.zeroOffsetYUnitValue = _offsetYUnit;
+    ammo.zeroOffsetY = Angular(
+      _offsetYRaw,
+      FC.adjustment.rawUnit,
+    ).in_(_offsetYUnit);
+    ammo.zeroOffsetXUnitValue = _offsetXUnit;
+    ammo.zeroOffsetX = Angular(
+      _offsetXRaw,
+      FC.adjustment.rawUnit,
+    ).in_(_offsetXUnit);
     return ammo;
   }
 
@@ -697,7 +727,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
             icon: IconDef.altitude,
             onChanged: (v) => setState(() => _zeroAltRaw = v),
           ),
-          // TODO: Zeroing atmo params
 
           // ── Powder sensitivity ──────────────────────────────────────────────
           if (_usePowderSensitivity) ...[
@@ -741,6 +770,22 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
               onTap: _navigateToPowderSensTable,
             ),
           ],
+
+          // ── Zeroing offset ────────────────────────────────────────
+          offsetsTile(
+            context: context,
+            yLabel: 'Vertical offset',
+            xLabel: 'Horizontal offset',
+            unitLabel: 'Click unit',
+            yRaw: _offsetYRaw,
+            xRaw: _offsetXRaw,
+            yUnits: _offsetYUnit,
+            xUnits: _offsetXUnit,
+            onYChanged: (v) => setState(() => _offsetYRaw = v),
+            onXChanged: (v) => setState(() => _offsetXRaw = v),
+            onYUnitChanged: (u) => setState(() => _offsetYUnit = u),
+            onXUnitChanged: (u) => setState(() => _offsetXUnit = u),
+          ),
 
           // ── Zeroing coriolis ────────────────────────────────────────
           const Divider(height: 1),

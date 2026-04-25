@@ -184,7 +184,7 @@ class _SvgAssetTile extends ConsumerWidget {
     // Add shape-rendering for better quality
     result = result.replaceFirst(
       RegExp(r'<svg\b'),
-      '<svg shape-rendering="crispEdges"',
+      '<svg shape-rendering="geometricPrecision"',
     );
 
     return result;

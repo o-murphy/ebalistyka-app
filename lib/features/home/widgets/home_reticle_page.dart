@@ -39,14 +39,6 @@ class HomeReticlePage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (rs.adjustedMessageLine != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Text(
-              rs.adjustedMessageLine!,
-              style: tt.labelMedium?.copyWith(color: cs.tertiary),
-            ),
-          ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
           child: _SemicolonWrappingText(
@@ -54,11 +46,33 @@ class HomeReticlePage extends ConsumerWidget {
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
           ),
         ),
+        if (rs.zeroOffsetMessageLine != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              rs.zeroOffsetMessageLine!,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              overflow: TextOverflow.visible,
+              style: tt.labelMedium?.copyWith(color: cs.tertiary),
+            ),
+          ),
+        if (rs.adjustedMessageLine != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              rs.adjustedMessageLine!,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              overflow: TextOverflow.visible,
+              style: tt.labelMedium?.copyWith(color: cs.tertiary),
+            ),
+          ),
+
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Ліва частина - ReticleView (2/3)
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -82,7 +96,6 @@ class HomeReticlePage extends ConsumerWidget {
                   ),
                 ),
               ),
-              // Права частина - AdjustmentsDisplayPanel (1/3)
               Expanded(
                 flex: 1,
                 child: Padding(

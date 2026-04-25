@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="770.37" height="770.37" viewBox="-3.852 -3.852 7.704 7.704" shape-rendering="crispEdges">
-  <g transform="scale(0.296)">
+<svg xmlns="http://www.w3.org/2000/svg" width="770.3704" height="770.3704" viewBox="-3.8519 -3.8519 7.7037 7.7037" shape-rendering="geometricPrecision">
+  <g transform="scale(0.2963)">
     <clipPath id="clip0">
       <circle id="circle-0" cx="0" cy="0" r="12.9" fill="transparent"/>
     </clipPath>
     <g id="clipgroup-0" clip-path="url(#clip0)">
       <rect id="fill-0" x="-13" y="-13" width="26" height="26" fill="transparent"/>
-      <circle id="dot-0" cx="0" cy="0" r="0.048" fill="onSurface"/>
-      <circle id="dot-1" cx="0" cy="3" r="0.048" fill="onSurface"/>
+      <circle id="dot-0" cx="0" cy="0" r="0.0475" fill="onSurface"/>
+      <circle id="dot-1" cx="0" cy="3" r="0.0475" fill="onSurface"/>
       <line id="hline-0" x1="0.5" y1="0" x2="1" y2="0" stroke="onSurface" stroke-width="0.016"/>
       <line id="hline-1" x1="-0.5" y1="0" x2="-1" y2="0" stroke="onSurface" stroke-width="0.016"/>
       <line id="vline-0" x1="0" y1="0.5" x2="0" y2="2.5" stroke="onSurface" stroke-width="0.016"/>

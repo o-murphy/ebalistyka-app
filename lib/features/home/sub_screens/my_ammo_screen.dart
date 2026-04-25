@@ -94,18 +94,25 @@ class MyAmmoScreen extends ConsumerWidget {
         icon: IconDef.import,
         title: 'Import from file',
         onTap: () async {
-          final ebcp = await EbcpService.pickAndParse();
-          if (ebcp == null || !context.mounted) return;
-          final ammos = ebcp.items
-              .map((i) => i.asAmmo())
-              .whereType<AmmoExport>()
-              .toList();
-          if (ammos.isEmpty) {
-            showNotAvailableSnackBar(context, 'No ammo found in file');
-            return;
-          }
-          for (final a in ammos) {
-            await ref.read(appStateProvider.notifier).importAmmo(a);
+          try {
+            final ebcp = await EbcpService.pickAndParse();
+            if (ebcp == null || !context.mounted) return;
+            final ammos = ebcp.items
+                .map((i) => i.asAmmo())
+                .whereType<AmmoExport>()
+                .toList();
+            if (ammos.isEmpty) {
+              showNotAvailableSnackBar(context, 'No ammo found in file');
+              return;
+            }
+            for (final a in ammos) {
+              await ref.read(appStateProvider.notifier).importAmmo(a);
+            }
+          } catch (e) {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
           }
         },
       ),
@@ -125,8 +132,8 @@ class MyAmmoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
-    final cartridges = ref.watch(cartridgesProvider);
     final appState = ref.watch(appStateProvider).value;
+    final cartridges = appState?.ammo ?? [];
     final profile = profileId != null
         ? appState?.profiles
               .where((p) => p.id.toString() == profileId)

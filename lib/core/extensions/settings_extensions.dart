@@ -137,4 +137,7 @@ extension ReticleSettingsExtension on ReticleSettings {
   );
   set horizontalAdjustmentUnitValue(Unit v) =>
       horizontalAdjustmentUnit = v.name;
+
+  bool get verticalAdjInClicks => verticalAdjustmentUnit == 'clicks';
+  bool get horizontalAdjInClicks => horizontalAdjustmentUnit == 'clicks';
 }

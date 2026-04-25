@@ -38,6 +38,9 @@ class PageDotsIndicator extends StatelessWidget {
           icon: Icon(IconDef.chevronLeft, size: 24),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          style: const ButtonStyle(
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
 
         // Dots
@@ -61,6 +64,9 @@ class PageDotsIndicator extends StatelessWidget {
           icon: Icon(IconDef.chevronRight, size: 24),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          style: const ButtonStyle(
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
       ],
     );

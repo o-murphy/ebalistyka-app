@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
@@ -12,32 +13,32 @@ import 'package:riverpod/riverpod.dart';
 
 class AppState {
   final List<Weapon> weapons;
-  final List<Ammo> cartridges;
+  final List<Ammo> ammo;
   final List<Sight> sights;
   final List<Profile> profiles;
   final Profile? activeProfile;
 
   const AppState({
     required this.weapons,
-    required this.cartridges,
+    required this.ammo,
     required this.sights,
     required this.profiles,
     this.activeProfile,
   });
 
   factory AppState.empty() =>
-      const AppState(weapons: [], cartridges: [], sights: [], profiles: []);
+      const AppState(weapons: [], ammo: [], sights: [], profiles: []);
 
   AppState copyWith({
     List<Weapon>? weapons,
-    List<Ammo>? cartridges,
+    List<Ammo>? ammo,
     List<Sight>? sights,
     List<Profile>? profiles,
     Profile? activeProfile,
     bool clearActiveProfile = false,
   }) => AppState(
     weapons: weapons ?? this.weapons,
-    cartridges: cartridges ?? this.cartridges,
+    ammo: ammo ?? this.ammo,
     sights: sights ?? this.sights,
     profiles: profiles ?? this.profiles,
     activeProfile: clearActiveProfile
@@ -87,7 +88,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
     ];
     ref.onDispose(() {
       for (final s in subs) {
-        s.cancel();
+        unawaited(s.cancel());
       }
     });
 
@@ -102,7 +103,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .query(Weapon_.owner.equals(owner.id))
         .build()
         .find();
-    var cartridges = _store
+    var ammo = _store
         .box<Ammo>()
         .query(Ammo_.owner.equals(owner.id))
         .build()
@@ -119,10 +120,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         .find();
 
     // ── Seed on first run ──────────────────────────────────────────────────────
-    if (weapons.isEmpty &&
-        cartridges.isEmpty &&
-        sights.isEmpty &&
-        profiles.isEmpty) {
+    if (weapons.isEmpty && ammo.isEmpty && sights.isEmpty && profiles.isEmpty) {
       debugPrint('AppStateNotifier: seeding initial data...');
       _seed(owner);
       weapons = _store
@@ -130,7 +128,7 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
           .query(Weapon_.owner.equals(owner.id))
           .build()
           .find();
-      cartridges = _store
+      ammo = _store
           .box<Ammo>()
           .query(Ammo_.owner.equals(owner.id))
           .build()
@@ -156,13 +154,13 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
         : (profiles.isNotEmpty ? profiles.first : null);
 
     debugPrint(
-      'AppStateNotifier: ${weapons.length} weapons, ${cartridges.length} ammo, '
+      'AppStateNotifier: ${weapons.length} weapons, ${ammo.length} ammo, '
       '${sights.length} sights, ${profiles.length} profiles',
     );
 
     return AppState(
       weapons: weapons,
-      cartridges: cartridges,
+      ammo: ammo,
       sights: sights,
       profiles: profiles,
       activeProfile: activeProfile,
@@ -283,7 +281,8 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
       ..zeroAzimuthDeg = original.zeroAzimuthDeg
       ..zeroOffsetX = original.zeroOffsetX
       ..zeroOffsetY = original.zeroOffsetY
-      ..zeroOffsetUnit = original.zeroOffsetUnit
+      ..zeroOffsetXUnit = original.zeroOffsetXUnit
+      ..zeroOffsetYUnit = original.zeroOffsetYUnit
       ..projectileName = original.projectileName
       ..vendor = original.vendor
       ..owner.target = _owner;
@@ -511,23 +510,3 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 final appStateProvider = AsyncNotifierProvider<AppStateNotifier, AppState>(
   AppStateNotifier.new,
 );
-
-final weaponsProvider = Provider<List<Weapon>>((ref) {
-  return ref.watch(appStateProvider).value?.weapons ?? [];
-});
-
-final cartridgesProvider = Provider<List<Ammo>>((ref) {
-  return ref.watch(appStateProvider).value?.cartridges ?? [];
-});
-
-final sightsProvider = Provider<List<Sight>>((ref) {
-  return ref.watch(appStateProvider).value?.sights ?? [];
-});
-
-final profilesProvider = Provider<List<Profile>>((ref) {
-  return ref.watch(appStateProvider).value?.profiles ?? [];
-});
-
-final activeProfileProvider = Provider<Profile?>((ref) {
-  return ref.watch(appStateProvider).value?.activeProfile;
-});
