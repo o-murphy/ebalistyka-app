@@ -1,6 +1,6 @@
 {
     "@@locale": "en",
-    "settingsScreenTitle": "Convertors",
+    "settingsScreenTitle": "Settings",
     "@settingsScreenTitle": {},
     "convertorsScreenTitle": "Convertors",
     "@convertorsScreenTitle": {},
@@ -179,7 +179,7 @@
     "labelPrivacyPolicy": "Privacy Policy",
     "@labelPrivacyPolicy": {},
     "labelVersion": "Version",
-    "@sectionAbout": {},
+    "@labelVersion": {},
     "labelChangelog": "Changelog",
     "@labelChangelog": {},
     "themeSystem": "System",
