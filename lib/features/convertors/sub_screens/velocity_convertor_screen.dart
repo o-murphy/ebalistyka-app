@@ -48,8 +48,6 @@ class VelocityConvertorScreen extends ConsumerWidget {
           _buildInfoTile(state.fps, l10n),
           _buildInfoTile(state.mph, l10n),
 
-          ListSectionTile(l10n.sectionOther),
-          _buildInfoTile(state.mach, l10n),
           SwitchListTile(
             title: Text(l10n.customAtmosphere),
             subtitle: Text(
@@ -60,8 +58,13 @@ class VelocityConvertorScreen extends ConsumerWidget {
             value: state.useCustomAtmo,
             onChanged: notifier.toggleCustomAtmo,
           ),
-
+          
+          ListSectionTile(l10n.sectionOther),
+          _buildInfoTile(state.mach, l10n),
+          
           if (state.useCustomAtmo) ...[
+            Divider(height: 1),
+            ListSectionTile(l10n.sectionAtmosphere),
             UnitValueFieldTile(
               title: l10n.atmoTemperature,
               rawValue: state.atmoTemperatureC,

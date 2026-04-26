@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @convertorsScreenTitle.
   ///
   /// In en, this message translates to:
-  /// **'Convertor'**
+  /// **'Convertors'**
   String get convertorsScreenTitle;
 
   /// No description provided for @lengthConvertorTitle.
@@ -247,6 +247,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Angles'**
   String get sectionAngles;
+
+  /// No description provided for @sectionAtmosphere.
+  ///
+  /// In en, this message translates to:
+  /// **'Atmosphere'**
+  String get sectionAtmosphere;
 
   /// No description provided for @sectionAdjustmentAtDistance.
   ///

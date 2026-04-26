@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get convertorsScreenTitle => 'Convertor';
+  String get convertorsScreenTitle => 'Convertors';
 
   @override
   String get lengthConvertorTitle => 'Length Converter';
@@ -82,6 +82,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionAngles => 'Angles';
+
+  @override
+  String get sectionAtmosphere => 'Atmosphere';
 
   @override
   String get sectionAdjustmentAtDistance => 'Adjustment Value at Distance';

@@ -9,7 +9,7 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
-  String get convertorsScreenTitle => 'Конвертор';
+  String get convertorsScreenTitle => 'Конвертори';
 
   @override
   String get lengthConvertorTitle => 'Конвертер довжини';
@@ -82,6 +82,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sectionAngles => 'Кути';
+
+  @override
+  String get sectionAtmosphere => 'Атмосфера';
 
   @override
   String get sectionAdjustmentAtDistance => 'Поправка на відстані';
@@ -195,7 +198,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitMachIcao => 'Мах (ICAO)';
 
   @override
-  String get unitMachCustom => 'Мах (власна атмо)';
+  String get unitMachCustom => 'Мах (власна атмосфера)';
 
   @override
   String get unitMil => 'MIL';

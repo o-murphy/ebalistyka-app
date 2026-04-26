@@ -50,6 +50,8 @@
     "@sectionOther": {},
     "sectionAngles": "Angles",
     "@sectionAngles": {},
+    "sectionAtmosphere": "Atmosphere",
+    "@sectionAtmosphere": {},
     "sectionAdjustmentAtDistance": "Adjustment Value at Distance",
     "@sectionAdjustmentAtDistance": {},
     "sectionDistanceMetric": "Distance metric",
