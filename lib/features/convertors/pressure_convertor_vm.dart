@@ -1,179 +1,86 @@
 import 'dart:async';
 
-import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
-import 'package:ebalistyka/core/providers/convertors_notifier.dart';
-import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
-import 'package:riverpod/riverpod.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:riverpod/riverpod.dart';
 
-class PressureConvertorUiState {
-  final GenericConvertorField mmHg;
-  final GenericConvertorField inHg;
-  final GenericConvertorField bar;
-  final GenericConvertorField hPa;
-  final GenericConvertorField psi;
-  final GenericConvertorField atm;
-  final double? rawValue;
-  final Unit inputUnit;
-
-  const PressureConvertorUiState({
-    required this.mmHg,
-    required this.inHg,
-    required this.bar,
-    required this.hPa,
-    required this.psi,
-    required this.atm,
-    required this.rawValue,
-    required this.inputUnit,
-  });
-}
-
-class PressureConvertorViewModel extends Notifier<PressureConvertorUiState> {
+class PressureConvertorViewModel extends SimpleConvertorVm {
   @override
-  PressureConvertorUiState build() {
-    final convertorsState = ref.watch(convertorStateProvider);
-    return _buildState(
-      convertorsState.pressureValueMmHg,
-      convertorsState.pressureUnit,
-    );
-  }
+  Unit get baseUnit => Unit.mmHg;
 
-  void updateRawValue(double? rawValueInInputUnit) {
-    final convertorsState = ref.read(convertorStateProvider);
+  @override
+  double getRawBase(ConvertorsState s) => s.pressureValueMmHg;
 
-    if (rawValueInInputUnit == null) {
-      unawaited(
-        ref.read(convertorsProvider.notifier).updatePressureValue(null),
-      );
-      return;
-    }
+  @override
+  Unit getInputUnit(ConvertorsState s) => s.pressureUnit;
 
-    final mmHgValue = rawValueInInputUnit.convert(
-      convertorsState.pressureUnit,
-      Unit.mmHg,
-    );
-    if (mmHgValue >= 0) {
-      unawaited(
-        ref.read(convertorsProvider.notifier).updatePressureValue(mmHgValue),
-      );
-    }
-  }
+  @override
+  Future<void> saveRawBase(double? base) =>
+      ref.read(convertorsProvider.notifier).updatePressureValue(base);
 
-  void changeInputUnit(Unit newUnit) {
-    unawaited(
-      ref.read(convertorsProvider.notifier).updatePressureUnit(newUnit),
-    );
-  }
+  @override
+  Future<void> saveInputUnit(Unit unit) =>
+      ref.read(convertorsProvider.notifier).updatePressureUnit(unit);
 
-  double? _getDisplayValue(double? rawMmHg, Unit inputUnit) {
-    if (rawMmHg == null) return null;
-    return rawMmHg.convert(Unit.mmHg, inputUnit);
-  }
+  @override
+  FieldConstraints getConstraintsForUnit(Unit unit) => FieldConstraints(
+    minRaw: 0.0.convert(Unit.mmHg, unit),
+    maxRaw: 2000.0.convert(Unit.mmHg, unit),
+    stepRaw: FC.convertorPressure.stepRaw.convert(Unit.mmHg, unit),
+    rawUnit: unit,
+    accuracy: FC.convertorPressure.accuracyFor(unit),
+  );
 
-  FieldConstraints getConstraintsForUnit(Unit unit) {
-    final minInMmHg = 0.0;
-    final maxInMmHg = 2000.0;
-
-    return FieldConstraints(
-      minRaw: minInMmHg.convert(Unit.mmHg, unit),
-      maxRaw: maxInMmHg.convert(Unit.mmHg, unit),
-      stepRaw: _getStepForUnit(unit),
-      rawUnit: unit,
-      accuracy: FC.convertorPressure.accuracyFor(unit),
-    );
-  }
-
-  double _getStepForUnit(Unit unit) {
-    final baseStep = FC.convertorPressure.stepRaw;
-    return baseStep.convert(Unit.mmHg, unit);
-  }
-
-  String _formatValue(double value, int decimals, String symbol) {
-    if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
-  }
-
-  PressureConvertorUiState _buildState(double rawMmHg, Unit inputUnit) {
-    final mmHgRaw = rawMmHg;
-
-    final mmHgAccuracy = FC.convertorPressure.accuracyFor(Unit.mmHg);
-    final inHgAccuracy = FC.convertorPressure.accuracyFor(Unit.inHg);
-    final barAccuracy = FC.convertorPressure.accuracyFor(Unit.bar);
-    final hPaAccuracy = FC.convertorPressure.accuracyFor(Unit.hPa);
-    final psiAccuracy = FC.convertorPressure.accuracyFor(Unit.psi);
-    final atmAccuracy = FC.convertorPressure.accuracyFor(Unit.atm);
-
-    return PressureConvertorUiState(
-      rawValue: _getDisplayValue(rawMmHg, inputUnit),
-      inputUnit: inputUnit,
-      mmHg: GenericConvertorField(
-        label: 'mmHg',
-        formattedValue: _formatValue(mmHgRaw, mmHgAccuracy, Unit.mmHg.symbol),
-        value: mmHgRaw,
-        symbol: Unit.mmHg.symbol,
-        decimals: mmHgAccuracy,
+  @override
+  List<ConvertorSection> buildSections(double rawMmHg) => [
+    ConvertorSection('Common', [
+      fieldFor(
+        rawMmHg,
+        Unit.atm,
+        'Atmosphere',
+        FC.convertorPressure.accuracyFor(Unit.atm),
       ),
-      inHg: GenericConvertorField(
-        label: 'inHg',
-        formattedValue: _formatValue(
-          mmHgRaw.convert(Unit.mmHg, Unit.inHg),
-          inHgAccuracy,
-          Unit.inHg.symbol,
-        ),
-        value: mmHgRaw.convert(Unit.mmHg, Unit.inHg),
-        symbol: Unit.inHg.symbol,
-        decimals: inHgAccuracy,
+      fieldFor(
+        rawMmHg,
+        Unit.hPa,
+        'hPa',
+        FC.convertorPressure.accuracyFor(Unit.hPa),
       ),
-      bar: GenericConvertorField(
-        label: 'Bar',
-        formattedValue: _formatValue(
-          mmHgRaw.convert(Unit.mmHg, Unit.bar),
-          barAccuracy,
-          Unit.bar.symbol,
-        ),
-        value: mmHgRaw.convert(Unit.mmHg, Unit.bar),
-        symbol: Unit.bar.symbol,
-        decimals: barAccuracy,
+      fieldFor(
+        rawMmHg,
+        Unit.bar,
+        'Bar',
+        FC.convertorPressure.accuracyFor(Unit.bar),
       ),
-      hPa: GenericConvertorField(
-        label: 'hPa',
-        formattedValue: _formatValue(
-          mmHgRaw.convert(Unit.mmHg, Unit.hPa),
-          hPaAccuracy,
-          Unit.hPa.symbol,
-        ),
-        value: mmHgRaw.convert(Unit.mmHg, Unit.hPa),
-        symbol: Unit.hPa.symbol,
-        decimals: hPaAccuracy,
+    ]),
+    ConvertorSection('Imperial', [
+      fieldFor(
+        rawMmHg,
+        Unit.psi,
+        'PSI',
+        FC.convertorPressure.accuracyFor(Unit.psi),
       ),
-      psi: GenericConvertorField(
-        label: 'PSI',
-        formattedValue: _formatValue(
-          mmHgRaw.convert(Unit.mmHg, Unit.psi),
-          psiAccuracy,
-          Unit.psi.symbol,
-        ),
-        value: mmHgRaw.convert(Unit.mmHg, Unit.psi),
-        symbol: Unit.psi.symbol,
-        decimals: psiAccuracy,
+      fieldFor(
+        rawMmHg,
+        Unit.inHg,
+        'inHg',
+        FC.convertorPressure.accuracyFor(Unit.inHg),
       ),
-      atm: GenericConvertorField(
-        label: 'Atmosphere',
-        formattedValue: _formatValue(
-          mmHgRaw.convert(Unit.mmHg, Unit.atm),
-          atmAccuracy,
-          Unit.atm.symbol,
-        ),
-        value: mmHgRaw.convert(Unit.mmHg, Unit.atm),
-        symbol: Unit.atm.symbol,
-        decimals: atmAccuracy,
+      fieldFor(
+        rawMmHg,
+        Unit.mmHg,
+        'mmHg',
+        FC.convertorPressure.accuracyFor(Unit.mmHg),
       ),
-    );
-  }
+    ]),
+  ];
 }
 
 final pressureConvertorVmProvider =
-    NotifierProvider<PressureConvertorViewModel, PressureConvertorUiState>(
+    NotifierProvider<PressureConvertorViewModel, SimpleConvertorUiState>(
       PressureConvertorViewModel.new,
     );

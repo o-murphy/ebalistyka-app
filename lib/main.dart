@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:path_provider/path_provider.dart';
@@ -153,6 +154,22 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
+      title: "eBalistyka",
+      supportedLocales: [Locale('en'), Locale('uk', 'UA')],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale == null) return const Locale('en');
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return const Locale('en');
+      },
       routerConfig: appRouter,
       theme: _lightTheme,
       darkTheme: _darkTheme,
