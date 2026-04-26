@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -32,13 +33,14 @@ class SettingsScreen extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Settings',
+      title: l10n.settingsScreenTitle,
       body: ListView(
         children: [
           // ── Language ───────────────────────────────────────────────────
-          ListSectionTile('Language'),
+          ListSectionTile(l10n.sectionLanguage),
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(_languageName(settings.languageCode)),
@@ -46,13 +48,14 @@ class SettingsScreen extends ConsumerWidget {
             dense: true,
             onTap: () => _showLanguageDialog(
               context,
+              l10n.sectionLanguage,
               settings.languageCode,
               notifier.setLanguage,
             ),
           ),
 
           // ── Appearance ─────────────────────────────────────────────────
-          ListSectionTile('Appearance'),
+          ListSectionTile(l10n.sectionAppearance),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: _ThemeSelector(
@@ -64,10 +67,10 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Display settings ─────────────────────────────────────────────────
-          ListSectionTile('Display settings'),
+          ListSectionTile(l10n.sectionUnitsSettings),
           ListTile(
             leading: const Icon(Icons.straighten_outlined),
-            title: const Text('Units of Measurement'),
+            title: Text(l10n.unitsSettingsLabel),
             trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsUnits),
@@ -76,18 +79,18 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Home screen props ─────────────────────────────────────────────────
-          ListSectionTile('Home screen'),
+          ListSectionTile(l10n.sectionHomeSettings),
           ListTile(
             leading: const Icon(Icons.tune_outlined),
-            title: const Text('Adjustment Display'),
+            title: Text(l10n.adjustmentDisplayScreenTitle),
             trailing: const Icon(IconDef.chevronRight),
             dense: true,
             onTap: () => context.push(Routes.settingsAdjustment),
           ),
           SwitchListTile(
             secondary: const Icon(IconDef.velocity),
-            title: const Text('Show subsonic transition'),
-            subtitle: const Text('Displays on trajectory chart'),
+            title: Text(l10n.switchShowSubsonicTransition),
+            subtitle: Text(l10n.switchShowSubsonicTransitionSubtitle),
             value: settings.homeShowSubsonicTransition,
             onChanged: (v) =>
                 notifier.setAdjustmentToggle('subsonicTransition', v),
@@ -96,7 +99,7 @@ class SettingsScreen extends ConsumerWidget {
 
           UnitValueFieldTile(
             icon: Icons.table_rows_outlined,
-            title: 'Table distance step',
+            title: l10n.labelTrajectoryTableStep,
             rawValue: settings.homeTableDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
@@ -104,7 +107,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           UnitValueFieldTile(
             icon: Icons.show_chart_outlined,
-            title: 'Chart distance step',
+            title: l10n.labelTrajectoryChartStep,
             rawValue: settings.homeChartDistanceStep,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
@@ -114,7 +117,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Profiles ───────────────────────────────────────────────────
-          ListSectionTile('Backup'),
+          ListSectionTile(l10n.sectionBackup),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Row(
@@ -122,7 +125,7 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: FilledButton.icon(
                     icon: const Icon(IconDef.export),
-                    label: const Text('Export backup'),
+                    label: Text(l10n.actionExportBackup),
                     onPressed: () async {
                       final file = EbcpService.buildFullExport(ref);
                       await EbcpService.shareFile(file, 'ebalistyka_backup');
@@ -133,7 +136,7 @@ class SettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: FilledButton.icon(
                     icon: const Icon(IconDef.import),
-                    label: const Text('Import backup'),
+                    label: Text(l10n.actionImportBackup),
                     onPressed: () async {
                       try {
                         final file = await EbcpService.pickAndParse();
@@ -142,7 +145,11 @@ class SettingsScreen extends ConsumerWidget {
                       } catch (e) {
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Import failed: $e')),
+                          SnackBar(
+                            content: Text(
+                              '${l10n.errorImportBackupFailed}: $e',
+                            ),
+                          ),
                         );
                       }
                     },
@@ -154,7 +161,7 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── Links ──────────────────────────────────────────────────────
-          ListSectionTile('Links'),
+          ListSectionTile(l10n.sectionLinks),
           ListTile(
             leading: const Icon(Icons.code_outlined),
             title: const Text('GitHub'),
@@ -165,14 +172,14 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy Policy'),
+            title: Text(l10n.labelPrivacyPolicy),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
-            title: const Text('Terms of Use'),
+            title: Text(l10n.labelTermsOfUse),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () {},
@@ -181,10 +188,10 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(height: 1),
 
           // ── About ──────────────────────────────────────────────────────
-          ListSectionTile('About'),
+          ListSectionTile(l10n.sectionAbout),
           ListTile(
             leading: const Icon(Icons.info_outlined),
-            title: const Text('Version'),
+            title: Text(l10n.labelVersion),
             trailing: Text(
               ref
                   .watch(_packageInfoProvider)
@@ -201,7 +208,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),
-            title: const Text('Changelog'),
+            title: Text(l10n.labelChangelog),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () => _launchUrl(
@@ -225,31 +232,46 @@ String _languageName(String code) => switch (code) {
 
 void _showLanguageDialog(
   BuildContext context,
+  String title,
   String current,
   Future<void> Function(String) onSelect,
 ) {
   const langs = [('en', 'English'), ('uk', 'Українська')];
   unawaited(
-    showDialog<void>(
+    showModalBottomSheet<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Language'),
-        content: RadioGroup<String>(
-          groupValue: current,
-          onChanged: (v) {
-            if (v != null) {
-              unawaited(onSelect(v));
-              Navigator.pop(ctx);
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: langs
-                .map(
-                  (l) => RadioListTile<String>(value: l.$1, title: Text(l.$2)),
-                )
-                .toList(),
-          ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
+            ),
+            const Divider(height: 1),
+
+            RadioGroup<String>(
+              groupValue: current,
+              onChanged: (v) {
+                if (v != null) {
+                  unawaited(onSelect(v));
+                  Navigator.pop(ctx);
+                }
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: langs
+                    .map(
+                      (l) =>
+                          RadioListTile<String>(value: l.$1, title: Text(l.$2)),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
         ),
       ),
     ),
@@ -265,22 +287,24 @@ class _ThemeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SegmentedButton<ThemeMode>(
-      segments: const [
+      segments: [
         ButtonSegment(
           value: ThemeMode.system,
           icon: Icon(Icons.brightness_auto_outlined),
-          label: Text('System'),
+          label: Text(l10n.themeSystem),
         ),
         ButtonSegment(
           value: ThemeMode.light,
           icon: Icon(Icons.light_mode_outlined),
-          label: Text('Light'),
+          label: Text(l10n.themeLight),
         ),
         ButtonSegment(
           value: ThemeMode.dark,
           icon: Icon(Icons.dark_mode_outlined),
-          label: Text('Dark'),
+          label: Text(l10n.themeDark),
         ),
       ],
       selected: {current},

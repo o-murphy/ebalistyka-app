@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
@@ -6,23 +7,53 @@ import 'package:ebalistyka/router.dart';
 
 // ─── Convertor tile data ──────────────────────────────────────────────────────
 
-const _convertors = [
+typedef _ConvertorConfig = ({
+  String type,
+  String Function(AppLocalizations) labelBuilder,
+  IconData icon,
+});
+
+final List<_ConvertorConfig> _convertors = [
   (
     type: 'target-distance',
-    label: 'Target at distance',
+    labelBuilder: (l10n) => l10n.targetDistanceConvertorTitle,
     icon: IconDef.distanceConvertor,
   ),
-  (type: 'velocity', label: 'Velocity', icon: IconDef.velocityConvertor),
-  (type: 'length', label: 'Length', icon: IconDef.lengthConvertor),
-  (type: 'weight', label: 'Weight', icon: IconDef.weigthConvertor),
-  (type: 'pressure', label: 'Pressure', icon: IconDef.pressureConvertor),
+  (
+    type: 'velocity',
+    labelBuilder: (l10n) => l10n.velocityConvertorTitle,
+    icon: IconDef.velocityConvertor,
+  ),
+  (
+    type: 'length',
+    labelBuilder: (l10n) => l10n.lengthConvertorTitle,
+    icon: IconDef.lengthConvertor,
+  ),
+  (
+    type: 'weight',
+    labelBuilder: (l10n) => l10n.weightConvertorTitle,
+    icon: IconDef.weigthConvertor,
+  ),
+  (
+    type: 'pressure',
+    labelBuilder: (l10n) => l10n.pressureConvertorTitle,
+    icon: IconDef.pressureConvertor,
+  ),
   (
     type: 'temperature',
-    label: 'Temperature',
+    labelBuilder: (l10n) => l10n.temperatureConvertorTitle,
     icon: IconDef.temperatureConvertor,
   ),
-  (type: 'angular', label: 'Angles', icon: IconDef.angleConvertor),
-  (type: 'torque', label: 'Torque', icon: IconDef.torqueConvertor),
+  (
+    type: 'angular',
+    labelBuilder: (l10n) => l10n.anglesConvertorTitle,
+    icon: IconDef.angleConvertor,
+  ),
+  (
+    type: 'torque',
+    labelBuilder: (l10n) => l10n.torqueConvertorTitle,
+    icon: IconDef.torqueConvertor,
+  ),
 ];
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -32,8 +63,10 @@ class ConvertorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BaseScreen(
-      title: 'Convertors',
+      title: l10n.convertorsScreenTitle,
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -47,11 +80,14 @@ class ConvertorScreen extends StatelessWidget {
               childAspectRatio: 1,
             ),
             itemCount: _convertors.length,
-            itemBuilder: (context, i) => _ConvertorTile(
-              type: _convertors[i].type,
-              label: _convertors[i].label,
-              icon: _convertors[i].icon,
-            ),
+            itemBuilder: (context, i) {
+              final config = _convertors[i];
+              return _ConvertorTile(
+                type: config.type,
+                label: config.labelBuilder(l10n),
+                icon: config.icon,
+              );
+            },
           ),
         ),
       ),
@@ -67,6 +103,7 @@ class _ConvertorTile extends StatelessWidget {
     required this.label,
     required this.icon,
   });
+
   final String type;
   final String label;
   final IconData icon;
@@ -74,7 +111,10 @@ class _ConvertorTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card.filled(
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push(Routes.convertorOf(type)),
@@ -83,10 +123,15 @@ class _ConvertorTile extends StatelessWidget {
           children: [
             Icon(icon, size: 48, color: cs.primary),
             const SizedBox(height: 12),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                label,
+                style: textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/db_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -406,4 +407,24 @@ final reticleSettingsProvider = Provider<ReticleSettings>((ref) {
 final themeModeProvider = Provider<ThemeMode>((ref) {
   return ref.watch(settingsProvider).value?.flutterThemeMode ??
       ThemeMode.system;
+});
+
+/// Returns the user-selected [Locale] from settings, or null to fall back
+/// to the system locale (handled by [MaterialApp.localeResolutionCallback]).
+final localeProvider = Provider<Locale?>((ref) {
+  final code = ref.watch(settingsProvider).value?.languageCode ?? '';
+  return code.isNotEmpty ? Locale(code) : null;
+});
+
+/// Returns [AppLocalizations] for use in Notifiers (no BuildContext available).
+/// Resolves: user setting → system locale → 'en' fallback.
+final appLocalizationsProvider = Provider<AppLocalizations>((ref) {
+  final userLocale = ref.watch(localeProvider);
+  final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+  final locale = userLocale ?? systemLocale;
+  try {
+    return lookupAppLocalizations(locale);
+  } catch (_) {
+    return lookupAppLocalizations(const Locale('en'));
+  }
 });

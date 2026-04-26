@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/convertors/angular_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -16,9 +17,10 @@ class AnglesConvertorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(anglesConvertorVmProvider);
     final notifier = ref.read(anglesConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Angles Converter',
+      title: l10n.anglesConvertorTitle,
       isSubscreen: true,
       body: ListView(
         children: [
@@ -31,7 +33,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             onChanged: notifier.updateDistanceValue,
             onUnitChanged: notifier.changeDistanceUnit,
             options: const [Unit.meter, Unit.yard],
-            label: 'Distance Input',
+            label: l10n.inputDistance,
             icon: IconDef.distanceConvertor,
           ),
           const SizedBox(height: 8),
@@ -51,7 +53,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
               Unit.inPer100Yd,
               Unit.degree,
             ],
-            label: 'Angle Input',
+            label: l10n.inputAngle,
             icon: IconDef.angleConvertor,
           ),
           const SizedBox(height: 8),
@@ -65,12 +67,12 @@ class AnglesConvertorScreen extends ConsumerWidget {
               Unit.inch,
               Unit.foot,
             ],
-            title: 'Output Unit',
+            title: l10n.outputUnit,
             icon: IconDef.heightConvertor,
           ),
           const Divider(height: 24),
 
-          ListSectionTile('Angles'),
+          ListSectionTile(l10n.sectionAngles),
           _buildInfoTile(state.mil),
           _buildInfoTile(state.moa),
           _buildInfoTile(state.mrad),
@@ -80,15 +82,21 @@ class AnglesConvertorScreen extends ConsumerWidget {
 
           const Divider(height: 24),
 
-          ListSectionTile('Adjustment Value at Distance'),
-          InfoListTile(label: '1 MIL', value: state.oneMilAtDistance),
+          ListSectionTile(l10n.sectionAdjustmentAtDistance),
           InfoListTile(
-            label: '${state.mil.value.toStringAsFixed(1)} MIL',
+            label: '1 ${l10n.unitMil}',
+            value: state.oneMilAtDistance,
+          ),
+          InfoListTile(
+            label: '${state.mil.value.toStringAsFixed(1)} ${l10n.unitMil}',
             value: state.angleInMilAtDistance,
           ),
-          InfoListTile(label: '1 MOA', value: state.oneMoaAtDistance),
           InfoListTile(
-            label: '${state.moa.value.toStringAsFixed(1)} MOA',
+            label: '1 ${l10n.unitMoa}',
+            value: state.oneMoaAtDistance,
+          ),
+          InfoListTile(
+            label: '${state.moa.value.toStringAsFixed(1)} ${l10n.unitMoa}',
             value: state.angleInMoaAtDistance,
           ),
 

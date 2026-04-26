@@ -10,6 +10,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Refactored
+
+#### Code Quality — Converter generalization (#7.1, priorities 1–2)
+- Introduced `SimpleConvertorVm` abstract base class (Template Method pattern) in `lib/features/convertors/simple_convertor_vm.dart`:
+  - Shared `build()`, `updateRawValue()`, `changeInputUnit()`, `fieldFor()`, `_fmt()` — no longer duplicated across VMs
+  - Shared state types: `SimpleConvertorUiState`, `ConvertorSection`
+- Applied to 5 simple VMs: `length`, `weight`, `pressure`, `temperature`, `torque` — each reduced to ~55 lines of VM-specific config; ~600 LOC removed
+- Introduced `SimpleConvertorScreen` stateless widget in `lib/features/convertors/sub_screens/simple_convertor_screen.dart` — generic layout (input picker → sections → info tiles)
+- Applied to 5 simple screens — each reduced to ~25-line `ConsumerWidget` wrapper; ~270 LOC removed
+- Velocity, angular, and target-distance converters untouched (unique layouts)
+- All provider names unchanged — zero impact on call sites
+
+### Added
+
+#### Localization
+- **Setup flutter_localizations** - added `flutter_localizations` dependency
+- **Settings screen (UA)** - Settings screen and it's subscreens localization
+- **Convertors screen (UA)** - Convertors screen and all convertors subscreens localization
+
 
 ## [0.1.2] - 2026-04-26
 

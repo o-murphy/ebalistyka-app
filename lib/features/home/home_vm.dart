@@ -164,8 +164,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     }, fireImmediately: true);
     ref.listen<AsyncValue<GeneralSettings>>(settingsProvider, (prev, next) {
       if (!next.hasValue) return;
-      if (_generalNeedsRecalc(prev?.value, next.value!))
+      if (_generalNeedsRecalc(prev?.value, next.value!)) {
         unawaited(_recalculate());
+      }
     }, fireImmediately: true);
     ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
       if (prev != null) unawaited(_recalculate());

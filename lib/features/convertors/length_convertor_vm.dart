@@ -1,165 +1,80 @@
 import 'dart:async';
 
-import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
-import 'package:ebalistyka/core/providers/convertors_notifier.dart';
-import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
-import 'package:riverpod/riverpod.dart';
-import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
+import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:riverpod/riverpod.dart';
 
-// ── Data classes ─────────────────────────────────────────────────────────────
-
-class LengthConvertorUiState {
-  final GenericConvertorField centimeters;
-  final GenericConvertorField meters;
-  final GenericConvertorField inches;
-  final GenericConvertorField feet;
-  final GenericConvertorField yards;
-  final double? rawValue;
-  final Unit inputUnit;
-
-  const LengthConvertorUiState({
-    required this.centimeters,
-    required this.meters,
-    required this.inches,
-    required this.feet,
-    required this.yards,
-    required this.rawValue,
-    required this.inputUnit,
-  });
-}
-
-// ── ViewModel ─────────────────────────────────────────────────────────────────
-
-class LengthConvertorViewModel extends Notifier<LengthConvertorUiState> {
+class LengthConvertorViewModel extends SimpleConvertorVm {
   @override
-  LengthConvertorUiState build() {
-    final convertorsState = ref.watch(convertorStateProvider);
-    return _buildState(
-      convertorsState.lengthValueInch,
-      convertorsState.lengthUnit,
-    );
-  }
+  Unit get baseUnit => Unit.inch;
 
-  void updateRawValue(double? rawValueInInputUnit) {
-    final convertorsState = ref.read(convertorStateProvider);
+  @override
+  double getRawBase(ConvertorsState s) => s.lengthValueInch;
 
-    if (rawValueInInputUnit == null) {
-      unawaited(ref.read(convertorsProvider.notifier).updateLengthValue(null));
-      return;
-    }
+  @override
+  Unit getInputUnit(ConvertorsState s) => s.lengthUnit;
 
-    final inchesValue = rawValueInInputUnit.convert(
-      convertorsState.lengthUnit,
-      Unit.inch,
-    );
-    if (inchesValue >= 0) {
-      unawaited(
-        ref.read(convertorsProvider.notifier).updateLengthValue(inchesValue),
-      );
-    }
-  }
+  @override
+  Future<void> saveRawBase(double? base) =>
+      ref.read(convertorsProvider.notifier).updateLengthValue(base);
 
-  void changeInputUnit(Unit newUnit) {
-    unawaited(ref.read(convertorsProvider.notifier).updateLengthUnit(newUnit));
-  }
+  @override
+  Future<void> saveInputUnit(Unit unit) =>
+      ref.read(convertorsProvider.notifier).updateLengthUnit(unit);
 
-  double? _getDisplayValue(double? rawInches, Unit inputUnit) {
-    if (rawInches == null) return null;
-    return rawInches.convert(Unit.inch, inputUnit);
-  }
+  @override
+  FieldConstraints getConstraintsForUnit(Unit unit) => FieldConstraints(
+    minRaw: FC.convertorLength.minRaw.convert(Unit.inch, unit),
+    maxRaw: FC.convertorLength.maxRaw.convert(Unit.inch, unit),
+    stepRaw: FC.convertorLength.stepRaw.convert(Unit.inch, unit),
+    rawUnit: unit,
+    accuracy: FC.convertorLength.accuracyFor(unit),
+  );
 
-  FieldConstraints getConstraintsForUnit(Unit unit) {
-    final minInInches = 0.0;
-    final maxInInches = 1000000.0.convert(Unit.centimeter, Unit.inch);
-
-    return FieldConstraints(
-      minRaw: minInInches.convert(Unit.inch, unit),
-      maxRaw: maxInInches.convert(Unit.inch, unit),
-      stepRaw: _getStepForUnit(unit),
-      rawUnit: unit,
-      accuracy: FC.convertorLength.accuracyFor(unit),
-    );
-  }
-
-  double _getStepForUnit(Unit unit) {
-    final baseStep = FC.convertorLength.stepRaw;
-    return baseStep.convert(Unit.inch, unit);
-  }
-
-  String _formatValue(double value, int decimals, String symbol) {
-    if (value.isNaN || value.isInfinite) return '— $symbol';
-    return '${value.toStringAsFixed(decimals)} $symbol';
-  }
-
-  LengthConvertorUiState _buildState(double rawInches, Unit inputUnit) {
-    final inchesRaw = rawInches;
-
-    final centimetersRaw = inchesRaw.convert(Unit.inch, Unit.centimeter);
-    final metersRaw = inchesRaw.convert(Unit.inch, Unit.meter);
-    final inchesRawValue = inchesRaw.convert(Unit.inch, Unit.inch);
-    final feetRaw = inchesRaw.convert(Unit.inch, Unit.foot);
-    final yardsRaw = inchesRaw.convert(Unit.inch, Unit.yard);
-
-    final cmAccuracy = FC.convertorLength.accuracyFor(Unit.centimeter);
-    final mAccuracy = FC.convertorLength.accuracyFor(Unit.meter);
-    final inAccuracy = FC.convertorLength.accuracyFor(Unit.inch);
-    final ftAccuracy = FC.convertorLength.accuracyFor(Unit.foot);
-    final ydAccuracy = FC.convertorLength.accuracyFor(Unit.yard);
-
-    return LengthConvertorUiState(
-      rawValue: _getDisplayValue(rawInches, inputUnit),
-      inputUnit: inputUnit,
-      centimeters: GenericConvertorField(
-        label: 'Centimeters',
-        formattedValue: _formatValue(
-          centimetersRaw,
-          cmAccuracy,
-          Unit.centimeter.symbol,
-        ),
-        value: centimetersRaw,
-        symbol: Unit.centimeter.symbol,
-        decimals: cmAccuracy,
+  @override
+  List<ConvertorSection> buildSections(double rawInch) => [
+    ConvertorSection((l10n) => l10n.sectionMetric, [
+      fieldFor(
+        rawInch,
+        Unit.centimeter,
+        (l10n) => l10n.unitCentimeters,
+        FC.convertorLength.accuracyFor(Unit.centimeter),
       ),
-      meters: GenericConvertorField(
-        label: 'Meters',
-        formattedValue: _formatValue(metersRaw, mAccuracy, Unit.meter.symbol),
-        value: metersRaw,
-        symbol: Unit.meter.symbol,
-        decimals: mAccuracy,
+      fieldFor(
+        rawInch,
+        Unit.meter,
+        (l10n) => l10n.unitMeters,
+        FC.convertorLength.accuracyFor(Unit.meter),
       ),
-      inches: GenericConvertorField(
-        label: 'Inches',
-        formattedValue: _formatValue(
-          inchesRawValue,
-          inAccuracy,
-          Unit.inch.symbol,
-        ),
-        value: inchesRawValue,
-        symbol: Unit.inch.symbol,
-        decimals: inAccuracy,
+    ]),
+    ConvertorSection((l10n) => l10n.sectionImperial, [
+      fieldFor(
+        rawInch,
+        Unit.inch,
+        (l10n) => l10n.unitInches,
+        FC.convertorLength.accuracyFor(Unit.inch),
       ),
-      feet: GenericConvertorField(
-        label: 'Feet',
-        formattedValue: _formatValue(feetRaw, ftAccuracy, Unit.foot.symbol),
-        value: feetRaw,
-        symbol: Unit.foot.symbol,
-        decimals: ftAccuracy,
+      fieldFor(
+        rawInch,
+        Unit.foot,
+        (l10n) => l10n.unitFeet,
+        FC.convertorLength.accuracyFor(Unit.foot),
       ),
-      yards: GenericConvertorField(
-        label: 'Yards',
-        formattedValue: _formatValue(yardsRaw, ydAccuracy, Unit.yard.symbol),
-        value: yardsRaw,
-        symbol: Unit.yard.symbol,
-        decimals: ydAccuracy,
+      fieldFor(
+        rawInch,
+        Unit.yard,
+        (l10n) => l10n.unitYards,
+        FC.convertorLength.accuracyFor(Unit.yard),
       ),
-    );
-  }
+    ]),
+  ];
 }
-
-// ── Provider ─────────────────────────────────────────────────────────────────
 
 final lengthConvertorVmProvider =
-    NotifierProvider<LengthConvertorViewModel, LengthConvertorUiState>(
+    NotifierProvider<LengthConvertorViewModel, SimpleConvertorUiState>(
       LengthConvertorViewModel.new,
     );

@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/convertors/target_distance_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -16,9 +17,10 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(targetAtDistanceConvertorVmProvider);
     final notifier = ref.read(targetAtDistanceConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Target Distance',
+      title: l10n.targetDistanceConvertorTitle,
       isSubscreen: true,
       body: ListView(
         children: [
@@ -35,7 +37,7 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
               Unit.inch,
               Unit.foot,
             ],
-            label: 'Target Size',
+            label: l10n.inputTargetSize,
             icon: IconDef.sight,
           ),
           const SizedBox(height: 8),
@@ -48,25 +50,25 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
             onChanged: notifier.updateAngularValue,
             onUnitChanged: notifier.changeAngularUnit,
             options: const [Unit.mil, Unit.moa, Unit.mRad],
-            label: 'Angular Size',
+            label: l10n.inputAngularSize,
             icon: IconDef.angleConvertor,
           ),
           const Divider(height: 1),
-          const ListSectionTile('Distance metric'),
+          ListSectionTile(l10n.sectionDistanceMetric),
           InfoListTile(
-            label: state.meters.label,
+            label: state.meters.labelBuilder(l10n),
             value: state.meters.formattedValue,
             icon: IconDef.distanceConvertor,
           ),
           const Divider(height: 1),
-          const ListSectionTile('Distance metric'),
+          ListSectionTile(l10n.sectionDistanceImperial),
           InfoListTile(
-            label: state.yards.label,
+            label: state.yards.labelBuilder(l10n),
             value: state.yards.formattedValue,
             icon: IconDef.distanceConvertor,
           ),
           InfoListTile(
-            label: state.feet.label,
+            label: state.feet.labelBuilder(l10n),
             value: state.feet.formattedValue,
             icon: IconDef.distanceConvertor,
           ),

@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'core/providers/db_provider.dart';
 import 'core/providers/settings_provider.dart';
+import 'l10n/app_localizations.dart';
 import 'router.dart';
 
 // Constants for window sizes
@@ -151,8 +152,22 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
+      title: "eBalistyka",
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale == null) return const Locale('en');
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return const Locale('en');
+      },
       routerConfig: appRouter,
       theme: _lightTheme,
       darkTheme: _darkTheme,
