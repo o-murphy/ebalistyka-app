@@ -22,6 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Velocity, angular, and target-distance converters untouched (unique layouts)
 - All provider names unchanged — zero impact on call sites
 
+### Added
+
+#### Localization
+- **Setup flutter_localizations** - added `flutter_localizations` dependency
+- **Settings screen (UA)** - Settings screen and it's subscreens localization
+- **Convertors screen (UA)** - Convertors screen and all convertors subscreens localization
+
 
 ## [0.1.2] - 2026-04-26
 

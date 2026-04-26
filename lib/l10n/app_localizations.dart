@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('uk'),
   ];
 
+  /// No description provided for @settingsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Convertors'**
+  String get settingsScreenTitle;
+
   /// No description provided for @convertorsScreenTitle.
   ///
   /// In en, this message translates to:
@@ -517,6 +523,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Degrees'**
   String get unitDegrees;
+
+  /// No description provided for @sectionLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get sectionLanguage;
+
+  /// No description provided for @sectionAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get sectionAppearance;
+
+  /// No description provided for @sectionUnitsSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Units settings'**
+  String get sectionUnitsSettings;
+
+  /// No description provided for @unitsSettingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Units of Measurement'**
+  String get unitsSettingsLabel;
+
+  /// No description provided for @sectionHomeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen'**
+  String get sectionHomeSettings;
+
+  /// No description provided for @adjustmentDisplayScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment Display'**
+  String get adjustmentDisplayScreenTitle;
+
+  /// No description provided for @switchShowSubsonicTransition.
+  ///
+  /// In en, this message translates to:
+  /// **'Show subsonic transition'**
+  String get switchShowSubsonicTransition;
+
+  /// No description provided for @switchShowSubsonicTransitionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Displays on trajectory chart'**
+  String get switchShowSubsonicTransitionSubtitle;
+
+  /// No description provided for @labelTrajectoryTableStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Table distance step'**
+  String get labelTrajectoryTableStep;
+
+  /// No description provided for @labelTrajectoryChartStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart distance step'**
+  String get labelTrajectoryChartStep;
+
+  /// No description provided for @sectionBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get sectionBackup;
+
+  /// No description provided for @actionExportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get actionExportBackup;
+
+  /// No description provided for @actionImportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get actionImportBackup;
+
+  /// No description provided for @errorImportBackupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup import failed'**
+  String get errorImportBackupFailed;
+
+  /// No description provided for @sectionLinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Links'**
+  String get sectionLinks;
+
+  /// No description provided for @sectionAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get sectionAbout;
+
+  /// No description provided for @labelTermsOfUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get labelTermsOfUse;
+
+  /// No description provided for @labelPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get labelPrivacyPolicy;
+
+  /// No description provided for @labelVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get labelVersion;
+
+  /// No description provided for @labelChangelog.
+  ///
+  /// In en, this message translates to:
+  /// **'Changelog'**
+  String get labelChangelog;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @adjustmentDisplayFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get adjustmentDisplayFormat;
+
+  /// No description provided for @unitClicks.
+  ///
+  /// In en, this message translates to:
+  /// **'Clicks'**
+  String get unitClicks;
+
+  /// No description provided for @sectionShowAdjustmentsIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Show units'**
+  String get sectionShowAdjustmentsIn;
+
+  /// No description provided for @labelVelocity.
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity'**
+  String get labelVelocity;
+
+  /// No description provided for @labelDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get labelDistance;
+
+  /// No description provided for @labelSightHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Sight Height'**
+  String get labelSightHeight;
+
+  /// No description provided for @labelPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Pressure'**
+  String get labelPressure;
+
+  /// No description provided for @labelTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get labelTemperature;
+
+  /// No description provided for @labelDropWindage.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop / Windage'**
+  String get labelDropWindage;
+
+  /// No description provided for @labelDropWindageAngle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop / Windage angle'**
+  String get labelDropWindageAngle;
+
+  /// No description provided for @labelEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get labelEnergy;
+
+  /// No description provided for @labelProjectileWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Projectile Weight'**
+  String get labelProjectileWeight;
+
+  /// No description provided for @labelProjectileLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Projectile Length'**
+  String get labelProjectileLength;
+
+  /// No description provided for @labelProjectileDiameter.
+  ///
+  /// In en, this message translates to:
+  /// **'Projectile Diameter'**
+  String get labelProjectileDiameter;
+
+  /// No description provided for @labelTargetSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Target size'**
+  String get labelTargetSize;
 }
 
 class _AppLocalizationsDelegate

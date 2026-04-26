@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,14 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
     final notifier = ref.read(settingsProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Adjustment Display',
+      title: l10n.adjustmentDisplayScreenTitle,
       isSubscreen: true,
       body: ListView(
         children: [
-          const ListSectionTile('Format'),
+          ListSectionTile(l10n.adjustmentDisplayFormat),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
             child: SegmentedButton<AdjustmentDisplayFormat>(
@@ -49,39 +51,39 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
             ),
           ),
           const Divider(height: 1),
-          const ListSectionTile('Show units'),
+          ListSectionTile(l10n.sectionShowAdjustmentsIn),
           SwitchListTile(
-            title: const Text('MRAD'),
+            title: Text(l10n.unitMrad),
             value: settings.homeShowMrad,
             onChanged: (v) => notifier.setAdjustmentToggle('showMrad', v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MOA'),
+            title: Text(l10n.unitMoa),
             value: settings.homeShowMoa,
             onChanged: (v) => notifier.setAdjustmentToggle('showMoa', v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MIL'),
+            title: Text(l10n.unitMoa),
             value: settings.homeShowMil,
             onChanged: (v) => notifier.setAdjustmentToggle('showMil', v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('cm / 100m'),
+            title: Text(l10n.unitCmPer100m),
             value: settings.homeShowCmPer100m,
             onChanged: (v) => notifier.setAdjustmentToggle('showCmPer100m', v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('in / 100yd'),
+            title: Text(l10n.unitInPer100Yd),
             value: settings.homeShowInPer100yd,
             onChanged: (v) => notifier.setAdjustmentToggle('showInPer100yd', v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('Clicks'),
+            title: Text(l10n.unitClicks),
             value: settings.homeShowInClicks,
             onChanged: (v) => notifier.setAdjustmentToggle('showInClicks', v),
             dense: true,

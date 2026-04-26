@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get settingsScreenTitle => 'Convertors';
+
+  @override
   String get convertorsScreenTitle => 'Convertors';
 
   @override
@@ -217,4 +220,119 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitDegrees => 'Degrees';
+
+  @override
+  String get sectionLanguage => 'Language';
+
+  @override
+  String get sectionAppearance => 'Appearance';
+
+  @override
+  String get sectionUnitsSettings => 'Units settings';
+
+  @override
+  String get unitsSettingsLabel => 'Units of Measurement';
+
+  @override
+  String get sectionHomeSettings => 'Home screen';
+
+  @override
+  String get adjustmentDisplayScreenTitle => 'Adjustment Display';
+
+  @override
+  String get switchShowSubsonicTransition => 'Show subsonic transition';
+
+  @override
+  String get switchShowSubsonicTransitionSubtitle =>
+      'Displays on trajectory chart';
+
+  @override
+  String get labelTrajectoryTableStep => 'Table distance step';
+
+  @override
+  String get labelTrajectoryChartStep => 'Chart distance step';
+
+  @override
+  String get sectionBackup => 'Backup';
+
+  @override
+  String get actionExportBackup => 'Export';
+
+  @override
+  String get actionImportBackup => 'Import';
+
+  @override
+  String get errorImportBackupFailed => 'Backup import failed';
+
+  @override
+  String get sectionLinks => 'Links';
+
+  @override
+  String get sectionAbout => 'About';
+
+  @override
+  String get labelTermsOfUse => 'Terms of Use';
+
+  @override
+  String get labelPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get labelVersion => 'Version';
+
+  @override
+  String get labelChangelog => 'Changelog';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get adjustmentDisplayFormat => 'Format';
+
+  @override
+  String get unitClicks => 'Clicks';
+
+  @override
+  String get sectionShowAdjustmentsIn => 'Show units';
+
+  @override
+  String get labelVelocity => 'Velocity';
+
+  @override
+  String get labelDistance => 'Distance';
+
+  @override
+  String get labelSightHeight => 'Sight Height';
+
+  @override
+  String get labelPressure => 'Pressure';
+
+  @override
+  String get labelTemperature => 'Temperature';
+
+  @override
+  String get labelDropWindage => 'Drop / Windage';
+
+  @override
+  String get labelDropWindageAngle => 'Drop / Windage angle';
+
+  @override
+  String get labelEnergy => 'Energy';
+
+  @override
+  String get labelProjectileWeight => 'Projectile Weight';
+
+  @override
+  String get labelProjectileLength => 'Projectile Length';
+
+  @override
+  String get labelProjectileDiameter => 'Projectile Diameter';
+
+  @override
+  String get labelTargetSize => 'Target size';
 }

@@ -58,10 +58,10 @@ class VelocityConvertorScreen extends ConsumerWidget {
             value: state.useCustomAtmo,
             onChanged: notifier.toggleCustomAtmo,
           ),
-          
+
           ListSectionTile(l10n.sectionOther),
           _buildInfoTile(state.mach, l10n),
-          
+
           if (state.useCustomAtmo) ...[
             Divider(height: 1),
             ListSectionTile(l10n.sectionAtmosphere),

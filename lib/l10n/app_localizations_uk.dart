@@ -9,6 +9,9 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get settingsScreenTitle => 'Налаштування';
+
+  @override
   String get convertorsScreenTitle => 'Конвертори';
 
   @override
@@ -217,4 +220,119 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get unitDegrees => 'Градуси';
+
+  @override
+  String get sectionLanguage => 'Мова';
+
+  @override
+  String get sectionAppearance => 'Зовнішній вигляд';
+
+  @override
+  String get sectionUnitsSettings => 'Одиниці вимірювання';
+
+  @override
+  String get unitsSettingsLabel => 'Одиниці вимірювання';
+
+  @override
+  String get sectionHomeSettings => 'Домашній екран';
+
+  @override
+  String get adjustmentDisplayScreenTitle => 'Відображення поправок';
+
+  @override
+  String get switchShowSubsonicTransition => 'Відображати перехід на дозвук';
+
+  @override
+  String get switchShowSubsonicTransitionSubtitle => 'На графіку траекторії';
+
+  @override
+  String get labelTrajectoryTableStep => 'Крок дистанції таблиці';
+
+  @override
+  String get labelTrajectoryChartStep => 'Крок дистанції на графіку';
+
+  @override
+  String get sectionBackup => 'Резервна копія';
+
+  @override
+  String get actionExportBackup => 'Експортувати';
+
+  @override
+  String get actionImportBackup => 'Імпортувати';
+
+  @override
+  String get errorImportBackupFailed => 'Помилка імпортувату резервної копії';
+
+  @override
+  String get sectionLinks => 'Посилання';
+
+  @override
+  String get sectionAbout => 'Про додаток';
+
+  @override
+  String get labelTermsOfUse => 'Умови використання';
+
+  @override
+  String get labelPrivacyPolicy => 'Політика конфіденційності';
+
+  @override
+  String get labelVersion => 'Версія';
+
+  @override
+  String get labelChangelog => 'Журнал змін';
+
+  @override
+  String get themeSystem => 'Системна';
+
+  @override
+  String get themeDark => 'Темна';
+
+  @override
+  String get themeLight => 'Світла';
+
+  @override
+  String get adjustmentDisplayFormat => 'Формат';
+
+  @override
+  String get unitClicks => 'Кліки';
+
+  @override
+  String get sectionShowAdjustmentsIn => 'Відображати одиниці';
+
+  @override
+  String get labelVelocity => 'Швидкість';
+
+  @override
+  String get labelDistance => 'Дистанція';
+
+  @override
+  String get labelSightHeight => 'Висота прицілу';
+
+  @override
+  String get labelPressure => 'Тиск';
+
+  @override
+  String get labelTemperature => 'Температура';
+
+  @override
+  String get labelDropWindage => 'Падіння кулі / горизонтальне відхилення';
+
+  @override
+  String get labelDropWindageAngle =>
+      'Падіння кулі / горизонтальне відхилення (кутове)';
+
+  @override
+  String get labelEnergy => 'Енергія';
+
+  @override
+  String get labelProjectileWeight => 'Вага набою';
+
+  @override
+  String get labelProjectileLength => 'Довжина набою';
+
+  @override
+  String get labelProjectileDiameter => 'Діаметр набою';
+
+  @override
+  String get labelTargetSize => 'Розмір мішені';
 }
