@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsScreenTitle.
   ///
   /// In en, this message translates to:
-  /// **'Convertors'**
+  /// **'Settings'**
   String get settingsScreenTitle;
 
   /// No description provided for @convertorsScreenTitle.
