@@ -1,0 +1,105 @@
+{
+  "@@locale": "en",
+
+  "lengthConvertorTitle": "Length Converter",
+  "@lengthConvertorTitle": {},
+
+  "weightConvertorTitle": "Weight Converter",
+  "@weightConvertorTitle": {},
+
+  "pressureConvertorTitle": "Pressure Converter",
+  "@pressureConvertorTitle": {},
+
+  "temperatureConvertorTitle": "Temperature Converter",
+  "@temperatureConvertorTitle": {},
+
+  "torqueConvertorTitle": "Torque Converter",
+  "@torqueConvertorTitle": {},
+
+  "enterLength": "Enter length",
+  "@enterLength": {},
+
+  "enterWeight": "Enter weight",
+  "@enterWeight": {},
+
+  "enterPressure": "Enter pressure",
+  "@enterPressure": {},
+
+  "enterTemperature": "Enter temperature",
+  "@enterTemperature": {},
+
+  "enterTorque": "Enter torque",
+  "@enterTorque": {},
+
+  "sectionMetric": "Metric",
+  "@sectionMetric": {},
+
+  "sectionImperial": "Imperial",
+  "@sectionImperial": {},
+
+  "sectionCommon": "Common",
+  "@sectionCommon": {},
+
+  "unitCentimeters": "Centimeters",
+  "@unitCentimeters": {},
+
+  "unitMeters": "Meters",
+  "@unitMeters": {},
+
+  "unitInches": "Inches",
+  "@unitInches": {},
+
+  "unitFeet": "Feet",
+  "@unitFeet": {},
+
+  "unitYards": "Yards",
+  "@unitYards": {},
+
+  "unitGrams": "Grams",
+  "@unitGrams": {},
+
+  "unitKilograms": "Kilograms",
+  "@unitKilograms": {},
+
+  "unitGrains": "Grains",
+  "@unitGrains": {},
+
+  "unitPounds": "Pounds",
+  "@unitPounds": {},
+
+  "unitOunces": "Ounces",
+  "@unitOunces": {},
+
+  "unitAtmosphere": "Atmosphere",
+  "@unitAtmosphere": {},
+
+  "unitHPa": "hPa",
+  "@unitHPa": {},
+
+  "unitBar": "Bar",
+  "@unitBar": {},
+
+  "unitPsi": "PSI",
+  "@unitPsi": {},
+
+  "unitInHg": "inHg",
+  "@unitInHg": {},
+
+  "unitMmHg": "mmHg",
+  "@unitMmHg": {},
+
+  "unitCelsius": "Celsius",
+  "@unitCelsius": {},
+
+  "unitFahrenheit": "Fahrenheit",
+  "@unitFahrenheit": {},
+
+  "unitNewtonMeter": "Newton-meter",
+  "@unitNewtonMeter": {},
+
+  "unitFootPound": "Foot-pound",
+  "@unitFootPound": {},
+
+  "unitInchPound": "Inch-pound",
+  "@unitInchPound": {}
+}

@@ -1,6 +1,7 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/features/convertors/pressure_convertor_vm.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/simple_convertor_screen.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,11 +10,12 @@ class PressureConvertorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(pressureConvertorVmProvider);
     final notifier = ref.read(pressureConvertorVmProvider.notifier);
     return SimpleConvertorScreen(
-      title: 'Pressure Converter',
-      hintText: 'Enter pressure',
+      title: l10n.pressureConvertorTitle,
+      hintText: l10n.enterPressure,
       unitOptions: const [
         Unit.mmHg,
         Unit.inHg,

@@ -5,6 +5,7 @@
 		build-bclibc ffigen \
 		proto-setup \
         objectbox-generate objectbox-setup objectbox-clean \
+		generate-localization \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -53,6 +54,9 @@ else
 	dart pub global activate protoc_plugin
 endif
 
+generate-localization:
+	flutter gen-l10n
+
 generate-reticles:
 	./scripts/gen_reticles.sh
 
@@ -80,7 +84,10 @@ objectbox-clean:
 objectbox-admin:
 	cd packages/ebalistyka_db && ./admin.sh
 
-generate: build-bclibc ffigen objectbox-generate generate-a7p generate-reticles generate-icons  
+generate: build-bclibc ffigen \
+	objectbox-generate \
+	generate-a7p generate-localization \
+	generate-reticles generate-icons
 
 # Run all tests (native must be built first)
 test: build-bclibc

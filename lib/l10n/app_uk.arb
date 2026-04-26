@@ -1,0 +1,45 @@
+{
+  "@@locale": "uk",
+
+  "lengthConvertorTitle": "Конвертер довжини",
+  "weightConvertorTitle": "Конвертер ваги",
+  "pressureConvertorTitle": "Конвертер тиску",
+  "temperatureConvertorTitle": "Конвертер температури",
+  "torqueConvertorTitle": "Конвертер моменту",
+
+  "enterLength": "Введіть довжину",
+  "enterWeight": "Введіть вагу",
+  "enterPressure": "Введіть тиск",
+  "enterTemperature": "Введіть температуру",
+  "enterTorque": "Введіть момент",
+
+  "sectionMetric": "Метрична",
+  "sectionImperial": "Імперська",
+  "sectionCommon": "Основні",
+
+  "unitCentimeters": "Сантиметри",
+  "unitMeters": "Метри",
+  "unitInches": "Дюйми",
+  "unitFeet": "Фути",
+  "unitYards": "Ярди",
+
+  "unitGrams": "Грами",
+  "unitKilograms": "Кілограми",
+  "unitGrains": "Грани",
+  "unitPounds": "Фунти",
+  "unitOunces": "Унції",
+
+  "unitAtmosphere": "Атмосфера",
+  "unitHPa": "гПа",
+  "unitBar": "Бар",
+  "unitPsi": "PSI",
+  "unitInHg": "дюйм рт.ст.",
+  "unitMmHg": "мм рт.ст.",
+
+  "unitCelsius": "Цельсій",
+  "unitFahrenheit": "Фаренгейт",
+
+  "unitNewtonMeter": "Ньютон-метр",
+  "unitFootPound": "Фут-фунт",
+  "unitInchPound": "Дюйм-фунт"
+}

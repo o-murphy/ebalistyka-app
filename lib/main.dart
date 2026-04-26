@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'core/providers/db_provider.dart';
 import 'core/providers/settings_provider.dart';
+import 'l10n/app_localizations.dart';
 import 'router.dart';
 
 // Constants for window sizes
@@ -152,15 +152,13 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       title: "eBalistyka",
-      supportedLocales: [Locale('en'), Locale('uk', 'UA')],
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale == null) return const Locale('en');
         for (var supportedLocale in supportedLocales) {

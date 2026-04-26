@@ -97,6 +97,216 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('uk'),
   ];
+
+  /// No description provided for @lengthConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Length Converter'**
+  String get lengthConvertorTitle;
+
+  /// No description provided for @weightConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Converter'**
+  String get weightConvertorTitle;
+
+  /// No description provided for @pressureConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pressure Converter'**
+  String get pressureConvertorTitle;
+
+  /// No description provided for @temperatureConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature Converter'**
+  String get temperatureConvertorTitle;
+
+  /// No description provided for @torqueConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Torque Converter'**
+  String get torqueConvertorTitle;
+
+  /// No description provided for @enterLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter length'**
+  String get enterLength;
+
+  /// No description provided for @enterWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter weight'**
+  String get enterWeight;
+
+  /// No description provided for @enterPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter pressure'**
+  String get enterPressure;
+
+  /// No description provided for @enterTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter temperature'**
+  String get enterTemperature;
+
+  /// No description provided for @enterTorque.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter torque'**
+  String get enterTorque;
+
+  /// No description provided for @sectionMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get sectionMetric;
+
+  /// No description provided for @sectionImperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial'**
+  String get sectionImperial;
+
+  /// No description provided for @sectionCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'Common'**
+  String get sectionCommon;
+
+  /// No description provided for @unitCentimeters.
+  ///
+  /// In en, this message translates to:
+  /// **'Centimeters'**
+  String get unitCentimeters;
+
+  /// No description provided for @unitMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'Meters'**
+  String get unitMeters;
+
+  /// No description provided for @unitInches.
+  ///
+  /// In en, this message translates to:
+  /// **'Inches'**
+  String get unitInches;
+
+  /// No description provided for @unitFeet.
+  ///
+  /// In en, this message translates to:
+  /// **'Feet'**
+  String get unitFeet;
+
+  /// No description provided for @unitYards.
+  ///
+  /// In en, this message translates to:
+  /// **'Yards'**
+  String get unitYards;
+
+  /// No description provided for @unitGrams.
+  ///
+  /// In en, this message translates to:
+  /// **'Grams'**
+  String get unitGrams;
+
+  /// No description provided for @unitKilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilograms'**
+  String get unitKilograms;
+
+  /// No description provided for @unitGrains.
+  ///
+  /// In en, this message translates to:
+  /// **'Grains'**
+  String get unitGrains;
+
+  /// No description provided for @unitPounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Pounds'**
+  String get unitPounds;
+
+  /// No description provided for @unitOunces.
+  ///
+  /// In en, this message translates to:
+  /// **'Ounces'**
+  String get unitOunces;
+
+  /// No description provided for @unitAtmosphere.
+  ///
+  /// In en, this message translates to:
+  /// **'Atmosphere'**
+  String get unitAtmosphere;
+
+  /// No description provided for @unitHPa.
+  ///
+  /// In en, this message translates to:
+  /// **'hPa'**
+  String get unitHPa;
+
+  /// No description provided for @unitBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Bar'**
+  String get unitBar;
+
+  /// No description provided for @unitPsi.
+  ///
+  /// In en, this message translates to:
+  /// **'PSI'**
+  String get unitPsi;
+
+  /// No description provided for @unitInHg.
+  ///
+  /// In en, this message translates to:
+  /// **'inHg'**
+  String get unitInHg;
+
+  /// No description provided for @unitMmHg.
+  ///
+  /// In en, this message translates to:
+  /// **'mmHg'**
+  String get unitMmHg;
+
+  /// No description provided for @unitCelsius.
+  ///
+  /// In en, this message translates to:
+  /// **'Celsius'**
+  String get unitCelsius;
+
+  /// No description provided for @unitFahrenheit.
+  ///
+  /// In en, this message translates to:
+  /// **'Fahrenheit'**
+  String get unitFahrenheit;
+
+  /// No description provided for @unitNewtonMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Newton-meter'**
+  String get unitNewtonMeter;
+
+  /// No description provided for @unitFootPound.
+  ///
+  /// In en, this message translates to:
+  /// **'Foot-pound'**
+  String get unitFootPound;
+
+  /// No description provided for @unitInchPound.
+  ///
+  /// In en, this message translates to:
+  /// **'Inch-pound'**
+  String get unitInchPound;
+
+  /// No description provided for @unitsImperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get unitsImperial;
 }
 
 class _AppLocalizationsDelegate

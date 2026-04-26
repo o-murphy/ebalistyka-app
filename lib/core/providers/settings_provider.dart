@@ -407,3 +407,10 @@ final themeModeProvider = Provider<ThemeMode>((ref) {
   return ref.watch(settingsProvider).value?.flutterThemeMode ??
       ThemeMode.system;
 });
+
+/// Returns the user-selected [Locale] from settings, or null to fall back
+/// to the system locale (handled by [MaterialApp.localeResolutionCallback]).
+final localeProvider = Provider<Locale?>((ref) {
+  final code = ref.watch(settingsProvider).value?.languageCode ?? '';
+  return code.isNotEmpty ? Locale(code) : null;
+});
