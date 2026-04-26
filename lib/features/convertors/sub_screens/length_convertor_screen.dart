@@ -10,9 +10,9 @@ class LengthConvertorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(lengthConvertorVmProvider);
     final notifier = ref.read(lengthConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
     return SimpleConvertorScreen(
       title: l10n.lengthConvertorTitle,
       hintText: l10n.enterLength,

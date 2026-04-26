@@ -37,37 +37,37 @@ class LengthConvertorViewModel extends SimpleConvertorVm {
 
   @override
   List<ConvertorSection> buildSections(double rawInch) => [
-    ConvertorSection('Metric', [
+    ConvertorSection((l10n) => l10n.sectionMetric, [
       fieldFor(
         rawInch,
         Unit.centimeter,
-        'Centimeters',
+        (l10n) => l10n.unitCentimeters,
         FC.convertorLength.accuracyFor(Unit.centimeter),
       ),
       fieldFor(
         rawInch,
         Unit.meter,
-        'Meters',
+        (l10n) => l10n.unitMeters,
         FC.convertorLength.accuracyFor(Unit.meter),
       ),
     ]),
-    ConvertorSection('Imperial', [
+    ConvertorSection((l10n) => l10n.sectionImperial, [
       fieldFor(
         rawInch,
         Unit.inch,
-        'Inches',
+        (l10n) => l10n.unitInches,
         FC.convertorLength.accuracyFor(Unit.inch),
       ),
       fieldFor(
         rawInch,
         Unit.foot,
-        'Feet',
+        (l10n) => l10n.unitFeet,
         FC.convertorLength.accuracyFor(Unit.foot),
       ),
       fieldFor(
         rawInch,
         Unit.yard,
-        'Yards',
+        (l10n) => l10n.unitYards,
         FC.convertorLength.accuracyFor(Unit.yard),
       ),
     ]),

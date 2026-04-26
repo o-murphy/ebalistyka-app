@@ -37,43 +37,43 @@ class PressureConvertorViewModel extends SimpleConvertorVm {
 
   @override
   List<ConvertorSection> buildSections(double rawMmHg) => [
-    ConvertorSection('Common', [
+    ConvertorSection((l10n) => l10n.sectionCommon, [
       fieldFor(
         rawMmHg,
         Unit.atm,
-        'Atmosphere',
+        (l10n) => l10n.unitAtmosphere,
         FC.convertorPressure.accuracyFor(Unit.atm),
       ),
       fieldFor(
         rawMmHg,
         Unit.hPa,
-        'hPa',
+        (l10n) => l10n.unitHPa,
         FC.convertorPressure.accuracyFor(Unit.hPa),
       ),
       fieldFor(
         rawMmHg,
         Unit.bar,
-        'Bar',
+        (l10n) => l10n.unitBar,
         FC.convertorPressure.accuracyFor(Unit.bar),
       ),
     ]),
-    ConvertorSection('Imperial', [
+    ConvertorSection((l10n) => l10n.sectionImperial, [
       fieldFor(
         rawMmHg,
         Unit.psi,
-        'PSI',
+        (l10n) => l10n.unitPsi,
         FC.convertorPressure.accuracyFor(Unit.psi),
       ),
       fieldFor(
         rawMmHg,
         Unit.inHg,
-        'inHg',
+        (l10n) => l10n.unitInHg,
         FC.convertorPressure.accuracyFor(Unit.inHg),
       ),
       fieldFor(
         rawMmHg,
         Unit.mmHg,
-        'mmHg',
+        (l10n) => l10n.unitMmHg,
         FC.convertorPressure.accuracyFor(Unit.mmHg),
       ),
     ]),

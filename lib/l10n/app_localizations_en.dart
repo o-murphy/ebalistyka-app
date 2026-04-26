@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get convertorsScreenTitle => 'Convertor';
+
+  @override
   String get lengthConvertorTitle => 'Length Converter';
 
   @override
@@ -22,6 +25,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get torqueConvertorTitle => 'Torque Converter';
+
+  @override
+  String get velocityConvertorTitle => 'Velocity Converter';
+
+  @override
+  String get anglesConvertorTitle => 'Angles Converter';
+
+  @override
+  String get targetDistanceConvertorTitle => 'Target Distance';
 
   @override
   String get enterLength => 'Enter length';
@@ -39,6 +51,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterTorque => 'Enter torque';
 
   @override
+  String get enterVelocity => 'Enter velocity';
+
+  @override
+  String get inputDistance => 'Distance Input';
+
+  @override
+  String get inputAngle => 'Angle Input';
+
+  @override
+  String get outputUnit => 'Output Unit';
+
+  @override
+  String get inputTargetSize => 'Target Size';
+
+  @override
+  String get inputAngularSize => 'Angular Size';
+
+  @override
   String get sectionMetric => 'Metric';
 
   @override
@@ -46,6 +76,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionCommon => 'Common';
+
+  @override
+  String get sectionOther => 'Other';
+
+  @override
+  String get sectionAngles => 'Angles';
+
+  @override
+  String get sectionAdjustmentAtDistance => 'Adjustment Value at Distance';
+
+  @override
+  String get sectionDistanceMetric => 'Distance metric';
+
+  @override
+  String get sectionDistanceImperial => 'Distance imperial';
+
+  @override
+  String get customAtmosphere => 'Custom atmosphere';
+
+  @override
+  String get usingCustomConditions => 'Using custom conditions';
+
+  @override
+  String get usingIcaoAtmosphere => 'Using ICAO standard atmosphere';
+
+  @override
+  String get atmoTemperature => 'Temperature';
+
+  @override
+  String get atmoPressure => 'Pressure';
+
+  @override
+  String get atmoHumidity => 'Humidity';
+
+  @override
+  String get atmoAltitude => 'Altitude';
+
+  @override
+  String get unitMillimeters => 'Millimeters';
 
   @override
   String get unitCentimeters => 'Centimeters';
@@ -111,5 +180,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitInchPound => 'Inch-pound';
 
   @override
-  String get unitsImperial => 'Metric';
+  String get unitMps => 'Meters per second';
+
+  @override
+  String get unitKmh => 'Kilometers per hour';
+
+  @override
+  String get unitFps => 'Feet per second';
+
+  @override
+  String get unitMph => 'Miles per hour';
+
+  @override
+  String get unitMachIcao => 'Mach (ICAO)';
+
+  @override
+  String get unitMachCustom => 'Mach (custom atmo)';
+
+  @override
+  String get unitMil => 'MIL';
+
+  @override
+  String get unitMoa => 'MOA';
+
+  @override
+  String get unitMrad => 'MRAD';
+
+  @override
+  String get unitCmPer100m => 'cm/100m';
+
+  @override
+  String get unitInPer100Yd => 'in/100yd';
+
+  @override
+  String get unitDegrees => 'Degrees';
 }

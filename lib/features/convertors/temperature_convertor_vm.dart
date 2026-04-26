@@ -43,11 +43,16 @@ class TemperatureConvertorViewModel extends SimpleConvertorVm {
 
   @override
   List<ConvertorSection> buildSections(double rawFahrenheit) => [
-    ConvertorSection('Metric', [
-      fieldFor(rawFahrenheit, Unit.celsius, 'Celsius', 1),
+    ConvertorSection((l10n) => l10n.sectionMetric, [
+      fieldFor(rawFahrenheit, Unit.celsius, (l10n) => l10n.unitCelsius, 1),
     ]),
-    ConvertorSection('Imperial', [
-      fieldFor(rawFahrenheit, Unit.fahrenheit, 'Fahrenheit', 1),
+    ConvertorSection((l10n) => l10n.sectionImperial, [
+      fieldFor(
+        rawFahrenheit,
+        Unit.fahrenheit,
+        (l10n) => l10n.unitFahrenheit,
+        1,
+      ),
     ]),
   ];
 }

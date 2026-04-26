@@ -98,6 +98,12 @@ abstract class AppLocalizations {
     Locale('uk'),
   ];
 
+  /// No description provided for @convertorsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Convertor'**
+  String get convertorsScreenTitle;
+
   /// No description provided for @lengthConvertorTitle.
   ///
   /// In en, this message translates to:
@@ -127,6 +133,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Torque Converter'**
   String get torqueConvertorTitle;
+
+  /// No description provided for @velocityConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity Converter'**
+  String get velocityConvertorTitle;
+
+  /// No description provided for @anglesConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Angles Converter'**
+  String get anglesConvertorTitle;
+
+  /// No description provided for @targetDistanceConvertorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Distance'**
+  String get targetDistanceConvertorTitle;
 
   /// No description provided for @enterLength.
   ///
@@ -158,6 +182,42 @@ abstract class AppLocalizations {
   /// **'Enter torque'**
   String get enterTorque;
 
+  /// No description provided for @enterVelocity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter velocity'**
+  String get enterVelocity;
+
+  /// No description provided for @inputDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance Input'**
+  String get inputDistance;
+
+  /// No description provided for @inputAngle.
+  ///
+  /// In en, this message translates to:
+  /// **'Angle Input'**
+  String get inputAngle;
+
+  /// No description provided for @outputUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Output Unit'**
+  String get outputUnit;
+
+  /// No description provided for @inputTargetSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Size'**
+  String get inputTargetSize;
+
+  /// No description provided for @inputAngularSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Angular Size'**
+  String get inputAngularSize;
+
   /// No description provided for @sectionMetric.
   ///
   /// In en, this message translates to:
@@ -175,6 +235,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Common'**
   String get sectionCommon;
+
+  /// No description provided for @sectionOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get sectionOther;
+
+  /// No description provided for @sectionAngles.
+  ///
+  /// In en, this message translates to:
+  /// **'Angles'**
+  String get sectionAngles;
+
+  /// No description provided for @sectionAdjustmentAtDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment Value at Distance'**
+  String get sectionAdjustmentAtDistance;
+
+  /// No description provided for @sectionDistanceMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance metric'**
+  String get sectionDistanceMetric;
+
+  /// No description provided for @sectionDistanceImperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance imperial'**
+  String get sectionDistanceImperial;
+
+  /// No description provided for @customAtmosphere.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom atmosphere'**
+  String get customAtmosphere;
+
+  /// No description provided for @usingCustomConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Using custom conditions'**
+  String get usingCustomConditions;
+
+  /// No description provided for @usingIcaoAtmosphere.
+  ///
+  /// In en, this message translates to:
+  /// **'Using ICAO standard atmosphere'**
+  String get usingIcaoAtmosphere;
+
+  /// No description provided for @atmoTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get atmoTemperature;
+
+  /// No description provided for @atmoPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Pressure'**
+  String get atmoPressure;
+
+  /// No description provided for @atmoHumidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Humidity'**
+  String get atmoHumidity;
+
+  /// No description provided for @atmoAltitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Altitude'**
+  String get atmoAltitude;
+
+  /// No description provided for @unitMillimeters.
+  ///
+  /// In en, this message translates to:
+  /// **'Millimeters'**
+  String get unitMillimeters;
 
   /// No description provided for @unitCentimeters.
   ///
@@ -302,11 +440,77 @@ abstract class AppLocalizations {
   /// **'Inch-pound'**
   String get unitInchPound;
 
-  /// No description provided for @unitsImperial.
+  /// No description provided for @unitMps.
   ///
   /// In en, this message translates to:
-  /// **'Metric'**
-  String get unitsImperial;
+  /// **'Meters per second'**
+  String get unitMps;
+
+  /// No description provided for @unitKmh.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilometers per hour'**
+  String get unitKmh;
+
+  /// No description provided for @unitFps.
+  ///
+  /// In en, this message translates to:
+  /// **'Feet per second'**
+  String get unitFps;
+
+  /// No description provided for @unitMph.
+  ///
+  /// In en, this message translates to:
+  /// **'Miles per hour'**
+  String get unitMph;
+
+  /// No description provided for @unitMachIcao.
+  ///
+  /// In en, this message translates to:
+  /// **'Mach (ICAO)'**
+  String get unitMachIcao;
+
+  /// No description provided for @unitMachCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Mach (custom atmo)'**
+  String get unitMachCustom;
+
+  /// No description provided for @unitMil.
+  ///
+  /// In en, this message translates to:
+  /// **'MIL'**
+  String get unitMil;
+
+  /// No description provided for @unitMoa.
+  ///
+  /// In en, this message translates to:
+  /// **'MOA'**
+  String get unitMoa;
+
+  /// No description provided for @unitMrad.
+  ///
+  /// In en, this message translates to:
+  /// **'MRAD'**
+  String get unitMrad;
+
+  /// No description provided for @unitCmPer100m.
+  ///
+  /// In en, this message translates to:
+  /// **'cm/100m'**
+  String get unitCmPer100m;
+
+  /// No description provided for @unitInPer100Yd.
+  ///
+  /// In en, this message translates to:
+  /// **'in/100yd'**
+  String get unitInPer100Yd;
+
+  /// No description provided for @unitDegrees.
+  ///
+  /// In en, this message translates to:
+  /// **'Degrees'**
+  String get unitDegrees;
 }
 
 class _AppLocalizationsDelegate

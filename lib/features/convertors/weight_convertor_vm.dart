@@ -37,37 +37,37 @@ class WeightConvertorViewModel extends SimpleConvertorVm {
 
   @override
   List<ConvertorSection> buildSections(double rawGrain) => [
-    ConvertorSection('Metric', [
+    ConvertorSection((l10n) => l10n.sectionMetric, [
       fieldFor(
         rawGrain,
         Unit.gram,
-        'Grams',
+        (l10n) => l10n.unitGrams,
         FC.convertorWeight.accuracyFor(Unit.gram),
       ),
       fieldFor(
         rawGrain,
         Unit.kilogram,
-        'Kilograms',
+        (l10n) => l10n.unitKilograms,
         FC.convertorWeight.accuracyFor(Unit.kilogram),
       ),
     ]),
-    ConvertorSection('Imperial', [
+    ConvertorSection((l10n) => l10n.sectionImperial, [
       fieldFor(
         rawGrain,
         Unit.grain,
-        'Grains',
+        (l10n) => l10n.unitGrains,
         FC.convertorWeight.accuracyFor(Unit.grain),
       ),
       fieldFor(
         rawGrain,
         Unit.pound,
-        'Pounds',
+        (l10n) => l10n.unitPounds,
         FC.convertorWeight.accuracyFor(Unit.pound),
       ),
       fieldFor(
         rawGrain,
         Unit.ounce,
-        'Ounces',
+        (l10n) => l10n.unitOunces,
         FC.convertorWeight.accuracyFor(Unit.ounce),
       ),
     ]),

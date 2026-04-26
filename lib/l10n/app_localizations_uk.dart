@@ -9,6 +9,9 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get convertorsScreenTitle => 'Конвертор';
+
+  @override
   String get lengthConvertorTitle => 'Конвертер довжини';
 
   @override
@@ -22,6 +25,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get torqueConvertorTitle => 'Конвертер моменту';
+
+  @override
+  String get velocityConvertorTitle => 'Конвертер швидкості';
+
+  @override
+  String get anglesConvertorTitle => 'Конвертер кутів';
+
+  @override
+  String get targetDistanceConvertorTitle => 'Відстань до цілі';
 
   @override
   String get enterLength => 'Введіть довжину';
@@ -39,13 +51,70 @@ class AppLocalizationsUk extends AppLocalizations {
   String get enterTorque => 'Введіть момент';
 
   @override
-  String get sectionMetric => 'Метрична';
+  String get enterVelocity => 'Введіть швидкість';
 
   @override
-  String get sectionImperial => 'Імперська';
+  String get inputDistance => 'Введення відстані';
+
+  @override
+  String get inputAngle => 'Введення кута';
+
+  @override
+  String get outputUnit => 'Одиниця виводу';
+
+  @override
+  String get inputTargetSize => 'Розмір цілі';
+
+  @override
+  String get inputAngularSize => 'Кутовий розмір';
+
+  @override
+  String get sectionMetric => 'Метричні';
+
+  @override
+  String get sectionImperial => 'Імперські';
 
   @override
   String get sectionCommon => 'Основні';
+
+  @override
+  String get sectionOther => 'Інше';
+
+  @override
+  String get sectionAngles => 'Кути';
+
+  @override
+  String get sectionAdjustmentAtDistance => 'Поправка на відстані';
+
+  @override
+  String get sectionDistanceMetric => 'Відстань метрична';
+
+  @override
+  String get sectionDistanceImperial => 'Відстань імперська';
+
+  @override
+  String get customAtmosphere => 'Власна атмосфера';
+
+  @override
+  String get usingCustomConditions => 'Використовуються власні умови';
+
+  @override
+  String get usingIcaoAtmosphere => 'Стандартна атмосфера ICAO';
+
+  @override
+  String get atmoTemperature => 'Температура';
+
+  @override
+  String get atmoPressure => 'Тиск';
+
+  @override
+  String get atmoHumidity => 'Вологість';
+
+  @override
+  String get atmoAltitude => 'Висота';
+
+  @override
+  String get unitMillimeters => 'Міліметри';
 
   @override
   String get unitCentimeters => 'Сантиметри';
@@ -111,5 +180,38 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitInchPound => 'Дюйм-фунт';
 
   @override
-  String get unitsImperial => 'Метричні';
+  String get unitMps => 'Метри на секунду';
+
+  @override
+  String get unitKmh => 'Кілометри на годину';
+
+  @override
+  String get unitFps => 'Фути на секунду';
+
+  @override
+  String get unitMph => 'Милі на годину';
+
+  @override
+  String get unitMachIcao => 'Мах (ICAO)';
+
+  @override
+  String get unitMachCustom => 'Мах (власна атмо)';
+
+  @override
+  String get unitMil => 'MIL';
+
+  @override
+  String get unitMoa => 'MOA';
+
+  @override
+  String get unitMrad => 'MRAD';
+
+  @override
+  String get unitCmPer100m => 'см/100м';
+
+  @override
+  String get unitInPer100Yd => 'дюйм/100ярд';
+
+  @override
+  String get unitDegrees => 'Градуси';
 }

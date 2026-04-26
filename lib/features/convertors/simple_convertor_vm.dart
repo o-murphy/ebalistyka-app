@@ -4,14 +4,15 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
 class ConvertorSection {
-  final String title;
+  final String Function(AppLocalizations) titleBuilder;
   final List<GenericConvertorField> fields;
 
-  const ConvertorSection(this.title, this.fields);
+  const ConvertorSection(this.titleBuilder, this.fields);
 }
 
 class SimpleConvertorUiState {
@@ -67,12 +68,12 @@ abstract class SimpleConvertorVm extends Notifier<SimpleConvertorUiState> {
   GenericConvertorField fieldFor(
     double rawBase,
     Unit toUnit,
-    String label,
+    String Function(AppLocalizations) labelBuilder,
     int decimals,
   ) {
     final value = rawBase.convert(baseUnit, toUnit);
     return GenericConvertorField(
-      label: label,
+      labelBuilder: labelBuilder,
       formattedValue: _fmt(value, decimals, toUnit.symbol),
       value: value,
       symbol: toUnit.symbol,

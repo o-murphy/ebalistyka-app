@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,52 @@ const _convertors = [
   (type: 'torque', label: 'Torque', icon: IconDef.torqueConvertor),
 ];
 
+// const List<
+//   ({IconData icon, String Function(AppLocalizations) labelBuilder, String type})
+// >
+// _convertors = [
+//   (
+//     type: 'target-distance',
+//     label: (l10n) => l10n.targetDistanceConvertorTitle,
+//     icon: IconDef.distanceConvertor,
+//   ),
+//   (
+//     type: 'velocity',
+//     label: (l10n) => l10n.velocityConvertorTitle,
+//     icon: IconDef.velocityConvertor,
+//   ),
+//   (
+//     type: 'length',
+//     label: (l10n) => l10n.lengthConvertorTitle,
+//     icon: IconDef.lengthConvertor,
+//   ),
+//   (
+//     type: 'weight',
+//     label: (l10n) => l10n.weightConvertorTitle,
+//     icon: IconDef.weigthConvertor,
+//   ),
+//   (
+//     type: 'pressure',
+//     label: (l10n) => l10n.pressureConvertorTitle,
+//     icon: IconDef.pressureConvertor,
+//   ),
+//   (
+//     type: 'temperature',
+//     label: (l10n) => l10n.temperatureConvertorTitle,
+//     icon: IconDef.temperatureConvertor,
+//   ),
+//   (
+//     type: 'angular',
+//     label: (l10n) => l10n.anglesConvertorTitle,
+//     icon: IconDef.angleConvertor,
+//   ),
+//   (
+//     type: 'torque',
+//     label: (l10n) => l10n.torqueConvertorTitle,
+//     icon: IconDef.torqueConvertor,
+//   ),
+// ];
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 class ConvertorScreen extends StatelessWidget {
@@ -32,8 +79,10 @@ class ConvertorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BaseScreen(
-      title: 'Convertors',
+      title: l10n.convertorsScreenTitle,
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(

@@ -1,6 +1,7 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -29,6 +30,8 @@ class SimpleConvertorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BaseScreen(
       title: title,
       isSubscreen: true,
@@ -45,9 +48,12 @@ class SimpleConvertorScreen extends StatelessWidget {
           ),
           const Divider(height: 24),
           for (final section in state.sections) ...[
-            ListSectionTile(section.title),
+            ListSectionTile(section.titleBuilder(l10n)),
             for (final field in section.fields)
-              InfoListTile(label: field.label, value: field.formattedValue),
+              InfoListTile(
+                label: field.labelBuilder(l10n),
+                value: field.formattedValue,
+              ),
           ],
           const SizedBox(height: 16),
         ],
