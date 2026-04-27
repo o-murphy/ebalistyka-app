@@ -173,8 +173,9 @@ class TableHtmlExporter {
     if (hasCond) {
       sb.writeln('<div class="card">');
       sb.writeln('<h2>${l10n.conditions}</h2><table class="info">');
-      if (d.temperature != null)
+      if (d.temperature != null) {
         sb.write(_row(l10n.temperature, d.temperature!));
+      }
       if (d.humidity != null) sb.write(_row(l10n.humidity, d.humidity!));
       if (d.pressure != null) sb.write(_row(l10n.pressure, d.pressure!));
       if (d.windSpeed != null) sb.write(_row(l10n.windSpeed, d.windSpeed!));

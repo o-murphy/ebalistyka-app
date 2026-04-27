@@ -4,7 +4,6 @@ import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';

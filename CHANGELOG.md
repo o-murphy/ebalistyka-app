@@ -15,7 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 #### UI
 - **Navigation bar labels** — applied `NavigationBarTheme` with `fontSize: 11` and `TextOverflow.ellipsis` so long localized labels truncate gracefully instead of overflowing
 
+### Fixed
+
+#### UI
+- **Wheel picker / hybrid wheel picker `-0.0`** — `UnitConversionHelper.formatDisplayValue` now normalises IEEE 754 negative zero before `toStringAsFixed`, so the wheel displays `0.0` instead of `-0.0`
+
 ### Refactored
+
+#### Code Quality — Split `home_vm.dart` (#7.1, priority 5)
+- Extracted `home_ui_state.dart` — all 7 UI state classes (`HomeUiState`, `HomeUiReady`, `HomeUiNoData`, `HomeUiError`, `HomeConditionsUiState`, `ReticleUiState`, `HomeChartUiState`, `HomeChartPointInfo`)
+- Extracted `home_builders.dart` — 9 pure top-level builder functions (`buildAdjustment`, `buildHomeTable`, `buildChartData`, `buildPointInfo`, `buildCartridgeInfoLine`, `buildZeroOffsetMessageLine`, `buildAdjustedMessageLine`, `parseMilWidth`, `closestIndex`) + `generalNeedsRecalc`
+- `home_vm.dart` reduced to notifier orchestration + `_buildReadyState` only; `export 'home_ui_state.dart'` keeps all existing import sites unchanged
+
+#### Code Quality — Split `profile_card.dart` (#7.1, priority 7)
+- Extracted `ProfileControlTile` (`profile_control_tile.dart`) — weapon image, edit FAB, sight/ammo selector buttons with hints
+- Extracted `ProfileWeaponSection`, `ProfileAmmoSection`, `ProfileSightSection` (`profile_sections.dart`) — replaces three `_build*Section` methods
+- Extracted `_ProfileActionsBar` — bottom select/incomplete bar
+- `profile_card.dart`: 504 → 145 lines
 
 #### Code Quality — Dialog & snackbar helpers (#7.1, priority 8)
 - Added `showFeedback(context, message, {bool isError, Duration duration})` to `lib/shared/widgets/snackbars.dart`
