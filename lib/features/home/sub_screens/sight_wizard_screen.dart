@@ -4,10 +4,13 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
+import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,10 +29,8 @@ class SightWizardScreen extends ConsumerStatefulWidget {
   ConsumerState<SightWizardScreen> createState() => _SightWizardScreenState();
 }
 
-class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _vendorCtrl;
-
+class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
+    with WizardFormMixin<SightWizardScreen> {
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
   // sightHeight / horizontalOffset: Unit.millimeter (FC.sightHeight)
   late double _sightHeightRaw;
@@ -51,11 +52,15 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
   late String? _reticleImage;
 
   @override
+  String get initialName => widget.initial?.name ?? '';
+
+  @override
+  String get initialVendor => widget.initial?.vendor ?? '';
+
+  @override
   void initState() {
     super.initState();
     final s = widget.initial;
-    _nameCtrl = TextEditingController(text: s?.name ?? '');
-    _vendorCtrl = TextEditingController(text: s?.vendor ?? '');
 
     _sightHeightRaw = s?.sightHeight.in_(FC.sightHeight.rawUnit) ?? 0.0;
     _horizontalOffsetRaw =
@@ -81,17 +86,10 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
     _reticleImage = s?.reticleImage;
   }
 
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _vendorCtrl.dispose();
-    super.dispose();
-  }
-
   // ── Validation ────────────────────────────────────────────────────────────
 
   bool get _isValid {
-    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (!isNameValid) return false;
     if (_minMagRaw <= 0) return false;
     if (_maxMagRaw <= 0) return false;
     if (_vClickRaw <= 0) return false;
@@ -103,10 +101,10 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
 
   Sight _buildSight() {
     final sight = widget.initial ?? Sight();
-    sight.name = _nameCtrl.text.trim();
-    sight.vendor = _vendorCtrl.text.trim().isEmpty
+    sight.name = nameCtrl.text.trim();
+    sight.vendor = vendorCtrl.text.trim().isEmpty
         ? null
-        : _vendorCtrl.text.trim();
+        : vendorCtrl.text.trim();
     sight.sightHeight = Distance(_sightHeightRaw, FC.sightHeight.rawUnit);
     sight.horizontalOffset = Distance(
       _horizontalOffsetRaw,
@@ -131,55 +129,36 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen> {
 
   void _onSave() {
     if (!_isValid) return;
-    context.pop(_buildSight());
+    commitSave(_buildSight);
   }
-
-  void _onDiscard() => context.pop(null);
 
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
-    final title = _nameCtrl.text.trim().isEmpty
-        ? 'New Sight'
-        : _nameCtrl.text.trim();
 
     return BaseScreen(
-      title: title,
+      title: wizardTitle('New Sight'),
       isSubscreen: true,
       showBack: false,
-      bottomBar: _ActionBar(
-        onDiscard: _onDiscard,
+      bottomBar: WizardActionBar(
+        onDiscard: onDiscard,
         onSave: _isValid ? _onSave : null,
       ),
       body: ListView(
         children: [
           _SightPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _nameCtrl,
-              decoration: InputDecoration(
-                labelText: 'Sight name',
-                errorText: _nameCtrl.text.trim().isEmpty
-                    ? 'Name is required'
-                    : null,
-                labelStyle: _nameCtrl.text.trim().isEmpty
-                    ? TextStyle(color: Theme.of(context).colorScheme.error)
-                    : null,
-              ),
-              textCapitalization: TextCapitalization.words,
-              onChanged: (_) {
-                setState(() {});
-              },
-            ),
+          WizardNameField(
+            controller: nameCtrl,
+            label: 'Sight name',
+            onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: _vendorCtrl,
+              controller: vendorCtrl,
               decoration: const InputDecoration(labelText: 'Vendor'),
               textCapitalization: TextCapitalization.words,
             ),
@@ -320,32 +299,6 @@ class _SightPlaceholder extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({required this.onDiscard, required this.onSave});
-
-  final VoidCallback onDiscard;
-  final VoidCallback? onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          children: [
-            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(onPressed: onSave, child: const Text('Save')),
-            ),
-          ],
         ),
       ),
     );

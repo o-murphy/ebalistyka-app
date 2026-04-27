@@ -10,6 +10,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -18,6 +19,8 @@ import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/features/home/sub_screens/powder_sens_table_editor_screen.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
+import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,9 +44,8 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   ConsumerState<AmmoWizardScreen> createState() => _AmmoWizardScreenState();
 }
 
-class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _vendorCtrl;
+class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
+    with WizardFormMixin<AmmoWizardScreen> {
   late final TextEditingController _projectileNameCtrl;
 
   late double _caliberRaw;
@@ -84,12 +86,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   late Unit _offsetYUnit;
 
   @override
+  String get initialName => widget.initial?.name ?? '';
+
+  @override
+  String get initialVendor => widget.initial?.vendor ?? '';
+
+  @override
   void initState() {
     super.initState();
     final a = widget.initial;
     _scheduleCaliberMismatchToast();
-    _nameCtrl = TextEditingController(text: a?.name ?? '');
-    _vendorCtrl = TextEditingController(text: a?.vendor ?? '');
     _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
     final caliberRaw = a != null && a.caliberInch > 0
         ? a.caliber.in_(FC.projectileDiameter.rawUnit)
@@ -149,8 +155,6 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
-    _vendorCtrl.dispose();
     _projectileNameCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -223,7 +227,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   // ── Validation ────────────────────────────────────────────────────────────
 
   bool get _isValid {
-    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (!isNameValid) return false;
     if (_caliberRaw <= 0) return false;
     if ((_weightRaw ?? 0) <= 0) return false;
     if ((_lengthRaw ?? 0) <= 0) return false;
@@ -252,10 +256,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   Ammo _buildAmmo() {
     final ammo = widget.initial ?? Ammo();
-    ammo.name = _nameCtrl.text.trim();
-    ammo.vendor = _vendorCtrl.text.trim().isEmpty
+    ammo.name = nameCtrl.text.trim();
+    ammo.vendor = vendorCtrl.text.trim().isEmpty
         ? null
-        : _vendorCtrl.text.trim();
+        : vendorCtrl.text.trim();
     ammo.projectileName = _projectileNameCtrl.text.trim().isEmpty
         ? null
         : _projectileNameCtrl.text.trim();
@@ -356,10 +360,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
 
   void _onSave() {
     if (!_isValid) return;
-    context.pop(_buildAmmo());
+    commitSave(_buildAmmo);
   }
-
-  void _onDiscard() => context.pop(null);
 
   // ── Navigation ────────────────────────────────────────────────────────────
 
@@ -553,16 +555,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
     final fmt = ref.watch(unitFormatterProvider);
-    final title = _nameCtrl.text.trim().isEmpty
-        ? 'New Ammo'
-        : _nameCtrl.text.trim();
 
     return BaseScreen(
-      title: title,
+      title: wizardTitle('New Ammo'),
       isSubscreen: true,
       showBack: false,
-      bottomBar: _ActionBar(
-        onDiscard: _onDiscard,
+      bottomBar: WizardActionBar(
+        onDiscard: onDiscard,
         onSave: _isValid ? _onSave : null,
       ),
       body: ListView(
@@ -570,29 +569,15 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen> {
         children: [
           _AmmoPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _nameCtrl,
-              decoration: InputDecoration(
-                labelText: 'Ammo name',
-                errorText: _nameCtrl.text.trim().isEmpty
-                    ? 'Name is required'
-                    : null,
-                labelStyle: _nameCtrl.text.trim().isEmpty
-                    ? TextStyle(color: Theme.of(context).colorScheme.error)
-                    : null,
-              ),
-              textCapitalization: TextCapitalization.words,
-              onChanged: (_) {
-                setState(() {});
-              },
-            ),
+          WizardNameField(
+            controller: nameCtrl,
+            label: 'Ammo name',
+            onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: _vendorCtrl,
+              controller: vendorCtrl,
               decoration: const InputDecoration(labelText: 'Vendor'),
               textCapitalization: TextCapitalization.words,
             ),
@@ -837,32 +822,6 @@ class _AmmoPlaceholder extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({required this.onDiscard, required this.onSave});
-
-  final VoidCallback onDiscard;
-  final VoidCallback? onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          children: [
-            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(onPressed: onSave, child: const Text('Save')),
-            ),
-          ],
         ),
       ),
     );

@@ -6,15 +6,17 @@ import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/shared/widgets/wizard_action_bar.dart';
+import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class WeaponWizardScreen extends ConsumerStatefulWidget {
   const WeaponWizardScreen({this.initial, this.caliberEditable, super.key});
@@ -31,9 +33,8 @@ class WeaponWizardScreen extends ConsumerStatefulWidget {
   ConsumerState<WeaponWizardScreen> createState() => _WeaponWizardScreenState();
 }
 
-class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _vendorCtrl;
+class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
+    with WizardFormMixin<WeaponWizardScreen> {
   late final TextEditingController _caliberNameCtrl;
 
   // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
@@ -48,11 +49,15 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   late double? _barrelLengthRaw;
 
   @override
+  String get initialName => widget.initial?.name ?? '';
+
+  @override
+  String get initialVendor => widget.initial?.vendor ?? '';
+
+  @override
   void initState() {
     super.initState();
     final w = widget.initial;
-    _nameCtrl = TextEditingController(text: w?.name ?? '');
-    _vendorCtrl = TextEditingController(text: w?.vendor ?? '');
     _caliberNameCtrl = TextEditingController(text: w?.caliberName ?? '');
     _caliberRaw = (w != null && w.caliberInch > 0)
         ? w.caliber.in_(FC.projectileDiameter.rawUnit)
@@ -70,8 +75,6 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
-    _vendorCtrl.dispose();
     _caliberNameCtrl.dispose();
     super.dispose();
   }
@@ -79,7 +82,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   // ── Validation ────────────────────────────────────────────────────────────
 
   bool get _isValid {
-    if (_nameCtrl.text.trim().isEmpty) return false;
+    if (!isNameValid) return false;
     if (_caliberRaw <= 0) return false;
     if (_twistRaw < 0) return false;
     return true;
@@ -89,10 +92,10 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
 
   Weapon _buildWeapon() {
     final weapon = widget.initial ?? Weapon();
-    weapon.name = _nameCtrl.text.trim();
-    weapon.vendor = _vendorCtrl.text.trim().isEmpty
+    weapon.name = nameCtrl.text.trim();
+    weapon.vendor = vendorCtrl.text.trim().isEmpty
         ? null
-        : _vendorCtrl.text.trim();
+        : vendorCtrl.text.trim();
     weapon.caliberName = _caliberNameCtrl.text.trim();
     weapon.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
     weapon.twist = Distance(
@@ -107,10 +110,8 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
 
   void _onSave() {
     if (!_isValid) return;
-    context.pop(_buildWeapon());
+    commitSave(_buildWeapon);
   }
-
-  void _onDiscard() => context.pop(null);
 
   // ── Build ─────────────────────────────────────────────────────────────────
 
@@ -118,47 +119,30 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen> {
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
     final fmt = ref.watch(unitFormatterProvider);
-    final title = _nameCtrl.text.trim().isEmpty
-        ? 'New Rifle'
-        : _nameCtrl.text.trim();
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
     final twistDirIcon = _rightHand ? IconDef.twistR : IconDef.twistL;
 
     return BaseScreen(
-      title: title,
+      title: wizardTitle('New Rifle'),
       isSubscreen: true,
       showBack: false,
-      bottomBar: _ActionBar(
-        onDiscard: _onDiscard,
+      bottomBar: WizardActionBar(
+        onDiscard: onDiscard,
         onSave: _isValid ? _onSave : null,
       ),
       body: ListView(
         children: [
           _RiflePlaceholder(imageId: widget.initial?.image),
           // ── Name ────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _nameCtrl,
-              decoration: InputDecoration(
-                labelText: 'Weapon name',
-                errorText: _nameCtrl.text.trim().isEmpty
-                    ? 'Name is required'
-                    : null,
-                labelStyle: _nameCtrl.text.trim().isEmpty
-                    ? TextStyle(color: Theme.of(context).colorScheme.error)
-                    : null,
-              ),
-              textCapitalization: TextCapitalization.words,
-              onChanged: (_) {
-                setState(() {});
-              },
-            ),
+          WizardNameField(
+            controller: nameCtrl,
+            label: 'Weapon name',
+            onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: _vendorCtrl,
+              controller: vendorCtrl,
               decoration: const InputDecoration(labelText: 'Vendor'),
               textCapitalization: TextCapitalization.words,
             ),
@@ -253,32 +237,6 @@ class _RiflePlaceholder extends StatelessWidget {
         child: Card(
           clipBehavior: Clip.antiAlias,
           child: WeaponSvgView(imageId: imageId, fit: BoxFit.contain),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({required this.onDiscard, required this.onSave});
-
-  final VoidCallback onDiscard;
-  final VoidCallback? onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          children: [
-            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(onPressed: onSave, child: const Text('Save')),
-            ),
-          ],
         ),
       ),
     );
