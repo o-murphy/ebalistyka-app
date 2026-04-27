@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
@@ -583,7 +584,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             ),
           ),
           // ── Projectile ──────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Projectile'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -623,7 +624,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           _buildDragModel(),
 
           // ── Cartridge ──────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Cartridge'),
           NullableUnitValueFieldTile(
             title: 'Muzzle velocity',
@@ -656,7 +657,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           ),
 
           // ── Zeroing ──────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Zeroing'),
           UnitValueFieldTile(
             title: 'Distance',
@@ -715,7 +716,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
           // ── Powder sensitivity ──────────────────────────────────────────────
           if (_usePowderSensitivity) ...[
-            const Divider(height: 1),
+            const TileDivider(),
             PowderSensSection(
               key: _powderSensKey,
               showToggle: false,
@@ -773,7 +774,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           ),
 
           // ── Zeroing coriolis ────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           CoriolisSection(
             key: _coriolisKey,
             useCoriolis: _zeroUseCoriolis,

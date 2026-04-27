@@ -3,13 +3,11 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/shared/constants/ui_dimensions.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-const _kMultiBcRowCount = 5;
-const _kDragTableRowCount = 100;
 
 // ── Multi-BC editor ───────────────────────────────────────────────────────────
 
@@ -63,7 +61,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
 
     return TwoColumnTableEditorScreen(
       title: '$dtName Multi-BC Table',
-      rowCount: _kMultiBcRowCount,
+      rowCount: kMultiBcRowCount,
       col1Header: 'V (${velocityUnit.symbol})',
       col2Header: 'BC (fraction)',
       col1Hint: '0',
@@ -115,7 +113,7 @@ class CustomDragTableEditorScreen extends StatelessWidget {
 
     return TwoColumnTableEditorScreen(
       title: 'Custom Drag Table',
-      rowCount: _kDragTableRowCount,
+      rowCount: kDragTableRowCount,
       col1Header: 'Mach',
       col2Header: 'Cd',
       col1Hint: '0.00',

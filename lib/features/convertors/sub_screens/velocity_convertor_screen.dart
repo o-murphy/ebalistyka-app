@@ -13,6 +13,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class VelocityConvertorScreen extends ConsumerWidget {
   const VelocityConvertorScreen({super.key});
@@ -38,7 +39,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
             options: const [Unit.mps, Unit.kmh, Unit.fps, Unit.mph, Unit.mach],
             hintText: l10n.enterVelocity,
           ),
-          const Divider(height: 24),
+          const SectionDivider(),
 
           ListSectionTile(l10n.sectionMetric),
           _buildInfoTile(state.mps, l10n),
@@ -63,7 +64,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
           _buildInfoTile(state.mach, l10n),
 
           if (state.useCustomAtmo) ...[
-            Divider(height: 1),
+            const TileDivider(),
             ListSectionTile(l10n.sectionAtmosphere),
             UnitValueFieldTile(
               title: l10n.atmoTemperature,

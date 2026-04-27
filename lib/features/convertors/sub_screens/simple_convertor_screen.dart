@@ -7,6 +7,7 @@ import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class SimpleConvertorScreen extends StatelessWidget {
   const SimpleConvertorScreen({
@@ -46,7 +47,7 @@ class SimpleConvertorScreen extends StatelessWidget {
             options: unitOptions,
             hintText: hintText,
           ),
-          const Divider(height: 24),
+          const SectionDivider(),
           for (final section in state.sections) ...[
             ListSectionTile(section.titleBuilder(l10n)),
             for (final field in section.fields)

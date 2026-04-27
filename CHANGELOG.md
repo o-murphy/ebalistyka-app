@@ -15,11 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 #### UI
 - **Navigation bar labels** — applied `NavigationBarTheme` with `fontSize: 11` and `TextOverflow.ellipsis` so long localized labels truncate gracefully instead of overflowing
 
+### Refactored
+
+#### Code Quality — UI constants & divider widgets (#7.1, priority 9)
+- Created `lib/shared/constants/ui_dimensions.dart` — `kHorizontalPadding`, `kDefaultVerticalPadding`, `kTileDividerHeight`, `kSectionDividerHeight`, `kMultiBcRowCount`, `kDragTableRowCount`
+- Created `TileDivider` + `SectionDivider` widgets (`lib/shared/widgets/dividers.dart`)
+- Replaced 43 × `Divider(height: 1)` and 4 × `Divider(height: 24)` across 19 files
+- Moved `_kMultiBcRowCount` / `_kDragTableRowCount` from local to shared constants
+
 ### Fixed
 
 #### Export / Import
 - **A7P zero offset export** — `setPayloadOffsets` now correctly converts the ammo angular offset to cm/100m via `Angular(...).in_(Unit.cmPer100m)` before dividing by click size; previously multiplied instead of divided, producing wrong click counts
 - **A7P zero offset import** — removed erroneous `getPayloadOffsets` call on import; a7p stores offsets as dimensionless click counts with no click-size metadata, so the angular offset cannot be reconstructed at import time and is intentionally left at default
+- **Built-in collection** - fix sight heights
+- **Settings screen sight height unit** - fix sight height unit picker
 
 ### Refactored
 

@@ -15,6 +15,7 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/router.dart';
 
@@ -164,7 +165,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             ),
           ),
           // ── Mounting ──────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Mounting'),
           UnitValueFieldTile(
             title: 'Sight height',
@@ -183,7 +184,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             onChanged: (v) => setState(() => _horizontalOffsetRaw = v),
           ),
           // ── Reticle ────────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Reticle'),
           ListTile(
             leading: const Icon(IconDef.sight),
@@ -204,7 +205,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             },
             dense: true,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: SegmentedButton<FocalPlane>(
@@ -248,7 +249,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             onChanged: (v) => setState(() => _maxMagRaw = v),
           ),
           // ── Clicks ────────────────────────────────────────────────
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Clicks'),
           offsetsTile(
             context: context,

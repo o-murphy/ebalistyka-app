@@ -4,6 +4,7 @@ import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
@@ -57,7 +58,7 @@ class ShotDetailsScreen extends ConsumerWidget {
           label: 'Velocity at target',
           value: state.velocityAtTarget,
         ),
-        const Divider(height: 1),
+        const TileDivider(),
         const ListSectionTile('Energy'),
         InfoListTile(
           icon: IconDef.energy,
@@ -69,14 +70,14 @@ class ShotDetailsScreen extends ConsumerWidget {
           label: 'Energy at target',
           value: state.energyAtTarget,
         ),
-        const Divider(height: 1),
+        const TileDivider(),
         const ListSectionTile('Stability'),
         InfoListTile(
           icon: IconDef.gyrostability,
           label: 'Gyroscopic stability factor',
           value: state.gyroscopicStability,
         ),
-        const Divider(height: 1),
+        const TileDivider(),
         const ListSectionTile('Trajectory'),
         InfoListTile(
           icon: IconDef.range,

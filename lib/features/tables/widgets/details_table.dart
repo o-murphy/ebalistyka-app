@@ -4,6 +4,7 @@ import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class DetailsTable extends ConsumerWidget {
   const DetailsTable({super.key});
@@ -53,13 +54,13 @@ class DetailsTableContent extends StatelessWidget {
       row('Caliber', v(details.caliber)),
       row('Twist', v(details.twist)),
       row('Zero distance', v(details.zeroDist)),
-      const Divider(height: 1),
+      const TileDivider(),
 
       // Cartridge
       section('Cartridge'),
       row('Zero MV', v(details.zeroMv)),
       row('Current MV', v(details.currentMv)),
-      const Divider(height: 1),
+      const TileDivider(),
 
       // Projectile
       section('Projectile'),
@@ -71,7 +72,7 @@ class DetailsTableContent extends StatelessWidget {
       row('Form factor', v(details.formFactor)),
       row('Sectional density', v(details.sectionalDensity)),
       row('Gyrostability (Sg)', v(details.gyroStability)),
-      const Divider(height: 1),
+      const TileDivider(),
 
       // Conditions
       section('Conditions'),

@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:ebalistyka/features/conditions/widgets/temperature_control.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class ConditionsScreen extends ConsumerWidget {
   const ConditionsScreen({super.key});
@@ -67,7 +68,7 @@ class ConditionsScreen extends ConsumerWidget {
               onChanged: (v) => notifier.updateTemperature(v),
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
           Padding(
@@ -102,7 +103,7 @@ class ConditionsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Powder sensitivity ─────────────────────────────────────────
           PowderSensSection(
@@ -116,7 +117,7 @@ class ConditionsScreen extends ConsumerWidget {
             onDiffTempToggled: notifier.setDiffPowderTemp,
             onPowderTempChanged: notifier.updatePowderTemp,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           // ── Coriolis ───────────────────────────────────────────────────
           CoriolisSection(
             useCoriolis: state.coriolisOn,

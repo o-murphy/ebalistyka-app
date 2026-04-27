@@ -3,6 +3,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
@@ -50,7 +51,7 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           ListSectionTile(l10n.sectionShowAdjustmentsIn),
           SwitchListTile(
             title: Text(l10n.unitMrad),

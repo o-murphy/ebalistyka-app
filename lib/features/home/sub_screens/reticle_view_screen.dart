@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
@@ -174,7 +175,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Divider(height: 1),
+                      const TileDivider(),
                       const ListSectionTile('Barrel drums'),
                       listInputLabel(context, 'Vertical adjustment'),
                       AdjustmentInputWithClicks(
@@ -214,7 +215,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           unawaited(_saveAdj());
                         },
                       ),
-                      const Divider(height: 1),
+                      const TileDivider(),
                       const ListSectionTile('Target'),
                       ListTile(
                         leading: const Icon(IconDef.sight),
@@ -240,7 +241,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         value: targetSizeDisplay,
                         icon: Icons.crop_free,
                       ),
-                      const Divider(height: 1),
+                      const TileDivider(),
                       const ListSectionTile('Reticle'),
                       ListTile(
                         leading: const Icon(IconDef.sight),
@@ -261,7 +262,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         },
                         dense: true,
                       ),
-                      const Divider(height: 1),
+                      const TileDivider(),
                       const ListSectionTile('Clicks'),
                       listInputLabel(context, 'Vertical click'),
                       UnitInputWithPicker(

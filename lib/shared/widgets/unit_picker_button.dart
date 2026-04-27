@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -66,7 +67,7 @@ class UnitPickerButton extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
               ),
-              const Divider(height: 1),
+              const TileDivider(),
               ...options.map(
                 (unit) => ListTile(
                   title: Text("${unit.label} (${unit.symbol})"),

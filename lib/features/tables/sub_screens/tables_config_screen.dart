@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -92,7 +93,7 @@ class TableConfigScreen extends ConsumerWidget {
             onChanged: (v) => save((s) => s.distanceStepMeter = v),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Extra tables ───────────────────────────────────────────────
           const ListSectionTile('Extra'),
@@ -112,7 +113,7 @@ class TableConfigScreen extends ConsumerWidget {
             dense: true,
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Visible columns'),
 
           for (final col in _columnDefs)
@@ -124,7 +125,7 @@ class TableConfigScreen extends ConsumerWidget {
                 dense: true,
               ),
 
-          const Divider(height: 1),
+          const TileDivider(),
           const ListSectionTile('Adjustment columns'),
 
           SwitchListTile(

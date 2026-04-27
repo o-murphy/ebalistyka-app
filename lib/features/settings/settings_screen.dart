@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -64,7 +65,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Display settings ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionUnitsSettings),
@@ -76,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => context.push(Routes.settingsUnits),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Home screen props ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionHomeSettings),
@@ -114,7 +115,7 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => notifier.setChartDistanceStep(v),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Profiles ───────────────────────────────────────────────────
           ListSectionTile(l10n.sectionBackup),
@@ -158,7 +159,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Links ──────────────────────────────────────────────────────
           ListSectionTile(l10n.sectionLinks),
@@ -185,7 +186,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () {},
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── About ──────────────────────────────────────────────────────
           ListSectionTile(l10n.sectionAbout),
@@ -251,7 +252,7 @@ void _showLanguageDialog(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
             ),
-            const Divider(height: 1),
+            const TileDivider(),
 
             RadioGroup<String>(
               groupValue: current,

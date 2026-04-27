@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -206,7 +207,7 @@ class _AdjUnitPickerButton extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
               ),
-              const Divider(height: 1),
+              const TileDivider(),
               ListTile(
                 title: const Text('$_clicksLabel ($_clicksSymbol)'),
                 trailing: current == null ? const Icon(IconDef.apply) : null,

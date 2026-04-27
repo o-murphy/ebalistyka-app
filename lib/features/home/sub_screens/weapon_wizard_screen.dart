@@ -17,6 +17,7 @@ import 'package:ebalistyka/shared/widgets/wizard_name_field.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class WeaponWizardScreen extends ConsumerStatefulWidget {
   const WeaponWizardScreen({this.initial, this.caliberEditable, super.key});
@@ -194,7 +195,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
             dense: true,
           ),
           // ── Extra fields section ────────────────────────────────────
-          Divider(height: 1),
+          const TileDivider(),
           SwitchListTile(
             secondary: const Icon(IconDef.moreHoriz),
             title: const Text('Additional parameters'),
