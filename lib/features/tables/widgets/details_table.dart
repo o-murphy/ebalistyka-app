@@ -1,6 +1,6 @@
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';

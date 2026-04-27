@@ -1,6 +1,6 @@
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bclibc_ffi/unit.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -176,16 +176,12 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
           ? nullStr
           : formatter.velocity(Velocity.fps(soundSpeedFps)),
       velocityAtTarget: formatter.velocity(atTarget.velocity),
-      energyAtMuzzle: firstPoint == null
-          ? nullStr
-          : formatter.energy(firstPoint.energy),
+      energyAtMuzzle: formatter.energy(firstPoint?.energy),
       energyAtTarget: formatter.energy(atTarget.energy),
       gyroscopicStability: sgStr,
       shotDistance: formatter.distance(conditions.distance),
       heightAtTarget: formatter.drop(atTarget.height),
-      maxHeightDistance: apexPoint == null
-          ? nullStr
-          : formatter.distance(apexPoint.distance),
+      maxHeightDistance: formatter.distance(apexPoint?.distance),
       windage: formatter.drop(atTarget.windage),
       timeToTarget: formatter.time(atTarget.time),
     );

@@ -13,7 +13,6 @@ import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka/shared/consts.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/click_label.dart';
@@ -113,7 +112,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
   Widget build(BuildContext context) {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
-    final fmt = ref.watch(unitFormatterProvider);
+    final formatter = ref.watch(unitFormatterProvider);
 
     if (vmState is HomeUiNoData) {
       return EmptyStatePlaceholder(
@@ -132,9 +131,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
     final targetSizeMilAtDistance =
         targetSizeMil * 100 / vmState.conditionsState.targetDistanceM;
-    final targetSizeDisplay = targetSizeMil >= 0.0
-        ? fmt.targetSize(Angular.mil(targetSizeMil))
-        : nullStr;
+    final targetSizeDisplay = formatter.targetSize(Angular.mil(targetSizeMil));
 
     return LayoutBuilder(
       builder: (context, constraints) {

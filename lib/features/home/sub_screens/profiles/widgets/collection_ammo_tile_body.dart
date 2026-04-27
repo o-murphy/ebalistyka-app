@@ -9,7 +9,7 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -24,7 +24,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
-
+    final cs = Theme.of(context).colorScheme;
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Stack(
@@ -71,24 +71,20 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "G1 BC = ${ammo.bcG1 > 0 ? ammo.bcG1.toFixedSafe(3) : nullStr}",
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+                        _buildBcRow(
+                          "G1 BC",
+                          ammo.bcG1,
+                          DragType.g1,
+                          ammo.dragType == DragType.g1,
+                          cs,
                         ),
                         const SizedBox(width: 12),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "G7 BC = ${ammo.bcG7 > 0 ? ammo.bcG7.toFixedSafe(3) : nullStr}",
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+                        _buildBcRow(
+                          "G7 BC",
+                          ammo.bcG7,
+                          DragType.g7,
+                          ammo.dragType == DragType.g7,
+                          cs,
                         ),
                         const SizedBox(width: 12),
                         Row(
@@ -97,10 +93,8 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             const Icon(IconDef.velocity, size: 14),
                             const SizedBox(width: 6),
                             Text(
-                              ammo.mv != null
-                                  ? formatter.velocity(ammo.mv!)
-                                  : nullStr,
-                              style: const TextStyle(fontSize: 12),
+                              formatter.velocity(ammo.mv),
+                              style: TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
@@ -153,6 +147,22 @@ class CollectionAmmoTileBody extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBcRow(String label, double bc, DragType dt, bool isPrimary, cs) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "$label = ${bc > 0 ? bc.toFixedSafe(3) : nullStr}",
+          style: TextStyle(
+            fontSize: 12,
+            color: isPrimary ? cs.primary : null,
+            fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ],
     );
   }
 }

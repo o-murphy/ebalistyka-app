@@ -9,7 +9,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/router.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -144,14 +144,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     _zeroAzimuthRaw = a?.zeroAzimuthDeg ?? 0.0;
 
     _offsetYUnit = a?.zeroOffsetYUnitValue ?? Unit.mil;
-    _offsetYRaw = a != null
-        ? Angular(a.zeroOffsetY, _offsetYUnit).in_(FC.adjustment.rawUnit)
-        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+    _offsetYRaw = a == null
+        ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+        : Angular(a.zeroOffsetY, _offsetYUnit).in_(FC.adjustment.rawUnit);
 
     _offsetXUnit = a?.zeroOffsetXUnitValue ?? Unit.mil;
-    _offsetXRaw = a != null
-        ? Angular(a.zeroOffsetX, _offsetXUnit).in_(FC.adjustment.rawUnit)
-        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
+    _offsetXRaw = a == null
+        ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
+        : Angular(a.zeroOffsetX, _offsetXUnit).in_(FC.adjustment.rawUnit);
   }
 
   @override
@@ -376,9 +376,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
   }
 
   Future<void> _navigateToPowderSensTable() async {
-    final mvMps = _mvRaw != null
-        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
-        : null;
+    final mvMps = _mvRaw == null
+        ? null
+        : Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
     final tempC = Temperature(
       _mvTempRaw,
       FC.temperature.rawUnit,
@@ -406,9 +406,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
         ? Routes.ammoEditMultiBcG1
         : Routes.ammoEditMultiBcG7;
 
-    final mvMps = _mvRaw != null
-        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
-        : null;
+    final mvMps = _mvRaw == null
+        ? null
+        : Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
 
     final result = await context.push<List<({double vMps, double bc})>>(
       route,
@@ -555,7 +555,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
-    final fmt = ref.watch(unitFormatterProvider);
+    final formatter = ref.watch(unitFormatterProvider);
 
     return BaseScreen(
       title: wizardTitle('New Ammo'),
@@ -596,11 +596,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           ),
           InfoListTile(
             label: 'Caliber',
-            value: _caliberRaw > 0
-                ? fmt.diameter(
-                    Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
-                  )
-                : nullStr,
+            value: formatter.diameter(
+              Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
+            ),
             icon: IconDef.caliber,
           ),
           NullableUnitValueFieldTile(
@@ -728,13 +726,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               mvValue: () {
                 final ammo = _buildAmmo();
                 if (!ammo.isReadyForCalculation) return null;
-                return fmt.velocity(
+                return formatter.velocity(
                   ammo.toZeroAmmo().getVelocityForTemp(
                     ammo.toZeroAtmo().powderTemp,
                   ),
                 );
               }(),
-              sensitivityValue: fmt.powderSensitivity(
+              sensitivityValue: formatter.powderSensitivity(
                 Ratio.fraction(_powderSensRaw),
               ),
               onDiffTempToggled: (v) =>

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:ebalistyka/core/providers/reticle_provider.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:riverpod/riverpod.dart';
@@ -446,7 +446,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         ? hit.getAtDistance(Distance.meter(targetM))
         : null;
     final windMil =
-        (targetPoint != null ? targetPoint.windageAngle.in_(Unit.mil) : 0.0) +
+        (targetPoint?.windageAngle.in_(Unit.mil) ?? 0.0) +
         hAdjMil +
         zeroOffsetXMil;
 
@@ -492,9 +492,9 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     );
     final chartData = _buildChartData(hit, targetM, settings);
     final autoIndex = _closestIndex(chartData.points, targetM);
-    final autoInfo = autoIndex != null
-        ? _buildPointInfo(chartData.points[autoIndex], formatter)
-        : null;
+    final autoInfo = autoIndex == null
+        ? null
+        : _buildPointInfo(chartData.points[autoIndex], formatter);
 
     return HomeUiReady(
       profileName: profile.name,
@@ -593,20 +593,18 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
   String _buildCartridgeInfoLine(
     Profile profile,
     ShootingConditions conditions,
-    UnitFormatter fmt,
+    UnitFormatter formatter,
   ) {
     final ammo = profile.ammo.target!;
     final weapon = profile.weapon.target;
     final sight = profile.sight.target;
 
-    final mvStr = ammo.mv != null ? fmt.velocity(ammo.mv!) : nullStr;
+    final mvStr = formatter.velocity(ammo.mv);
     final dragStr = ammo.dragModelFormattedInfo;
 
     String? sgStr;
     if (weapon != null && ammo.weightGrain > 0 && ammo.caliberInch > 0) {
-      final sightHeight = sight != null
-          ? Distance.inch(sight.sightHeightInch)
-          : Distance.inch(0);
+      final sightHeight = Distance.inch(sight?.sightHeightInch ?? 0.0);
       final bcWeapon = weapon.toWeapon(sightHeight);
       final currentShot = profile.toCurrentShot(conditions, bcWeapon);
       final sg = currentShot.calculateStabilityCoefficient();
@@ -857,17 +855,21 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     return ChartData(points: points, snapDistM: step);
   }
 
-  HomeChartPointInfo _buildPointInfo(ChartPoint point, UnitFormatter fmt) {
+  HomeChartPointInfo _buildPointInfo(
+    ChartPoint point,
+    UnitFormatter formatter,
+  ) {
     return HomeChartPointInfo(
-      distance: fmt.distance(Distance(point.distanceM, Unit.meter)),
-      velocity: fmt.velocity(Velocity(point.velocityMps, Unit.mps)),
-      energy: fmt.energy(Energy(point.energyJ, Unit.joule)),
-      time: fmt.time(point.time),
-      height: fmt.drop(Distance(point.heightCm / 100.0, Unit.meter)),
-      drop: '${point.dropAngleMil.toFixedSafe(2)} ${fmt.adjustmentSymbol}',
+      distance: formatter.distance(Distance(point.distanceM, Unit.meter)),
+      velocity: formatter.velocity(Velocity(point.velocityMps, Unit.mps)),
+      energy: formatter.energy(Energy(point.energyJ, Unit.joule)),
+      time: formatter.time(point.time),
+      height: formatter.drop(Distance(point.heightCm / 100.0, Unit.meter)),
+      drop:
+          '${point.dropAngleMil.toFixedSafe(2)} ${formatter.adjustmentSymbol}',
       windage:
-          '${point.windageAngleMil.toFixedSafe(2)} ${fmt.adjustmentSymbol}',
-      mach: fmt.mach(point.mach),
+          '${point.windageAngleMil.toFixedSafe(2)} ${formatter.adjustmentSymbol}',
+      mach: formatter.mach(point.mach),
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
@@ -119,7 +119,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
-    final fmt = ref.watch(unitFormatterProvider);
+    final formatter = ref.watch(unitFormatterProvider);
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
     final twistDirIcon = _rightHand ? IconDef.twistR : IconDef.twistL;
 
@@ -170,9 +170,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           else
             InfoListTile(
               label: 'Caliber diameter',
-              value: widget.initial != null
-                  ? fmt.diameter(widget.initial!.caliber)
-                  : nullStr,
+              value: formatter.diameter(widget.initial?.caliber),
               icon: IconDef.caliber,
             ),
           // ── Hardware ─────────────────────────────────────────────────

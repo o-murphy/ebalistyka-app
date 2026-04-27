@@ -164,7 +164,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         : tempRaw;
 
     final curVelocity = profile?.getCalculatedCurrentVelocity(conditions);
-    final mvStr = curVelocity != null ? formatter.velocity(curVelocity) : "";
+    final mvStr = formatter.velocity(curVelocity);
 
     String sensStr = "";
     final ammo = profile?.ammo.target;

@@ -5,7 +5,7 @@ import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -412,7 +412,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
       for (var pi = 0; pi < rows.length; pi++) {
         final row = rows[pi];
         final val = col.$4(row);
-        final valStr = val != null ? val.toFixedSafe(col.$5) : nullStr;
+        final valStr = val?.toFixedSafe(col.$5) ?? nullStr;
         final isZero = (row.flag & bclibc.TrajFlag.zero.value) != 0;
         final isTarget = zeroDistFlags.isNotEmpty && zeroDistFlags[pi];
         cells.add(

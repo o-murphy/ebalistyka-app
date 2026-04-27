@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -10,7 +11,13 @@ class UnitFormatterImpl implements UnitFormatter {
 
   UnitFormatterImpl(this._u);
 
-  String _fmt(Dimension dim, FieldConstraints fc, Unit unit) {
+  String _fmt(
+    Dimension? dim,
+    FieldConstraints fc,
+    Unit unit, [
+    bool Function(Dimension)? condition,
+  ]) {
+    if (dim == null || condition?.call(dim) == false) return nullStr;
     final accuracy = fc.accuracyFor(unit);
     return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.symbol}';
   }
@@ -18,10 +25,11 @@ class UnitFormatterImpl implements UnitFormatter {
   // --- Formatted strings ---
 
   @override
-  String velocity(Velocity dim) => _fmt(dim, FC.velocity, _u.velocityUnit);
+  String velocity(Velocity? dim) =>
+      _fmt(dim, FC.velocity, _u.velocityUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String distance(Distance dim) =>
+  String distance(Distance? dim) =>
       _fmt(dim, FC.targetDistance, _u.distanceUnit);
 
   @override
@@ -41,24 +49,26 @@ class UnitFormatterImpl implements UnitFormatter {
   String adjustment(Angular dim) => _fmt(dim, FC.adjustment, _u.adjustmentUnit);
 
   @override
-  String energy(Energy dim) => _fmt(dim, FC.energy, _u.energyUnit);
+  String energy(Energy? dim) => _fmt(dim, FC.energy, _u.energyUnit);
 
   @override
-  String weight(Weight dim) => _fmt(dim, FC.projectileWeight, _u.weightUnit);
+  String weight(Weight? dim) =>
+      _fmt(dim, FC.projectileWeight, _u.weightUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String length(Distance dim) => _fmt(dim, FC.projectileLength, _u.lengthUnit);
+  String length(Distance? dim) =>
+      _fmt(dim, FC.projectileLength, _u.lengthUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String diameter(Distance dim) =>
-      _fmt(dim, FC.projectileDiameter, _u.diameterUnit);
+  String diameter(Distance? dim) =>
+      _fmt(dim, FC.projectileDiameter, _u.diameterUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String sightHeight(Distance dim) =>
+  String sightHeight(Distance? dim) =>
       _fmt(dim, FC.sightHeight, _u.sightHeightUnit);
 
   @override
-  String twist(Distance dim) => '1:${_fmt(dim, FC.twist, _u.twistUnit)}';
+  String twist(Distance? dim) => '1:${_fmt(dim, FC.twist, _u.twistUnit)}';
 
   @override
   String barrelLength(Distance dim) =>
@@ -83,7 +93,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String torque(Torque dim) => _fmt(dim, FC.torque, _u.torqueUnit);
 
   @override
-  String targetSize(Angular dim) => _fmt(dim, FC.targetSize, _u.targetSizeUnit);
+  String targetSize(Angular dim) =>
+      _fmt(dim, FC.targetSize, _u.targetSizeUnit, (dim) => dim.raw >= 0.0);
 
   @override
   String windSpeed(Velocity dim) => _fmt(dim, FC.windSpeed, _u.velocityUnit);
@@ -92,12 +103,13 @@ class UnitFormatterImpl implements UnitFormatter {
   String windDirection(Angular dim) => _fmt(dim, FC.windDirection, Unit.degree);
 
   @override
-  String magnificationRange(double min, double max) =>
-      "${min.toFixedSafe(0)}-${max.toFixedSafe(0)}x";
+  String magnificationRange(double? min, double? max) =>
+      "${min?.toFixedSafe(0) ?? "?"}-${max?.toFixedSafe(0) ?? "?"}x";
 
   @override
-  String click(double value, Unit unit) => adjustment(Angular(value, unit));
-
+  String click(double? value, Unit? unit) => value == null || unit == null
+      ? nullStr
+      : adjustment(Angular(value, unit));
   // --- Symbols ---
 
   @override

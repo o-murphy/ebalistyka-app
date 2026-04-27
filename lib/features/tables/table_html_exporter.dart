@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';

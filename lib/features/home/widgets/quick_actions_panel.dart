@@ -23,16 +23,16 @@ class QuickActionsPanel extends ConsumerWidget {
     if (conditions == null) return const SizedBox.shrink();
 
     final units = ref.watch(unitSettingsProvider);
-    final fmt = ref.watch(unitFormatterProvider);
+    final formatter = ref.watch(unitFormatterProvider);
     final notifier = ref.read(shotConditionsProvider.notifier);
 
     final windMps = conditions.windSpeedMps;
-    final windDisplay = fmt.windSpeed(conditions.windSpeed);
+    final windDisplay = formatter.windSpeed(conditions.windSpeed);
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
     final lookDisplay = '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
 
-    final distDisplay = fmt.distance(conditions.distance);
+    final distDisplay = formatter.distance(conditions.distance);
     final distM = conditions.distanceMeter;
 
     final UnitPickerContext windSpeedCtx = UnitPickerContext(

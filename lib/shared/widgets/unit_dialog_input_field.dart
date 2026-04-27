@@ -1,5 +1,5 @@
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 import 'package:bclibc_ffi/unit.dart';

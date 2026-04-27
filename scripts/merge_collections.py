@@ -111,6 +111,10 @@ def merge(paths: list[Path], maps: FieldMaps) -> dict:
                 seen_calibers.add(k)
                 calibers.append(c)
 
+    ammo.sort(key=lambda a: ((a.get("vendor") or "").lower(), (a.get("name") or "").lower()))
+    sights.sort(key=lambda s: ((s.get("vendor") or "").lower(), (s.get("name") or "").lower()))
+    weapons.sort(key=lambda w: ((w.get("vendor") or "").lower(), (w.get("name") or "").lower()))
+
     # Reassign IDs sequentially
     for i, a in enumerate(ammo, start=1):
         a["id"] = i

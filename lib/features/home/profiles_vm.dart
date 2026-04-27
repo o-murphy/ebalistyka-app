@@ -1,5 +1,5 @@
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -189,45 +189,39 @@ ProfileCardData _buildCardData(
     weaponFingerprint: _weaponFingerprint(weapon),
     weaponName: weapon?.name ?? nullStr,
     weaponImage: weapon?.image,
-    weaponCaliber: weapon != null
-        ? formatter.diameter(weapon.caliber)
-        : nullStr,
+    weaponCaliber: formatter.diameter(weapon?.caliber),
     twist: weapon != null && weapon.twistInch.abs() > 0
         ? formatter.twist(weapon.twist)
         : nullStr,
     rightHanded: weapon?.isRightHandTwist ?? true,
     ammoId: ammo?.id,
     ammoFingerprint: _ammoFingerprint(ammo),
-    ammoCaliber: ammo != null ? formatter.diameter(ammo.caliber) : nullStr,
+    ammoCaliber: formatter.diameter(ammo?.caliber),
     cartridgeName: ammo?.name ?? nullStr,
     projectileName: ammo?.projectileName ?? nullStr,
     dragModel: ammo?.dragModelFormattedInfo ?? nullStr,
-    muzzleVelocity: (ammo != null && ammo.mv != null)
-        ? formatter.velocity(ammo.mv!)
-        : nullStr,
-    weight: ammo != null ? formatter.weight(ammo.weight) : nullStr,
+    muzzleVelocity: formatter.velocity(ammo?.mv),
+    weight: formatter.weight(ammo?.weight),
     sightId: sight?.id,
     sightFingerprint: _sightFingerprint(sight),
     sightName: sight?.name ?? 'Not selected',
-    sightHeight: sight != null
-        ? formatter.sightHeight(sight.sightHeight)
-        : nullStr,
+    sightHeight: formatter.sightHeight(sight?.sightHeight),
     focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
     reticleImage: sight?.reticleImage?.isNotEmpty == true
         ? sight!.reticleImage!
         : defaultReticleId,
-    magnification: sight != null
-        ? formatter.magnificationRange(
-            sight.minMagnification,
-            sight.maxMagnification,
-          )
-        : nullStr,
-    verticalClick: sight != null
-        ? formatter.click(sight.verticalClick, sight.verticalClickUnitValue)
-        : nullStr,
-    horizontalClick: sight != null
-        ? formatter.click(sight.horizontalClick, sight.horizontalClickUnitValue)
-        : nullStr,
+    magnification: formatter.magnificationRange(
+      sight?.minMagnification,
+      sight?.maxMagnification,
+    ),
+    verticalClick: formatter.click(
+      sight?.verticalClick,
+      sight?.verticalClickUnitValue,
+    ),
+    horizontalClick: formatter.click(
+      sight?.horizontalClick,
+      sight?.horizontalClickUnitValue,
+    ),
   );
 }
 

@@ -65,5 +65,12 @@
         "Sellier&Bellot": "Sellier & Bellot",
         "Swiss P": "RUAG Swiss P",
         "TulAmmo (Russia)": "TulAmmo"
+    },
+    "caliberInch": {
+        "300 AAC Blackout / Whisper": 0.338,
+        "308 Winchester / 7.62x51mm NATO": 0.308,
+        "22 Long Rifle / Hornet": 0.224,
+        "303 British": 0.303,
+        "325 WSM": 0.323
     }
 }
