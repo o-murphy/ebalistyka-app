@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
@@ -29,10 +30,11 @@ class TempControl extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final sym = displayUnit.symbol;
     final inputAcc = _fc.accuracy;
+    final l10n = AppLocalizations.of(context)!;
 
     final UnitPickerContext tempCtx = UnitPickerContext(
       context,
-      label: 'Temperature',
+      label: l10n.temperature,
       rawValue: rawValue,
       constraints: _fc,
       displayUnit: displayUnit,
@@ -61,7 +63,7 @@ class TempControl extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               Text(
-                'Temperature',
+                l10n.temperature,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: cs.onSurface.withValues(alpha: 0.55),
                 ),

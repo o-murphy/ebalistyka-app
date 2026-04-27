@@ -1,7 +1,7 @@
 {
     "@@locale": "uk",
     "homeScreenTitle": "Дім",
-    "conditionScreenTitle": "Умови",
+    "conditionsScreenTitle": "Умови",
     "tablesScreenTitle": "Таблиці",
     "tableConfigScreenTitle": "Налаштування таблиці",
     "settingsScreenTitle": "Налаштування",
@@ -37,10 +37,6 @@
     "customAtmosphere": "Власна атмосфера",
     "usingCustomConditions": "Використовуються власні умови",
     "usingIcaoAtmosphere": "Стандартна атмосфера ICAO",
-    "atmoTemperature": "Температура",
-    "atmoPressure": "Тиск",
-    "atmoHumidity": "Вологість",
-    "atmoAltitude": "Висота",
     "unitMillimeters": "Міліметри",
     "unitCentimeters": "Сантиметри",
     "unitMeters": "Метри",
@@ -142,7 +138,6 @@
     "tablesConfigSectionAdjustmentColumns": "Стовпці поправок",
     "tablesSectionTrajectory": "Траекторія",
     "tablesSectionZeroCrossing": "Перетин нулів",
-    "buttonClose": "Закрити",
     "weapon": "Зброя",
     "name": "Назва",
     "caliber": "Калібр",
@@ -164,78 +159,25 @@
     "temperature": "Температура",
     "humidity": "Вологість",
     "pressure": "Тиск",
+    "altitude": "Висота",
+    "powderTemperature": "Температура пороху",
+    "latitude": "Широта",
+    "azimuth": "Азимут",
     "windSpeed": "Швидкість вітру",
     "windDirection": "Напрямок вітру",
-    "@weapon": {
-        "description": "Заголовок секції Зброя"
-    },
-    "@name": {
-        "description": "Поле назви зброї"
-    },
-    "@caliber": {
-        "description": "Поле калібру"
-    },
-    "@twist": {
-        "description": "Поле крутизни нарізів"
-    },
-    "@zeroDistance": {
-        "description": "Поле дистанції пристрілки"
-    },
-    "@cartridge": {
-        "description": "Заголовок секції Набій"
-    },
-    "@zeroMv": {
-        "description": "Поле нульової швидкості"
-    },
-    "@currentMv": {
-        "description": "Поле поточної швидкості"
-    },
-    "@projectile": {
-        "description": "Заголовок секції Снаряд"
-    },
-    "@dragModel": {
-        "description": "Поле моделі опору"
-    },
-    "@bc": {
-        "description": "Поле балістичного коефіцієнта"
-    },
-    "@length": {
-        "description": "Поле довжини снаряда"
-    },
-    "@diameter": {
-        "description": "Поле діаметра снаряда"
-    },
-    "@weight": {
-        "description": "Поле ваги снаряда"
-    },
-    "@formFactor": {
-        "description": "Поле коефіцієнта форми"
-    },
-    "@sectionalDensity": {
-        "description": "Поле поперечного навантаження"
-    },
-    "@gyrostabilitySg": {
-        "description": "Поле гіростабільності"
-    },
-    "@conditions": {
-        "description": "Заголовок секції Умови"
-    },
-    "@temperature": {
-        "description": "Поле температури"
-    },
-    "@humidity": {
-        "description": "Поле вологості"
-    },
-    "@pressure": {
-        "description": "Поле тиску"
-    },
-    "@windSpeed": {
-        "description": "Поле швидкості вітру"
-    },
-    "@windDirection": {
-        "description": "Поле напрямку вітру"
-    },
+    "powderSensitivity": "Температурна чутливість пороху",
+    "usePowderSensitivity": "Враховувати температурну чутливість пороху",
+    "velocityChangePer15C": "Зміна швидкості на 15°C",
+    "useDifferentPowderTemperature": "Використовувати іншу температуру пороху",
+    "usesPowderTemperature": "Використовується температура пороху",
+    "usesAtmoTemperature": "Використовується температура атмосфери",
+    "mvAtPowderTemp": "Початкова швидкість для температури пороху",
+    "mvAtAtmoTemp": "Початкова швидкість для температури атмосфери",
+    "sectionCoriolisEffect": "Ефект Коріоліса",
     "errorZeroCrossingNotFound": "Перетини нуля в межах траєкторії не виявлені!",
     "saveButton": "Зберегти",
+    "discardButton": "Скасувати",
+    "confirmButton": "ОК",
+    "closeButton": "Закрити",
     "printButton": "Друкувати"
 }

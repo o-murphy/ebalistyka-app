@@ -2,6 +2,7 @@ import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -85,8 +86,9 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final conditions = await ref.watch(shotConditionsProvider.future);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
+    final l10n = ref.watch(appLocalizationsProvider);
 
-    return _buildState(ctx?.profile, conditions, units, formatter);
+    return _buildState(ctx?.profile, conditions, units, formatter, l10n);
   }
 
   Future<void> updateTemperature(double rawCelsius) async {
@@ -144,6 +146,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     ShootingConditions conditions,
     UnitSettings units,
     UnitFormatter formatter,
+    AppLocalizations l10n,
   ) {
     final tempUnit = units.temperatureUnit;
     final distUnit = units.distanceUnit;
@@ -171,7 +174,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
 
     return ConditionsUiState(
       temperature: _field(
-        label: 'Temperature',
+        label: l10n.temperature,
         rawValue: tempRaw,
         fc: FC.temperature,
         displayUnit: tempUnit,
@@ -179,7 +182,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         formatter: formatter,
       ),
       altitude: _field(
-        label: 'Altitude',
+        label: l10n.altitude,
         rawValue: altRaw,
         fc: FC.altitude,
         displayUnit: distUnit,
@@ -187,7 +190,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         formatter: formatter,
       ),
       humidity: _field(
-        label: 'Humidity',
+        label: l10n.humidity,
         rawValue: humRaw,
         fc: FC.humidity,
         displayUnit: Unit.percent,
@@ -195,7 +198,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         formatter: formatter,
       ),
       pressure: _field(
-        label: 'Pressure',
+        label: l10n.pressure,
         rawValue: pressRaw,
         fc: FC.pressure,
         displayUnit: pressUnit,
@@ -204,7 +207,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       ),
       powderTemperature: (powderSensOn && useDiffPowderTemp)
           ? _field(
-              label: 'Powder temperature',
+              label: l10n.powderTemperature,
               rawValue: powderTempRaw,
               fc: FC.temperature,
               displayUnit: tempUnit,
@@ -216,7 +219,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       useDiffPowderTemp: useDiffPowderTemp,
       coriolisOn: conditions.useCoriolis,
       latitude: _field(
-        label: 'Latitude',
+        label: l10n.latitude,
         rawValue: conditions.latitude.in_(Unit.degree),
         fc: FC.latitude,
         displayUnit: Unit.degree,
@@ -224,7 +227,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         formatter: formatter,
       ),
       azimuth: _field(
-        label: 'Azimuth',
+        label: l10n.azimuth,
         rawValue: conditions.azimuth.in_(Unit.degree),
         fc: FC.azimuth,
         displayUnit: Unit.degree,

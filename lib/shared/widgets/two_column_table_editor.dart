@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -307,6 +308,8 @@ class _TableActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return ColoredBox(
       color: Theme.of(context).colorScheme.surface,
       child: Padding(
@@ -317,19 +320,19 @@ class _TableActionBar extends StatelessWidget {
               Expanded(
                 child: FilledButton(
                   onPressed: onDiscard,
-                  child: const Text('Close'),
+                  child: Text(l10n.closeButton),
                 ),
               )
             else ...[
               OutlinedButton(
                 onPressed: onDiscard,
-                child: const Text('Discard'),
+                child: Text(l10n.discardButton),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
                   onPressed: onSave,
-                  child: const Text('Save'),
+                  child: Text(l10n.saveButton),
                 ),
               ),
             ],

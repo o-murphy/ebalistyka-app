@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeScreenTitle => 'Home';
 
   @override
-  String get conditionScreenTitle => 'Conditions';
+  String get conditionsScreenTitle => 'Conditions';
 
   @override
   String get tablesScreenTitle => 'Tables';
@@ -118,18 +118,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usingIcaoAtmosphere => 'Using ICAO standard atmosphere';
-
-  @override
-  String get atmoTemperature => 'Temperature';
-
-  @override
-  String get atmoPressure => 'Pressure';
-
-  @override
-  String get atmoHumidity => 'Humidity';
-
-  @override
-  String get atmoAltitude => 'Altitude';
 
   @override
   String get unitMillimeters => 'Millimeters';
@@ -436,9 +424,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tablesSectionZeroCrossing => 'Zero Crossings';
 
   @override
-  String get buttonClose => 'Close';
-
-  @override
   String get weapon => 'Weapon';
 
   @override
@@ -502,10 +487,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pressure => 'Pressure';
 
   @override
+  String get altitude => 'Висота';
+
+  @override
+  String get powderTemperature => 'Powder temperature';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get azimuth => 'Azimuth';
+
+  @override
   String get windSpeed => 'Wind speed';
 
   @override
   String get windDirection => 'Wind direction';
+
+  @override
+  String get powderSensitivity => 'Powder temperature sensitivity';
+
+  @override
+  String get velocityChangePer15C =>
+      'Velocity change per 15°C temperature delta';
+
+  @override
+  String get useDifferentPowderTemperature =>
+      'Use different powder temperature';
+
+  @override
+  String get usePowderSensitivity => 'Enable powder temperature sensitivity';
+
+  @override
+  String get usesPowderTemperature => 'Uses powder temperature';
+
+  @override
+  String get usesAtmoTemperature => 'Uses atmospheric temperature';
+
+  @override
+  String get mvAtPowderTemp => 'Muzzle velocity at powder temperature';
+
+  @override
+  String get mvAtAtmoTemp => 'Muzzle velocity at atmospheric temperature';
+
+  @override
+  String get sectionCoriolisEffect => 'Coriolis effect';
 
   @override
   String get errorZeroCrossingNotFound =>
@@ -513,6 +539,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveButton => 'Save';
+
+  @override
+  String get discardButton => 'Discard';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get confirmButton => 'Confirm';
 
   @override
   String get printButton => 'Print';

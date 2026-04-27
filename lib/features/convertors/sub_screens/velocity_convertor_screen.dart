@@ -67,7 +67,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
             const TileDivider(),
             ListSectionTile(l10n.sectionAtmosphere),
             UnitValueFieldTile(
-              title: l10n.atmoTemperature,
+              title: l10n.temperature,
               rawValue: state.atmoTemperatureC,
               constraints: FC.temperature,
               displayUnit: units.temperatureUnit,
@@ -75,7 +75,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoTemperature,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoPressure,
+              title: l10n.pressure,
               rawValue: state.atmoPressureHPa,
               constraints: FC.pressure,
               displayUnit: units.pressureUnit,
@@ -83,7 +83,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoPressure,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoHumidity,
+              title: l10n.humidity,
               rawValue: state.atmoHumidityFrac,
               constraints: FC.humidity,
               displayUnit: Unit.percent,
@@ -91,7 +91,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoHumidity,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoAltitude,
+              title: l10n.altitude,
               rawValue: state.atmoAltitudeMeter,
               constraints: FC.altitude,
               displayUnit: units.distanceUnit,

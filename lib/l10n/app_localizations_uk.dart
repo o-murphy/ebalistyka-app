@@ -12,7 +12,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeScreenTitle => 'Дім';
 
   @override
-  String get conditionScreenTitle => 'Умови';
+  String get conditionsScreenTitle => 'Умови';
 
   @override
   String get tablesScreenTitle => 'Таблиці';
@@ -118,18 +118,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get usingIcaoAtmosphere => 'Стандартна атмосфера ICAO';
-
-  @override
-  String get atmoTemperature => 'Температура';
-
-  @override
-  String get atmoPressure => 'Тиск';
-
-  @override
-  String get atmoHumidity => 'Вологість';
-
-  @override
-  String get atmoAltitude => 'Висота';
 
   @override
   String get unitMillimeters => 'Міліметри';
@@ -438,9 +426,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get tablesSectionZeroCrossing => 'Перетин нулів';
 
   @override
-  String get buttonClose => 'Закрити';
-
-  @override
   String get weapon => 'Зброя';
 
   @override
@@ -504,10 +489,51 @@ class AppLocalizationsUk extends AppLocalizations {
   String get pressure => 'Тиск';
 
   @override
+  String get altitude => 'Висота';
+
+  @override
+  String get powderTemperature => 'Температура пороху';
+
+  @override
+  String get latitude => 'Широта';
+
+  @override
+  String get azimuth => 'Азимут';
+
+  @override
   String get windSpeed => 'Швидкість вітру';
 
   @override
   String get windDirection => 'Напрямок вітру';
+
+  @override
+  String get powderSensitivity => 'Температурна чутливість пороху';
+
+  @override
+  String get velocityChangePer15C => 'Зміна швидкості на 15°C';
+
+  @override
+  String get useDifferentPowderTemperature =>
+      'Використовувати іншу температуру пороху';
+
+  @override
+  String get usePowderSensitivity =>
+      'Враховувати температурну чутливість пороху';
+
+  @override
+  String get usesPowderTemperature => 'Використовується температура пороху';
+
+  @override
+  String get usesAtmoTemperature => 'Використовується температура атмосфери';
+
+  @override
+  String get mvAtPowderTemp => 'Початкова швидкість для температури пороху';
+
+  @override
+  String get mvAtAtmoTemp => 'Початкова швидкість для температури атмосфери';
+
+  @override
+  String get sectionCoriolisEffect => 'Ефект Коріоліса';
 
   @override
   String get errorZeroCrossingNotFound =>
@@ -515,6 +541,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get saveButton => 'Зберегти';
+
+  @override
+  String get discardButton => 'Скасувати';
+
+  @override
+  String get closeButton => 'Закрити';
+
+  @override
+  String get confirmButton => 'ОК';
 
   @override
   String get printButton => 'Друкувати';

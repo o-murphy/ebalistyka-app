@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Convertors screen (UA)** - Convertors screen and all convertors subscreens localization
 - **Settings screen (UA)** - Settings screen and it's subscreens localization
 - **Html trajectory report (UA)** - uses app localization on export
+- **Condition screen** - uses app localization
 
 
 ## [0.1.2] - 2026-04-26

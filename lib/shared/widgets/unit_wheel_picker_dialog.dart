@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_value_header.dart';
@@ -52,6 +53,7 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final displayValue = _helper.toDisplay(_currentRawValue);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
@@ -98,7 +100,7 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
               widget.onSave(_currentRawValue);
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: Text(l10n.confirmButton),
           ),
         ],
       ),

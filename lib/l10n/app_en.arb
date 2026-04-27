@@ -2,8 +2,8 @@
     "@@locale": "en",
     "homeScreenTitle": "Home",
     "@homeScreenTitle": {},
-    "conditionScreenTitle": "Conditions",
-    "@conditionScreenTitle": {},
+    "conditionsScreenTitle": "Conditions",
+    "@conditionsScreenTitle": {},
     "tablesScreenTitle": "Tables",
     "@tablesScreenTitle": {
         "description": "Title of the tables screen"
@@ -76,14 +76,6 @@
     "@usingCustomConditions": {},
     "usingIcaoAtmosphere": "Using ICAO standard atmosphere",
     "@usingIcaoAtmosphere": {},
-    "atmoTemperature": "Temperature",
-    "@atmoTemperature": {},
-    "atmoPressure": "Pressure",
-    "@atmoPressure": {},
-    "atmoHumidity": "Humidity",
-    "@atmoHumidity": {},
-    "atmoAltitude": "Altitude",
-    "@atmoAltitude": {},
     "unitMillimeters": "Millimeters",
     "@unitMillimeters": {},
     "unitCentimeters": "Centimeters",
@@ -318,104 +310,134 @@
     "@tablesSectionTrajectory": {},
     "tablesSectionZeroCrossing": "Zero Crossings",
     "@tablesSectionZeroCrossing": {},
-    "buttonClose": "Close",
-    "@buttonClose": {},
     "weapon": "Weapon",
-    "name": "Name",
-    "caliber": "Caliber",
-    "twist": "Twist",
-    "zeroDistance": "Zero distance",
-    "cartridge": "Cartridge",
-    "zeroMv": "Zero MV",
-    "currentMv": "Current MV",
-    "projectile": "Projectile",
-    "dragModel": "Drag model",
-    "bc": "BC",
-    "length": "Length",
-    "diameter": "Diameter",
-    "weight": "Weight",
-    "formFactor": "Form factor",
-    "sectionalDensity": "Sectional density",
-    "gyrostabilitySg": "Gyrostability (Sg)",
-    "conditions": "Conditions",
-    "temperature": "Temperature",
-    "humidity": "Humidity",
-    "pressure": "Pressure",
-    "windSpeed": "Wind speed",
-    "windDirection": "Wind direction",
     "@weapon": {
         "description": "Weapon section title"
     },
+    "name": "Name",
     "@name": {
         "description": "Weapon name field label"
     },
+    "caliber": "Caliber",
     "@caliber": {
         "description": "Caliber field label"
     },
+    "twist": "Twist",
     "@twist": {
         "description": "Twist rate field label"
     },
+    "zeroDistance": "Zero distance",
     "@zeroDistance": {
         "description": "Zero distance field label"
     },
+    "cartridge": "Cartridge",
     "@cartridge": {
         "description": "Cartridge section title"
     },
+    "zeroMv": "Zero MV",
     "@zeroMv": {
         "description": "Zero muzzle velocity field label"
     },
+    "currentMv": "Current MV",
     "@currentMv": {
         "description": "Current muzzle velocity field label"
     },
+    "projectile": "Projectile",
     "@projectile": {
         "description": "Projectile section title"
     },
+    "dragModel": "Drag model",
     "@dragModel": {
         "description": "Drag model field label"
     },
+    "bc": "BC",
     "@bc": {
         "description": "Ballistic coefficient field label"
     },
+    "length": "Length",
     "@length": {
         "description": "Bullet length field label"
     },
+    "diameter": "Diameter",
     "@diameter": {
         "description": "Bullet diameter field label"
     },
+    "weight": "Weight",
     "@weight": {
         "description": "Bullet weight field label"
     },
+    "formFactor": "Form factor",
     "@formFactor": {
         "description": "Form factor field label"
     },
+    "sectionalDensity": "Sectional density",
     "@sectionalDensity": {
         "description": "Sectional density field label"
     },
+    "gyrostabilitySg": "Gyrostability (Sg)",
     "@gyrostabilitySg": {
         "description": "Gyroscopic stability factor field label"
     },
+    "conditions": "Conditions",
     "@conditions": {
         "description": "Conditions section title"
     },
+    "temperature": "Temperature",
     "@temperature": {
         "description": "Temperature field label"
     },
+    "humidity": "Humidity",
     "@humidity": {
         "description": "Humidity field label"
     },
+    "pressure": "Pressure",
     "@pressure": {
         "description": "Pressure field label"
     },
+    "altitude": "Висота",
+    "@altitude": {},
+    "powderTemperature": "Powder temperature",
+    "@powderTemperature": {},
+    "latitude": "Latitude",
+    "@latitude": {},
+    "azimuth": "Azimuth",
+    "@azimuth": {},
+    "windSpeed": "Wind speed",
     "@windSpeed": {
         "description": "Wind speed field label"
     },
+    "windDirection": "Wind direction",
     "@windDirection": {
         "description": "Wind direction field label"
     },
+    "powderSensitivity": "Powder temperature sensitivity",
+    "@powderSensitivity": {},
+    "velocityChangePer15C": "Velocity change per 15°C temperature delta",
+    "@velocityChangePer15C": {},
+    "useDifferentPowderTemperature": "Use different powder temperature",
+    "@useDifferentPowderTemperature": {},
+    "usePowderSensitivity": "Enable powder temperature sensitivity",
+    "@usePowderSensitivity": {},
+    "usesPowderTemperature": "Uses powder temperature",
+    "@usesPowderTemperature": {},
+    "usesAtmoTemperature": "Uses atmospheric temperature",
+    "@usesAtmoTemperature": {},
+    "mvAtPowderTemp": "Muzzle velocity at powder temperature",
+    "@mvAtPowderTemp": {},
+    "mvAtAtmoTemp": "Muzzle velocity at atmospheric temperature",
+    "@mvAtAtmoTemp": {},
+    "sectionCoriolisEffect": "Coriolis effect",
+    "@sectionCoriolisEffect": {},
     "errorZeroCrossingNotFound": "Zero crossings not found in the current trajectory range!",
     "@errorZeroCrossingNotFound": {},
     "saveButton": "Save",
     "@saveButton": {},
+    "discardButton": "Discard",
+    "@discardButton": {},
+    "closeButton": "Close",
+    "@closeButton": {},
+    "confirmButton": "Confirm",
+    "@confirmButton": {},
     "printButton": "Print",
     "@printButton": {}
 }

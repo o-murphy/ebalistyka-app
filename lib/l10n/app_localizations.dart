@@ -104,11 +104,11 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get homeScreenTitle;
 
-  /// No description provided for @conditionScreenTitle.
+  /// No description provided for @conditionsScreenTitle.
   ///
   /// In en, this message translates to:
   /// **'Conditions'**
-  String get conditionScreenTitle;
+  String get conditionsScreenTitle;
 
   /// Title of the tables screen
   ///
@@ -319,30 +319,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Using ICAO standard atmosphere'**
   String get usingIcaoAtmosphere;
-
-  /// No description provided for @atmoTemperature.
-  ///
-  /// In en, this message translates to:
-  /// **'Temperature'**
-  String get atmoTemperature;
-
-  /// No description provided for @atmoPressure.
-  ///
-  /// In en, this message translates to:
-  /// **'Pressure'**
-  String get atmoPressure;
-
-  /// No description provided for @atmoHumidity.
-  ///
-  /// In en, this message translates to:
-  /// **'Humidity'**
-  String get atmoHumidity;
-
-  /// No description provided for @atmoAltitude.
-  ///
-  /// In en, this message translates to:
-  /// **'Altitude'**
-  String get atmoAltitude;
 
   /// No description provided for @unitMillimeters.
   ///
@@ -950,12 +926,6 @@ abstract class AppLocalizations {
   /// **'Zero Crossings'**
   String get tablesSectionZeroCrossing;
 
-  /// No description provided for @buttonClose.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get buttonClose;
-
   /// Weapon section title
   ///
   /// In en, this message translates to:
@@ -1082,6 +1052,30 @@ abstract class AppLocalizations {
   /// **'Pressure'**
   String get pressure;
 
+  /// No description provided for @altitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Висота'**
+  String get altitude;
+
+  /// No description provided for @powderTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Powder temperature'**
+  String get powderTemperature;
+
+  /// No description provided for @latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitude;
+
+  /// No description provided for @azimuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Azimuth'**
+  String get azimuth;
+
   /// Wind speed field label
   ///
   /// In en, this message translates to:
@@ -1094,6 +1088,60 @@ abstract class AppLocalizations {
   /// **'Wind direction'**
   String get windDirection;
 
+  /// No description provided for @powderSensitivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Powder temperature sensitivity'**
+  String get powderSensitivity;
+
+  /// No description provided for @velocityChangePer15C.
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity change per 15°C temperature delta'**
+  String get velocityChangePer15C;
+
+  /// No description provided for @useDifferentPowderTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Use different powder temperature'**
+  String get useDifferentPowderTemperature;
+
+  /// No description provided for @usePowderSensitivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable powder temperature sensitivity'**
+  String get usePowderSensitivity;
+
+  /// No description provided for @usesPowderTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses powder temperature'**
+  String get usesPowderTemperature;
+
+  /// No description provided for @usesAtmoTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses atmospheric temperature'**
+  String get usesAtmoTemperature;
+
+  /// No description provided for @mvAtPowderTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'Muzzle velocity at powder temperature'**
+  String get mvAtPowderTemp;
+
+  /// No description provided for @mvAtAtmoTemp.
+  ///
+  /// In en, this message translates to:
+  /// **'Muzzle velocity at atmospheric temperature'**
+  String get mvAtAtmoTemp;
+
+  /// No description provided for @sectionCoriolisEffect.
+  ///
+  /// In en, this message translates to:
+  /// **'Coriolis effect'**
+  String get sectionCoriolisEffect;
+
   /// No description provided for @errorZeroCrossingNotFound.
   ///
   /// In en, this message translates to:
@@ -1105,6 +1153,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get saveButton;
+
+  /// No description provided for @discardButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discardButton;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
 
   /// No description provided for @printButton.
   ///

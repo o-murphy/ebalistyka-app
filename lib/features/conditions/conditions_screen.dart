@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -20,6 +21,7 @@ class ConditionsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(conditionsVmProvider);
     final state = vmAsync.value;
+    final l10n = AppLocalizations.of(context)!;
 
     if (state == null) {
       return const Center(child: CircularProgressIndicator());
@@ -29,7 +31,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     final UnitPickerContext altCtx = UnitPickerContext(
       context,
-      label: 'Altitude',
+      label: l10n.altitude,
       rawValue: state.altitude.rawValue,
       constraints: RC.altitude,
       displayUnit: state.altitude.displayUnit,
@@ -38,7 +40,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     final UnitPickerContext humCtx = UnitPickerContext(
       context,
-      label: 'Humidity',
+      label: l10n.humidity,
       rawValue: state.humidity.rawValue,
       constraints: RC.humidity,
       displayUnit: state.humidity.displayUnit,
@@ -48,7 +50,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     final UnitPickerContext pressCtx = UnitPickerContext(
       context,
-      label: 'Pressure',
+      label: l10n.pressure,
       rawValue: state.pressure.rawValue,
       constraints: RC.pressure,
       displayUnit: state.pressure.displayUnit,
@@ -56,7 +58,7 @@ class ConditionsScreen extends ConsumerWidget {
     );
 
     return BaseScreen(
-      title: 'Conditions',
+      title: l10n.conditionsScreenTitle,
       body: ListView(
         children: [
           // ── Temperature — big centred control ──────────────────────────
@@ -77,7 +79,7 @@ class ConditionsScreen extends ConsumerWidget {
               items: [
                 IconValueButton(
                   icon: IconDef.altitude,
-                  label: 'Altitude',
+                  label: l10n.altitude,
                   heroTag: 'cond-alt',
                   value:
                       '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
@@ -85,7 +87,7 @@ class ConditionsScreen extends ConsumerWidget {
                 ),
                 IconValueButton(
                   icon: IconDef.humidity,
-                  label: 'Humidity',
+                  label: l10n.humidity,
                   heroTag: 'cond-hum',
                   value:
                       '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
@@ -94,7 +96,7 @@ class ConditionsScreen extends ConsumerWidget {
 
                 IconValueButton(
                   icon: IconDef.velocity,
-                  label: 'Pressure',
+                  label: l10n.pressure,
                   heroTag: 'cond-press',
                   value:
                       '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',

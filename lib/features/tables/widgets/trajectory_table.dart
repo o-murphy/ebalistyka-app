@@ -115,7 +115,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dlgCtx),
-            child: Text(l10n.buttonClose),
+            child: Text(l10n.closeButton),
           ),
         ],
       ),

@@ -422,7 +422,7 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
             ),
             NavigationDestination(
               icon: Icon(IconDef.conditions),
-              label: l10n.conditionScreenTitle,
+              label: l10n.conditionsScreenTitle,
             ),
             NavigationDestination(
               icon: Icon(IconDef.tables),
