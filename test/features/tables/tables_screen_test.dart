@@ -5,6 +5,7 @@
 //   flutter test test/trajectory_table_test.dart
 
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,7 +96,11 @@ Widget _wrapWithRiverpod(
 
   return UncontrolledProviderScope(
     container: container,
-    child: MaterialApp(home: Scaffold(body: child)),
+    child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    ),
   );
 }
 
@@ -132,7 +137,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.textContaining('Range, m'), findsWidgets);
+      expect(find.text('Range'), findsWidgets);
     });
 
     testWidgets('renders row labels', (tester) async {

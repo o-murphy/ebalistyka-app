@@ -4,6 +4,7 @@
 //   flutter test test/trajectory_table_test.dart
 
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,7 +64,11 @@ DetailsTableData _makeFullSpoiler() => const DetailsTableData(
   windDir: '90°',
 );
 
-Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
+Widget _wrap(Widget child) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: Scaffold(body: child),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -86,8 +91,7 @@ void main() {
       );
       await tester.pump();
 
-      // 'm' appears in the header row and potentially in cells
-      expect(find.textContaining('Range, m'), findsWidgets);
+      expect(find.text('Range'), findsWidgets);
     });
 
     testWidgets('renders row labels', (tester) async {

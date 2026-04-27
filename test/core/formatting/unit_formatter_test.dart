@@ -374,8 +374,12 @@ void main() {
       fmt = UnitFormatterImpl(_metricSettings());
     });
 
-    test('zero values format correctly', () {
-      expect(fmt.velocity(Velocity.mps(0)), contains('0'));
+    test('zero velocity returns no-data placeholder', () {
+      // velocity(0) is intentionally '—' — zero MV has no ballistic meaning.
+      expect(fmt.velocity(Velocity.mps(0)), '—');
+    });
+
+    test('zero distance and energy format as numeric zero', () {
       expect(fmt.distance(Distance.meter(0)), contains('0'));
       expect(fmt.energy(Energy.joule(0)), contains('0'));
     });
