@@ -65,12 +65,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 #### Localization
-- **Setup flutter_localizations** - added `flutter_localizations` dependency
-- **Settings screen (UA)** - Settings screen and it's subscreens localization
-- **Convertors screen (UA)** - Convertors screen and all convertors subscreens localization
-- **Settings screen (UA)** - Settings screen and it's subscreens localization
-- **Html trajectory report (UA)** - uses app localization on export
-- **Condition screen** - uses app localization
+- **`flutter_localizations` setup** — ARB pipeline; EN + UA, 180 keys, fully in sync
+- **Settings screen (UA)** — main screen + sub-screens (units, adjustments)
+- **Convertors screen (UA)** — all convertor sub-screens
+- **Conditions screen (UA)** — conditions screen and temperature control widget
+- **HTML trajectory report (UA)** — uses app locale on export
+- **Tables screen (UA)** — screen title, tab labels, tooltips
+- **Tables config screen (UA)** — all section titles, column toggles, distance fields
+- **Trajectory table widget (UA)** — column headers, section titles, detail dialog, error messages
+- **Details table widget (UA)** — all section and field labels
 
 
 ## [0.1.2] - 2026-04-26
