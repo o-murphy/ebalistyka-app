@@ -10,7 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+#### Export / Import
+- **A7P zero offset export** — `setPayloadOffsets` now correctly converts the ammo angular offset to cm/100m via `Angular(...).in_(Unit.cmPer100m)` before dividing by click size; previously multiplied instead of divided, producing wrong click counts
+- **A7P zero offset import** — removed erroneous `getPayloadOffsets` call on import; a7p stores offsets as dimensionless click counts with no click-size metadata, so the angular offset cannot be reconstructed at import time and is intentionally left at default
+
 ### Refactored
+
+#### Code Quality — Wizard screens deduplication (#7.1, priority 4)
+- Extracted `WizardActionBar` widget (`lib/shared/widgets/wizard_action_bar.dart`) — replaces three identical private `_ActionBar` classes in weapon, sight, and ammo wizard screens
+- Extracted `WizardNameField` widget (`lib/shared/widgets/wizard_name_field.dart`) — padded `TextField` with empty-name error styling, replaces inline pattern repeated in all three wizards
+- Introduced `WizardFormMixin<W>` (`lib/shared/mixins/wizard_form_mixin.dart`) — mixin on `ConsumerState<W>` covering: `nameCtrl` / `vendorCtrl` lifecycle (init + dispose), `isNameValid` getter, `wizardTitle()`, `onNameChanged()`, `onDiscard()`, `commitSave()`
+- Applied to all three wizard screens (`weapon_wizard_screen`, `sight_wizard_screen`, `ammo_wizard_screen`); ~155 LOC removed
 
 #### Code Quality — Converter generalization (#7.1, priorities 1–2)
 - Introduced `SimpleConvertorVm` abstract base class (Template Method pattern) in `lib/features/convertors/simple_convertor_vm.dart`:
