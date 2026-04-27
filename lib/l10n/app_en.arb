@@ -5,7 +5,9 @@
     "conditionScreenTitle": "Conditions",
     "@conditionScreenTitle": {},
     "tablesScreenTitle": "Tables",
-    "@tablesScreenTitle": {},
+    "@tablesScreenTitle": {
+        "description": "Title of the tables screen"
+    },
     "settingsScreenTitle": "Settings",
     "@settingsScreenTitle": {},
     "convertorsScreenTitle": "Convertors",
@@ -223,5 +225,89 @@
     "labelProjectileDiameter": "Projectile Diameter",
     "@labelProjectileDiameter": {},
     "labelTargetSize": "Target size",
-    "@labelTargetSize": {}
+    "@labelTargetSize": {},
+    "tabTrajectory": "Trajectory",
+    "@tabTrajectory": {
+        "description": "Tab label for trajectory table"
+    },
+    "tabDetails": "Details",
+    "@tabDetails": {
+        "description": "Tab label for details table"
+    },
+    "tooltipConfigure": "Configure",
+    "@tooltipConfigure": {
+        "description": "Tooltip for configure button"
+    },
+    "tooltipShare": "Share",
+    "@tooltipShare": {
+        "description": "Tooltip for share button"
+    },
+    "columnRange": "Range",
+    "@columnRange": {
+        "description": "Column header for range/distance"
+    },
+    "columnTime": "Time",
+    "@columnTime": {
+        "description": "Column header for time"
+    },
+    "columnVelocity": "Velocity",
+    "@columnVelocity": {
+        "description": "Column header for velocity"
+    },
+    "columnHeight": "Height",
+    "@columnHeight": {
+        "description": "Column header for height"
+    },
+    "columnDrop": "Drop",
+    "@columnDrop": {
+        "description": "Column header for drop"
+    },
+    "columnDropAngle": "Drop°",
+    "@columnDropAngle": {
+        "description": "Column header for drop angle in degrees"
+    },
+    "columnDropClicks": "Drop",
+    "@columnDropClicks": {
+        "description": "Column header for drop in clicks"
+    },
+    "columnWind": "Wind",
+    "@columnWind": {
+        "description": "Column header for wind"
+    },
+    "columnWindAngle": "Wind°",
+    "@columnWindAngle": {
+        "description": "Column header for wind angle in degrees"
+    },
+    "columnWindClicks": "Wind",
+    "@columnWindClicks": {
+        "description": "Column header for wind in clicks"
+    },
+    "columnMach": "Mach",
+    "@columnMach": {
+        "description": "Column header for Mach number"
+    },
+    "columnDrag": "Drag",
+    "@columnDrag": {},
+    "columnEnergy": "Energy",
+    "@columnEnergy": {
+        "description": "Column header for energy"
+    },
+    "tablesConfigSectionDistance": "Range",
+    "@tablesConfigSectionDistance": {},
+    "tablesConfigDistanceStart": "Start distance",
+    "@tablesConfigDistanceStart": {},
+    "tablesConfigDistanceEnd": "End distance",
+    "@tablesConfigDistanceEnd": {},
+    "tablesConfigDistanceStep": "Distance step",
+    "@tablesConfigDistanceStep": {},
+    "tablesConfigSectionExtra": "Extra",
+    "@tablesConfigSectionExtra": {},
+    "tablesConfigShowZeroCrossingTable": "Show zero crossings table",
+    "@tablesConfigShowZeroCrossingTable": {},
+    "tablesConfigShowSubsonicTransition": "Show subsonic transition",
+    "@tablesConfigShowSubsonicTransition": {},
+    "tablesConfigSectionVisibleColumns": "Visible columns",
+    "@tablesConfigSectionVisibleColumns": {},
+    "tablesConfigSectionAdjustmentColumns": "Adjustment columns",
+    "@tablesConfigSectionAdjustmentColumns": {}
 }

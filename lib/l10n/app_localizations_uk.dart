@@ -344,4 +344,84 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get labelTargetSize => 'Розмір мішені';
+
+  @override
+  String get tabTrajectory => 'Траекторія';
+
+  @override
+  String get tabDetails => 'Деталі';
+
+  @override
+  String get tooltipConfigure => 'Налаштування';
+
+  @override
+  String get tooltipShare => 'Поширити';
+
+  @override
+  String get columnRange => 'Відстань';
+
+  @override
+  String get columnTime => 'Час';
+
+  @override
+  String get columnVelocity => 'Швидкість';
+
+  @override
+  String get columnHeight => 'Висота';
+
+  @override
+  String get columnDrop => 'Верт. поправка';
+
+  @override
+  String get columnDropAngle => 'Верт. поправка°';
+
+  @override
+  String get columnDropClicks => 'Верт. поправка';
+
+  @override
+  String get columnWind => 'Гориз. поправка';
+
+  @override
+  String get columnWindAngle => 'Гориз. поправка°';
+
+  @override
+  String get columnWindClicks => 'Гориз. поправка';
+
+  @override
+  String get columnMach => 'Мах';
+
+  @override
+  String get columnDrag => 'Драг';
+
+  @override
+  String get columnEnergy => 'Енергія';
+
+  @override
+  String get tablesConfigSectionDistance => 'Відстань';
+
+  @override
+  String get tablesConfigDistanceStart => 'Початкова відстань';
+
+  @override
+  String get tablesConfigDistanceEnd => 'Кінцева відстань';
+
+  @override
+  String get tablesConfigDistanceStep => 'Крок відстані';
+
+  @override
+  String get tablesConfigSectionExtra => 'Додатково';
+
+  @override
+  String get tablesConfigShowZeroCrossingTable =>
+      'Відображати таблицю перетину нулів';
+
+  @override
+  String get tablesConfigShowSubsonicTransition =>
+      'Відображати перехід на дозвук';
+
+  @override
+  String get tablesConfigSectionVisibleColumns => 'Відображати стовпці';
+
+  @override
+  String get tablesConfigSectionAdjustmentColumns => 'Стовпці поправок';
 }

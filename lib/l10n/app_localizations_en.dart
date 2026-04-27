@@ -344,4 +344,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelTargetSize => 'Target size';
+
+  @override
+  String get tabTrajectory => 'Trajectory';
+
+  @override
+  String get tabDetails => 'Details';
+
+  @override
+  String get tooltipConfigure => 'Configure';
+
+  @override
+  String get tooltipShare => 'Share';
+
+  @override
+  String get columnRange => 'Range';
+
+  @override
+  String get columnTime => 'Time';
+
+  @override
+  String get columnVelocity => 'Velocity';
+
+  @override
+  String get columnHeight => 'Height';
+
+  @override
+  String get columnDrop => 'Drop';
+
+  @override
+  String get columnDropAngle => 'Drop°';
+
+  @override
+  String get columnDropClicks => 'Drop';
+
+  @override
+  String get columnWind => 'Wind';
+
+  @override
+  String get columnWindAngle => 'Wind°';
+
+  @override
+  String get columnWindClicks => 'Wind';
+
+  @override
+  String get columnMach => 'Mach';
+
+  @override
+  String get columnDrag => 'Drag';
+
+  @override
+  String get columnEnergy => 'Energy';
+
+  @override
+  String get tablesConfigSectionDistance => 'Range';
+
+  @override
+  String get tablesConfigDistanceStart => 'Start distance';
+
+  @override
+  String get tablesConfigDistanceEnd => 'End distance';
+
+  @override
+  String get tablesConfigDistanceStep => 'Distance step';
+
+  @override
+  String get tablesConfigSectionExtra => 'Extra';
+
+  @override
+  String get tablesConfigShowZeroCrossingTable => 'Show zero crossings table';
+
+  @override
+  String get tablesConfigShowSubsonicTransition => 'Show subsonic transition';
+
+  @override
+  String get tablesConfigSectionVisibleColumns => 'Visible columns';
+
+  @override
+  String get tablesConfigSectionAdjustmentColumns => 'Adjustment columns';
 }

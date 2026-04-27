@@ -110,7 +110,7 @@ abstract class AppLocalizations {
   /// **'Conditions'**
   String get conditionScreenTitle;
 
-  /// No description provided for @tablesScreenTitle.
+  /// Title of the tables screen
   ///
   /// In en, this message translates to:
   /// **'Tables'**
@@ -769,6 +769,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target size'**
   String get labelTargetSize;
+
+  /// Tab label for trajectory table
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory'**
+  String get tabTrajectory;
+
+  /// Tab label for details table
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get tabDetails;
+
+  /// Tooltip for configure button
+  ///
+  /// In en, this message translates to:
+  /// **'Configure'**
+  String get tooltipConfigure;
+
+  /// Tooltip for share button
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get tooltipShare;
+
+  /// Column header for range/distance
+  ///
+  /// In en, this message translates to:
+  /// **'Range'**
+  String get columnRange;
+
+  /// Column header for time
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get columnTime;
+
+  /// Column header for velocity
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity'**
+  String get columnVelocity;
+
+  /// Column header for height
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get columnHeight;
+
+  /// Column header for drop
+  ///
+  /// In en, this message translates to:
+  /// **'Drop'**
+  String get columnDrop;
+
+  /// Column header for drop angle in degrees
+  ///
+  /// In en, this message translates to:
+  /// **'Drop°'**
+  String get columnDropAngle;
+
+  /// Column header for drop in clicks
+  ///
+  /// In en, this message translates to:
+  /// **'Drop'**
+  String get columnDropClicks;
+
+  /// Column header for wind
+  ///
+  /// In en, this message translates to:
+  /// **'Wind'**
+  String get columnWind;
+
+  /// Column header for wind angle in degrees
+  ///
+  /// In en, this message translates to:
+  /// **'Wind°'**
+  String get columnWindAngle;
+
+  /// Column header for wind in clicks
+  ///
+  /// In en, this message translates to:
+  /// **'Wind'**
+  String get columnWindClicks;
+
+  /// Column header for Mach number
+  ///
+  /// In en, this message translates to:
+  /// **'Mach'**
+  String get columnMach;
+
+  /// No description provided for @columnDrag.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag'**
+  String get columnDrag;
+
+  /// Column header for energy
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get columnEnergy;
+
+  /// No description provided for @tablesConfigSectionDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Range'**
+  String get tablesConfigSectionDistance;
+
+  /// No description provided for @tablesConfigDistanceStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start distance'**
+  String get tablesConfigDistanceStart;
+
+  /// No description provided for @tablesConfigDistanceEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End distance'**
+  String get tablesConfigDistanceEnd;
+
+  /// No description provided for @tablesConfigDistanceStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance step'**
+  String get tablesConfigDistanceStep;
+
+  /// No description provided for @tablesConfigSectionExtra.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra'**
+  String get tablesConfigSectionExtra;
+
+  /// No description provided for @tablesConfigShowZeroCrossingTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Show zero crossings table'**
+  String get tablesConfigShowZeroCrossingTable;
+
+  /// No description provided for @tablesConfigShowSubsonicTransition.
+  ///
+  /// In en, this message translates to:
+  /// **'Show subsonic transition'**
+  String get tablesConfigShowSubsonicTransition;
+
+  /// No description provided for @tablesConfigSectionVisibleColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible columns'**
+  String get tablesConfigSectionVisibleColumns;
+
+  /// No description provided for @tablesConfigSectionAdjustmentColumns.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment columns'**
+  String get tablesConfigSectionAdjustmentColumns;
 }
 
 class _AppLocalizationsDelegate
