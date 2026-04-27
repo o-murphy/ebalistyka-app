@@ -65,9 +65,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
                 }
               } catch (e) {
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+                showFeedback(context, 'Import failed: $e', isError: true);
               }
             },
           ),

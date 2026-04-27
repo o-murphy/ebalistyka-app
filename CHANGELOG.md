@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Refactored
 
+#### Code Quality — Dialog & snackbar helpers (#7.1, priority 8)
+- Added `showFeedback(context, message, {bool isError, Duration duration})` to `lib/shared/widgets/snackbars.dart`
+- Replaced 4 × inline `ScaffoldMessenger.showSnackBar` in `my_sights_screen`, `my_ammo_screen`, `my_profiles_screen`, `settings_screen` with `showFeedback(..., isError: true)`
+
 #### Code Quality — UI constants & divider widgets (#7.1, priority 9)
 - Created `lib/shared/constants/ui_dimensions.dart` — `kHorizontalPadding`, `kDefaultVerticalPadding`, `kTileDividerHeight`, `kSectionDividerHeight`, `kMultiBcRowCount`, `kDragTableRowCount`
 - Created `TileDivider` + `SectionDivider` widgets (`lib/shared/widgets/dividers.dart`)

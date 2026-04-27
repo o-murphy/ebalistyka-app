@@ -13,6 +13,7 @@ import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -131,9 +132,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+      showFeedback(context, 'Import failed: $e', isError: true);
     }
   }
 

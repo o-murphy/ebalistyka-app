@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -145,12 +146,10 @@ class SettingsScreen extends ConsumerWidget {
                         await EbcpService.restoreFromExport(file, ref);
                       } catch (e) {
                         if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${l10n.errorImportBackupFailed}: $e',
-                            ),
-                          ),
+                        showFeedback(
+                          context,
+                          '${l10n.errorImportBackupFailed}: $e',
+                          isError: true,
                         );
                       }
                     },
