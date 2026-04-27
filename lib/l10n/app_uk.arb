@@ -3,6 +3,7 @@
     "homeScreenTitle": "Дім",
     "conditionScreenTitle": "Умови",
     "tablesScreenTitle": "Таблиці",
+    "tableConfigScreenTitle": "Налаштування таблиці",
     "settingsScreenTitle": "Налаштування",
     "convertorsScreenTitle": "Конвертори",
     "lengthConvertorTitle": "Конвертер довжини",
@@ -94,6 +95,7 @@
     "labelPrivacyPolicy": "Політика конфіденційності",
     "labelVersion": "Версія",
     "labelChangelog": "Журнал змін",
+    "theme": "Тема",
     "themeSystem": "Системна",
     "themeDark": "Темна",
     "themeLight": "Світла",
@@ -137,5 +139,103 @@
     "tablesConfigShowZeroCrossingTable": "Відображати таблицю перетину нулів",
     "tablesConfigShowSubsonicTransition": "Відображати перехід на дозвук",
     "tablesConfigSectionVisibleColumns": "Відображати стовпці",
-    "tablesConfigSectionAdjustmentColumns": "Стовпці поправок"
+    "tablesConfigSectionAdjustmentColumns": "Стовпці поправок",
+    "tablesSectionTrajectory": "Траекторія",
+    "tablesSectionZeroCrossing": "Перетин нулів",
+    "buttonClose": "Закрити",
+    "weapon": "Зброя",
+    "name": "Назва",
+    "caliber": "Калібр",
+    "twist": "Крок нарізів",
+    "zeroDistance": "Дистанція пристрілки",
+    "cartridge": "Набій",
+    "zeroMv": "Швидкість пристрілюваної кулі",
+    "currentMv": "Поточна швидкість",
+    "projectile": "Снаряд",
+    "dragModel": "Модель опору",
+    "bc": "Балістичний коефіцієнт",
+    "length": "Довжина",
+    "diameter": "Діаметр",
+    "weight": "Вага",
+    "formFactor": "Коефіцієнт форми",
+    "sectionalDensity": "Поперечне навантаження",
+    "gyrostabilitySg": "Гіроскопічна стабільність (Sg)",
+    "conditions": "Умови",
+    "temperature": "Температура",
+    "humidity": "Вологість",
+    "pressure": "Тиск",
+    "windSpeed": "Швидкість вітру",
+    "windDirection": "Напрямок вітру",
+    "@weapon": {
+        "description": "Заголовок секції Зброя"
+    },
+    "@name": {
+        "description": "Поле назви зброї"
+    },
+    "@caliber": {
+        "description": "Поле калібру"
+    },
+    "@twist": {
+        "description": "Поле крутизни нарізів"
+    },
+    "@zeroDistance": {
+        "description": "Поле дистанції пристрілки"
+    },
+    "@cartridge": {
+        "description": "Заголовок секції Набій"
+    },
+    "@zeroMv": {
+        "description": "Поле нульової швидкості"
+    },
+    "@currentMv": {
+        "description": "Поле поточної швидкості"
+    },
+    "@projectile": {
+        "description": "Заголовок секції Снаряд"
+    },
+    "@dragModel": {
+        "description": "Поле моделі опору"
+    },
+    "@bc": {
+        "description": "Поле балістичного коефіцієнта"
+    },
+    "@length": {
+        "description": "Поле довжини снаряда"
+    },
+    "@diameter": {
+        "description": "Поле діаметра снаряда"
+    },
+    "@weight": {
+        "description": "Поле ваги снаряда"
+    },
+    "@formFactor": {
+        "description": "Поле коефіцієнта форми"
+    },
+    "@sectionalDensity": {
+        "description": "Поле поперечного навантаження"
+    },
+    "@gyrostabilitySg": {
+        "description": "Поле гіростабільності"
+    },
+    "@conditions": {
+        "description": "Заголовок секції Умови"
+    },
+    "@temperature": {
+        "description": "Поле температури"
+    },
+    "@humidity": {
+        "description": "Поле вологості"
+    },
+    "@pressure": {
+        "description": "Поле тиску"
+    },
+    "@windSpeed": {
+        "description": "Поле швидкості вітру"
+    },
+    "@windDirection": {
+        "description": "Поле напрямку вітру"
+    },
+    "errorZeroCrossingNotFound": "Перетини нуля в межах траєкторії не виявлені!",
+    "saveButton": "Зберегти",
+    "printButton": "Друкувати"
 }

@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tablesScreenTitle => 'Tables';
 
   @override
+  String get tableConfigScreenTitle => 'Table Configuration';
+
+  @override
   String get settingsScreenTitle => 'Settings';
 
   @override
@@ -292,6 +295,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelChangelog => 'Changelog';
 
   @override
+  String get theme => 'Theme';
+
+  @override
   String get themeSystem => 'System';
 
   @override
@@ -422,4 +428,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tablesConfigSectionAdjustmentColumns => 'Adjustment columns';
+
+  @override
+  String get tablesSectionTrajectory => 'Trajectory';
+
+  @override
+  String get tablesSectionZeroCrossing => 'Zero Crossings';
+
+  @override
+  String get buttonClose => 'Close';
+
+  @override
+  String get weapon => 'Weapon';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get caliber => 'Caliber';
+
+  @override
+  String get twist => 'Twist';
+
+  @override
+  String get zeroDistance => 'Zero distance';
+
+  @override
+  String get cartridge => 'Cartridge';
+
+  @override
+  String get zeroMv => 'Zero MV';
+
+  @override
+  String get currentMv => 'Current MV';
+
+  @override
+  String get projectile => 'Projectile';
+
+  @override
+  String get dragModel => 'Drag model';
+
+  @override
+  String get bc => 'BC';
+
+  @override
+  String get length => 'Length';
+
+  @override
+  String get diameter => 'Diameter';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get formFactor => 'Form factor';
+
+  @override
+  String get sectionalDensity => 'Sectional density';
+
+  @override
+  String get gyrostabilitySg => 'Gyrostability (Sg)';
+
+  @override
+  String get conditions => 'Conditions';
+
+  @override
+  String get temperature => 'Temperature';
+
+  @override
+  String get humidity => 'Humidity';
+
+  @override
+  String get pressure => 'Pressure';
+
+  @override
+  String get windSpeed => 'Wind speed';
+
+  @override
+  String get windDirection => 'Wind direction';
+
+  @override
+  String get errorZeroCrossingNotFound =>
+      'Zero crossings not found in the current trajectory range!';
+
+  @override
+  String get saveButton => 'Save';
+
+  @override
+  String get printButton => 'Print';
 }

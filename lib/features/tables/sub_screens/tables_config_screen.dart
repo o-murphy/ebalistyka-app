@@ -59,7 +59,7 @@ class TableConfigScreen extends ConsumerWidget {
     }
 
     return BaseScreen(
-      title: 'Table Configuration',
+      title: l10n.tableConfigScreenTitle,
       isSubscreen: true,
       body: ListView(
         children: [

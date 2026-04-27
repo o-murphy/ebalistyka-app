@@ -8,6 +8,8 @@
     "@tablesScreenTitle": {
         "description": "Title of the tables screen"
     },
+    "tableConfigScreenTitle": "Table Configuration",
+    "@tableConfigScreenTitle": {},
     "settingsScreenTitle": "Settings",
     "@settingsScreenTitle": {},
     "convertorsScreenTitle": "Convertors",
@@ -190,6 +192,8 @@
     "@labelVersion": {},
     "labelChangelog": "Changelog",
     "@labelChangelog": {},
+    "theme": "Theme",
+    "@theme": {},
     "themeSystem": "System",
     "@themeSystem": {},
     "themeDark": "Dark",
@@ -309,5 +313,109 @@
     "tablesConfigSectionVisibleColumns": "Visible columns",
     "@tablesConfigSectionVisibleColumns": {},
     "tablesConfigSectionAdjustmentColumns": "Adjustment columns",
-    "@tablesConfigSectionAdjustmentColumns": {}
+    "@tablesConfigSectionAdjustmentColumns": {},
+    "tablesSectionTrajectory": "Trajectory",
+    "@tablesSectionTrajectory": {},
+    "tablesSectionZeroCrossing": "Zero Crossings",
+    "@tablesSectionZeroCrossing": {},
+    "buttonClose": "Close",
+    "@buttonClose": {},
+    "weapon": "Weapon",
+    "name": "Name",
+    "caliber": "Caliber",
+    "twist": "Twist",
+    "zeroDistance": "Zero distance",
+    "cartridge": "Cartridge",
+    "zeroMv": "Zero MV",
+    "currentMv": "Current MV",
+    "projectile": "Projectile",
+    "dragModel": "Drag model",
+    "bc": "BC",
+    "length": "Length",
+    "diameter": "Diameter",
+    "weight": "Weight",
+    "formFactor": "Form factor",
+    "sectionalDensity": "Sectional density",
+    "gyrostabilitySg": "Gyrostability (Sg)",
+    "conditions": "Conditions",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "pressure": "Pressure",
+    "windSpeed": "Wind speed",
+    "windDirection": "Wind direction",
+    "@weapon": {
+        "description": "Weapon section title"
+    },
+    "@name": {
+        "description": "Weapon name field label"
+    },
+    "@caliber": {
+        "description": "Caliber field label"
+    },
+    "@twist": {
+        "description": "Twist rate field label"
+    },
+    "@zeroDistance": {
+        "description": "Zero distance field label"
+    },
+    "@cartridge": {
+        "description": "Cartridge section title"
+    },
+    "@zeroMv": {
+        "description": "Zero muzzle velocity field label"
+    },
+    "@currentMv": {
+        "description": "Current muzzle velocity field label"
+    },
+    "@projectile": {
+        "description": "Projectile section title"
+    },
+    "@dragModel": {
+        "description": "Drag model field label"
+    },
+    "@bc": {
+        "description": "Ballistic coefficient field label"
+    },
+    "@length": {
+        "description": "Bullet length field label"
+    },
+    "@diameter": {
+        "description": "Bullet diameter field label"
+    },
+    "@weight": {
+        "description": "Bullet weight field label"
+    },
+    "@formFactor": {
+        "description": "Form factor field label"
+    },
+    "@sectionalDensity": {
+        "description": "Sectional density field label"
+    },
+    "@gyrostabilitySg": {
+        "description": "Gyroscopic stability factor field label"
+    },
+    "@conditions": {
+        "description": "Conditions section title"
+    },
+    "@temperature": {
+        "description": "Temperature field label"
+    },
+    "@humidity": {
+        "description": "Humidity field label"
+    },
+    "@pressure": {
+        "description": "Pressure field label"
+    },
+    "@windSpeed": {
+        "description": "Wind speed field label"
+    },
+    "@windDirection": {
+        "description": "Wind direction field label"
+    },
+    "errorZeroCrossingNotFound": "Zero crossings not found in the current trajectory range!",
+    "@errorZeroCrossingNotFound": {},
+    "saveButton": "Save",
+    "@saveButton": {},
+    "printButton": "Print",
+    "@printButton": {}
 }

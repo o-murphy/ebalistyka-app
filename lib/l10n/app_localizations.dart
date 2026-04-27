@@ -116,6 +116,12 @@ abstract class AppLocalizations {
   /// **'Tables'**
   String get tablesScreenTitle;
 
+  /// No description provided for @tableConfigScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Table Configuration'**
+  String get tableConfigScreenTitle;
+
   /// No description provided for @settingsScreenTitle.
   ///
   /// In en, this message translates to:
@@ -662,6 +668,12 @@ abstract class AppLocalizations {
   /// **'Changelog'**
   String get labelChangelog;
 
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
   /// No description provided for @themeSystem.
   ///
   /// In en, this message translates to:
@@ -925,6 +937,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Adjustment columns'**
   String get tablesConfigSectionAdjustmentColumns;
+
+  /// No description provided for @tablesSectionTrajectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory'**
+  String get tablesSectionTrajectory;
+
+  /// No description provided for @tablesSectionZeroCrossing.
+  ///
+  /// In en, this message translates to:
+  /// **'Zero Crossings'**
+  String get tablesSectionZeroCrossing;
+
+  /// No description provided for @buttonClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get buttonClose;
+
+  /// Weapon section title
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon'**
+  String get weapon;
+
+  /// Weapon name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// Caliber field label
+  ///
+  /// In en, this message translates to:
+  /// **'Caliber'**
+  String get caliber;
+
+  /// Twist rate field label
+  ///
+  /// In en, this message translates to:
+  /// **'Twist'**
+  String get twist;
+
+  /// Zero distance field label
+  ///
+  /// In en, this message translates to:
+  /// **'Zero distance'**
+  String get zeroDistance;
+
+  /// Cartridge section title
+  ///
+  /// In en, this message translates to:
+  /// **'Cartridge'**
+  String get cartridge;
+
+  /// Zero muzzle velocity field label
+  ///
+  /// In en, this message translates to:
+  /// **'Zero MV'**
+  String get zeroMv;
+
+  /// Current muzzle velocity field label
+  ///
+  /// In en, this message translates to:
+  /// **'Current MV'**
+  String get currentMv;
+
+  /// Projectile section title
+  ///
+  /// In en, this message translates to:
+  /// **'Projectile'**
+  String get projectile;
+
+  /// Drag model field label
+  ///
+  /// In en, this message translates to:
+  /// **'Drag model'**
+  String get dragModel;
+
+  /// Ballistic coefficient field label
+  ///
+  /// In en, this message translates to:
+  /// **'BC'**
+  String get bc;
+
+  /// Bullet length field label
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get length;
+
+  /// Bullet diameter field label
+  ///
+  /// In en, this message translates to:
+  /// **'Diameter'**
+  String get diameter;
+
+  /// Bullet weight field label
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// Form factor field label
+  ///
+  /// In en, this message translates to:
+  /// **'Form factor'**
+  String get formFactor;
+
+  /// Sectional density field label
+  ///
+  /// In en, this message translates to:
+  /// **'Sectional density'**
+  String get sectionalDensity;
+
+  /// Gyroscopic stability factor field label
+  ///
+  /// In en, this message translates to:
+  /// **'Gyrostability (Sg)'**
+  String get gyrostabilitySg;
+
+  /// Conditions section title
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get conditions;
+
+  /// Temperature field label
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get temperature;
+
+  /// Humidity field label
+  ///
+  /// In en, this message translates to:
+  /// **'Humidity'**
+  String get humidity;
+
+  /// Pressure field label
+  ///
+  /// In en, this message translates to:
+  /// **'Pressure'**
+  String get pressure;
+
+  /// Wind speed field label
+  ///
+  /// In en, this message translates to:
+  /// **'Wind speed'**
+  String get windSpeed;
+
+  /// Wind direction field label
+  ///
+  /// In en, this message translates to:
+  /// **'Wind direction'**
+  String get windDirection;
+
+  /// No description provided for @errorZeroCrossingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Zero crossings not found in the current trajectory range!'**
+  String get errorZeroCrossingNotFound;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveButton;
+
+  /// No description provided for @printButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get printButton;
 }
 
 class _AppLocalizationsDelegate

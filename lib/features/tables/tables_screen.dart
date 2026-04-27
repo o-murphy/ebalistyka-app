@@ -65,10 +65,13 @@ class TablesScreen extends ConsumerWidget {
     final brightness = Theme.of(context).brightness;
     final isDarkMode = brightness == Brightness.dark;
 
+    final l10n = AppLocalizations.of(context)!;
+
     await TableHtmlExporter.share(
       details: details,
       tables: vmState,
       darkMode: isDarkMode,
+      l10n: l10n,
     );
   }
 }

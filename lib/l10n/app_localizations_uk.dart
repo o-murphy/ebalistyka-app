@@ -18,6 +18,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get tablesScreenTitle => 'Таблиці';
 
   @override
+  String get tableConfigScreenTitle => 'Налаштування таблиці';
+
+  @override
   String get settingsScreenTitle => 'Налаштування';
 
   @override
@@ -291,6 +294,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get labelChangelog => 'Журнал змін';
 
   @override
+  String get theme => 'Тема';
+
+  @override
   String get themeSystem => 'Системна';
 
   @override
@@ -424,4 +430,92 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get tablesConfigSectionAdjustmentColumns => 'Стовпці поправок';
+
+  @override
+  String get tablesSectionTrajectory => 'Траекторія';
+
+  @override
+  String get tablesSectionZeroCrossing => 'Перетин нулів';
+
+  @override
+  String get buttonClose => 'Закрити';
+
+  @override
+  String get weapon => 'Зброя';
+
+  @override
+  String get name => 'Назва';
+
+  @override
+  String get caliber => 'Калібр';
+
+  @override
+  String get twist => 'Крок нарізів';
+
+  @override
+  String get zeroDistance => 'Дистанція пристрілки';
+
+  @override
+  String get cartridge => 'Набій';
+
+  @override
+  String get zeroMv => 'Швидкість пристрілюваної кулі';
+
+  @override
+  String get currentMv => 'Поточна швидкість';
+
+  @override
+  String get projectile => 'Снаряд';
+
+  @override
+  String get dragModel => 'Модель опору';
+
+  @override
+  String get bc => 'Балістичний коефіцієнт';
+
+  @override
+  String get length => 'Довжина';
+
+  @override
+  String get diameter => 'Діаметр';
+
+  @override
+  String get weight => 'Вага';
+
+  @override
+  String get formFactor => 'Коефіцієнт форми';
+
+  @override
+  String get sectionalDensity => 'Поперечне навантаження';
+
+  @override
+  String get gyrostabilitySg => 'Гіроскопічна стабільність (Sg)';
+
+  @override
+  String get conditions => 'Умови';
+
+  @override
+  String get temperature => 'Температура';
+
+  @override
+  String get humidity => 'Вологість';
+
+  @override
+  String get pressure => 'Тиск';
+
+  @override
+  String get windSpeed => 'Швидкість вітру';
+
+  @override
+  String get windDirection => 'Напрямок вітру';
+
+  @override
+  String get errorZeroCrossingNotFound =>
+      'Перетини нуля в межах траєкторії не виявлені!';
+
+  @override
+  String get saveButton => 'Зберегти';
+
+  @override
+  String get printButton => 'Друкувати';
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/consts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -17,12 +18,14 @@ class TableHtmlExporter {
   static Future<void> share({
     required DetailsTableData? details,
     required TrajectoryTablesUiReady tables,
+    required AppLocalizations l10n,
     bool darkMode = false,
   }) async {
     final html = _buildHtml(
       details: details,
       tables: tables,
       darkMode: darkMode,
+      l10n: l10n,
     );
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/trajectory_table.html');
@@ -38,8 +41,8 @@ class TableHtmlExporter {
           ),
         ],
         subject: details != null
-            ? '${details.weaponName} — Trajectory'
-            : 'Trajectory',
+            ? '${details.weaponName} — ${l10n.tabTrajectory}'
+            : l10n.tabTrajectory,
       );
     } else {
       // Desktop: open HTML in the default browser
@@ -56,10 +59,11 @@ class TableHtmlExporter {
     required DetailsTableData? details,
     required TrajectoryTablesUiReady tables,
     required bool darkMode,
+    required AppLocalizations l10n,
   }) {
     final title = details != null
-        ? '${_esc(details.weaponName)} — Trajectory'
-        : 'Trajectory';
+        ? '${_esc(details.weaponName)} — ${l10n.tabTrajectory}'
+        : l10n.tabTrajectory;
     final sb = StringBuffer()
       ..writeln('<!DOCTYPE html>')
       ..writeln('<html lang="en">')
@@ -80,19 +84,23 @@ class TableHtmlExporter {
       ..writeln('<div class="toolbar" id="toolbar">')
       ..writeln('  <span class="toolbar-title">${_esc(title)}</span>')
       ..writeln('  <div class="toolbar-actions">')
-      ..writeln('    <button onclick="toggleTheme()">🌓 Theme</button>')
-      ..writeln('    <button onclick="saveHtml()">Save</button>')
-      ..writeln('    <button onclick="window.print()">Print</button>')
+      ..writeln('    <button onclick="toggleTheme()">🌓 ${l10n.theme}</button>')
+      ..writeln('    <button onclick="saveHtml()">${l10n.saveButton}</button>')
+      ..writeln(
+        '    <button onclick="window.print()">${l10n.printButton}</button>',
+      )
       ..writeln('  </div>')
       ..writeln('</div>');
 
-    if (details != null) sb.write(_buildDetails(details));
+    if (details != null) sb.write(_buildDetails(details, l10n: l10n));
 
     final zeros = tables.zeroCrossings;
     if (zeros != null && zeros.distanceHeaders.isNotEmpty) {
-      sb.write(_buildTable(zeros, title: 'Zero Crossings'));
+      sb.write(_buildTable(zeros, title: l10n.tablesSectionZeroCrossing));
     }
-    sb.write(_buildTable(tables.mainTable, title: 'Trajectory'));
+    sb.write(
+      _buildTable(tables.mainTable, title: l10n.tablesSectionTrajectory),
+    );
 
     sb.writeln('</body>');
     sb.writeln('</html>');
@@ -101,26 +109,29 @@ class TableHtmlExporter {
 
   // ── Details section ────────────────────────────────────────────────────────
 
-  static String _buildDetails(DetailsTableData d) {
+  static String _buildDetails(
+    DetailsTableData d, {
+    required AppLocalizations l10n,
+  }) {
     final sb = StringBuffer()
       ..writeln('<section class="details">')
       ..writeln('<h1>${_esc(d.weaponName)}</h1>');
 
     // Rifle
     sb.writeln('<div class="card">');
-    sb.writeln('<h2>Weapon</h2><table class="info">');
-    sb.write(_row('Name', d.weaponName));
-    if (d.caliber != null) sb.write(_row('Caliber', d.caliber!));
-    if (d.twist != null) sb.write(_row('Twist', d.twist!));
-    if (d.zeroDist != null) sb.write(_row('Zero distance', d.zeroDist!));
+    sb.writeln('<h2>${l10n.weapon}</h2><table class="info">');
+    sb.write(_row(l10n.name, d.weaponName));
+    if (d.caliber != null) sb.write(_row(l10n.caliber, d.caliber!));
+    if (d.twist != null) sb.write(_row(l10n.twist, d.twist!));
+    if (d.zeroDist != null) sb.write(_row(l10n.zeroDistance, d.zeroDist!));
     sb.writeln('</table></div>');
 
     // Cartridge
     if (d.zeroMv != null || d.currentMv != null) {
       sb.writeln('<div class="card">');
-      sb.writeln('<h2>Cartridge</h2><table class="info">');
-      if (d.zeroMv != null) sb.write(_row('Zero MV', d.zeroMv!));
-      if (d.currentMv != null) sb.write(_row('Current MV', d.currentMv!));
+      sb.writeln('<h2>${l10n.cartridge}</h2><table class="info">');
+      if (d.zeroMv != null) sb.write(_row(l10n.zeroMv, d.zeroMv!));
+      if (d.currentMv != null) sb.write(_row(l10n.currentMv, d.currentMv!));
       sb.writeln('</table></div>');
     }
 
@@ -136,18 +147,18 @@ class TableHtmlExporter {
         d.gyroStability != null;
     if (hasProj) {
       sb.writeln('<div class="card">');
-      sb.writeln('<h2>Projectile</h2><table class="info">');
-      if (d.dragModel != null) sb.write(_row('Drag model', d.dragModel!));
-      if (d.bc != null) sb.write(_row('BC', d.bc!));
-      if (d.bulletLen != null) sb.write(_row('Length', d.bulletLen!));
-      if (d.bulletDiam != null) sb.write(_row('Diameter', d.bulletDiam!));
-      if (d.bulletWeight != null) sb.write(_row('Weight', d.bulletWeight!));
-      if (d.formFactor != null) sb.write(_row('Form factor', d.formFactor!));
+      sb.writeln('<h2>${l10n.projectile}</h2><table class="info">');
+      if (d.dragModel != null) sb.write(_row(l10n.dragModel, d.dragModel!));
+      if (d.bc != null) sb.write(_row(l10n.bc, d.bc!));
+      if (d.bulletLen != null) sb.write(_row(l10n.length, d.bulletLen!));
+      if (d.bulletDiam != null) sb.write(_row(l10n.diameter, d.bulletDiam!));
+      if (d.bulletWeight != null) sb.write(_row(l10n.weight, d.bulletWeight!));
+      if (d.formFactor != null) sb.write(_row(l10n.formFactor, d.formFactor!));
       if (d.sectionalDensity != null) {
-        sb.write(_row('Sectional density', d.sectionalDensity!));
+        sb.write(_row(l10n.sectionalDensity, d.sectionalDensity!));
       }
       if (d.gyroStability != null) {
-        sb.write(_row('Gyrostability (Sg)', d.gyroStability!));
+        sb.write(_row(l10n.gyrostabilitySg, d.gyroStability!));
       }
       sb.writeln('</table></div>');
     }
@@ -161,12 +172,13 @@ class TableHtmlExporter {
         d.windDir != null;
     if (hasCond) {
       sb.writeln('<div class="card">');
-      sb.writeln('<h2>Conditions</h2><table class="info">');
-      if (d.temperature != null) sb.write(_row('Temperature', d.temperature!));
-      if (d.humidity != null) sb.write(_row('Humidity', d.humidity!));
-      if (d.pressure != null) sb.write(_row('Pressure', d.pressure!));
-      if (d.windSpeed != null) sb.write(_row('Wind speed', d.windSpeed!));
-      if (d.windDir != null) sb.write(_row('Wind direction', d.windDir!));
+      sb.writeln('<h2>${l10n.conditions}</h2><table class="info">');
+      if (d.temperature != null)
+        sb.write(_row(l10n.temperature, d.temperature!));
+      if (d.humidity != null) sb.write(_row(l10n.humidity, d.humidity!));
+      if (d.pressure != null) sb.write(_row(l10n.pressure, d.pressure!));
+      if (d.windSpeed != null) sb.write(_row(l10n.windSpeed, d.windSpeed!));
+      if (d.windDir != null) sb.write(_row(l10n.windDirection, d.windDir!));
       sb.writeln('</table></div>');
     }
 

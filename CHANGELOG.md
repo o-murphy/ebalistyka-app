@@ -64,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Setup flutter_localizations** - added `flutter_localizations` dependency
 - **Settings screen (UA)** - Settings screen and it's subscreens localization
 - **Convertors screen (UA)** - Convertors screen and all convertors subscreens localization
-- **Settings screen (UA)** - Settongs screen and Settings config screen localization
+- **Settings screen (UA)** - Settings screen and it's subscreens localization
+- **Html trajectory report (UA)** - uses app localization on export
 
 
 ## [0.1.2] - 2026-04-26
