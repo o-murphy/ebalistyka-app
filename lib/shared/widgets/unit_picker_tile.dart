@@ -30,6 +30,12 @@ class UnitPickerListTile extends StatelessWidget {
       title: Text(title ?? label ?? ''),
       trailing: UnitPickerButton(
         current: current,
+        options: options,
+        label: label ?? title ?? 'Select Unit',
+      ),
+      onTap: () => showUnitPicker(
+        context,
+        current: current,
         onChanged: onChanged,
         options: options,
         label: label ?? title ?? 'Select Unit',

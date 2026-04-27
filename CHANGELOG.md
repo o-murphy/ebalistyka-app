@@ -55,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Velocity, angular, and target-distance converters untouched (unique layouts)
 - All provider names unchanged — zero impact on call sites
 
+#### Unit picker
+- `UnitPickerTile` and `UnitPickerButton` share reusable `showUnitPicker`
+
 ### Added
 
 #### Localization
