@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+#### UI
+- **Navigation bar labels** — applied `NavigationBarTheme` with `fontSize: 11` and `TextOverflow.ellipsis` so long localized labels truncate gracefully instead of overflowing
+
 ### Fixed
 
 #### Export / Import
@@ -17,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **A7P zero offset import** — removed erroneous `getPayloadOffsets` call on import; a7p stores offsets as dimensionless click counts with no click-size metadata, so the angular offset cannot be reconstructed at import time and is intentionally left at default
 
 ### Refactored
+
+#### Code Quality — Table editor generalization (#7.1, priority 3)
+- Extracted `TwoColumnTableEditorScreen` widget (`lib/shared/widgets/two_column_table_editor.dart`) — generic two-column numeric table with `col1Signed`, `col1RequirePositive`, `readOnly`, `headerChild` (live preview slot), `onRowsParsed` (change callback), `footerText`
+- `multi_bc_editor_screen.dart`: removed internal `_TwoColumnTableEditorScreen` + all sub-widgets; 400 → 110 lines
+- `powder_sens_table_editor_screen.dart`: replaced `_PowderSensEditorScreen` with `TwoColumnTableEditorScreen`; converted to `ConsumerStatefulWidget` for live preview state; 450 → 195 lines
+- ~545 LOC removed across two files
 
 #### Code Quality — Wizard screens deduplication (#7.1, priority 4)
 - Extracted `WizardActionBar` widget (`lib/shared/widgets/wizard_action_bar.dart`) — replaces three identical private `_ActionBar` classes in weapon, sight, and ammo wizard screens

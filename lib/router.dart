@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/features/convertors/sub_screens/convertors_sub_screens.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_screen.dart';
@@ -401,27 +402,42 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(child: widget.shell),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: widget.shell.currentIndex,
-        onDestinationSelected: _onTabSelected,
-        destinations: const [
-          NavigationDestination(icon: Icon(IconDef.home), label: 'Home'),
-          NavigationDestination(
-            icon: Icon(IconDef.conditions),
-            label: 'Conditions',
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          labelTextStyle: WidgetStateProperty.all(
+            const TextStyle(fontSize: 11, overflow: TextOverflow.ellipsis),
           ),
-          NavigationDestination(icon: Icon(IconDef.tables), label: 'Tables'),
-          NavigationDestination(
-            icon: Icon(IconDef.convertors),
-            label: 'Convertors',
-          ),
-          NavigationDestination(
-            icon: Icon(IconDef.settings),
-            label: 'Settings',
-          ),
-        ],
+        ),
+        child: NavigationBar(
+          selectedIndex: widget.shell.currentIndex,
+          onDestinationSelected: _onTabSelected,
+          destinations: [
+            NavigationDestination(
+              icon: Icon(IconDef.home),
+              label: l10n.homeScreenTitle,
+            ),
+            NavigationDestination(
+              icon: Icon(IconDef.conditions),
+              label: l10n.conditionScreenTitle,
+            ),
+            NavigationDestination(
+              icon: Icon(IconDef.tables),
+              label: l10n.tablesScreenTitle,
+            ),
+            NavigationDestination(
+              icon: Icon(IconDef.convertors),
+              label: l10n.convertorsScreenTitle,
+            ),
+            NavigationDestination(
+              icon: Icon(IconDef.settings),
+              label: l10n.settingsScreenTitle,
+            ),
+          ],
+        ),
       ),
     );
   }

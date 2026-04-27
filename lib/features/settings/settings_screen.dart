@@ -294,22 +294,22 @@ class _ThemeSelector extends StatelessWidget {
         ButtonSegment(
           value: ThemeMode.system,
           icon: Icon(Icons.brightness_auto_outlined),
-          label: Text(l10n.themeSystem),
+          label: Text(l10n.themeSystem, overflow: TextOverflow.ellipsis),
         ),
         ButtonSegment(
           value: ThemeMode.light,
           icon: Icon(Icons.light_mode_outlined),
-          label: Text(l10n.themeLight),
+          label: Text(l10n.themeLight, overflow: TextOverflow.ellipsis),
         ),
         ButtonSegment(
           value: ThemeMode.dark,
           icon: Icon(Icons.dark_mode_outlined),
-          label: Text(l10n.themeDark),
+          label: Text(l10n.themeDark, overflow: TextOverflow.ellipsis),
         ),
       ],
       selected: {current},
       onSelectionChanged: (s) => onChanged(s.first),
-      style: const ButtonStyle(
+      style: ButtonStyle(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),

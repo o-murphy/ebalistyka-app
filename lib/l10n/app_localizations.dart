@@ -98,6 +98,24 @@ abstract class AppLocalizations {
     Locale('uk'),
   ];
 
+  /// No description provided for @homeScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeScreenTitle;
+
+  /// No description provided for @conditionScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get conditionScreenTitle;
+
+  /// No description provided for @tablesScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tables'**
+  String get tablesScreenTitle;
+
   /// No description provided for @settingsScreenTitle.
   ///
   /// In en, this message translates to:

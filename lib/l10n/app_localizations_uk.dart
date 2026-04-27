@@ -9,6 +9,15 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get homeScreenTitle => 'Дім';
+
+  @override
+  String get conditionScreenTitle => 'Умови';
+
+  @override
+  String get tablesScreenTitle => 'Таблиці';
+
+  @override
   String get settingsScreenTitle => 'Налаштування';
 
   @override

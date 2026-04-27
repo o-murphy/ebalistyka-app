@@ -1,5 +1,11 @@
 {
     "@@locale": "en",
+    "homeScreenTitle": "Home",
+    "@homeScreenTitle": {},
+    "conditionScreenTitle": "Conditions",
+    "@conditionScreenTitle": {},
+    "tablesScreenTitle": "Tables",
+    "@tablesScreenTitle": {},
     "settingsScreenTitle": "Settings",
     "@settingsScreenTitle": {},
     "convertorsScreenTitle": "Convertors",

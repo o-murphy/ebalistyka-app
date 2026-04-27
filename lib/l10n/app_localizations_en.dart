@@ -9,6 +9,15 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get homeScreenTitle => 'Home';
+
+  @override
+  String get conditionScreenTitle => 'Conditions';
+
+  @override
+  String get tablesScreenTitle => 'Tables';
+
+  @override
   String get settingsScreenTitle => 'Settings';
 
   @override
