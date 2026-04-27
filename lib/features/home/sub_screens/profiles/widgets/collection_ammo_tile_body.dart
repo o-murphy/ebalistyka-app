@@ -75,7 +75,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "G1 BC = ${ammo.bcG1.toFixedSafe(3)}",
+                              "G1 BC = ${ammo.bcG1 > 0 ? ammo.bcG1.toFixedSafe(3) : nullStr}",
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],
@@ -85,7 +85,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "G1 BC = ${ammo.bcG1.toFixedSafe(3)}",
+                              "G7 BC = ${ammo.bcG7 > 0 ? ammo.bcG7.toFixedSafe(3) : nullStr}",
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],
