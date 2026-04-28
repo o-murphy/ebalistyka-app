@@ -297,7 +297,7 @@ Vertically scrollable set of compact tables (target ± 2 steps, 11 rows).
 
 > Opened from **Shot details** button on Home.
 
-Full read-only list of current shot parameters. Sections: Velocity, Energy, Stability (Miller Sg), Trajectory. All values unit-aware via `ShotDetailsViewModel`.
+Full read-only list of current shot parameters. Sections: Velocity, Energy, Stability (Miller Sg), Trajectory. All values unit-aware via `ShotInfoViewModel`.
 
 ---
 
@@ -416,7 +416,7 @@ GSF shown in Shot Details screen and as info row on Home Page 1.
 ├─────────────────────────────────────────┤
 │           ViewModels                     │
 │  HomeViewModel · ConditionsViewModel     │
-│  TablesViewModel · ShotDetailsViewModel  │
+│  TablesViewModel · ShotInfoViewModel  │
 │  (sealed UiState classes, formatted)     │
 ├─────────────────────────────────────────┤
 │        Formatting                        │
@@ -517,7 +517,7 @@ Owner (singleton, token="local")
 | ---------------------------- | --------------------------------------------------- |
 | `shotContextProvider`        | `ShotContext { profile, conditions }` — for VMs     |
 | `homeVmProvider`             | `HomeUiState` (sealed: Loading/Ready/Error)         |
-| `shotDetailsVmProvider`      | `ShotDetailsUiState` (sealed)                       |
+| `ShotInfoVMProvider`      | `ShotInfoUiState` (sealed)                       |
 | `trajectoryTablesVmProvider` | `TrajectoryTablesUiState` (sealed)                  |
 | `ballisticsServiceProvider`  | FFI-backed `BallisticsService`                      |
 | `unitFormatterProvider`      | `UnitFormatter` (depends on `unitSettingsProvider`) |
@@ -605,7 +605,7 @@ ObjectBox database at `~/.eBalistyka/objectbox/`. Single transaction for all CRU
 | Convertors → MIL/MOA          | ✅      |                                                                         |
 | Convertors → Torque           | ✅      |                                                                         |
 | Convertors → Distance         | ⏳      | stub                                                                    |
-| Shot Details                  | ✅      | 4 sections via `ShotDetailsViewModel`                                   |
+| Shot Details                  | ✅      | 4 sections via `ShotInfoViewModel`                                   |
 | ProfilesScreen                | ✅      | PageView, paging, FAB, per-card callbacks, export/import                |
 | WeaponWizardScreen            | ✅      | Caliber readonly from collection; required highlighting                 |
 | AmmoWizardScreen              | ✅      | Full: drag model, BC/custom table, MV, powder sens, zero cond, coriolis |
@@ -723,7 +723,7 @@ See [RECALC_REFACTORING.md](RECALC_REFACTORING.md) for detailed migration notes.
 ### Post-Refactoring Improvements ✅ (REFACTORING_PLAN_2.md — Doc #2)
 
 - Phase 1: Feature-first directory restructure (72 files moved, 244 tests pass)
-- Phase 2: `ShotDetailsViewModel` — legacy provider eliminated
+- Phase 2: `ShotInfoViewModel` — legacy provider eliminated
 - Phase 3: FFI enum wrappers — resolved by Phase 4
 - Phase 4: ffigen ^20 update — proper Dart enums generated
 - Phase 5: Strict dimension typing — per-dimension enums, `Dimension<T,U>` parameterized
@@ -885,7 +885,7 @@ Phase 8         ✅  Tables Screen + Configure
 Phase 5.5       ✅  QuickActionsPanel MVP (showUnitEditDialog)
 Phase 6         ✅  Home Screen bottom block (3 pages)
 Refactor        ✅  REFACTORING_PLAN (Phases 0–5): MVVM + UnitFormatter + BallisticsService
-Refactor 2      ✅  REFACTORING_PLAN_2 (Phases 1–5): feature-first, ShotDetailsVM, FFI enums, dim typing
+Refactor 2      ✅  REFACTORING_PLAN_2 (Phases 1–5): feature-first, ShotInfoVM, FFI enums, dim typing
 ObjectBox       ✅  OBJECTBOX_MIGRATION: JsonFileStorage → ObjectBox; all extensions
 Phase A7P       ✅  packages/a7p + A7pService + import/export UI
 Phase 11        ✅  All wizard screens (Weapon/Ammo/Sight) + collection screens + ProfilesScreen

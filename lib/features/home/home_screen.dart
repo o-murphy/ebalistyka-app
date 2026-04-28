@@ -250,7 +250,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           ),
                                         ],
                                         onTopPressed: () =>
-                                            context.push(Routes.shotDetails),
+                                            context.push(Routes.shotInfo),
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

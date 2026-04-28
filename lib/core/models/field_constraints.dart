@@ -135,7 +135,7 @@ abstract final class FC {
     rawUnit: Unit.degree,
     minRaw: -90.0,
     maxRaw: 90.0,
-    stepRaw: 1.0,
+    stepRaw: 0.1,
     accuracy: 1,
   );
 

@@ -201,5 +201,9 @@
     "sectionTrajectory": "Траекторія",
     "energyAtTarget": "Енергія біля цілі",
     "energyAtMuzzle": "Енергія при початковій швидкості",
-    "sectionGyrostabilitySg": "Гіроскопічна стабільність"
+    "sectionGyrostabilitySg": "Гіроскопічна стабільність",
+    "apexHeight": "Висота траекторії",
+    "apexDistance": "Дистанція найвищої траекторії",
+    "windage": "Вітрознос",
+    "timeToTarget": "Час до цілі"
 }

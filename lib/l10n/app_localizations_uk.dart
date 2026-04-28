@@ -619,4 +619,16 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sectionGyrostabilitySg => 'Гіроскопічна стабільність';
+
+  @override
+  String get apexHeight => 'Висота траекторії';
+
+  @override
+  String get apexDistance => 'Дистанція найвищої траекторії';
+
+  @override
+  String get windage => 'Вітрознос';
+
+  @override
+  String get timeToTarget => 'Час до цілі';
 }

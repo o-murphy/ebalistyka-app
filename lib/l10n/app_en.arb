@@ -481,5 +481,13 @@
     "energyAtMuzzle": "Energy at muzzle velocity",
     "@energyAtMuzzle": {},
     "sectionGyrostabilitySg": "Gyroscopic stability",
-    "@sectionGyrostabilitySg": {}
+    "@sectionGyrostabilitySg": {},
+    "apexHeight": "Trajectory apex",
+    "@apexHeight": {},
+    "apexDistance": "Trajectory apex distance",
+    "@apexDistance": {},
+    "windage": "Windage",
+    "@windage": {},
+    "timeToTarget": "Time to target",
+    "@timeToTarget": {}
 }

@@ -40,7 +40,7 @@ class UnitFormatterImpl implements UnitFormatter {
   String pressure(Pressure dim) => _fmt(dim, FC.pressure, _u.pressureUnit);
 
   @override
-  String drop(Distance dim) => _fmt(dim, FC.drop, _u.dropUnit);
+  String drop(Distance? dim) => _fmt(dim, FC.drop, _u.dropUnit);
 
   @override
   String windage(Distance dim) => drop(dim);

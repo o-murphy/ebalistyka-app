@@ -8,7 +8,7 @@ abstract interface class UnitFormatter {
   String distance(Distance? dim); // "300 m"
   String temperature(Temperature dim); // "15 °C"
   String pressure(Pressure dim); // "1013 hPa"
-  String drop(Distance dim); // "−12.5 cm"
+  String drop(Distance? dim); // "−12.5 cm"
   String windage(Distance dim); // "3.2 cm"
   String adjustment(Angular dim); // "3.45 MIL"
   String energy(Energy? dim); // "4200 J"

@@ -617,4 +617,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionGyrostabilitySg => 'Gyroscopic stability';
+
+  @override
+  String get apexHeight => 'Trajectory apex';
+
+  @override
+  String get apexDistance => 'Trajectory apex distance';
+
+  @override
+  String get windage => 'Windage';
+
+  @override
+  String get timeToTarget => 'Time to target';
 }

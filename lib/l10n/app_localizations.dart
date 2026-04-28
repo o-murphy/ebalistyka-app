@@ -1309,6 +1309,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gyroscopic stability'**
   String get sectionGyrostabilitySg;
+
+  /// No description provided for @apexHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory apex'**
+  String get apexHeight;
+
+  /// No description provided for @apexDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory apex distance'**
+  String get apexDistance;
+
+  /// No description provided for @windage.
+  ///
+  /// In en, this message translates to:
+  /// **'Windage'**
+  String get windage;
+
+  /// No description provided for @timeToTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to target'**
+  String get timeToTarget;
 }
 
 class _AppLocalizationsDelegate

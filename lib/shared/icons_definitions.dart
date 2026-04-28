@@ -9,6 +9,7 @@ class IconDef {
   static const IconData weigth = Icons.scale_outlined;
   static const IconData caliber = Icons.circle_outlined;
   static const IconData height = Icons.height_outlined;
+  static const IconData apex = Icons.architecture_outlined;
   static const IconData horizontalOffset = Icons.height_outlined;
   static const IconData grain = Icons.grain_outlined;
   static const IconData dragModel = Icons.trending_up_outlined;
@@ -24,7 +25,7 @@ class IconDef {
   static const IconData gyrostability = Icons.rotate_right_outlined;
   static const IconData angle = Icons.square_foot_outlined;
   static const IconData windSpeed = Icons.air_outlined;
-  static const IconData machSpeed = Icons.graphic_eq_outlined;
+  static const IconData speedOfSound = Icons.graphic_eq_outlined;
   static const IconData magnificationMin = Icons.zoom_out_outlined;
   static const IconData magnificationMax = Icons.zoom_in_outlined;
   static const IconData powderTemperature =

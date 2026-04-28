@@ -10,12 +10,12 @@ import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/features/home/shot_details_vm.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 
-class ShotDetailsScreen extends ConsumerWidget {
-  const ShotDetailsScreen({super.key});
+class ShotInfoScreen extends ConsumerWidget {
+  const ShotInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(shotDetailsVmProvider);
+    final state = ref.watch(shotInfoVmProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
@@ -29,9 +29,9 @@ class ShotDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, ShotDetailsUiState state) {
-    if (state is! ShotDetailsReady) {
-      if (state is ShotDetailsError) {
+  Widget _buildContent(BuildContext context, ShotInfoUiState state) {
+    if (state is! ShotInfoReady) {
+      if (state is ShotInfoError) {
         return EmptyStatePlaceholder(type: state.type, message: state.message);
       }
       return const Center(child: CircularProgressIndicator());
@@ -53,7 +53,7 @@ class ShotDetailsScreen extends ConsumerWidget {
           value: state.zeroMv,
         ),
         InfoListTile(
-          icon: IconDef.machSpeed,
+          icon: IconDef.speedOfSound,
           label: l10n.speedOfSound,
           value: state.speedOfSound,
         ),
@@ -90,22 +90,22 @@ class ShotDetailsScreen extends ConsumerWidget {
         ),
         InfoListTile(
           icon: IconDef.height,
-          label: 'Height at target',
-          value: state.heightAtTarget,
+          label: l10n.apexHeight,
+          value: state.apexHeight,
         ),
         InfoListTile(
-          icon: Icons.architecture_outlined,
-          label: 'Max height distance',
+          icon: IconDef.apex,
+          label: l10n.apexDistance,
           value: state.maxHeightDistance,
         ),
         InfoListTile(
           icon: IconDef.windage,
-          label: 'Windage',
+          label: l10n.windage,
           value: state.windage,
         ),
         InfoListTile(
           icon: IconDef.time,
-          label: 'Time to target',
+          label: l10n.timeToTarget,
           value: state.timeToTarget,
         ),
         const SizedBox(height: 16),

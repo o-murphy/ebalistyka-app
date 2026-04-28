@@ -29,7 +29,7 @@ abstract final class Routes {
   static const settings = '/settings';
 
   // Home stack — shot info
-  static const shotDetails = '/home/shot-details';
+  static const shotInfo = '/home/shot-details';
   static const reticleView = '/home/reticle-view';
 
   // Profile (profiles) stack
@@ -103,7 +103,7 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'shot-details',
-                  builder: (_, _) => const ShotDetailsScreen(),
+                  builder: (_, _) => const ShotInfoScreen(),
                 ),
                 GoRoute(
                   path: 'reticle-view',

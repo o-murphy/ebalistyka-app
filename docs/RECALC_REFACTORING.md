@@ -17,7 +17,7 @@ recalcCoordinatorProvider
 ├── watches reticleSettingsProvider
 └── triggers recalculate() on all 3 ViewModels
     ├── homeVmProvider
-    ├── shotDetailsVmProvider
+    ├── ShotInfoVMProvider
     └── trajectoryTablesVmProvider
 ```
 

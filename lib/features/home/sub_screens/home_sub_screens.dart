@@ -1,4 +1,4 @@
-export 'shot_details_screen.dart';
+export 'shot_info_screen.dart';
 export 'my_profiles_screen.dart';
 export 'my_ammo_screen.dart';
 export 'my_sights_screen.dart';
