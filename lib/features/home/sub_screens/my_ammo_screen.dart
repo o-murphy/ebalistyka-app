@@ -3,6 +3,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/router.dart';
@@ -31,91 +32,99 @@ class MyAmmoScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Weapon? weapon,
-  ) => showActionSheet(
-    context,
-    title: 'Add Ammo',
-    entries: [
-      ActionSheetItem(
-        icon: IconDef.addCircle,
-        title: 'Create new',
-        onTap: () async {
-          final result = await context.push<Ammo?>(
-            Routes.ammoCreate,
-            extra: weapon?.caliberInch,
-          );
-          if (result != null && context.mounted) {
-            await ref.read(appStateProvider.notifier).saveAmmo(result);
-          }
-        },
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select cartridge from collection',
-        onTap: () async {
-          final template = await context.push<Ammo?>(
-            Routes.cartridgeCollection,
-            extra: weapon?.caliberInch,
-          );
-          if (template == null || !context.mounted) return;
-          final result = await context.push<Ammo?>(
-            Routes.profileEditAmmo,
-            extra: (
-              template,
-              template.caliberInch > 0 ? template.caliberInch : null,
-            ),
-          );
-          if (result != null && context.mounted) {
-            await ref.read(appStateProvider.notifier).saveAmmo(result);
-          }
-        },
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'Select bullet from collection',
-        onTap: () async {
-          final template = await context.push<Ammo?>(
-            Routes.bulletCollection,
-            extra: weapon?.caliberInch,
-          );
-          if (template == null || !context.mounted) return;
-          final result = await context.push<Ammo?>(
-            Routes.profileEditAmmo,
-            extra: (
-              template,
-              template.caliberInch > 0 ? template.caliberInch : null,
-            ),
-          );
-          if (result != null && context.mounted) {
-            await ref.read(appStateProvider.notifier).saveAmmo(result);
-          }
-        },
-      ),
-      ActionSheetItem(
-        icon: IconDef.import,
-        title: 'Import from file',
-        onTap: () async {
-          try {
-            final ebcp = await EbcpService.pickAndParse();
-            if (ebcp == null || !context.mounted) return;
-            final ammos = ebcp.items
-                .map((i) => i.asAmmo())
-                .whereType<AmmoExport>()
-                .toList();
-            if (ammos.isEmpty) {
-              showNotAvailableSnackBar(context, 'No ammo found in file');
-              return;
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return showActionSheet(
+      context,
+      title: l10n.actionAddAmmo,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () async {
+            final result = await context.push<Ammo?>(
+              Routes.ammoCreate,
+              extra: weapon?.caliberInch,
+            );
+            if (result != null && context.mounted) {
+              await ref.read(appStateProvider.notifier).saveAmmo(result);
             }
-            for (final a in ammos) {
-              await ref.read(appStateProvider.notifier).importAmmo(a);
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.selectCartridgeFromCollection,
+          onTap: () async {
+            final template = await context.push<Ammo?>(
+              Routes.cartridgeCollection,
+              extra: weapon?.caliberInch,
+            );
+            if (template == null || !context.mounted) return;
+            final result = await context.push<Ammo?>(
+              Routes.profileEditAmmo,
+              extra: (
+                template,
+                template.caliberInch > 0 ? template.caliberInch : null,
+              ),
+            );
+            if (result != null && context.mounted) {
+              await ref.read(appStateProvider.notifier).saveAmmo(result);
             }
-          } catch (e) {
-            if (!context.mounted) return;
-            showFeedback(context, 'Import failed: $e', isError: true);
-          }
-        },
-      ),
-    ],
-  );
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.selectBulletFromCollection,
+          onTap: () async {
+            final template = await context.push<Ammo?>(
+              Routes.bulletCollection,
+              extra: weapon?.caliberInch,
+            );
+            if (template == null || !context.mounted) return;
+            final result = await context.push<Ammo?>(
+              Routes.profileEditAmmo,
+              extra: (
+                template,
+                template.caliberInch > 0 ? template.caliberInch : null,
+              ),
+            );
+            if (result != null && context.mounted) {
+              await ref.read(appStateProvider.notifier).saveAmmo(result);
+            }
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: () async {
+            try {
+              final ebcp = await EbcpService.pickAndParse();
+              if (ebcp == null || !context.mounted) return;
+              final ammos = ebcp.items
+                  .map((i) => i.asAmmo())
+                  .whereType<AmmoExport>()
+                  .toList();
+              if (ammos.isEmpty) {
+                showNotAvailableSnackBar(context, l10n.errorNoAmmoFoundInFile);
+                return;
+              }
+              for (final a in ammos) {
+                await ref.read(appStateProvider.notifier).importAmmo(a);
+              }
+            } catch (e) {
+              if (!context.mounted) return;
+              showFeedback(
+                context,
+                '${l10n.errorImportFailed}: $e',
+                isError: true,
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
 
   Future<void> _onExport(BuildContext context, WidgetRef ref, Ammo item) async {
     final info = await PackageInfo.fromPlatform();
@@ -131,6 +140,8 @@ class MyAmmoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
     final appState = ref.watch(appStateProvider).value;
+    final l10n = AppLocalizations.of(context)!;
+
     final cartridges = appState?.ammo ?? [];
     final profile = profileId != null
         ? appState?.profiles
@@ -153,7 +164,7 @@ class MyAmmoScreen extends ConsumerWidget {
     ];
 
     return BaseScreen(
-      title: "My Ammo",
+      title: l10n.myAmmoScreenTitle,
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
         heroTag: "generalFab",
@@ -171,7 +182,7 @@ class MyAmmoScreen extends ConsumerWidget {
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(child: Text('${l10n.error}: $error')),
         data: (_) => BaseCollectionBody(
           tiles: sorted
               .map(
@@ -210,10 +221,10 @@ class MyAmmoScreen extends ConsumerWidget {
                   onDuplicate: () async {
                     final name = await showTextInputDialog(
                       context,
-                      title: 'Duplicate Ammo',
-                      initialValue: 'Copy of ${item.name}',
-                      labelText: 'Ammo name',
-                      confirmLabel: 'Create',
+                      title: l10n.ammoDuplicateDialogTitle,
+                      initialValue: '${l10n.copyOf} ${item.name}',
+                      labelText: l10n.ammoName,
+                      confirmLabel: l10n.actionCreate,
                     );
                     if (name == null || !context.mounted) return;
                     await ref
@@ -224,9 +235,9 @@ class MyAmmoScreen extends ConsumerWidget {
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,
-                      title: 'Remove ammo',
-                      content: 'Remove "${item.name}"?',
-                      confirmLabel: 'Remove',
+                      title: l10n.ammoRemoveDialogTitle,
+                      content: '${l10n.remove} "${item.name}"?',
+                      confirmLabel: l10n.removeAction,
                       isDestructive: true,
                     );
                     if (confirmed && context.mounted) {

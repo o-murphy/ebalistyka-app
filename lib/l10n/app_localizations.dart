@@ -482,6 +482,12 @@ abstract class AppLocalizations {
   /// **'Miles per hour'**
   String get unitMph;
 
+  /// No description provided for @unitMach.
+  ///
+  /// In en, this message translates to:
+  /// **'Mach'**
+  String get unitMach;
+
   /// No description provided for @unitMachIcao.
   ///
   /// In en, this message translates to:
@@ -1382,6 +1388,12 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get removeAction;
 
+  /// No description provided for @actionCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get actionCreate;
+
   /// No description provided for @rightHand.
   ///
   /// In en, this message translates to:
@@ -1471,6 +1483,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ammo caliber differs from weapon caliber'**
   String get caliberMatchingError;
+
+  /// No description provided for @twoColumnEditorFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows where any value is 0 are ignored on save.'**
+  String get twoColumnEditorFooter;
+
+  /// No description provided for @customDragTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Drag Table'**
+  String get customDragTable;
+
+  /// No description provided for @multiBcTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-BC Table'**
+  String get multiBcTable;
+
+  /// No description provided for @actionAddAmmo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Ammo'**
+  String get actionAddAmmo;
+
+  /// No description provided for @createNewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new'**
+  String get createNewAction;
+
+  /// No description provided for @selectCartridgeFromCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cartridge from collection'**
+  String get selectCartridgeFromCollection;
+
+  /// No description provided for @selectBulletFromCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Select bullet from collection'**
+  String get selectBulletFromCollection;
+
+  /// No description provided for @actionImportFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from file'**
+  String get actionImportFromFile;
+
+  /// No description provided for @errorNoAmmoFoundInFile.
+  ///
+  /// In en, this message translates to:
+  /// **'No ammo found in file'**
+  String get errorNoAmmoFoundInFile;
+
+  /// No description provided for @errorImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get errorImportFailed;
+
+  /// No description provided for @myAmmoScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Ammo'**
+  String get myAmmoScreenTitle;
+
+  /// No description provided for @ammoDuplicateDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Ammo'**
+  String get ammoDuplicateDialogTitle;
+
+  /// No description provided for @ammoRemoveDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Ammo'**
+  String get ammoRemoveDialogTitle;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @ammoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo name'**
+  String get ammoName;
+
+  /// No description provided for @copyOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy of'**
+  String get copyOf;
 }
 
 class _AppLocalizationsDelegate

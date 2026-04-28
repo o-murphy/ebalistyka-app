@@ -201,6 +201,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitMph => 'Miles per hour';
 
   @override
+  String get unitMach => 'Mach';
+
+  @override
   String get unitMachIcao => 'Mach (ICAO)';
 
   @override
@@ -655,6 +658,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeAction => 'Remove';
 
   @override
+  String get actionCreate => 'Create';
+
+  @override
   String get rightHand => 'RH';
 
   @override
@@ -698,4 +704,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get caliberMatchingError => 'Ammo caliber differs from weapon caliber';
+
+  @override
+  String get twoColumnEditorFooter =>
+      'Rows where any value is 0 are ignored on save.';
+
+  @override
+  String get customDragTable => 'Custom Drag Table';
+
+  @override
+  String get multiBcTable => 'Multi-BC Table';
+
+  @override
+  String get actionAddAmmo => 'Add Ammo';
+
+  @override
+  String get createNewAction => 'Create new';
+
+  @override
+  String get selectCartridgeFromCollection =>
+      'Select cartridge from collection';
+
+  @override
+  String get selectBulletFromCollection => 'Select bullet from collection';
+
+  @override
+  String get actionImportFromFile => 'Import from file';
+
+  @override
+  String get errorNoAmmoFoundInFile => 'No ammo found in file';
+
+  @override
+  String get errorImportFailed => 'Import failed';
+
+  @override
+  String get myAmmoScreenTitle => 'My Ammo';
+
+  @override
+  String get ammoDuplicateDialogTitle => 'Duplicate Ammo';
+
+  @override
+  String get ammoRemoveDialogTitle => 'Remove Ammo';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get ammoName => 'Ammo name';
+
+  @override
+  String get copyOf => 'Copy of';
 }

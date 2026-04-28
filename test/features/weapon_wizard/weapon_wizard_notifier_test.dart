@@ -36,28 +36,44 @@ void main() {
 
     test('caliberRaw ≤ 0 → false', () {
       expect(
-        WeaponWizardState(name: 'Rifle', caliberRaw: 0.0, twistRaw: 10.0).isValid,
+        WeaponWizardState(
+          name: 'Rifle',
+          caliberRaw: 0.0,
+          twistRaw: 10.0,
+        ).isValid,
         isFalse,
       );
     });
 
     test('twistRaw < 0 → false', () {
       expect(
-        WeaponWizardState(name: 'Rifle', caliberRaw: 7.82, twistRaw: -1.0).isValid,
+        WeaponWizardState(
+          name: 'Rifle',
+          caliberRaw: 7.82,
+          twistRaw: -1.0,
+        ).isValid,
         isFalse,
       );
     });
 
     test('twistRaw = 0 → valid', () {
       expect(
-        WeaponWizardState(name: 'Rifle', caliberRaw: 7.82, twistRaw: 0.0).isValid,
+        WeaponWizardState(
+          name: 'Rifle',
+          caliberRaw: 7.82,
+          twistRaw: 0.0,
+        ).isValid,
         isTrue,
       );
     });
 
     test('all fields valid → true', () {
       expect(
-        WeaponWizardState(name: 'Rifle', caliberRaw: 7.82, twistRaw: 10.0).isValid,
+        WeaponWizardState(
+          name: 'Rifle',
+          caliberRaw: 7.82,
+          twistRaw: 10.0,
+        ).isValid,
         isTrue,
       );
     });
@@ -91,7 +107,10 @@ void main() {
         st.caliberRaw,
         closeTo(Distance.inch(0.308).in_(FC.projectileDiameter.rawUnit), 0.001),
       );
-      expect(st.twistRaw, closeTo(Distance.inch(10.0).in_(FC.twist.rawUnit), 0.001));
+      expect(
+        st.twistRaw,
+        closeTo(Distance.inch(10.0).in_(FC.twist.rawUnit), 0.001),
+      );
       expect(st.rightHand, isTrue);
       expect(st.showExtraFields, isTrue);
       expect(

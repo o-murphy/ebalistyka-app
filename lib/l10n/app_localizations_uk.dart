@@ -201,6 +201,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitMph => 'Милі на годину';
 
   @override
+  String get unitMach => 'Maх';
+
+  @override
   String get unitMachIcao => 'Мах (ICAO)';
 
   @override
@@ -657,6 +660,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get removeAction => 'Видалити';
 
   @override
+  String get actionCreate => 'Create';
+
+  @override
   String get rightHand => 'Правий';
 
   @override
@@ -675,13 +681,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get goToCalculationsButton => 'До розрахунків';
 
   @override
-  String get selectAmmoSightHint => 'Спершу оберіть снаряд і приціл';
+  String get selectAmmoSightHint => 'Спершу оберіть набій і приціл';
 
   @override
   String get selectSightHint => 'Оберіть приціл';
 
   @override
-  String get selectAmmoHint => 'Оберіть снаряд';
+  String get selectAmmoHint => 'Оберіть набій';
 
   @override
   String get weaponName => 'Назва зброї';
@@ -699,5 +705,54 @@ class AppLocalizationsUk extends AppLocalizations {
   String get cartridgeCollectionScreenTitle => 'Колекція куль';
 
   @override
-  String get caliberMatchingError => 'Калібр снаряду і зброї відрізняється';
+  String get caliberMatchingError => 'Калібр набою і зброї відрізняється';
+
+  @override
+  String get twoColumnEditorFooter =>
+      'Рядки з нульовими значеннями ігноруються під час збереження.';
+
+  @override
+  String get customDragTable => 'Кастомна драг функція';
+
+  @override
+  String get multiBcTable => 'Таблиця Мульти-БК';
+
+  @override
+  String get actionAddAmmo => 'Додати набій';
+
+  @override
+  String get createNewAction => 'Створити новий';
+
+  @override
+  String get selectCartridgeFromCollection => 'Вибрати патрон з колекції';
+
+  @override
+  String get selectBulletFromCollection => 'Вибрати кулю з колекції';
+
+  @override
+  String get actionImportFromFile => 'Імпортувати з файлу';
+
+  @override
+  String get errorNoAmmoFoundInFile => 'Не знайдено набоїв у файлі';
+
+  @override
+  String get errorImportFailed => 'Помилка імпорту';
+
+  @override
+  String get myAmmoScreenTitle => 'Мої набої';
+
+  @override
+  String get ammoDuplicateDialogTitle => 'Копіювати набій';
+
+  @override
+  String get ammoRemoveDialogTitle => 'Видалити набій';
+
+  @override
+  String get remove => 'Видалити';
+
+  @override
+  String get ammoName => 'Назва набою';
+
+  @override
+  String get copyOf => 'Копія';
 }

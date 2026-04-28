@@ -22,12 +22,15 @@ class WeaponWizardState {
   final String name;
   final String vendor;
   final String caliberName;
-  final double caliberRaw;      // FC.projectileDiameter.rawUnit = mm
-  final double twistRaw;        // FC.twist.rawUnit = inch, always ≥ 0; direction via rightHand
+  final double caliberRaw; // FC.projectileDiameter.rawUnit = mm
+  final double
+  twistRaw; // FC.twist.rawUnit = inch, always ≥ 0; direction via rightHand
   final bool rightHand;
   final bool showExtraFields;
-  final double? barrelLengthRaw; // FC.barrelLength.rawUnit = inch; null = not set
-  final Weapon? initial;         // non-null in edit mode; buildWeapon() mutates and returns it
+  final double?
+  barrelLengthRaw; // FC.barrelLength.rawUnit = inch; null = not set
+  final Weapon?
+  initial; // non-null in edit mode; buildWeapon() mutates and returns it
 
   bool get isValid => name.trim().isNotEmpty && caliberRaw > 0 && twistRaw >= 0;
 
@@ -62,10 +65,7 @@ class WeaponWizardState {
     weapon.vendor = vendor.trim().isEmpty ? null : vendor.trim();
     weapon.caliberName = caliberName.trim();
     weapon.caliber = Distance(caliberRaw, FC.projectileDiameter.rawUnit);
-    weapon.twist = Distance(
-      rightHand ? twistRaw : -twistRaw,
-      FC.twist.rawUnit,
-    );
+    weapon.twist = Distance(rightHand ? twistRaw : -twistRaw, FC.twist.rawUnit);
     weapon.barrelLength = (showExtraFields && barrelLengthRaw != null)
         ? Distance(barrelLengthRaw!, FC.barrelLength.rawUnit)
         : null;
@@ -100,10 +100,12 @@ class WeaponWizardState {
 
 typedef WeaponWizardArg = ({Weapon? initial});
 
-final weaponWizardProvider = NotifierProvider.family<
-    WeaponWizardNotifier, WeaponWizardState, WeaponWizardArg>(
-  (arg) => WeaponWizardNotifier(arg),
-);
+final weaponWizardProvider =
+    NotifierProvider.family<
+      WeaponWizardNotifier,
+      WeaponWizardState,
+      WeaponWizardArg
+    >((arg) => WeaponWizardNotifier(arg));
 
 class WeaponWizardNotifier extends Notifier<WeaponWizardState> {
   WeaponWizardNotifier(this._arg);
@@ -118,6 +120,8 @@ class WeaponWizardNotifier extends Notifier<WeaponWizardState> {
   void updateCaliberRaw(double v) => state = state.copyWith(caliberRaw: v);
   void updateTwistRaw(double v) => state = state.copyWith(twistRaw: v);
   void updateRightHand(bool v) => state = state.copyWith(rightHand: v);
-  void updateShowExtraFields(bool v) => state = state.copyWith(showExtraFields: v);
-  void updateBarrelLengthRaw(double? v) => state = state.copyWith(barrelLengthRaw: v);
+  void updateShowExtraFields(bool v) =>
+      state = state.copyWith(showExtraFields: v);
+  void updateBarrelLengthRaw(double? v) =>
+      state = state.copyWith(barrelLengthRaw: v);
 }

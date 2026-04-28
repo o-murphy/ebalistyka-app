@@ -3,6 +3,7 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/ui_dimensions.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -39,6 +40,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final velocityUnit = ref.watch(unitSettingsProvider).velocityUnit;
+    final l10n = AppLocalizations.of(context)!;
     final vAcc = FC.muzzleVelocity.accuracyFor(velocityUnit);
     final dtName = dragType.name.toUpperCase();
 
@@ -60,15 +62,15 @@ class MultiBcEditorScreen extends ConsumerWidget {
     }
 
     return TwoColumnTableEditorScreen(
-      title: '$dtName Multi-BC Table',
+      title: '$dtName ${l10n.multiBcTable}',
       rowCount: kMultiBcRowCount,
-      col1Header: 'V (${velocityUnit.symbol})',
-      col2Header: 'BC (fraction)',
+      col1Header: '${l10n.columnVelocity} (${velocityUnit.symbol})',
+      col2Header: l10n.bcShort,
       col1Hint: '0',
       col2Hint: '0.000',
       initialRows: initialRows,
       sortAscending: false,
-      footerText: 'Rows where any value is 0 are ignored on save.',
+      footerText: l10n.twoColumnEditorFooter,
       onSave: (rows) {
         final result = rows
             .map(
@@ -110,11 +112,12 @@ class CustomDragTableEditorScreen extends StatelessWidget {
     final initialRows = initialTable
         ?.map((r) => (r.mach.toStringAsFixed(2), r.cd.toStringAsFixed(4)))
         .toList();
+    final l10n = AppLocalizations.of(context)!;
 
     return TwoColumnTableEditorScreen(
-      title: 'Custom Drag Table',
+      title: l10n.customDragTable,
       rowCount: kDragTableRowCount,
-      col1Header: 'Mach',
+      col1Header: l10n.unitMach,
       col2Header: 'Cd',
       col1Hint: '0.00',
       col2Hint: '0.0000',

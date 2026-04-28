@@ -25,17 +25,18 @@ class SightWizardState {
 
   final String name;
   final String vendor;
-  final double sightHeightRaw;      // FC.sightHeight.rawUnit = mm
+  final double sightHeightRaw; // FC.sightHeight.rawUnit = mm
   final double horizontalOffsetRaw; // FC.sightHeight.rawUnit = mm
   final FocalPlane focalPlane;
-  final double vClickRaw;           // FC.adjustment.rawUnit = mil
+  final double vClickRaw; // FC.adjustment.rawUnit = mil
   final Unit vClickUnit;
-  final double hClickRaw;           // FC.adjustment.rawUnit = mil
+  final double hClickRaw; // FC.adjustment.rawUnit = mil
   final Unit hClickUnit;
-  final double minMagRaw;           // FC.magnification.rawUnit = scalar
-  final double maxMagRaw;           // FC.magnification.rawUnit = scalar
+  final double minMagRaw; // FC.magnification.rawUnit = scalar
+  final double maxMagRaw; // FC.magnification.rawUnit = scalar
   final String? reticleImage;
-  final Sight? initial; // non-null in edit mode; buildSight() mutates and returns it
+  final Sight?
+  initial; // non-null in edit mode; buildSight() mutates and returns it
 
   bool get isValid =>
       name.trim().isNotEmpty &&
@@ -62,9 +63,15 @@ class SightWizardState {
       sightHeightRaw: s.sightHeight.in_(FC.sightHeight.rawUnit),
       horizontalOffsetRaw: s.horizontalOffset.in_(FC.sightHeight.rawUnit),
       focalPlane: s.focalPlane,
-      vClickRaw: Angular(s.verticalClick, vClickUnit).in_(FC.adjustment.rawUnit),
+      vClickRaw: Angular(
+        s.verticalClick,
+        vClickUnit,
+      ).in_(FC.adjustment.rawUnit),
       vClickUnit: vClickUnit,
-      hClickRaw: Angular(s.horizontalClick, hClickUnit).in_(FC.adjustment.rawUnit),
+      hClickRaw: Angular(
+        s.horizontalClick,
+        hClickUnit,
+      ).in_(FC.adjustment.rawUnit),
       hClickUnit: hClickUnit,
       minMagRaw: s.minMagnification > 0 ? s.minMagnification : 1.0,
       maxMagRaw: s.maxMagnification > 0 ? s.maxMagnification : 1.0,
@@ -78,12 +85,21 @@ class SightWizardState {
     sight.name = name.trim();
     sight.vendor = vendor.trim().isEmpty ? null : vendor.trim();
     sight.sightHeight = Distance(sightHeightRaw, FC.sightHeight.rawUnit);
-    sight.horizontalOffset = Distance(horizontalOffsetRaw, FC.sightHeight.rawUnit);
+    sight.horizontalOffset = Distance(
+      horizontalOffsetRaw,
+      FC.sightHeight.rawUnit,
+    );
     sight.focalPlane = focalPlane;
     sight.verticalClickUnitValue = vClickUnit;
-    sight.verticalClick = Angular(vClickRaw, FC.adjustment.rawUnit).in_(vClickUnit);
+    sight.verticalClick = Angular(
+      vClickRaw,
+      FC.adjustment.rawUnit,
+    ).in_(vClickUnit);
     sight.horizontalClickUnitValue = hClickUnit;
-    sight.horizontalClick = Angular(hClickRaw, FC.adjustment.rawUnit).in_(hClickUnit);
+    sight.horizontalClick = Angular(
+      hClickRaw,
+      FC.adjustment.rawUnit,
+    ).in_(hClickUnit);
     sight.minMagnification = minMagRaw;
     sight.maxMagnification = maxMagRaw;
     sight.reticleImage = reticleImage;
@@ -126,10 +142,12 @@ class SightWizardState {
 
 typedef SightWizardArg = ({Sight? initial});
 
-final sightWizardProvider = NotifierProvider.family<
-    SightWizardNotifier, SightWizardState, SightWizardArg>(
-  (arg) => SightWizardNotifier(arg),
-);
+final sightWizardProvider =
+    NotifierProvider.family<
+      SightWizardNotifier,
+      SightWizardState,
+      SightWizardArg
+    >((arg) => SightWizardNotifier(arg));
 
 class SightWizardNotifier extends Notifier<SightWizardState> {
   SightWizardNotifier(this._arg);
@@ -140,7 +158,8 @@ class SightWizardNotifier extends Notifier<SightWizardState> {
 
   void updateName(String v) => state = state.copyWith(name: v);
   void updateVendor(String v) => state = state.copyWith(vendor: v);
-  void updateSightHeightRaw(double v) => state = state.copyWith(sightHeightRaw: v);
+  void updateSightHeightRaw(double v) =>
+      state = state.copyWith(sightHeightRaw: v);
   void updateHorizontalOffsetRaw(double v) =>
       state = state.copyWith(horizontalOffsetRaw: v);
   void updateFocalPlane(FocalPlane v) => state = state.copyWith(focalPlane: v);

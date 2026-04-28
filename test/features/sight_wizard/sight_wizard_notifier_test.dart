@@ -41,11 +41,26 @@ void main() {
     );
 
     test('empty name → false', () => expect(base(name: '').isValid, isFalse));
-    test('whitespace name → false', () => expect(base(name: '  ').isValid, isFalse));
-    test('vClickRaw = 0 → false', () => expect(base(vClickRaw: 0.0).isValid, isFalse));
-    test('hClickRaw = 0 → false', () => expect(base(hClickRaw: 0.0).isValid, isFalse));
-    test('minMagRaw = 0 → false', () => expect(base(minMagRaw: 0.0).isValid, isFalse));
-    test('maxMagRaw = 0 → false', () => expect(base(maxMagRaw: 0.0).isValid, isFalse));
+    test(
+      'whitespace name → false',
+      () => expect(base(name: '  ').isValid, isFalse),
+    );
+    test(
+      'vClickRaw = 0 → false',
+      () => expect(base(vClickRaw: 0.0).isValid, isFalse),
+    );
+    test(
+      'hClickRaw = 0 → false',
+      () => expect(base(hClickRaw: 0.0).isValid, isFalse),
+    );
+    test(
+      'minMagRaw = 0 → false',
+      () => expect(base(minMagRaw: 0.0).isValid, isFalse),
+    );
+    test(
+      'maxMagRaw = 0 → false',
+      () => expect(base(maxMagRaw: 0.0).isValid, isFalse),
+    );
     test('all valid → true', () => expect(base().isValid, isTrue));
   });
 
@@ -120,7 +135,9 @@ void main() {
         name: 'New Scope',
         vendor: 'Vortex',
         sightHeightRaw: Distance.millimeter(50.0).in_(FC.sightHeight.rawUnit),
-        horizontalOffsetRaw: Distance.millimeter(5.0).in_(FC.sightHeight.rawUnit),
+        horizontalOffsetRaw: Distance.millimeter(
+          5.0,
+        ).in_(FC.sightHeight.rawUnit),
         focalPlane: FocalPlane.sfp,
         vClickRaw: Angular.mil(0.1).in_(FC.adjustment.rawUnit),
         vClickUnit: Unit.mil,
@@ -158,7 +175,10 @@ void main() {
       final st = SightWizardState.fromSight(original);
       final rebuilt = st.buildSight();
       expect(rebuilt.verticalClick, closeTo(original.verticalClick, 0.0001));
-      expect(rebuilt.horizontalClick, closeTo(original.horizontalClick, 0.0001));
+      expect(
+        rebuilt.horizontalClick,
+        closeTo(original.horizontalClick, 0.0001),
+      );
       expect(rebuilt.verticalClickUnit, original.verticalClickUnit);
     });
 
