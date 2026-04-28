@@ -1,6 +1,7 @@
 {
     "@@locale": "uk",
     "homeScreenTitle": "Дім",
+    "shotInfoScreenTitle": "Інформація про постріл",
     "conditionsScreenTitle": "Умови",
     "tablesScreenTitle": "Таблиці",
     "tableConfigScreenTitle": "Налаштування таблиці",
@@ -189,9 +190,16 @@
     "lookAngle": "Кут цілі",
     "targetRange": "Відстань до цілі",
     "notYetAvaliable": "поки що не доступно",
-    "holdoversVertical": "Винос по вертикалі", 
-    "holdoversHorizontal": "Вітрознос" ,
+    "holdoversVertical": "Винос по вертикалі",
+    "holdoversHorizontal": "Вітрознос",
     "adjustmentDisplayDisabled": "Відображення поправок вимкнено!",
     "adjustmentDisplayDisabledHint": "Увімкнути",
-    "error": "Помилка"
+    "error": "Помилка",
+    "speedOfSound": "Швидкість звуку",
+    "velocityAtTarget": "Швидкість біля цілі",
+    "sectionEnergy": "Енергія",
+    "sectionTrajectory": "Траекторія",
+    "energyAtTarget": "Енергія біля цілі",
+    "energyAtMuzzle": "Енергія при початковій швидкості",
+    "sectionGyrostabilitySg": "Гіроскопічна стабільність"
 }

@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -15,9 +16,10 @@ class ShotDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(shotDetailsVmProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Shot Info',
+      title: l10n.shotInfoScreenTitle,
       isSubscreen: true,
       body: state.when(
         data: (uiState) => _buildContent(context, uiState),
@@ -35,53 +37,55 @@ class ShotDetailsScreen extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return ListView(
       children: [
-        const ListSectionTile('Velocity'),
+        ListSectionTile(l10n.labelVelocity),
         InfoListTile(
           icon: IconDef.velocity,
-          label: 'Current muzzle velocity',
+          label: l10n.currentMv,
           value: state.currentMv,
         ),
         InfoListTile(
           icon: IconDef.velocity,
-          label: 'Zero muzzle velocity',
+          label: l10n.zeroMv,
           value: state.zeroMv,
         ),
         InfoListTile(
           icon: IconDef.machSpeed,
-          label: 'Speed of sound',
+          label: l10n.speedOfSound,
           value: state.speedOfSound,
         ),
         InfoListTile(
           icon: IconDef.velocity,
-          label: 'Velocity at target',
+          label: l10n.velocityAtTarget,
           value: state.velocityAtTarget,
         ),
         const TileDivider(),
-        const ListSectionTile('Energy'),
+        ListSectionTile(l10n.sectionEnergy),
         InfoListTile(
           icon: IconDef.energy,
-          label: 'Energy at muzzle velocity',
+          label: l10n.energyAtMuzzle,
           value: state.energyAtMuzzle,
         ),
         InfoListTile(
           icon: IconDef.energy,
-          label: 'Energy at target',
+          label: l10n.energyAtTarget,
           value: state.energyAtTarget,
         ),
         const TileDivider(),
-        const ListSectionTile('Stability'),
+        ListSectionTile(l10n.sectionGyrostabilitySg),
         InfoListTile(
           icon: IconDef.gyrostability,
-          label: 'Gyroscopic stability factor',
+          label: l10n.gyrostabilitySg,
           value: state.gyroscopicStability,
         ),
         const TileDivider(),
-        const ListSectionTile('Trajectory'),
+        ListSectionTile(l10n.sectionTrajectory),
         InfoListTile(
           icon: IconDef.range,
-          label: 'Shot distance',
+          label: l10n.targetRange,
           value: state.shotDistance,
         ),
         InfoListTile(

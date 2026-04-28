@@ -12,6 +12,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeScreenTitle => 'Дім';
 
   @override
+  String get shotInfoScreenTitle => 'Інформація про постріл';
+
+  @override
   String get conditionsScreenTitle => 'Умови';
 
   @override
@@ -595,4 +598,25 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get error => 'Помилка';
+
+  @override
+  String get speedOfSound => 'Швидкість звуку';
+
+  @override
+  String get velocityAtTarget => 'Швидкість біля цілі';
+
+  @override
+  String get sectionEnergy => 'Енергія';
+
+  @override
+  String get sectionTrajectory => 'Траекторія';
+
+  @override
+  String get energyAtTarget => 'Енергія біля цілі';
+
+  @override
+  String get energyAtMuzzle => 'Енергія при початковій швидкості';
+
+  @override
+  String get sectionGyrostabilitySg => 'Гіроскопічна стабільність';
 }

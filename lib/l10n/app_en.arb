@@ -2,6 +2,8 @@
     "@@locale": "en",
     "homeScreenTitle": "Home",
     "@homeScreenTitle": {},
+    "shotInfoScreenTitle": "Shot info",
+    "@shotInfoScreenTitle": {},
     "conditionsScreenTitle": "Conditions",
     "@conditionsScreenTitle": {},
     "tablesScreenTitle": "Tables",
@@ -374,10 +376,8 @@
     "@sectionalDensity": {
         "description": "Sectional density field label"
     },
-    "gyrostabilitySg": "Gyrostability (Sg)",
-    "@gyrostabilitySg": {
-        "description": "Gyroscopic stability factor field label"
-    },
+    "gyrostabilitySg": "Gyroscopic stability factor (Sg)",
+    "@gyrostabilitySg": {},
     "conditions": "Conditions",
     "@conditions": {
         "description": "Conditions section title"
@@ -467,5 +467,19 @@
     "adjustmentDisplayDisabledHint": "Enable",
     "@adjustmentDisplayDisabledHint": {},
     "error": "Error",
-    "@error": {}
+    "@error": {},
+    "speedOfSound": "Speed of sound",
+    "@speedOfSound": {},
+    "velocityAtTarget": "Velocity at target",
+    "@velocityAtTarget": {},
+    "sectionEnergy": "Energy",
+    "@sectionEnergy": {},
+    "sectionTrajectory": "Trajectory",
+    "@sectionTrajectory": {},
+    "energyAtTarget": "Energy at target",
+    "@energyAtTarget": {},
+    "energyAtMuzzle": "Energy at muzzle velocity",
+    "@energyAtMuzzle": {},
+    "sectionGyrostabilitySg": "Gyroscopic stability",
+    "@sectionGyrostabilitySg": {}
 }

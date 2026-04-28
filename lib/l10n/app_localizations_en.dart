@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeScreenTitle => 'Home';
 
   @override
+  String get shotInfoScreenTitle => 'Shot info';
+
+  @override
   String get conditionsScreenTitle => 'Conditions';
 
   @override
@@ -472,7 +475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionalDensity => 'Sectional density';
 
   @override
-  String get gyrostabilitySg => 'Gyrostability (Sg)';
+  String get gyrostabilitySg => 'Gyroscopic stability factor (Sg)';
 
   @override
   String get conditions => 'Conditions';
@@ -593,4 +596,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error => 'Error';
+
+  @override
+  String get speedOfSound => 'Speed of sound';
+
+  @override
+  String get velocityAtTarget => 'Velocity at target';
+
+  @override
+  String get sectionEnergy => 'Energy';
+
+  @override
+  String get sectionTrajectory => 'Trajectory';
+
+  @override
+  String get energyAtTarget => 'Energy at target';
+
+  @override
+  String get energyAtMuzzle => 'Energy at muzzle velocity';
+
+  @override
+  String get sectionGyrostabilitySg => 'Gyroscopic stability';
 }

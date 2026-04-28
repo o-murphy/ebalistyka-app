@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get homeScreenTitle;
 
+  /// No description provided for @shotInfoScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shot info'**
+  String get shotInfoScreenTitle;
+
   /// No description provided for @conditionsScreenTitle.
   ///
   /// In en, this message translates to:
@@ -1022,10 +1028,10 @@ abstract class AppLocalizations {
   /// **'Sectional density'**
   String get sectionalDensity;
 
-  /// Gyroscopic stability factor field label
+  /// No description provided for @gyrostabilitySg.
   ///
   /// In en, this message translates to:
-  /// **'Gyrostability (Sg)'**
+  /// **'Gyroscopic stability factor (Sg)'**
   String get gyrostabilitySg;
 
   /// Conditions section title
@@ -1261,6 +1267,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error'**
   String get error;
+
+  /// No description provided for @speedOfSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed of sound'**
+  String get speedOfSound;
+
+  /// No description provided for @velocityAtTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity at target'**
+  String get velocityAtTarget;
+
+  /// No description provided for @sectionEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get sectionEnergy;
+
+  /// No description provided for @sectionTrajectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory'**
+  String get sectionTrajectory;
+
+  /// No description provided for @energyAtTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy at target'**
+  String get energyAtTarget;
+
+  /// No description provided for @energyAtMuzzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy at muzzle velocity'**
+  String get energyAtMuzzle;
+
+  /// No description provided for @sectionGyrostabilitySg.
+  ///
+  /// In en, this message translates to:
+  /// **'Gyroscopic stability'**
+  String get sectionGyrostabilitySg;
 }
 
 class _AppLocalizationsDelegate
