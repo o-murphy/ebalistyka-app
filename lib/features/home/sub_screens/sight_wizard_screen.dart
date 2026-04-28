@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/sight_wizard_notifier.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -58,9 +59,10 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
     final st = ref.watch(_provider);
     final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: wizardTitle('New Sight'),
+      title: wizardTitle(l10n.newSight),
       isSubscreen: true,
       showBack: false,
       bottomBar: WizardActionBar(
@@ -73,22 +75,22 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           // ── Name ──────────────────────────────────────────────────
           WizardNameField(
             controller: nameCtrl,
-            label: 'Sight name',
+            label: l10n.sightName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: vendorCtrl,
-              decoration: const InputDecoration(labelText: 'Vendor'),
+              decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
           ),
           // ── Mounting ──────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Mounting'),
+          ListSectionTile(l10n.sectionMounting),
           UnitValueFieldTile(
-            title: 'Sight height',
+            title: l10n.sightHeight,
             rawValue: st.sightHeightRaw,
             constraints: FC.sightHeight,
             displayUnit: units.sightHeightUnit,
@@ -96,7 +98,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             onChanged: notifier.updateSightHeightRaw,
           ),
           UnitValueFieldTile(
-            title: 'Horizontal offset',
+            title: l10n.horizontalOffset,
             rawValue: st.horizontalOffsetRaw,
             constraints: FC.sightHeight,
             displayUnit: units.sightHeightUnit,
@@ -105,11 +107,11 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           ),
           // ── Reticle ────────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Reticle'),
+          ListSectionTile(l10n.sectionReticle),
           ListTile(
             leading: const Icon(IconDef.sight),
-            title: const Text('Reticle pattern'),
-            subtitle: Text(st.reticleImage ?? 'default'),
+            title: Text(l10n.reticlePattern),
+            subtitle: Text(st.reticleImage ?? l10n.defaultLabel),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               final route = widget.initial != null
@@ -129,20 +131,20 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: SegmentedButton<FocalPlane>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: FocalPlane.ffp,
-                  label: Text('FFP'),
+                  label: Text(l10n.focalPlaneFFP),
                   icon: Icon(IconDef.ffp),
                 ),
                 ButtonSegment(
                   value: FocalPlane.sfp,
-                  label: Text('SFP'),
+                  label: Text(l10n.focalPlaneSFP),
                   icon: Icon(IconDef.sfp),
                 ),
                 ButtonSegment(
                   value: FocalPlane.lwir,
-                  label: Text('LWIR'),
+                  label: Text(l10n.focalPlaneLWIR),
                   icon: Icon(IconDef.lwir),
                 ),
               ],
@@ -151,7 +153,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             ),
           ),
           UnitValueFieldTile(
-            title: 'Min magnification',
+            title: l10n.minMagnification,
             rawValue: st.minMagRaw,
             constraints: FC.magnification,
             displayUnit: Unit.scalar,
@@ -160,7 +162,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             onChanged: notifier.updateMinMagRaw,
           ),
           UnitValueFieldTile(
-            title: 'Max magnification',
+            title: l10n.maxMagnification,
             rawValue: st.maxMagRaw,
             constraints: FC.magnification,
             displayUnit: Unit.scalar,
@@ -170,12 +172,12 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           ),
           // ── Clicks ────────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Clicks'),
+          ListSectionTile(l10n.sectionClicks),
           offsetsTile(
             context: context,
-            yLabel: 'Vertical click',
-            xLabel: 'Horizontal click',
-            unitLabel: 'Click unit',
+            yLabel: l10n.verticalClick,
+            xLabel: l10n.horizontalClick,
+            unitLabel: l10n.clickUnit,
             yRaw: st.vClickRaw,
             xRaw: st.hClickRaw,
             yUnits: st.vClickUnit,
@@ -196,6 +198,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
 class _SightPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
@@ -212,7 +215,7 @@ class _SightPlaceholder extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Sight image',
+                  l10n.sightImage,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.outlineVariant,
                   ),

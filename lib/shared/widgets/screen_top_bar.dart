@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       title: Text(title),
       centerTitle: true,
@@ -37,7 +39,7 @@ class ScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.arrow_back_outlined),
               onPressed: () =>
                   isSubscreen ? context.pop() : context.go(Routes.home),
-              tooltip: 'Back',
+              tooltip: l10n.backTooltip,
             )
           : null,
       actions: actions,

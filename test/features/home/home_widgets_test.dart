@@ -383,14 +383,16 @@ void main() {
       expect(find.textContaining('MRAD'), findsWidgets);
     });
 
-    testWidgets('shows Enable units message when elevation is empty', (
-      tester,
-    ) async {
+    testWidgets('shows disabled panel when elevation is empty', (tester) async {
       final state = _makeReady(adjustment: AdjustmentData.empty);
       await tester.pumpWidget(_scoped(state, const HomeReticlePage()));
       await tester.pump();
 
-      expect(find.textContaining('Enable units'), findsOneWidget);
+      expect(
+        find.textContaining('Adjustment Display disabled'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Enable'), findsOneWidget);
     });
   });
 

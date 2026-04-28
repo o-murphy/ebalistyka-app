@@ -41,10 +41,14 @@ class ProfileWeaponSection extends StatelessWidget {
           value: data.weaponCaliber,
           icon: IconDef.caliber,
         ),
-        InfoListTile(label: l10n.twist, value: data.twist, icon: twistDirIcon),
+        InfoListTile(
+          label: l10n.twistRate,
+          value: data.twist,
+          icon: twistDirIcon,
+        ),
         InfoListTile(
           label: l10n.twistDirection,
-          value: data.rightHanded ? l10n.rightHandFull : l10n.rightHandFull,
+          value: data.rightHanded ? l10n.rightHand : l10n.leftHand,
           icon: twistDirIcon,
         ),
       ],
@@ -65,43 +69,48 @@ class ProfileAmmoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
         const TileDivider(),
         ListSectionTile(
-          "Ammo",
+          l10n.ammo,
           onTap: onEdit,
           trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.grain),
           title: Text(data.cartridgeName),
-          subtitle: const Text("Cartridge name"),
+          subtitle: Text(l10n.cartridgeName),
           dense: true,
         ),
         ListTile(
           leading: const Icon(IconDef.grain),
           title: Text(data.projectileName),
-          subtitle: const Text("Projectile name"),
+          subtitle: Text(l10n.projectileName),
           dense: true,
         ),
         InfoListTile(
-          label: "Drag model",
+          label: l10n.dragModel,
           value: data.dragModel,
           icon: IconDef.dragModel,
         ),
         InfoListTile(
-          label: "Muzzle velocity",
+          label: l10n.muzzleVelocity,
           value: data.muzzleVelocity,
           icon: IconDef.velocity,
         ),
         InfoListTile(
-          label: "Caliber",
+          label: l10n.caliber,
           value: data.ammoCaliber,
           icon: IconDef.caliber,
         ),
-        InfoListTile(label: "Weight", value: data.weight, icon: IconDef.weigth),
+        InfoListTile(
+          label: l10n.weight,
+          value: data.weight,
+          icon: IconDef.weigth,
+        ),
       ],
     );
   }
@@ -120,6 +129,8 @@ class ProfileSightSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
     final fpIcon = switch (data.focalPlane) {
       FocalPlane.ffp => IconDef.ffp,
       FocalPlane.sfp => IconDef.sfp,
@@ -130,43 +141,43 @@ class ProfileSightSection extends StatelessWidget {
       children: [
         const TileDivider(),
         ListSectionTile(
-          "Sight",
+          l10n.sight,
           onTap: onEdit,
           trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.sight),
           title: Text(data.sightName),
-          subtitle: const Text("Sight name"),
+          subtitle: Text(l10n.sightName),
           dense: true,
         ),
         InfoListTile(
-          label: "Sight height",
+          label: l10n.sightHeight,
           value: data.sightHeight,
           icon: IconDef.height,
         ),
         InfoListTile(
-          label: "Reticle",
+          label: l10n.reticle,
           value: data.reticleImage,
           icon: IconDef.sight,
         ),
         InfoListTile(
-          label: "Focal plane",
+          label: l10n.focalPlane,
           value: data.focalPlane.name.toUpperCase(),
           icon: fpIcon,
         ),
         InfoListTile(
-          label: "Magnification",
+          label: l10n.magnification,
           value: data.magnification,
           icon: IconDef.magnificationMax,
         ),
         InfoListTile(
-          label: "Vertical click",
+          label: l10n.verticalClick,
           value: data.verticalClick,
           icon: IconDef.verticalClick,
         ),
         InfoListTile(
-          label: "Horizontal click",
+          label: l10n.horizontalClick,
           value: data.horizontalClick,
           icon: IconDef.horizontalClick,
         ),

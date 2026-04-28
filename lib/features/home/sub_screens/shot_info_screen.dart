@@ -22,22 +22,20 @@ class ShotInfoScreen extends ConsumerWidget {
       title: l10n.shotInfoScreenTitle,
       isSubscreen: true,
       body: state.when(
-        data: (uiState) => _buildContent(context, uiState),
+        data: (uiState) => _buildContent(l10n, uiState),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text(e.toString())),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, ShotInfoUiState state) {
+  Widget _buildContent(AppLocalizations l10n, ShotInfoUiState state) {
     if (state is! ShotInfoReady) {
       if (state is ShotInfoError) {
         return EmptyStatePlaceholder(type: state.type, message: state.message);
       }
       return const Center(child: CircularProgressIndicator());
     }
-
-    final l10n = AppLocalizations.of(context)!;
 
     return ListView(
       children: [

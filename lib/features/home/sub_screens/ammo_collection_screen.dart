@@ -5,6 +5,7 @@ import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_til
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_ammo_tile_body.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,7 @@ class AmmoCollectionScreen extends ConsumerWidget {
       isSubscreen: true,
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('${l10n.error}: $error')),
+        error: (error, _) => ErrorDisplay(error: error),
         data: (collection) {
           final all = filterBullet ? collection.bullets : collection.cartridges;
           final items = caliberInch != null

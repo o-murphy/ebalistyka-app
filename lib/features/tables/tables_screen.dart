@@ -2,6 +2,7 @@ import 'package:ebalistyka/features/tables/details_table_mv.dart';
 import 'package:ebalistyka/features/tables/table_html_exporter.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/widgets/details_table.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class TablesScreen extends ConsumerWidget {
     final brightness = Theme.of(context).brightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = ref.read(appLocalizationsProvider);
 
     await TableHtmlExporter.share(
       details: details,

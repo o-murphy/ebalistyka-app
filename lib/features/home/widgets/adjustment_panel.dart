@@ -23,21 +23,13 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
   String _elevDir() {
     if (adjustment.elevation.isEmpty) return '';
     final pos = adjustment.elevation.first.isPositive;
-    return switch (fmt) {
-      AdjustmentDisplayFormat.arrows => pos ? '↑' : '↓',
-      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
-      AdjustmentDisplayFormat.letters => pos ? 'U' : 'D',
-    };
+    return fmt.elevDir(pos);
   }
 
   String _windDir() {
     if (adjustment.windage.isEmpty) return '';
     final pos = adjustment.windage.first.isPositive;
-    return switch (fmt) {
-      AdjustmentDisplayFormat.arrows => pos ? '→' : '←',
-      AdjustmentDisplayFormat.signs => pos ? '+' : '−',
-      AdjustmentDisplayFormat.letters => pos ? 'R' : 'L',
-    };
+    return fmt.windDir(pos);
   }
 
   Widget _buildEmpty(

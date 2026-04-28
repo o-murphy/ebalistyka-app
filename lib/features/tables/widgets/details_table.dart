@@ -53,11 +53,11 @@ class DetailsTableContent extends StatelessWidget {
       // Rifle
       section(l10n.weapon),
       row(
-        l10n.name,
+        l10n.weaponName,
         v(details.weaponName.isNotEmpty ? details.weaponName : null),
       ),
       row(l10n.caliber, v(details.caliber)),
-      row(l10n.twist, v(details.twist)),
+      row(l10n.twistRate, v(details.twist)),
       row(l10n.zeroDistance, v(details.zeroDist)),
       const TileDivider(),
 
@@ -72,7 +72,7 @@ class DetailsTableContent extends StatelessWidget {
       row(l10n.dragModel, v(details.dragModel)),
       row(l10n.bc, v(details.bc)),
       row(l10n.length, v(details.bulletLen)),
-      row(l10n.diameter, v(details.bulletDiam)),
+      row(l10n.caliber, v(details.bulletDiam)),
       row(l10n.weight, v(details.bulletWeight)),
       row(l10n.formFactor, v(details.formFactor)),
       row(l10n.sectionalDensity, v(details.sectionalDensity)),

@@ -68,7 +68,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
-    final l10n = AppLocalizations.of(context)!;
 
     final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
     final cs = vmState is HomeUiReady ? vmState.conditionsState : null;
@@ -78,6 +77,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final humidStr = cs?.humidDisplay ?? nullStr;
     final windAngleDeg = cs?.windAngleDeg ?? 0.0;
     final windInitialAngle = (windAngleDeg - 90) * math.pi / 180;
+
+    final l10n = AppLocalizations.of(context)!;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -107,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
         final cs = Theme.of(context).colorScheme;
 
-        getWindDirCtx(deg) => UnitPickerContext(
+        UnitPickerContext getWindDirCtx(deg) => UnitPickerContext(
           context,
           label: l10n.windDirection,
           rawValue: deg,

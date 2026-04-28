@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Shows a confirmation dialog.
@@ -10,8 +11,8 @@ Future<bool> showConfirmDialog(
   BuildContext context, {
   required String title,
   required String content,
-  String confirmLabel = 'Confirm',
-  String cancelLabel = 'Dismiss',
+  String? confirmLabel,
+  String? cancelLabel,
   bool isDestructive = false,
 }) async {
   final result = await showDialog<bool>(
@@ -19,6 +20,7 @@ Future<bool> showConfirmDialog(
     builder: (ctx) {
       final theme = Theme.of(ctx);
       final colorScheme = theme.colorScheme;
+      final l10n = AppLocalizations.of(ctx)!;
       final confirmStyle = isDestructive
           ? FilledButton.styleFrom(
               backgroundColor: colorScheme.error,
@@ -56,7 +58,7 @@ Future<bool> showConfirmDialog(
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.of(ctx).pop(false),
-                      child: Text(cancelLabel),
+                      child: Text(cancelLabel ?? l10n.dismissButton),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -64,7 +66,7 @@ Future<bool> showConfirmDialog(
                     child: FilledButton(
                       style: confirmStyle,
                       onPressed: () => Navigator.of(ctx).pop(true),
-                      child: Text(confirmLabel),
+                      child: Text(confirmLabel ?? l10n.confirmButton),
                     ),
                   ),
                 ],

@@ -120,9 +120,9 @@ class TableHtmlExporter {
     // Rifle
     sb.writeln('<div class="card">');
     sb.writeln('<h2>${l10n.weapon}</h2><table class="info">');
-    sb.write(_row(l10n.name, d.weaponName));
+    sb.write(_row(l10n.weaponName, d.weaponName));
     if (d.caliber != null) sb.write(_row(l10n.caliber, d.caliber!));
-    if (d.twist != null) sb.write(_row(l10n.twist, d.twist!));
+    if (d.twist != null) sb.write(_row(l10n.twistRate, d.twist!));
     if (d.zeroDist != null) sb.write(_row(l10n.zeroDistance, d.zeroDist!));
     sb.writeln('</table></div>');
 
@@ -151,7 +151,7 @@ class TableHtmlExporter {
       if (d.dragModel != null) sb.write(_row(l10n.dragModel, d.dragModel!));
       if (d.bc != null) sb.write(_row(l10n.bc, d.bc!));
       if (d.bulletLen != null) sb.write(_row(l10n.length, d.bulletLen!));
-      if (d.bulletDiam != null) sb.write(_row(l10n.diameter, d.bulletDiam!));
+      if (d.bulletDiam != null) sb.write(_row(l10n.caliber, d.bulletDiam!));
       if (d.bulletWeight != null) sb.write(_row(l10n.weight, d.bulletWeight!));
       if (d.formFactor != null) sb.write(_row(l10n.formFactor, d.formFactor!));
       if (d.sectionalDensity != null) {

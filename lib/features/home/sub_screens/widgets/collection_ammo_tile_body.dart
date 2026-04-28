@@ -158,7 +158,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          "$label = ${bc > 0 ? bc.toFixedSafe(3) : nullStr}",
+          '$label = ${bc > 0 ? bc.toFixedSafe(3) : nullStr}',
           style: TextStyle(
             fontSize: 12,
             color: isPrimary ? cs.primary : null,

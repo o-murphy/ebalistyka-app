@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class CollectionSightTileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     final verticalClick = formatter.click(
       sight.verticalClick,
@@ -80,7 +82,7 @@ class CollectionSightTileBody extends ConsumerWidget {
                         Text(
                           sight.reticleImage?.isNotEmpty == true
                               ? sight.reticleImage!
-                              : 'default',
+                              : l10n.defaultLabel,
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],

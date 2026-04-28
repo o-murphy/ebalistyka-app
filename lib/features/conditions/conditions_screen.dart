@@ -21,13 +21,14 @@ class ConditionsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(conditionsVmProvider);
     final state = vmAsync.value;
-    final l10n = AppLocalizations.of(context)!;
 
     if (state == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     final notifier = ref.read(conditionsVmProvider.notifier);
+
+    final l10n = AppLocalizations.of(context)!;
 
     final UnitPickerContext altCtx = UnitPickerContext(
       context,

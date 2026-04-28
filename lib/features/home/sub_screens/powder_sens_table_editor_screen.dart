@@ -2,6 +2,7 @@ import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,6 +80,7 @@ class _PowderSensTableEditorScreenState
   @override
   Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
+    final l10n = AppLocalizations.of(context)!;
     final vUnit = units.velocityUnit;
     final tUnit = units.temperatureUnit;
     final vAcc = FC.muzzleVelocity.accuracyFor(vUnit);
@@ -108,10 +110,10 @@ class _PowderSensTableEditorScreenState
     }
 
     return TwoColumnTableEditorScreen(
-      title: 'Powder Sensitivity Table',
+      title: l10n.powderSensTableEditorTitle,
       rowCount: _kPowderSensRowCount,
-      col1Header: 'T (${tUnit.symbol})',
-      col2Header: 'V (${vUnit.symbol})',
+      col1Header: '${l10n.temperature} (${tUnit.symbol})',
+      col2Header: '${l10n.columnVelocity} (${vUnit.symbol})',
       col1Hint: '0',
       col2Hint: '0',
       initialRows: prefilled,
@@ -120,10 +122,7 @@ class _PowderSensTableEditorScreenState
       col1RequirePositive: false,
       headerChild: _SensitivityPreview(sensitivity: _preview),
       onRowsParsed: _onRowsChanged,
-      footerText:
-          'Rows with non-positive velocity are ignored.\n'
-          'Temperature may be negative, zero, or positive.\n'
-          'Sensitivity is averaged across all valid pairs.',
+      footerText: l10n.nonPositiveRowsHint,
       onSave: (rawRows) {
         final table = rawRows
             .map(
@@ -174,11 +173,12 @@ class _SensitivityPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isError = sensitivity == null;
 
     final String label;
     if (sensitivity == null) {
-      label = 'No measurements yet';
+      label = l10n.noMeasurementsYet;
     } else {
       final acc = FC.powderSensitivity.accuracyFor(Unit.percent);
       final pct = Ratio.fraction(sensitivity!).in_(Unit.percent);
@@ -198,7 +198,7 @@ class _SensitivityPreview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Calculated sensitivity',
+                    l10n.calculatedSensitivity,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: isError
                           ? theme.colorScheme.onErrorContainer

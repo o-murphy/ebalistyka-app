@@ -1,10 +1,13 @@
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_sight_tile_body.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -25,52 +28,59 @@ class MySightsCollectionScreen extends ConsumerWidget {
   /// Falls back to the active profile when null.
   final String? profileId;
 
-  Future<void> _showAddSightSheet(BuildContext context, WidgetRef ref) =>
-      showActionSheet(
-        context,
-        title: 'Add Sight',
-        entries: [
-          ActionSheetItem(
-            icon: IconDef.addCircle,
-            title: 'Create new',
-            onTap: () async {
-              final result = await context.push<Sight?>(Routes.sightCreate);
-              if (result != null && context.mounted) {
-                await ref.read(appStateProvider.notifier).saveSight(result);
+  Future<void> _showAddSightSheet(BuildContext context, WidgetRef ref) {
+    final l10n = ref.read(appLocalizationsProvider);
+
+    return showActionSheet(
+      context,
+      title: l10n.actionAddSight,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () async {
+            final result = await context.push<Sight?>(Routes.sightCreate);
+            if (result != null && context.mounted) {
+              await ref.read(appStateProvider.notifier).saveSight(result);
+            }
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.actionSelectSightFromCollection,
+          onTap: () async => context.push(Routes.sightCollection),
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: () async {
+            try {
+              final ebcp = await EbcpService.pickAndParse();
+              if (ebcp == null || !context.mounted) return;
+              final sights = ebcp.items
+                  .map((i) => i.asSight())
+                  .whereType<SightExport>()
+                  .toList();
+              if (sights.isEmpty) {
+                showNotAvailableSnackBar(context, l10n.noSightsFoundInFile);
+                return;
               }
-            },
-          ),
-          ActionSheetItem(
-            icon: IconDef.openCollection,
-            title: 'Select from collection',
-            onTap: () async => context.push(Routes.sightCollection),
-          ),
-          ActionSheetItem(
-            icon: IconDef.import,
-            title: 'Import from file',
-            onTap: () async {
-              try {
-                final ebcp = await EbcpService.pickAndParse();
-                if (ebcp == null || !context.mounted) return;
-                final sights = ebcp.items
-                    .map((i) => i.asSight())
-                    .whereType<SightExport>()
-                    .toList();
-                if (sights.isEmpty) {
-                  showNotAvailableSnackBar(context, 'No sights found in file');
-                  return;
-                }
-                for (final s in sights) {
-                  await ref.read(appStateProvider.notifier).importSight(s);
-                }
-              } catch (e) {
-                if (!context.mounted) return;
-                showFeedback(context, 'Import failed: $e', isError: true);
+              for (final s in sights) {
+                await ref.read(appStateProvider.notifier).importSight(s);
               }
-            },
-          ),
-        ],
-      );
+            } catch (e) {
+              if (!context.mounted) return;
+              showFeedback(
+                context,
+                '${l10n.errorImportFailed}: $e',
+                isError: true,
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
 
   Future<void> _onExport(
     BuildContext context,
@@ -90,6 +100,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
     final appState = ref.watch(appStateProvider).value;
+    final l10n = AppLocalizations.of(context)!;
     final sights = appState?.sights ?? [];
     final profile = profileId != null
         ? appState?.profiles
@@ -104,10 +115,10 @@ class MySightsCollectionScreen extends ConsumerWidget {
     ];
 
     return BaseScreen(
-      title: "My Sights",
+      title: l10n.mySights,
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
-        heroTag: "generalFab",
+        heroTag: 'generalFab',
         onPressed: () => _showAddSightSheet(context, ref),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -116,13 +127,13 @@ class MySightsCollectionScreen extends ConsumerWidget {
       ),
       actions: [
         IconButton(
-          onPressed: () => debugPrint("Filter button (will call bottom toast)"),
+          onPressed: () => debugPrint('Filter button (will call bottom toast)'),
           icon: Icon(IconDef.filter),
         ),
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, _) => ErrorDisplay(error: error),
         data: (_) => BaseCollectionBody(
           tiles: sorted
               .map(
@@ -154,10 +165,10 @@ class MySightsCollectionScreen extends ConsumerWidget {
                   onDuplicate: () async {
                     final name = await showTextInputDialog(
                       context,
-                      title: 'Duplicate Sight',
-                      initialValue: 'Copy of ${item.name}',
-                      labelText: 'Sight name',
-                      confirmLabel: 'Create',
+                      title: l10n.sightDuplicateDialogTitle,
+                      initialValue: '${l10n.copyOf} ${item.name}',
+                      labelText: l10n.sightName,
+                      confirmLabel: l10n.createAction,
                     );
                     if (name == null || !context.mounted) return;
                     await ref
@@ -168,9 +179,9 @@ class MySightsCollectionScreen extends ConsumerWidget {
                   onRemove: () async {
                     final confirmed = await showConfirmDialog(
                       context,
-                      title: 'Remove sight',
-                      content: 'Remove "${item.name}"?',
-                      confirmLabel: 'Remove',
+                      title: l10n.sightRemoveDialogTitle,
+                      content: '${l10n.remove} "${item.name}"?',
+                      confirmLabel: l10n.removeAction,
                       isDestructive: true,
                     );
                     if (confirmed && context.mounted) {

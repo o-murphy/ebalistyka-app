@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
@@ -79,11 +80,12 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
+    final l10n = AppLocalizations.of(context)!;
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
     final twistDirIcon = st.rightHand ? IconDef.twistR : IconDef.twistL;
 
     return BaseScreen(
-      title: wizardTitle('New Rifle'),
+      title: wizardTitle(l10n.newWeaponScreenTitle),
       isSubscreen: true,
       showBack: false,
       bottomBar: WizardActionBar(
@@ -96,14 +98,14 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           // ── Name ────────────────────────────────────────────────────
           WizardNameField(
             controller: nameCtrl,
-            label: 'Weapon name',
+            label: l10n.weaponName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: vendorCtrl,
-              decoration: const InputDecoration(labelText: 'Vendor'),
+              decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
           ),
@@ -111,15 +113,15 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
               controller: _caliberNameCtrl,
-              decoration: const InputDecoration(labelText: 'Caliber name'),
+              decoration: InputDecoration(labelText: l10n.caliberName),
               textCapitalization: TextCapitalization.words,
             ),
           ),
           // ── Ballistics ───────────────────────────────────────────────
-          const ListSectionTile('Ballistics'),
+          ListSectionTile(l10n.sectionBallistics),
           if (caliberEditable)
             UnitValueFieldTile(
-              title: 'Caliber diameter',
+              title: l10n.caliber,
               rawValue: st.caliberRaw,
               constraints: FC.projectileDiameter,
               displayUnit: units.diameterUnit,
@@ -128,14 +130,14 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
             )
           else
             InfoListTile(
-              label: 'Caliber diameter',
+              label: l10n.caliber,
               value: formatter.diameter(widget.initial?.caliber),
               icon: IconDef.caliber,
             ),
           // ── Hardware ─────────────────────────────────────────────────
-          const ListSectionTile('Hardware'),
+          ListSectionTile(l10n.sectionHardware),
           UnitValueFieldTile(
-            title: 'Twist rate',
+            title: l10n.twistRate,
             rawValue: st.twistRaw,
             constraints: FC.twist,
             displayUnit: units.twistUnit,
@@ -145,8 +147,8 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           ),
           SwitchListTile(
             secondary: Icon(twistDirIcon),
-            title: const Text('Twist direction'),
-            subtitle: Text(st.rightHand ? 'right' : 'left'),
+            title: Text(l10n.twistDirection),
+            subtitle: Text(st.rightHand ? l10n.rightHand : l10n.leftHand),
             value: st.rightHand,
             onChanged: notifier.updateRightHand,
             dense: true,
@@ -155,8 +157,8 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           const TileDivider(),
           SwitchListTile(
             secondary: const Icon(IconDef.moreHoriz),
-            title: const Text('Additional parameters'),
-            subtitle: const Text('Barrel length, etc.'),
+            title: Text(l10n.additionalParameters),
+            subtitle: Text(l10n.additionalParametersBarelLen),
             value: st.showExtraFields,
             onChanged: notifier.updateShowExtraFields,
             dense: true,
@@ -164,7 +166,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           if (st.showExtraFields) ...[
             const SizedBox(height: 8),
             NullableUnitValueFieldTile(
-              title: 'Barrel length',
+              title: l10n.barrelLength,
               rawValue: st.barrelLengthRaw,
               constraints: FC.barrelLength,
               displayUnit: units.barrelLengthUnit,

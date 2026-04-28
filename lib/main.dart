@@ -76,7 +76,7 @@ void main() async {
 
   final appSupport = await getApplicationSupportDirectory();
   final (store, dbWasReset) = await _openStore(appSupport.path);
-  debugPrint("DB path: ${appSupport.path}");
+  debugPrint('DB path: ${appSupport.path}');
 
   runApp(
     ProviderScope(
@@ -155,7 +155,7 @@ class MyApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
-      title: "eBalistyka",
+      title: 'eBalistyka',
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

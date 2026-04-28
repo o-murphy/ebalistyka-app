@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart' show Angular, Unit;
@@ -17,6 +18,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/offsets_edit.dart';
@@ -121,7 +123,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
       );
     }
     if (vmState is HomeUiError) {
-      return Center(child: Text('Error: ${vmState.message}'));
+      return ErrorDisplay(error: vmState.message);
     }
     if (vmAsync.isLoading || vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());
@@ -135,6 +137,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final l10n = AppLocalizations.of(context)!;
         const double maxTopHeightRatio = 0.50;
         final double fullHeight = constraints.maxHeight;
         final double maxAllowedHeight = fullHeight * maxTopHeightRatio;
@@ -145,7 +148,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
         );
 
         return BaseScreen(
-          title: 'Reticle View',
+          title: l10n.reticleScreenTitle,
           isSubscreen: true,
           body: Column(
             mainAxisSize: MainAxisSize.min,
@@ -161,7 +164,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                   padding: const EdgeInsets.fromLTRB(8, 4, 16, 12),
                   child: ListView(
                     children: [
-                      ListSectionTile('Adjustments'),
+                      ListSectionTile(l10n.sectionHoldovers),
                       Center(
                         child: AdjustmentsDisplayPanel(
                           adjustment: vmState.reticleState.adjustment,
@@ -173,15 +176,15 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                       ),
                       const SizedBox(height: 8),
                       const TileDivider(),
-                      const ListSectionTile('Barrel drums'),
-                      listInputLabel(context, 'Vertical adjustment'),
+                      ListSectionTile(l10n.sectionManualAdjustments),
+                      listInputLabel(context, l10n.verticalAdjustment),
                       AdjustmentInputWithClicks(
                         rawValue: _vAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vAdjUnit,
                         clickSizeRaw: _vClickRaw,
                         options: offsetUnits,
-                        unitLabel: 'Adjustment unit',
+                        unitLabel: l10n.adjustmentUnit,
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vAdjRaw = v);
@@ -193,14 +196,14 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           unawaited(_saveAdj());
                         },
                       ),
-                      listInputLabel(context, 'Horizontal adjustment'),
+                      listInputLabel(context, l10n.horizontalAdjustment),
                       AdjustmentInputWithClicks(
                         rawValue: _hAdjRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hAdjUnit,
                         clickSizeRaw: _hClickRaw,
                         options: offsetUnits,
-                        unitLabel: 'Adjustment unit',
+                        unitLabel: l10n.adjustmentUnit,
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hAdjRaw = v);
@@ -213,11 +216,11 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         },
                       ),
                       const TileDivider(),
-                      const ListSectionTile('Target'),
+                      ListSectionTile(l10n.sectionTarget),
                       ListTile(
                         leading: const Icon(IconDef.sight),
-                        title: const Text('Target pattern'),
-                        subtitle: Text(_targetImage ?? 'default'),
+                        title: Text(l10n.targetPattern),
+                        subtitle: Text(_targetImage ?? l10n.defaultLabel),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(
@@ -234,16 +237,16 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         dense: true,
                       ),
                       InfoListTile(
-                        label: 'Target size',
+                        label: l10n.labelTargetSize,
                         value: targetSizeDisplay,
                         icon: Icons.crop_free,
                       ),
                       const TileDivider(),
-                      const ListSectionTile('Reticle'),
+                      ListSectionTile(l10n.sectionReticle),
                       ListTile(
                         leading: const Icon(IconDef.sight),
-                        title: const Text('Reticle pattern'),
-                        subtitle: Text(_reticleImage ?? 'default'),
+                        title: Text(l10n.reticlePattern),
+                        subtitle: Text(_reticleImage ?? l10n.defaultLabel),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
                           final result = await context.push<String?>(
@@ -260,14 +263,14 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                         dense: true,
                       ),
                       const TileDivider(),
-                      const ListSectionTile('Clicks'),
-                      listInputLabel(context, 'Vertical click'),
+                      ListSectionTile(l10n.sectionClicks),
+                      listInputLabel(context, l10n.verticalClick),
                       UnitInputWithPicker(
                         value: _vClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _vClickUnit,
                         options: offsetUnits,
-                        unitLabel: 'Click unit',
+                        unitLabel: l10n.clickUnit,
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _vClickRaw = v);
@@ -279,13 +282,13 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                           unawaited(_saveSight());
                         },
                       ),
-                      listInputLabel(context, 'Horizontal click'),
+                      listInputLabel(context, l10n.horizontalClick),
                       UnitInputWithPicker(
                         value: _hClickRaw,
                         constraints: FC.adjustment,
                         displayUnit: _hClickUnit,
                         options: offsetUnits,
-                        unitLabel: 'Click unit',
+                        unitLabel: l10n.clickUnit,
                         onChanged: (v) {
                           if (v != null) {
                             setState(() => _hClickRaw = v);

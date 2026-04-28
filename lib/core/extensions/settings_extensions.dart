@@ -2,7 +2,27 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 
-enum AdjustmentDisplayFormat { arrows, signs, letters }
+enum AdjustmentDisplayFormat {
+  arrows,
+  signs,
+  letters;
+
+  String elevDir(bool isPos) {
+    return switch (this) {
+      AdjustmentDisplayFormat.arrows => isPos ? '↑' : '↓',
+      AdjustmentDisplayFormat.signs => isPos ? '+' : '−',
+      AdjustmentDisplayFormat.letters => isPos ? 'U' : 'D',
+    };
+  }
+
+  String windDir(bool isPos) {
+    return switch (this) {
+      AdjustmentDisplayFormat.arrows => isPos ? '→' : '←',
+      AdjustmentDisplayFormat.signs => isPos ? '+' : '−',
+      AdjustmentDisplayFormat.letters => isPos ? 'R' : 'L',
+    };
+  }
+}
 
 extension GeneralSettingsExtension on GeneralSettings {
   // ── Enum ─────────────────────────────────────────────────────────────────────

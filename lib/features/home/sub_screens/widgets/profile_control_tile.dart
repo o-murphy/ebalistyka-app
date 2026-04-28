@@ -33,43 +33,47 @@ class ProfileControlTile extends StatelessWidget {
   final VoidCallback onRemove;
   final ValueChanged<String> onRename;
 
-  Future<void> _showEditActionsSheet(BuildContext context) => showActionSheet(
-    context,
-    title: 'Edit Profile',
-    entries: [
-      ActionSheetItem(
-        icon: IconDef.copy,
-        title: 'Duplicate',
-        onTap: () async => onDuplicate(),
-      ),
-      ActionSheetItem(
-        icon: IconDef.export,
-        title: 'Export',
-        onTap: () async => onExport(),
-      ),
-      ActionSheetItem(
-        icon: IconDef.edit,
-        title: 'Edit profile name',
-        onTap: () async {
-          final name = await showTextInputDialog(
-            context,
-            title: 'Edit Profile Name',
-            initialValue: profileName,
-            labelText: 'Profile name',
-            confirmLabel: 'Save',
-          );
-          if (name != null) onRename(name);
-        },
-      ),
-      const ActionSheetDivider(),
-      ActionSheetItem(
-        icon: IconDef.remove,
-        title: 'Remove',
-        isDestructive: true,
-        onTap: () async => onRemove(),
-      ),
-    ],
-  );
+  Future<void> _showEditActionsSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return showActionSheet(
+      context,
+      title: l10n.editProfile,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.copy,
+          title: l10n.duplicateAction,
+          onTap: () async => onDuplicate(),
+        ),
+        ActionSheetItem(
+          icon: IconDef.export,
+          title: l10n.exportAction,
+          onTap: () async => onExport(),
+        ),
+        ActionSheetItem(
+          icon: IconDef.edit,
+          title: l10n.editProfileName,
+          onTap: () async {
+            final name = await showTextInputDialog(
+              context,
+              title: l10n.editProfileName,
+              initialValue: profileName,
+              labelText: l10n.profileName,
+              confirmLabel: l10n.saveButton,
+            );
+            if (name != null) onRename(name);
+          },
+        ),
+        const ActionSheetDivider(),
+        ActionSheetItem(
+          icon: IconDef.remove,
+          title: l10n.removeAction,
+          isDestructive: true,
+          onTap: () async => onRemove(),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

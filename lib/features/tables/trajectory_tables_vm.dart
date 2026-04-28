@@ -321,7 +321,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'dropClicks',
               l10n.columnDropClicks,
-              (_) => "clicks",
+              (_) => 'clicks',
               (bclibc.TrajectoryData r) => verticalClickSizeMil > 0.0
                   ? r.dropAngle.in_(Unit.mil) / verticalClickSizeMil
                   : 0.0,
@@ -347,7 +347,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'windClicks',
               l10n.columnWindClicks,
-              (_) => "clicks",
+              (_) => 'clicks',
               (bclibc.TrajectoryData r) => horizontalClickSizeMil > 0.0
                   ? r.windageAngle.in_(Unit.mil) / horizontalClickSizeMil
                   : 0.0,

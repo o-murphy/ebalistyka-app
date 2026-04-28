@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
 import 'package:flutter/material.dart';
@@ -199,37 +201,47 @@ class _AdjUnitPickerButton extends StatelessWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        builder: (ctx) => SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(label, style: Theme.of(ctx).textTheme.titleMedium),
-              ),
-              const TileDivider(),
-              ListTile(
-                title: const Text('$_clicksLabel ($_clicksSymbol)'),
-                trailing: current == null ? const Icon(IconDef.apply) : null,
-                onTap: () {
-                  onChanged(null);
-                  Navigator.pop(ctx);
-                },
-              ),
-              ...options.map(
-                (unit) => ListTile(
-                  title: Text('${unit.label} (${unit.symbol})'),
-                  trailing: current == unit ? const Icon(IconDef.apply) : null,
+        builder: (ctx) {
+          final l10n = AppLocalizations.of(ctx)!;
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    label,
+                    style: Theme.of(ctx).textTheme.titleMedium,
+                  ),
+                ),
+                const TileDivider(),
+                ListTile(
+                  title: const Text('$_clicksLabel ($_clicksSymbol)'),
+                  trailing: current == null ? const Icon(IconDef.apply) : null,
                   onTap: () {
-                    onChanged(unit);
+                    onChanged(null);
                     Navigator.pop(ctx);
                   },
                 ),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
+                ...options.map(
+                  (unit) => ListTile(
+                    title: Text(
+                      '${unit.localizedLabel(l10n)} (${unit.localizedSymbol(l10n)})',
+                    ),
+                    trailing: current == unit
+                        ? const Icon(IconDef.apply)
+                        : null,
+                    onTap: () {
+                      onChanged(unit);
+                      Navigator.pop(ctx);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

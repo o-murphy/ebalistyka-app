@@ -166,7 +166,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     final curVelocity = profile?.getCalculatedCurrentVelocity(conditions);
     final mvStr = formatter.velocity(curVelocity);
 
-    String sensStr = "";
+    String sensStr = '';
     final ammo = profile?.ammo.target;
     if (ammo != null) {
       sensStr = formatter.powderSensitivity(ammo.powderSensitivity);

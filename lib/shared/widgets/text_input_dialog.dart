@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Shows a simple single-line text input dialog.
@@ -8,9 +9,9 @@ Future<String?> showTextInputDialog(
   BuildContext context, {
   required String title,
   String? initialValue,
-  String labelText = 'Name',
-  String confirmLabel = 'OK',
-  String cancelLabel = 'Dismiss',
+  String? labelText,
+  String? confirmLabel,
+  String? cancelLabel,
 }) async {
   final controller = TextEditingController(text: initialValue ?? '');
   String? error;
@@ -21,10 +22,13 @@ Future<String?> showTextInputDialog(
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) {
         final theme = Theme.of(ctx);
+        final l10n = AppLocalizations.of(ctx)!;
 
         void validate() {
           setState(
-            () => error = controller.text.trim().isEmpty ? 'Required' : null,
+            () => error = controller.text.trim().isEmpty
+                ? l10n.requiredFieldError
+                : null,
           );
         }
 
@@ -84,14 +88,14 @@ Future<String?> showTextInputDialog(
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.of(ctx).pop(null),
-                        child: Text(cancelLabel),
+                        child: Text(cancelLabel ?? l10n.dismissButton),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: FilledButton(
                         onPressed: tryConfirm,
-                        child: Text(confirmLabel),
+                        child: Text(confirmLabel ?? l10n.confirmButton),
                       ),
                     ),
                   ],

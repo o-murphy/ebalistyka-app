@@ -10,100 +10,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.1.3] - 2026-04-28
+
+### Added
+
+- **Localization (EN/UA) — full pass** — ARB pipeline; ~375 keys, EN = UK in sync; all screens covered: settings, convertors, conditions, tables, home, shot details, profiles, ammo/weapon/sight wizards, collection tiles, reticle view screen, unit pickers; `Unit.localizedLabel/Symbol(l10n)` extension + 34 `unitXxxSym` ARB keys; `UnitFormatterImpl` takes `AppLocalizations`; all formatted values and unit symbols localized
+
 ### Changed
 
-#### UI
-- **Navigation bar labels** — applied `NavigationBarTheme` with `fontSize: 11` and `TextOverflow.ellipsis` so long localized labels truncate gracefully instead of overflowing
-- **Home screen** — prettified condition indicators, page labels, wind direction display
+- **Navigation bar labels** — `NavigationBarTheme` with `fontSize: 11` + `TextOverflow.ellipsis` for long localized labels
+- **Home screen** — condition indicators, page labels, wind direction display prettified
 
 ### Fixed
 
-#### UI
-- **Wheel picker / hybrid wheel picker `-0.0`** — `UnitConversionHelper.formatDisplayValue` now normalises IEEE 754 negative zero before `toStringAsFixed`, so the wheel displays `0.0` instead of `-0.0`
-
-### Added
-
-#### Localization
-- **Home screen (UA/EN)** — main screen labels, page titles (`Holdovers`, `Trajectory Info`, `Trajectory Chart`), condition indicator labels, wind direction, tool/notes button labels
-- **Shot details screen (UA/EN)** — partial: ~20 keys for `ShotInfoScreen`
-- **Ammo collection (UA/EN)** — partial: collection tile body and list UI keys
+- **A7P zero offset export** — offset now correctly converted to cm/100m before dividing by click size (previously multiplied)
+- **A7P zero offset import** — removed erroneous offset reconstruction; a7p click counts carry no click-size metadata
+- **Wheel picker `-0.0`** — `formatDisplayValue` normalises IEEE 754 negative zero before `toStringAsFixed`
+- **Built-in collection** — fix sight heights
+- **Settings screen** — fix sight height unit picker
 
 ### Refactored
 
-#### Code Quality — Split `ammo_wizard_screen.dart` (#7.1, priority 6)
-- Extracted 3 pure parser functions to `lib/features/home/sub_screens/ammo_wizard_parsers.dart` (`decodeBcTable`, `decodeCustomDragTable`, `decodePowderSensTable`)
-- Created `AmmoWizardNotifier` (`ammo_wizard_notifier.dart`) — `@immutable AmmoWizardState` with `isValid`, `fromAmmo()`, `buildAmmo()`, `copyWith()`; Riverpod 3.x `NotifierProvider.family`
-- All 30 `setState` calls removed from `ammo_wizard_screen.dart`; screen reduced 827 → 611 lines
-- 77 new tests: 20 parser tests + 57 notifier tests (isValid, fromAmmo roundtrip, buildAmmo unit conversions)
-
-#### Code Quality — Split `home_vm.dart` (#7.1, priority 5)
-- Extracted `home_ui_state.dart` — all 7 UI state classes (`HomeUiState`, `HomeUiReady`, `HomeUiNoData`, `HomeUiError`, `HomeConditionsUiState`, `ReticleUiState`, `HomeChartUiState`, `HomeChartPointInfo`)
-- Extracted `home_builders.dart` — 9 pure top-level builder functions (`buildAdjustment`, `buildHomeTable`, `buildChartData`, `buildPointInfo`, `buildCartridgeInfoLine`, `buildZeroOffsetMessageLine`, `buildAdjustedMessageLine`, `parseMilWidth`, `closestIndex`) + `generalNeedsRecalc`
-- `home_vm.dart` reduced to notifier orchestration + `_buildReadyState` only; `export 'home_ui_state.dart'` keeps all existing import sites unchanged
-
-#### Code Quality — Split `profile_card.dart` (#7.1, priority 7)
-- Extracted `ProfileControlTile` (`profile_control_tile.dart`) — weapon image, edit FAB, sight/ammo selector buttons with hints
-- Extracted `ProfileWeaponSection`, `ProfileAmmoSection`, `ProfileSightSection` (`profile_sections.dart`) — replaces three `_build*Section` methods
-- Extracted `_ProfileActionsBar` — bottom select/incomplete bar
-- `profile_card.dart`: 504 → 145 lines
-
-#### Code Quality — Dialog & snackbar helpers (#7.1, priority 8)
-- Added `showFeedback(context, message, {bool isError, Duration duration})` to `lib/shared/widgets/snackbars.dart`
-- Replaced 4 × inline `ScaffoldMessenger.showSnackBar` in `my_sights_screen`, `my_ammo_screen`, `my_profiles_screen`, `settings_screen` with `showFeedback(..., isError: true)`
-
-#### Code Quality — UI constants & divider widgets (#7.1, priority 9)
-- Created `lib/shared/constants/ui_dimensions.dart` — `kHorizontalPadding`, `kDefaultVerticalPadding`, `kTileDividerHeight`, `kSectionDividerHeight`, `kMultiBcRowCount`, `kDragTableRowCount`
-- Created `TileDivider` + `SectionDivider` widgets (`lib/shared/widgets/dividers.dart`)
-- Replaced 43 × `Divider(height: 1)` and 4 × `Divider(height: 24)` across 19 files
-- Moved `_kMultiBcRowCount` / `_kDragTableRowCount` from local to shared constants
-
-### Fixed
-
-#### Export / Import
-- **A7P zero offset export** — `setPayloadOffsets` now correctly converts the ammo angular offset to cm/100m via `Angular(...).in_(Unit.cmPer100m)` before dividing by click size; previously multiplied instead of divided, producing wrong click counts
-- **A7P zero offset import** — removed erroneous `getPayloadOffsets` call on import; a7p stores offsets as dimensionless click counts with no click-size metadata, so the angular offset cannot be reconstructed at import time and is intentionally left at default
-- **Built-in collection** - fix sight heights
-- **Settings screen sight height unit** - fix sight height unit picker
-
-### Refactored
-
-#### Code Quality — Table editor generalization (#7.1, priority 3)
-- Extracted `TwoColumnTableEditorScreen` widget (`lib/shared/widgets/two_column_table_editor.dart`) — generic two-column numeric table with `col1Signed`, `col1RequirePositive`, `readOnly`, `headerChild` (live preview slot), `onRowsParsed` (change callback), `footerText`
-- `multi_bc_editor_screen.dart`: removed internal `_TwoColumnTableEditorScreen` + all sub-widgets; 400 → 110 lines
-- `powder_sens_table_editor_screen.dart`: replaced `_PowderSensEditorScreen` with `TwoColumnTableEditorScreen`; converted to `ConsumerStatefulWidget` for live preview state; 450 → 195 lines
-- ~545 LOC removed across two files
-
-#### Code Quality — Wizard screens deduplication (#7.1, priority 4)
-- Extracted `WizardActionBar` widget (`lib/shared/widgets/wizard_action_bar.dart`) — replaces three identical private `_ActionBar` classes in weapon, sight, and ammo wizard screens
-- Extracted `WizardNameField` widget (`lib/shared/widgets/wizard_name_field.dart`) — padded `TextField` with empty-name error styling, replaces inline pattern repeated in all three wizards
-- Introduced `WizardFormMixin<W>` (`lib/shared/mixins/wizard_form_mixin.dart`) — mixin on `ConsumerState<W>` covering: `nameCtrl` / `vendorCtrl` lifecycle (init + dispose), `isNameValid` getter, `wizardTitle()`, `onNameChanged()`, `onDiscard()`, `commitSave()`
-- Applied to all three wizard screens (`weapon_wizard_screen`, `sight_wizard_screen`, `ammo_wizard_screen`); ~155 LOC removed
-
-#### Code Quality — Converter generalization (#7.1, priorities 1–2)
-- Introduced `SimpleConvertorVm` abstract base class (Template Method pattern) in `lib/features/convertors/simple_convertor_vm.dart`:
-  - Shared `build()`, `updateRawValue()`, `changeInputUnit()`, `fieldFor()`, `_fmt()` — no longer duplicated across VMs
-  - Shared state types: `SimpleConvertorUiState`, `ConvertorSection`
-- Applied to 5 simple VMs: `length`, `weight`, `pressure`, `temperature`, `torque` — each reduced to ~55 lines of VM-specific config; ~600 LOC removed
-- Introduced `SimpleConvertorScreen` stateless widget in `lib/features/convertors/sub_screens/simple_convertor_screen.dart` — generic layout (input picker → sections → info tiles)
-- Applied to 5 simple screens — each reduced to ~25-line `ConsumerWidget` wrapper; ~270 LOC removed
-- Velocity, angular, and target-distance converters untouched (unique layouts)
-- All provider names unchanged — zero impact on call sites
-
-#### Unit picker
-- `UnitPickerTile` and `UnitPickerButton` share reusable `showUnitPicker`
-
-### Added
-
-#### Localization
-- **`flutter_localizations` setup** — ARB pipeline; EN + UA, 180 keys, fully in sync
-- **Settings screen (UA)** — main screen + sub-screens (units, adjustments)
-- **Convertors screen (UA)** — all convertor sub-screens
-- **Conditions screen (UA)** — conditions screen and temperature control widget
-- **HTML trajectory report (UA)** — uses app locale on export
-- **Tables screen (UA)** — screen title, tab labels, tooltips
-- **Tables config screen (UA)** — all section titles, column toggles, distance fields
-- **Trajectory table widget (UA)** — column headers, section titles, detail dialog, error messages
-- **Details table widget (UA)** — all section and field labels
+- **Code quality — converter generalization** (#7.1 #1–2) — `SimpleConvertorVm` base + `SimpleConvertorScreen`; 5 VMs + 5 screens unified; ~870 LOC removed
+- **Code quality — table editor generalization** (#7.1 #3) — `TwoColumnTableEditorScreen` generic widget; multi-BC + powder sens editors unified; ~545 LOC removed
+- **Code quality — wizard deduplication** (#7.1 #4) — `WizardActionBar`, `WizardNameField`, `WizardFormMixin`; applied to all 3 wizard screens; ~155 LOC removed
+- **Code quality — `home_vm.dart` split** (#7.1 #5) — `home_ui_state.dart` + `home_builders.dart` extracted; notifier reduced to orchestration only
+- **Code quality — `ammo_wizard_screen.dart` split** (#7.1 #6) — `ammo_wizard_parsers.dart` + `AmmoWizardNotifier`; 30 `setState` removed; 77 new tests
+- **Code quality — `profile_card.dart` split** (#7.1 #7) — `ProfileControlTile`, `ProfileWeaponSection`, `ProfileAmmoSection`, `ProfileSightSection` extracted; 504 → 145 lines
+- **Code quality — dialog/snackbar helpers** (#7.1 #8) — `showFeedback()` helper; 4 inline `showSnackBar` calls replaced
+- **Code quality — UI constants + dividers** (#7.1 #9) — `ui_dimensions.dart`; `TileDivider`/`SectionDivider` widgets; 47 inline `Divider` calls replaced
+- **Code quality — asset picker generalization** (#7.1 #10) — `SvgAssetPickerScreen<T>` generic; pickers as 22-line wrappers
+- **Code quality — wizard notifiers** (#7.1 #11) — `WeaponWizardNotifier` + `SightWizardNotifier`; all `setState` removed from both screens
+- **Code quality — `AdjustmentsDisplayPanel` disabled state** (#7.1 #12) — `_buildEmpty` implemented; test updated
+- **Code quality — standalone widget extraction** (#7.1 #13) — `_BcSection` + `_DragModelSection` replace builder methods in `ammo_wizard_screen.dart`
+- **Code quality — naming conventions** (#7.1 #14) — widget/class/provider naming rules + localization rule documented in `CLAUDE.md`
+- **Unit picker** — `UnitPickerTile` and `UnitPickerButton` share reusable `showUnitPicker`
 
 
 ## [0.1.2] - 2026-04-26

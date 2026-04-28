@@ -1,5 +1,7 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
@@ -8,8 +10,9 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 
 class UnitFormatterImpl implements UnitFormatter {
   final UnitSettings _u;
+  final AppLocalizations _l10n;
 
-  UnitFormatterImpl(this._u);
+  UnitFormatterImpl(this._u, this._l10n);
 
   String _fmt(
     Dimension? dim,
@@ -19,7 +22,7 @@ class UnitFormatterImpl implements UnitFormatter {
   ]) {
     if (dim == null || condition?.call(dim) == false) return nullStr;
     final accuracy = fc.accuracyFor(unit);
-    return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.symbol}';
+    return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.localizedSymbol(_l10n)}';
   }
 
   // --- Formatted strings ---
@@ -78,7 +81,7 @@ class UnitFormatterImpl implements UnitFormatter {
   String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
 
   @override
-  String mach(double m) => '${m.toFixedSafe(2)} M';
+  String mach(double m) => '${m.toFixedSafe(2)} ${_l10n.unitMachSym}';
 
   @override
   String time(double seconds) => '${seconds.toFixedSafe(3)} s';
@@ -86,7 +89,7 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   String powderSensitivity(Ratio dim) {
     final accuracy = FC.powderSensitivity.accuracyFor(Unit.percent);
-    return '${dim.in_(Unit.percent).toFixedSafe(accuracy)} %/15°C';
+    return '${dim.in_(Unit.percent).toFixedSafe(accuracy)} ${_l10n.powderSensUnit}';
   }
 
   @override
@@ -113,25 +116,25 @@ class UnitFormatterImpl implements UnitFormatter {
   // --- Symbols ---
 
   @override
-  String get velocitySymbol => _u.velocityUnit.symbol;
+  String get velocitySymbol => _u.velocityUnit.localizedSymbol(_l10n);
   @override
-  String get distanceSymbol => _u.distanceUnit.symbol;
+  String get distanceSymbol => _u.distanceUnit.localizedSymbol(_l10n);
   @override
-  String get temperatureSymbol => _u.temperatureUnit.symbol;
+  String get temperatureSymbol => _u.temperatureUnit.localizedSymbol(_l10n);
   @override
-  String get pressureSymbol => _u.pressureUnit.symbol;
+  String get pressureSymbol => _u.pressureUnit.localizedSymbol(_l10n);
   @override
-  String get dropSymbol => _u.dropUnit.symbol;
+  String get dropSymbol => _u.dropUnit.localizedSymbol(_l10n);
   @override
-  String get adjustmentSymbol => _u.adjustmentUnit.symbol;
+  String get adjustmentSymbol => _u.adjustmentUnit.localizedSymbol(_l10n);
   @override
-  String get energySymbol => _u.energyUnit.symbol;
+  String get energySymbol => _u.energyUnit.localizedSymbol(_l10n);
   @override
-  String get weightSymbol => _u.weightUnit.symbol;
+  String get weightSymbol => _u.weightUnit.localizedSymbol(_l10n);
   @override
-  String get sightHeightSymbol => _u.sightHeightUnit.symbol;
+  String get sightHeightSymbol => _u.sightHeightUnit.localizedSymbol(_l10n);
   @override
-  String get barrelLengthSymbol => _u.barrelLengthUnit.symbol;
+  String get barrelLengthSymbol => _u.barrelLengthUnit.localizedSymbol(_l10n);
 
   // --- Input conversion (for input dialogs) ---
 

@@ -29,7 +29,7 @@ class UnitValueHeader extends StatelessWidget {
     Color headerColor;
 
     if (errorText != null) {
-      displayHeader = "Invalid";
+      displayHeader = 'Invalid';
       headerColor = theme.colorScheme.error;
     } else if (isNullValue) {
       displayHeader = nullStr;

@@ -3,7 +3,9 @@ import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_weapon_tile_body.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,13 +17,14 @@ class WeaponCollectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionAsync = ref.watch(builtinCollectionProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: 'Weapon Collection',
+      title: l10n.weaponCollectionScreenTitle,
       isSubscreen: true,
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => ErrorDisplay(error: error),
         data: (collection) => BaseCollectionBody(
           tiles: collection.weapons
               .map(

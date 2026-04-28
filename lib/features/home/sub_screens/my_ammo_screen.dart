@@ -3,8 +3,10 @@ import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
@@ -33,7 +35,7 @@ class MyAmmoScreen extends ConsumerWidget {
     WidgetRef ref,
     Weapon? weapon,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = ref.read(appLocalizationsProvider);
 
     return showActionSheet(
       context,
@@ -167,7 +169,7 @@ class MyAmmoScreen extends ConsumerWidget {
       title: l10n.myAmmoScreenTitle,
       isSubscreen: true,
       floatingActionButton: FloatingActionButton(
-        heroTag: "generalFab",
+        heroTag: 'generalFab',
         onPressed: () => _showAddAmmoSheet(context, ref, weapon),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -176,13 +178,13 @@ class MyAmmoScreen extends ConsumerWidget {
       ),
       actions: [
         IconButton(
-          onPressed: () => debugPrint("Filter button (will call bottom toast)"),
+          onPressed: () => debugPrint('Filter button (will call bottom toast)'),
           icon: Icon(IconDef.filter),
         ),
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('${l10n.error}: $error')),
+        error: (error, stack) => ErrorDisplay(error: error),
         data: (_) => BaseCollectionBody(
           tiles: sorted
               .map(
@@ -224,7 +226,7 @@ class MyAmmoScreen extends ConsumerWidget {
                       title: l10n.ammoDuplicateDialogTitle,
                       initialValue: '${l10n.copyOf} ${item.name}',
                       labelText: l10n.ammoName,
-                      confirmLabel: l10n.actionCreate,
+                      confirmLabel: l10n.createAction,
                     );
                     if (name == null || !context.mounted) return;
                     await ref

@@ -12,9 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeScreenTitle => 'Home';
 
   @override
-  String get shotInfoScreenTitle => 'Shot info';
-
-  @override
   String get conditionsScreenTitle => 'Conditions';
 
   @override
@@ -28,6 +25,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get convertorsScreenTitle => 'Convertors';
+
+  @override
+  String get notesScreenTitle => 'Notes';
+
+  @override
+  String get toolsScreenTitle => 'Tools';
+
+  @override
+  String get shotInfoScreenTitle => 'Shot info';
+
+  @override
+  String get adjustmentDisplayScreenTitle => 'Adjustment Display';
+
+  @override
+  String get myAmmoScreenTitle => 'My Ammo';
+
+  @override
+  String get mySights => 'My Sights';
+
+  @override
+  String get myProfiles => 'My Profiles';
+
+  @override
+  String get newWeaponScreenTitle => 'New Weapon';
+
+  @override
+  String get weaponCollectionScreenTitle => 'Weapon Collection';
+
+  @override
+  String get bulletCollectionScreenTitle => 'Bullet Collection';
+
+  @override
+  String get cartridgeCollectionScreenTitle => 'Cartridge Collection';
+
+  @override
+  String get sightCollectionScreenTitle => 'Sight Collection';
+
+  @override
+  String get reticleScreenTitle => 'Reticle';
+
+  @override
+  String get powderSensTableEditorTitle =>
+      'Powder Temperature Sensitivity Table';
 
   @override
   String get lengthConvertorTitle => 'Length Converter';
@@ -54,37 +94,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetDistanceConvertorTitle => 'Target Distance';
 
   @override
-  String get enterLength => 'Enter length';
+  String get tabTrajectory => 'Trajectory';
 
   @override
-  String get enterWeight => 'Enter weight';
+  String get tabDetails => 'Details';
 
   @override
-  String get enterPressure => 'Enter pressure';
+  String get pageHoldovers => 'Holdovers';
 
   @override
-  String get enterTemperature => 'Enter temperature';
+  String get pageTrajectoryInfo => 'Trajectory info';
 
   @override
-  String get enterTorque => 'Enter torque';
-
-  @override
-  String get enterVelocity => 'Enter velocity';
-
-  @override
-  String get inputDistance => 'Distance Input';
-
-  @override
-  String get inputAngle => 'Angle Input';
-
-  @override
-  String get outputUnit => 'Output Unit';
-
-  @override
-  String get inputTargetSize => 'Target Size';
-
-  @override
-  String get inputAngularSize => 'Angular Size';
+  String get pageTrajectoryChart => 'Trajectory chart';
 
   @override
   String get sectionMetric => 'Metric';
@@ -114,13 +136,139 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionDistanceImperial => 'Distance imperial';
 
   @override
-  String get customAtmosphere => 'Custom atmosphere';
+  String get sectionLanguage => 'Language';
 
   @override
-  String get usingCustomConditions => 'Using custom conditions';
+  String get sectionAppearance => 'Appearance';
 
   @override
-  String get usingIcaoAtmosphere => 'Using ICAO standard atmosphere';
+  String get sectionUnitsSettings => 'Units settings';
+
+  @override
+  String get sectionHomeSettings => 'Home screen';
+
+  @override
+  String get sectionBackup => 'Backup';
+
+  @override
+  String get sectionLinks => 'Links';
+
+  @override
+  String get sectionAbout => 'About';
+
+  @override
+  String get sectionShowAdjustmentsIn => 'Show units';
+
+  @override
+  String get sectionCoriolisEffect => 'Coriolis effect';
+
+  @override
+  String get sectionEnergy => 'Energy';
+
+  @override
+  String get sectionTrajectory => 'Trajectory';
+
+  @override
+  String get sectionGyrostabilitySg => 'Gyroscopic stability';
+
+  @override
+  String get sectionBallistics => 'Ballistics';
+
+  @override
+  String get sectionHardware => 'Hardware';
+
+  @override
+  String get sectionClicks => 'Clicks';
+
+  @override
+  String get sectionReticle => 'Reticle';
+
+  @override
+  String get sectionMounting => 'Mounting';
+
+  @override
+  String get sectionManualAdjustments => 'Manual Adjustments';
+
+  @override
+  String get sectionHoldovers => 'Holdovers';
+
+  @override
+  String get sectionTarget => 'Target';
+
+  @override
+  String get sectionMagnification => 'Magnification';
+
+  @override
+  String get columnRange => 'Range';
+
+  @override
+  String get columnTime => 'Time';
+
+  @override
+  String get columnVelocity => 'Velocity';
+
+  @override
+  String get columnHeight => 'Height';
+
+  @override
+  String get columnDrop => 'Drop';
+
+  @override
+  String get columnDropAngle => 'Drop°';
+
+  @override
+  String get columnDropClicks => 'Drop';
+
+  @override
+  String get columnWind => 'Wind';
+
+  @override
+  String get columnWindAngle => 'Wind°';
+
+  @override
+  String get columnWindClicks => 'Wind';
+
+  @override
+  String get columnMach => 'Mach';
+
+  @override
+  String get columnDrag => 'Drag';
+
+  @override
+  String get columnEnergy => 'Energy';
+
+  @override
+  String get tablesConfigSectionDistance => 'Range';
+
+  @override
+  String get tablesConfigDistanceStart => 'Start distance';
+
+  @override
+  String get tablesConfigDistanceEnd => 'End distance';
+
+  @override
+  String get tablesConfigDistanceStep => 'Distance step';
+
+  @override
+  String get tablesConfigSectionExtra => 'Extra';
+
+  @override
+  String get tablesConfigShowZeroCrossingTable => 'Show zero crossings table';
+
+  @override
+  String get tablesConfigShowSubsonicTransition => 'Show subsonic transition';
+
+  @override
+  String get tablesConfigSectionVisibleColumns => 'Visible columns';
+
+  @override
+  String get tablesConfigSectionAdjustmentColumns => 'Adjustment columns';
+
+  @override
+  String get tablesSectionTrajectory => 'Trajectory';
+
+  @override
+  String get tablesSectionZeroCrossing => 'Zero Crossings';
 
   @override
   String get unitMillimeters => 'Millimeters';
@@ -228,38 +376,223 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitDegrees => 'Degrees';
 
   @override
-  String get sectionLanguage => 'Language';
+  String get unitClicks => 'Clicks';
 
   @override
-  String get sectionAppearance => 'Appearance';
+  String get unitJoule => 'Joule';
 
   @override
-  String get sectionUnitsSettings => 'Units settings';
+  String get unitMillimeterSym => 'mm';
 
   @override
-  String get unitsSettingsLabel => 'Units of Measurement';
+  String get unitCentimeterSym => 'cm';
 
   @override
-  String get sectionHomeSettings => 'Home screen';
+  String get unitMeterSym => 'm';
 
   @override
-  String get adjustmentDisplayScreenTitle => 'Adjustment Display';
+  String get unitInchSym => 'inch';
 
   @override
-  String get switchShowSubsonicTransition => 'Show subsonic transition';
+  String get unitFootSym => 'ft';
 
   @override
-  String get switchShowSubsonicTransitionSubtitle =>
-      'Displays on trajectory chart';
+  String get unitYardSym => 'yd';
 
   @override
-  String get labelTrajectoryTableStep => 'Table distance step';
+  String get unitGrainSym => 'gr';
 
   @override
-  String get labelTrajectoryChartStep => 'Chart distance step';
+  String get unitGramSym => 'g';
 
   @override
-  String get sectionBackup => 'Backup';
+  String get unitKilogramSym => 'kg';
+
+  @override
+  String get unitPoundSym => 'lb';
+
+  @override
+  String get unitOunceSym => 'oz';
+
+  @override
+  String get unitMpsSym => 'm/s';
+
+  @override
+  String get unitFpsSym => 'ft/s';
+
+  @override
+  String get unitKmhSym => 'km/h';
+
+  @override
+  String get unitMphSym => 'mph';
+
+  @override
+  String get unitMachSym => 'Mach';
+
+  @override
+  String get unitJouleSym => 'J';
+
+  @override
+  String get unitFootPoundSym => 'ft·lb';
+
+  @override
+  String get unitNewtonMeterSym => 'N·m';
+
+  @override
+  String get unitInchPoundSym => 'in·lb';
+
+  @override
+  String get unitHPaSym => 'hPa';
+
+  @override
+  String get unitMmHgSym => 'mmHg';
+
+  @override
+  String get unitInHgSym => 'inHg';
+
+  @override
+  String get unitPsiSym => 'psi';
+
+  @override
+  String get unitBarSym => 'bar';
+
+  @override
+  String get unitAtmSym => 'atm';
+
+  @override
+  String get unitCelsiusSym => '°C';
+
+  @override
+  String get unitFahrenheitSym => '°F';
+
+  @override
+  String get unitMilSym => 'MIL';
+
+  @override
+  String get unitMoaSym => 'MOA';
+
+  @override
+  String get unitMradSym => 'MRAD';
+
+  @override
+  String get unitCmPer100mSym => 'cm/100m';
+
+  @override
+  String get unitInPer100YdSym => 'in/100yd';
+
+  @override
+  String get unitDegreesSym => '°';
+
+  @override
+  String get enterLength => 'Enter length';
+
+  @override
+  String get enterWeight => 'Enter weight';
+
+  @override
+  String get enterPressure => 'Enter pressure';
+
+  @override
+  String get enterTemperature => 'Enter temperature';
+
+  @override
+  String get enterTorque => 'Enter torque';
+
+  @override
+  String get enterVelocity => 'Enter velocity';
+
+  @override
+  String get inputDistance => 'Distance Input';
+
+  @override
+  String get inputAngle => 'Angle Input';
+
+  @override
+  String get outputUnit => 'Output Unit';
+
+  @override
+  String get inputTargetSize => 'Target Size';
+
+  @override
+  String get inputAngularSize => 'Angular Size';
+
+  @override
+  String get customAtmosphere => 'Custom atmosphere';
+
+  @override
+  String get usingCustomConditions => 'Using custom conditions';
+
+  @override
+  String get usingIcaoAtmosphere => 'Using ICAO standard atmosphere';
+
+  @override
+  String get saveButton => 'Save';
+
+  @override
+  String get discardButton => 'Discard';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
+  String get nextButton => 'Next';
+
+  @override
+  String get dismissButton => 'Dismiss';
+
+  @override
+  String get printButton => 'Print';
+
+  @override
+  String get helpButton => 'Help';
+
+  @override
+  String get selectButton => 'Select';
+
+  @override
+  String get backTooltip => 'Back';
+
+  @override
+  String get tooltipConfigure => 'Configure';
+
+  @override
+  String get tooltipShare => 'Share';
+
+  @override
+  String get editAction => 'Edit';
+
+  @override
+  String get duplicateAction => 'Duplicate';
+
+  @override
+  String get exportAction => 'Export';
+
+  @override
+  String get importAction => 'Import';
+
+  @override
+  String get removeAction => 'Remove';
+
+  @override
+  String get createAction => 'Create';
+
+  @override
+  String get createNewAction => 'Create new';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get actionAddAmmo => 'Add Ammo';
+
+  @override
+  String get actionAddSight => 'Add Sight';
 
   @override
   String get actionExportBackup => 'Export';
@@ -268,25 +601,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionImportBackup => 'Import';
 
   @override
-  String get errorImportBackupFailed => 'Backup import failed';
+  String get actionImportFromFile => 'Import from file';
 
   @override
-  String get sectionLinks => 'Links';
+  String get actionSelectSightFromCollection => 'Select sight from collection';
 
   @override
-  String get sectionAbout => 'About';
+  String get selectCartridgeFromCollection =>
+      'Select cartridge from collection';
 
   @override
-  String get labelTermsOfUse => 'Terms of Use';
+  String get selectBulletFromCollection => 'Select bullet from collection';
 
   @override
-  String get labelPrivacyPolicy => 'Privacy Policy';
-
-  @override
-  String get labelVersion => 'Version';
-
-  @override
-  String get labelChangelog => 'Changelog';
+  String get goToCalculationsButton => 'Go to calculations';
 
   @override
   String get theme => 'Theme';
@@ -304,10 +632,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adjustmentDisplayFormat => 'Format';
 
   @override
-  String get unitClicks => 'Clicks';
+  String get unitsSettingsLabel => 'Units of Measurement';
 
   @override
-  String get sectionShowAdjustmentsIn => 'Show units';
+  String get switchShowSubsonicTransition => 'Show subsonic transition';
+
+  @override
+  String get switchShowSubsonicTransitionSubtitle =>
+      'Displays on trajectory chart';
+
+  @override
+  String get labelTrajectoryTableStep => 'Table distance step';
+
+  @override
+  String get labelTrajectoryChartStep => 'Chart distance step';
+
+  @override
+  String get labelTermsOfUse => 'Terms of Use';
+
+  @override
+  String get labelPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get labelVersion => 'Version';
+
+  @override
+  String get labelChangelog => 'Changelog';
 
   @override
   String get labelVelocity => 'Velocity';
@@ -346,106 +696,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelTargetSize => 'Target size';
 
   @override
-  String get tabTrajectory => 'Trajectory';
-
-  @override
-  String get tabDetails => 'Details';
-
-  @override
-  String get tooltipConfigure => 'Configure';
-
-  @override
-  String get tooltipShare => 'Share';
-
-  @override
-  String get columnRange => 'Range';
-
-  @override
-  String get columnTime => 'Time';
-
-  @override
-  String get columnVelocity => 'Velocity';
-
-  @override
-  String get columnHeight => 'Height';
-
-  @override
-  String get columnDrop => 'Drop';
-
-  @override
-  String get columnDropAngle => 'Drop°';
-
-  @override
-  String get columnDropClicks => 'Drop';
-
-  @override
-  String get columnWind => 'Wind';
-
-  @override
-  String get columnWindAngle => 'Wind°';
-
-  @override
-  String get columnWindClicks => 'Wind';
-
-  @override
-  String get columnMach => 'Mach';
-
-  @override
-  String get columnDrag => 'Drag';
-
-  @override
-  String get columnEnergy => 'Energy';
-
-  @override
-  String get tablesConfigSectionDistance => 'Range';
-
-  @override
-  String get tablesConfigDistanceStart => 'Start distance';
-
-  @override
-  String get tablesConfigDistanceEnd => 'End distance';
-
-  @override
-  String get tablesConfigDistanceStep => 'Distance step';
-
-  @override
-  String get tablesConfigSectionExtra => 'Extra';
-
-  @override
-  String get tablesConfigShowZeroCrossingTable => 'Show zero crossings table';
-
-  @override
-  String get tablesConfigShowSubsonicTransition => 'Show subsonic transition';
-
-  @override
-  String get tablesConfigSectionVisibleColumns => 'Visible columns';
-
-  @override
-  String get tablesConfigSectionAdjustmentColumns => 'Adjustment columns';
-
-  @override
-  String get tablesSectionTrajectory => 'Trajectory';
-
-  @override
-  String get tablesSectionZeroCrossing => 'Zero Crossings';
-
-  @override
   String get weapon => 'Weapon';
 
   @override
-  String get name => 'Name';
+  String get weaponName => 'Weapon name';
 
   @override
   String get caliber => 'Caliber';
 
   @override
-  String get twist => 'Twist';
+  String get caliberName => 'Caliber name';
+
+  @override
+  String get twistRate => 'Twist';
+
+  @override
+  String get twistDirection => 'Twist direction';
+
+  @override
+  String get rightHand => 'Right';
+
+  @override
+  String get leftHand => 'Left';
+
+  @override
+  String get barrelLength => 'Barrel length';
+
+  @override
+  String get sightHeight => 'Sight height';
 
   @override
   String get zeroDistance => 'Zero distance';
 
   @override
+  String get drumAdjustment => 'Manual adjustments';
+
+  @override
+  String get vendor => 'Vendor';
+
+  @override
   String get cartridge => 'Cartridge';
+
+  @override
+  String get cartridgeName => 'Cartridge name';
+
+  @override
+  String get ammo => 'Ammo';
+
+  @override
+  String get ammoName => 'Ammo name';
 
   @override
   String get zeroMv => 'Zero MV';
@@ -454,7 +753,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get currentMv => 'Current MV';
 
   @override
+  String get muzzleVelocity => 'Muzzle velocity';
+
+  @override
   String get projectile => 'Projectile';
+
+  @override
+  String get projectileName => 'Projectile name';
 
   @override
   String get dragModel => 'Drag model';
@@ -469,9 +774,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get length => 'Length';
 
   @override
-  String get diameter => 'Diameter';
-
-  @override
   String get weight => 'Weight';
 
   @override
@@ -482,6 +784,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gyrostabilitySg => 'Gyroscopic stability factor (Sg)';
+
+  @override
+  String get customDragTable => 'Custom Drag Table';
+
+  @override
+  String get multiBcTable => 'Multi-BC Table';
+
+  @override
+  String get twoColumnEditorFooter =>
+      'Rows where any value is 0 are ignored on save.';
+
+  @override
+  String get nonPositiveRowsHint =>
+      'Rows with non-positive velocity are ignored.\nTemperature may be negative, zero, or positive.\nSensitivity is averaged across all valid pairs.';
 
   @override
   String get conditions => 'Conditions';
@@ -540,44 +856,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mvAtAtmoTemp => 'Muzzle velocity at atmospheric temperature';
 
   @override
-  String get sectionCoriolisEffect => 'Coriolis effect';
+  String get sight => 'Sight';
 
   @override
-  String get errorZeroCrossingNotFound =>
-      'Zero crossings not found in the current trajectory range!';
+  String get sightName => 'Sight name';
 
   @override
-  String get saveButton => 'Save';
+  String get sightImage => 'Sight Image';
 
   @override
-  String get discardButton => 'Discard';
+  String get reticle => 'Reticle';
 
   @override
-  String get closeButton => 'Close';
+  String get reticlePattern => 'Reticle pattern';
 
   @override
-  String get confirmButton => 'Confirm';
+  String get targetPattern => 'Target pattern';
 
   @override
-  String get printButton => 'Print';
+  String get focalPlane => 'Focal plane';
 
   @override
-  String get notesScreenTitle => 'Notes';
+  String get focalPlaneFFP => 'FFP';
 
   @override
-  String get helpButton => 'Help';
+  String get focalPlaneSFP => 'SFP';
 
   @override
-  String get toolsScreenTitle => 'Tools';
+  String get focalPlaneLWIR => 'LWIR';
 
   @override
-  String get pageHoldovers => 'Holdovers';
+  String get defaultLabel => 'default';
 
   @override
-  String get pageTrajectoryInfo => 'Trajectory info';
+  String get magnification => 'Magnification';
 
   @override
-  String get pageTrajectoryChart => 'Trajectory chart';
+  String get maxMagnification => 'Max Magnification';
+
+  @override
+  String get minMagnification => 'Min Magnification';
+
+  @override
+  String get verticalClick => 'Vertical click';
+
+  @override
+  String get horizontalClick => 'Horizontal click';
+
+  @override
+  String get clickUnit => 'Click Unit';
+
+  @override
+  String get horizontalOffset => 'Horizontal Offset';
+
+  @override
+  String get verticalOffset => 'Vertical Offset';
+
+  @override
+  String get adjustmentUnit => 'Adjustment Unit';
+
+  @override
+  String get horizontalAdjustment => 'Horizontal Adjustment';
+
+  @override
+  String get verticalAdjustment => 'Vertical Adjustment';
+
+  @override
+  String get selectReticle => 'Select Reticle';
+
+  @override
+  String get calculatedSensitivity => 'Calculated Sensitivity';
+
+  @override
+  String get noMeasurementsYet => 'No measurements yet';
 
   @override
   String get lookAngle => 'Look angle';
@@ -586,43 +937,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get targetRange => 'Target range';
 
   @override
-  String get notYetAvaliable => 'not yet available';
-
-  @override
-  String get holdoversVertical => 'Hold';
-
-  @override
-  String get holdoversHorizontal => 'Windage';
-
-  @override
-  String get adjustmentDisplayDisabled => 'Adjustment Display disabled!';
-
-  @override
-  String get adjustmentDisplayDisabledHint => 'Enable';
-
-  @override
-  String get error => 'Error';
-
-  @override
   String get speedOfSound => 'Speed of sound';
 
   @override
   String get velocityAtTarget => 'Velocity at target';
 
   @override
-  String get sectionEnergy => 'Energy';
-
-  @override
-  String get sectionTrajectory => 'Trajectory';
-
-  @override
   String get energyAtTarget => 'Energy at target';
 
   @override
   String get energyAtMuzzle => 'Energy at muzzle velocity';
-
-  @override
-  String get sectionGyrostabilitySg => 'Gyroscopic stability';
 
   @override
   String get apexHeight => 'Trajectory apex';
@@ -637,46 +961,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeToTarget => 'Time to target';
 
   @override
-  String get placeholderSearch => 'Search';
+  String get holdoversVertical => 'Hold';
 
   @override
-  String get actions => 'Actions';
+  String get holdoversHorizontal => 'Windage';
 
   @override
-  String get editAction => 'Edit';
+  String get adjustmentDisplayDisabled => 'Adjustment Display disabled!';
 
   @override
-  String get duplicateAction => 'Duplicate';
+  String get adjustmentDisplayDisabledHint => 'Enable';
 
   @override
-  String get exportAction => 'Export';
+  String get additionalParameters => 'Additional parameters';
 
   @override
-  String get importAction => 'Import';
+  String get additionalParametersBarelLen => 'Barrel length, etc.';
 
   @override
-  String get removeAction => 'Remove';
+  String get caliberMatchingError => 'Ammo caliber differs from weapon caliber';
 
   @override
-  String get actionCreate => 'Create';
+  String get newSight => 'New Sight';
 
   @override
-  String get rightHand => 'RH';
+  String get newProfile => 'New Profile';
 
   @override
-  String get leftHand => 'LH';
+  String get newAmmo => 'New Ammo';
 
   @override
-  String get rightHandFull => 'Right';
+  String get newCartridge => 'New Cartridge';
 
   @override
-  String get leftHandFull => 'Left';
+  String get newProjectile => 'New Projectile';
 
   @override
-  String get selectButton => 'Select';
+  String get newBullet => 'New Bullet';
 
   @override
-  String get goToCalculationsButton => 'Go to calculations';
+  String get copyOf => 'Copy of';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get profileName => 'Profile name';
+
+  @override
+  String get editProfileName => 'Edit Profile Name';
+
+  @override
+  String get selectProfile => 'Select Profile';
+
+  @override
+  String get removeProfile => 'Remove Profile';
+
+  @override
+  String get noProfiles => 'No profiles. Tap + to add one.';
+
+  @override
+  String get noSightsFoundInFile => 'No sights found in file';
+
+  @override
+  String get ammoDuplicateDialogTitle => 'Duplicate Ammo';
+
+  @override
+  String get ammoRemoveDialogTitle => 'Remove Ammo';
+
+  @override
+  String get sightDuplicateDialogTitle => 'Duplicate Sight';
+
+  @override
+  String get sightRemoveDialogTitle => 'Remove Sight';
 
   @override
   String get selectAmmoSightHint => 'Select ammo and sight first';
@@ -688,48 +1045,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAmmoHint => 'Select ammo';
 
   @override
-  String get weaponName => 'Weapon name';
+  String get placeholderSearch => 'Search';
 
   @override
-  String get twistDirection => 'Twist direction';
+  String get notYetAvaliable => 'not yet available';
 
   @override
-  String get drumAdjustment => 'Manual adjustments';
+  String get requiredFieldError => 'Required';
 
   @override
-  String get bulletCollectionScreenTitle => 'Bullet Collection';
+  String get errorZeroCrossingNotFound =>
+      'Zero crossings not found in the current trajectory range!';
 
   @override
-  String get cartridgeCollectionScreenTitle => 'Cartridge Collection';
-
-  @override
-  String get caliberMatchingError => 'Ammo caliber differs from weapon caliber';
-
-  @override
-  String get twoColumnEditorFooter =>
-      'Rows where any value is 0 are ignored on save.';
-
-  @override
-  String get customDragTable => 'Custom Drag Table';
-
-  @override
-  String get multiBcTable => 'Multi-BC Table';
-
-  @override
-  String get actionAddAmmo => 'Add Ammo';
-
-  @override
-  String get createNewAction => 'Create new';
-
-  @override
-  String get selectCartridgeFromCollection =>
-      'Select cartridge from collection';
-
-  @override
-  String get selectBulletFromCollection => 'Select bullet from collection';
-
-  @override
-  String get actionImportFromFile => 'Import from file';
+  String get errorImportBackupFailed => 'Backup import failed';
 
   @override
   String get errorNoAmmoFoundInFile => 'No ammo found in file';
@@ -738,20 +1067,95 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorImportFailed => 'Import failed';
 
   @override
-  String get myAmmoScreenTitle => 'My Ammo';
+  String get error => 'Error';
 
   @override
-  String get ammoDuplicateDialogTitle => 'Duplicate Ammo';
+  String get sectionZeroing => 'Zeroing';
 
   @override
-  String get ammoRemoveDialogTitle => 'Remove Ammo';
+  String get calculateFromMeasurementsAction => 'Calculate from measurements';
 
   @override
-  String get remove => 'Remove';
+  String get updateAction => 'Update';
 
   @override
-  String get ammoName => 'Ammo name';
+  String get editCustomDragTableTitle => 'Edit Custom Drag Table';
 
   @override
-  String get copyOf => 'Copy of';
+  String enableMultiBcTitle(String model) {
+    return 'Enable $model Multi-BC';
+  }
+
+  @override
+  String editMultiBcTableTitle(String model) {
+    return 'Edit $model Multi-BC table';
+  }
+
+  @override
+  String ballisticCoefficientLabel(String model) {
+    return 'Ballistic coefficient $model';
+  }
+
+  @override
+  String get mvTemperatureLabel => 'Muzzle velocity temperature';
+
+  @override
+  String get mvTemperatureSubtitle =>
+      'Powder temperature at the time of measurement';
+
+  @override
+  String get measuredOrVendorSubtitle => 'Measured / Vendor provided';
+
+  @override
+  String get zeroingDistanceSubtitle => 'Zeroing distance';
+
+  @override
+  String get zeroingLookAngleSubtitle => 'Zeroing look angle';
+
+  @override
+  String get zeroingTemperatureSubtitle => 'Zeroing atmospheric temperature';
+
+  @override
+  String get zeroingPressureSubtitle => 'Zeroing atmospheric pressure';
+
+  @override
+  String get zeroingHumiditySubtitle => 'Zeroing atmospheric humidity';
+
+  @override
+  String get zeroingAltitudeSubtitle => 'Zeroing altitude';
+
+  @override
+  String get powderSensUnit => '%/15°C';
+
+  @override
+  String get addProfileDialogTitle => 'Add Profile';
+
+  @override
+  String get fromCollectionAction => 'From collection';
+
+  @override
+  String removeProfileContent(String name) {
+    return 'Remove \"$name\" and its weapon?';
+  }
+
+  @override
+  String get exportFormatDialogTitle => 'Export format';
+
+  @override
+  String get selectRangeDialogTitle => 'Select range';
+
+  @override
+  String get rangeSubsonic => 'Subsonic';
+
+  @override
+  String get rangeLow => 'Low';
+
+  @override
+  String get rangeMiddle => 'Middle';
+
+  @override
+  String get rangeLong => 'Long';
+
+  @override
+  String get rangeUltraLong => 'Ultra long';
 }

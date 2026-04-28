@@ -1,8 +1,11 @@
 import 'package:test/test.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter_impl.dart';
+import 'package:ebalistyka/l10n/app_localizations_en.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:bclibc_ffi/unit.dart';
+
+final _l10n = AppLocalizationsEn();
 
 /// Metric UnitSettings: meter, mps, celsius, hPa, cm (drop), mil, joule, grain, mm (sightHeight)
 UnitSettings _metricSettings() =>
@@ -26,7 +29,7 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(_metricSettings());
+      fmt = UnitFormatterImpl(_metricSettings(), _l10n);
     });
 
     // ── Formatted strings ──────────────────────────────────────────────────
@@ -120,8 +123,8 @@ void main() {
     });
 
     test('mach() formats with 2 decimals', () {
-      expect(fmt.mach(0.85), '0.85 M');
-      expect(fmt.mach(1.0), '1.00 M');
+      expect(fmt.mach(0.85), '0.85 Mach');
+      expect(fmt.mach(1.0), '1.00 Mach');
     });
 
     test('time() formats with 3 decimals', () {
@@ -150,7 +153,7 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(_imperialSettings());
+      fmt = UnitFormatterImpl(_imperialSettings(), _l10n);
     });
 
     test('velocity() formats fps', () {
@@ -212,7 +215,7 @@ void main() {
     late UnitFormatterImpl fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(_metricSettings());
+      fmt = UnitFormatterImpl(_metricSettings(), _l10n);
     });
 
     test('velocity: round-trip mps → raw → mps', () {
@@ -314,6 +317,7 @@ void main() {
           ..temperature = Unit.fahrenheit.name
           ..pressure = Unit.inHg.name
           ..sightHeight = Unit.inch.name,
+        _l10n,
       );
     });
 
@@ -371,7 +375,7 @@ void main() {
     late UnitFormatter fmt;
 
     setUp(() {
-      fmt = UnitFormatterImpl(_metricSettings());
+      fmt = UnitFormatterImpl(_metricSettings(), _l10n);
     });
 
     test('zero velocity returns no-data placeholder', () {
@@ -394,6 +398,7 @@ void main() {
     test('default constructor works', () {
       final formatter = UnitFormatterImpl(
         UnitSettings()..sightHeight = Unit.millimeter.name,
+        _l10n,
       );
       expect(formatter.velocitySymbol, Unit.mps.symbol);
     });

@@ -194,6 +194,7 @@ FormattedTableData buildHomeTable(
   GeneralSettings settings,
   UnitSettings units,
   UnitFormatter fmt,
+  AppLocalizations l10n,
 ) {
   final stepM = settings.homeTableDistanceStep;
   final distUnit = units.distanceUnit;
@@ -267,7 +268,11 @@ FormattedTableData buildHomeTable(
           : Angular.radian(hold).in_(u).toFixedSafe(acc);
       cells.add(FormattedCell(value: valStr, isTargetColumn: ci == targetCol));
     }
-    return FormattedRow(label: 'Drop', unitSymbol: unitLabel, cells: cells);
+    return FormattedRow(
+      label: l10n.columnDrop,
+      unitSymbol: unitLabel,
+      cells: cells,
+    );
   }
 
   FormattedRow buildTrajRow(

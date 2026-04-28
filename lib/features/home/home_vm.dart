@@ -57,7 +57,6 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final units = ref.read(unitSettingsProvider);
     final reticle = ref.read(reticleSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
-    final l10n = ref.read(appLocalizationsProvider);
 
     if (ctx == null || settings == null) {
       state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
@@ -80,6 +79,8 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     if (state.value is! HomeUiReady) {
       state = const AsyncLoading<HomeUiState>();
     }
+
+    final l10n = ref.read(appLocalizationsProvider);
 
     try {
       final opts = TargetCalcOptions(
@@ -352,6 +353,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       settings,
       units,
       formatter,
+      l10n,
     );
     final chartData = buildChartData(hit, targetM, settings);
     final autoIndex = closestIndex(chartData.points, targetM);

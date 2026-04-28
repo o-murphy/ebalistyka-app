@@ -105,7 +105,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           content: Text(l10n.caliberMatchingError),
           duration: const Duration(seconds: 6),
           action: SnackBarAction(
-            label: 'Update',
+            label: l10n.updateAction,
             onPressed: () => ref
                 .read(_provider.notifier)
                 .updateCaliberRaw(
@@ -207,143 +207,16 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     }
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
-  List<Widget> _buildBcSection({
-    required DragType dt,
-    required bool useMulti,
-    required List<({double vMps, double bc})>? multiTable,
-    required double? bcRaw,
-    required ValueChanged<bool> onMultiChanged,
-    required ValueChanged<double?> onBcChanged,
-  }) {
-    final dtName = dt.name.toUpperCase();
-    return [
-      SwitchListTile(
-        title: Text('Enable $dtName Multi-BC'),
-        subtitle: Text(
-          useMulti ? '$dtName Multi-BC mode' : '$dtName Single BC mode',
-        ),
-        value: useMulti,
-        onChanged: onMultiChanged,
-        dense: true,
-      ),
-      if (!useMulti)
-        NullableUnitValueFieldTile(
-          title: 'Ballistic coefficient $dtName',
-          rawValue: bcRaw,
-          constraints: FC.ballisticCoefficient,
-          displayUnit: Unit.fraction,
-          icon: IconDef.dragModel,
-          isRequired: true,
-          onChanged: onBcChanged,
-        ),
-      if (useMulti)
-        Builder(
-          builder: (context) {
-            final theme = Theme.of(context);
-            final isEmpty = multiTable == null || multiTable.isEmpty;
-            final count = multiTable?.length ?? 0;
-            return ListTile(
-              tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
-              leading: Icon(
-                IconDef.dragModel,
-                color: isEmpty ? theme.colorScheme.tertiary : null,
-              ),
-              title: Text('Edit $dtName Multi-BC table'),
-              subtitle: Text(
-                isEmpty
-                    ? 'Required'
-                    : '$count breakpoint${count == 1 ? '' : 's'}',
-                style: isEmpty
-                    ? TextStyle(color: theme.colorScheme.error)
-                    : null,
-              ),
-              trailing: const Icon(IconDef.chevronRight),
-              dense: true,
-              onTap: () => _navigateToMultiBcEditor(dt),
-            );
-          },
-        ),
-    ];
-  }
-
-  Widget _buildDragModel(AmmoWizardState st) {
-    final notifier = ref.read(_provider.notifier);
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-          child: SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<DragType>(
-              segments: const [
-                ButtonSegment(value: DragType.g1, label: Text('G1')),
-                ButtonSegment(value: DragType.g7, label: Text('G7')),
-                ButtonSegment(value: DragType.custom, label: Text('CUSTOM')),
-              ],
-              selected: {st.dragType},
-              onSelectionChanged: (s) => notifier.updateDragType(s.first),
-            ),
-          ),
-        ),
-        if (st.dragType == DragType.g1)
-          ..._buildBcSection(
-            dt: DragType.g1,
-            useMulti: st.useMultiBcG1,
-            multiTable: st.multiBcG1Table,
-            bcRaw: st.bcG1,
-            onMultiChanged: notifier.updateUseMultiBcG1,
-            onBcChanged: notifier.updateBcG1,
-          ),
-        if (st.dragType == DragType.g7)
-          ..._buildBcSection(
-            dt: DragType.g7,
-            useMulti: st.useMultiBcG7,
-            multiTable: st.multiBcG7Table,
-            bcRaw: st.bcG7,
-            onMultiChanged: notifier.updateUseMultiBcG7,
-            onBcChanged: notifier.updateBcG7,
-          ),
-        if (st.dragType == DragType.custom)
-          Builder(
-            builder: (context) {
-              final theme = Theme.of(context);
-              final isEmpty =
-                  st.customDragTable == null || st.customDragTable!.isEmpty;
-              final count = st.customDragTable?.length ?? 0;
-              return ListTile(
-                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
-                leading: Icon(
-                  IconDef.dragModel,
-                  color: isEmpty ? theme.colorScheme.tertiary : null,
-                ),
-                title: const Text('Edit Custom Drag Table'),
-                subtitle: Text(
-                  isEmpty ? 'Required' : '$count point${count == 1 ? '' : 's'}',
-                  style: isEmpty
-                      ? TextStyle(color: theme.colorScheme.error)
-                      : null,
-                ),
-                trailing: const Icon(IconDef.chevronRight),
-                dense: true,
-                onTap: _navigateToDragTableEditor,
-              );
-            },
-          ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final st = ref.watch(_provider);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
     final notifier = ref.read(_provider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      title: wizardTitle('New Ammo'),
+      title: wizardTitle(l10n.newAmmo),
       isSubscreen: true,
       showBack: false,
       bottomBar: WizardActionBar(
@@ -357,37 +230,37 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           // ── Name ──────────────────────────────────────────────────
           WizardNameField(
             controller: nameCtrl,
-            label: 'Ammo name',
+            label: l10n.ammoName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: vendorCtrl,
-              decoration: const InputDecoration(labelText: 'Vendor'),
+              decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
           ),
           // ── Projectile ──────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Projectile'),
+          ListSectionTile(l10n.projectile),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: TextField(
               controller: _projectileNameCtrl,
-              decoration: const InputDecoration(labelText: 'Projectile name'),
+              decoration: InputDecoration(labelText: l10n.projectileName),
               textCapitalization: TextCapitalization.words,
             ),
           ),
           InfoListTile(
-            label: 'Caliber',
+            label: l10n.caliber,
             value: formatter.diameter(
               Distance(st.caliberRaw, FC.projectileDiameter.rawUnit),
             ),
             icon: IconDef.caliber,
           ),
           NullableUnitValueFieldTile(
-            title: 'Weight',
+            title: l10n.weight,
             rawValue: st.weightRaw,
             constraints: FC.projectileWeight,
             displayUnit: units.weightUnit,
@@ -396,7 +269,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateWeightRaw,
           ),
           NullableUnitValueFieldTile(
-            title: 'Length',
+            title: l10n.length,
             rawValue: st.lengthRaw,
             constraints: FC.projectileLength,
             displayUnit: units.lengthUnit,
@@ -404,14 +277,26 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             isRequired: true,
             onChanged: notifier.updateLengthRaw,
           ),
-          _buildDragModel(st),
+          _DragModelSection(
+            st: st,
+            onDragTypeChanged: notifier.updateDragType,
+            onMultiBcG1Changed: notifier.updateUseMultiBcG1,
+            onBcG1Changed: notifier.updateBcG1,
+            onMultiBcG7Changed: notifier.updateUseMultiBcG7,
+            onBcG7Changed: notifier.updateBcG7,
+            onNavigateToMultiBcG1: () =>
+                unawaited(_navigateToMultiBcEditor(DragType.g1)),
+            onNavigateToMultiBcG7: () =>
+                unawaited(_navigateToMultiBcEditor(DragType.g7)),
+            onNavigateToDragTable: _navigateToDragTableEditor,
+          ),
 
           // ── Cartridge ──────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Cartridge'),
+          ListSectionTile(l10n.cartridge),
           NullableUnitValueFieldTile(
-            title: 'Muzzle velocity',
-            subtitle: "Measured / Vendor provided",
+            title: l10n.muzzleVelocity,
+            subtitle: l10n.measuredOrVendorSubtitle,
             rawValue: st.mvRaw,
             constraints: FC.muzzleVelocity,
             displayUnit: units.velocityUnit,
@@ -420,8 +305,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateMvRaw,
           ),
           UnitValueFieldTile(
-            title: 'Muzzle velocity temperature',
-            subtitle: 'Powder temperature at the time of measurement',
+            title: l10n.mvTemperatureLabel,
+            subtitle: l10n.mvTemperatureSubtitle,
             rawValue: st.mvTempRaw,
             constraints: FC.temperature,
             displayUnit: units.temperatureUnit,
@@ -429,7 +314,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateMvTempRaw,
           ),
           SwitchListTile(
-            title: const Text('Powder temperature sensitivity'),
+            title: Text(l10n.powderSensitivity),
             secondary: const Icon(IconDef.powderTemperature),
             value: st.usePowderSensitivity,
             onChanged: (v) {
@@ -441,10 +326,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
           // ── Zeroing ──────────────────────────────────────────────
           const TileDivider(),
-          const ListSectionTile('Zeroing'),
+          ListSectionTile(l10n.sectionZeroing),
           UnitValueFieldTile(
-            title: 'Distance',
-            subtitle: 'Zeroing distance',
+            title: l10n.zeroDistance,
+            subtitle: l10n.zeroingDistanceSubtitle,
             rawValue: st.zeroDistRaw,
             constraints: FC.zeroDistance,
             displayUnit: units.distanceUnit,
@@ -452,8 +337,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateZeroDistRaw,
           ),
           UnitValueFieldTile(
-            title: 'Look angle',
-            subtitle: 'Zeroing look angle',
+            title: l10n.lookAngle,
+            subtitle: l10n.zeroingLookAngleSubtitle,
             rawValue: st.zeroLookAngleRaw,
             constraints: FC.lookAngle,
             displayUnit: units.angularUnit,
@@ -461,8 +346,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateZeroLookAngleRaw,
           ),
           UnitValueFieldTile(
-            title: 'Temperature',
-            subtitle: 'Zeroing atmospheric temperature',
+            title: l10n.temperature,
+            subtitle: l10n.zeroingTemperatureSubtitle,
             rawValue: st.zeroTempRaw,
             constraints: FC.temperature,
             displayUnit: units.temperatureUnit,
@@ -470,8 +355,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateZeroTempRaw,
           ),
           UnitValueFieldTile(
-            title: 'Pressure',
-            subtitle: 'Zeroing atmospheric pressure',
+            title: l10n.pressure,
+            subtitle: l10n.zeroingPressureSubtitle,
             rawValue: st.zeroPressureRaw,
             constraints: FC.pressure,
             displayUnit: units.pressureUnit,
@@ -479,8 +364,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateZeroPressureRaw,
           ),
           UnitValueFieldTile(
-            title: 'Humidity',
-            subtitle: 'Zeroing atmospheric humidity',
+            title: l10n.humidity,
+            subtitle: l10n.zeroingHumiditySubtitle,
             rawValue: st.zeroHumidityRaw,
             constraints: FC.humidity,
             displayUnit: Unit.percent,
@@ -488,8 +373,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             onChanged: notifier.updateZeroHumidityRaw,
           ),
           UnitValueFieldTile(
-            title: 'Altitude',
-            subtitle: 'Zeroing altitude',
+            title: l10n.altitude,
+            subtitle: l10n.zeroingAltitudeSubtitle,
             rawValue: st.zeroAltRaw,
             constraints: FC.altitude,
             displayUnit: units.distanceUnit,
@@ -526,7 +411,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             ),
             ListTile(
               leading: const Icon(IconDef.powderTemperature),
-              title: const Text('Calculate from measurements'),
+              title: Text(l10n.calculateFromMeasurementsAction),
               subtitle: Text(
                 st.powderSensTable != null
                     ? '${st.powderSensTable!.length} measurement${st.powderSensTable!.length == 1 ? '' : 's'}'
@@ -606,6 +491,178 @@ class _AmmoPlaceholder extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BcSection extends StatelessWidget {
+  const _BcSection({
+    required this.dt,
+    required this.useMulti,
+    required this.multiTable,
+    required this.bcRaw,
+    required this.onMultiChanged,
+    required this.onBcChanged,
+    required this.onNavigate,
+  });
+
+  final DragType dt;
+  final bool useMulti;
+  final List<({double vMps, double bc})>? multiTable;
+  final double? bcRaw;
+  final ValueChanged<bool> onMultiChanged;
+  final ValueChanged<double?> onBcChanged;
+  final VoidCallback onNavigate;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dtName = dt.name.toUpperCase();
+    return Column(
+      children: [
+        SwitchListTile(
+          title: Text(l10n.enableMultiBcTitle(dtName)),
+          subtitle: Text(
+            useMulti ? '$dtName Multi-BC mode' : '$dtName Single BC mode',
+          ),
+          value: useMulti,
+          onChanged: onMultiChanged,
+          dense: true,
+        ),
+        if (!useMulti)
+          NullableUnitValueFieldTile(
+            title: l10n.ballisticCoefficientLabel(dtName),
+            rawValue: bcRaw,
+            constraints: FC.ballisticCoefficient,
+            displayUnit: Unit.fraction,
+            icon: IconDef.dragModel,
+            isRequired: true,
+            onChanged: onBcChanged,
+          ),
+        if (useMulti)
+          Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              final isEmpty = multiTable == null || multiTable!.isEmpty;
+              final count = multiTable?.length ?? 0;
+              return ListTile(
+                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                leading: Icon(
+                  IconDef.dragModel,
+                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                ),
+                title: Text(l10n.editMultiBcTableTitle(dtName)),
+                subtitle: Text(
+                  isEmpty
+                      ? l10n.requiredFieldError
+                      : '$count breakpoint${count == 1 ? '' : 's'}',
+                  style: isEmpty
+                      ? TextStyle(color: theme.colorScheme.error)
+                      : null,
+                ),
+                trailing: const Icon(IconDef.chevronRight),
+                dense: true,
+                onTap: onNavigate,
+              );
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _DragModelSection extends StatelessWidget {
+  const _DragModelSection({
+    required this.st,
+    required this.onDragTypeChanged,
+    required this.onMultiBcG1Changed,
+    required this.onBcG1Changed,
+    required this.onMultiBcG7Changed,
+    required this.onBcG7Changed,
+    required this.onNavigateToMultiBcG1,
+    required this.onNavigateToMultiBcG7,
+    required this.onNavigateToDragTable,
+  });
+
+  final AmmoWizardState st;
+  final ValueChanged<DragType> onDragTypeChanged;
+  final ValueChanged<bool> onMultiBcG1Changed;
+  final ValueChanged<double?> onBcG1Changed;
+  final ValueChanged<bool> onMultiBcG7Changed;
+  final ValueChanged<double?> onBcG7Changed;
+  final VoidCallback onNavigateToMultiBcG1;
+  final VoidCallback onNavigateToMultiBcG7;
+  final VoidCallback onNavigateToDragTable;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<DragType>(
+              segments: const [
+                ButtonSegment(value: DragType.g1, label: Text('G1')),
+                ButtonSegment(value: DragType.g7, label: Text('G7')),
+                ButtonSegment(value: DragType.custom, label: Text('CUSTOM')),
+              ],
+              selected: {st.dragType},
+              onSelectionChanged: (s) => onDragTypeChanged(s.first),
+            ),
+          ),
+        ),
+        if (st.dragType == DragType.g1)
+          _BcSection(
+            dt: DragType.g1,
+            useMulti: st.useMultiBcG1,
+            multiTable: st.multiBcG1Table,
+            bcRaw: st.bcG1,
+            onMultiChanged: onMultiBcG1Changed,
+            onBcChanged: onBcG1Changed,
+            onNavigate: onNavigateToMultiBcG1,
+          ),
+        if (st.dragType == DragType.g7)
+          _BcSection(
+            dt: DragType.g7,
+            useMulti: st.useMultiBcG7,
+            multiTable: st.multiBcG7Table,
+            bcRaw: st.bcG7,
+            onMultiChanged: onMultiBcG7Changed,
+            onBcChanged: onBcG7Changed,
+            onNavigate: onNavigateToMultiBcG7,
+          ),
+        if (st.dragType == DragType.custom)
+          Builder(
+            builder: (context) {
+              final theme = Theme.of(context);
+              final isEmpty =
+                  st.customDragTable == null || st.customDragTable!.isEmpty;
+              final count = st.customDragTable?.length ?? 0;
+              return ListTile(
+                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                leading: Icon(
+                  IconDef.dragModel,
+                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                ),
+                title: Text(l10n.editCustomDragTableTitle),
+                subtitle: Text(
+                  isEmpty
+                      ? l10n.requiredFieldError
+                      : '$count point${count == 1 ? '' : 's'}',
+                  style: isEmpty
+                      ? TextStyle(color: theme.colorScheme.error)
+                      : null,
+                ),
+                trailing: const Icon(IconDef.chevronRight),
+                dense: true,
+                onTap: onNavigateToDragTable,
+              );
+            },
+          ),
+      ],
     );
   }
 }
