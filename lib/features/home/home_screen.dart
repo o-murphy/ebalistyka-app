@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
@@ -67,6 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
+    final l10n = AppLocalizations.of(context)!;
 
     final profileName = vmState is HomeUiReady ? vmState.profileName : nullStr;
     final cs = vmState is HomeUiReady ? vmState.conditionsState : null;
@@ -107,7 +109,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
         getWindDirCtx(deg) => UnitPickerContext(
           context,
-          label: 'Wind direction',
+          label: l10n.windDirection,
           rawValue: deg,
           constraints: FC.windDirection,
           displayUnit: Unit.degree,
@@ -120,10 +122,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         );
 
         String pageName = switch (_currentPage) {
-          0 => "Holdovers",
-          1 => "Trajectory info",
-          2 => "Trajectory chart",
-          _ => "",
+          0 => l10n.pageHoldovers,
+          1 => l10n.pageTrajectoryInfo,
+          2 => l10n.pageTrajectoryChart,
+          _ => '',
         };
 
         return Stack(
@@ -234,7 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             cs.onSurface.withValues(
                                               alpha: 0.65,
                                             ),
-                                            "Temp.",
+                                            l10n.temperature,
                                             tempStr,
                                           ),
                                           (
@@ -243,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             cs.onSurface.withValues(
                                               alpha: 0.65,
                                             ),
-                                            "Altitude",
+                                            l10n.altitude,
                                             altStr,
                                           ),
                                         ],
@@ -252,7 +254,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,
-                                              'Notes',
+                                              l10n.notesScreenTitle,
                                             ),
                                       ),
                                     ),
@@ -285,7 +287,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             cs.onSurface.withValues(
                                               alpha: 0.65,
                                             ),
-                                            "Humidity",
+                                            l10n.humidity,
                                             humidStr,
                                           ),
                                           (
@@ -294,19 +296,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             cs.onSurface.withValues(
                                               alpha: 0.65,
                                             ),
-                                            "Pressure",
+                                            l10n.pressure,
                                             pressStr,
                                           ),
                                         ],
                                         onTopPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,
-                                              'Help',
+                                              l10n.helpButton,
                                             ),
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,
-                                              'Tools',
+                                              l10n.toolsScreenTitle,
                                             ),
                                       ),
                                     ),

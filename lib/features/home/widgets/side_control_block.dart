@@ -48,6 +48,7 @@ class SideControlBlock extends StatelessWidget {
                       color: cs.onSurface.withValues(alpha: 0.85),
                     ),
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 if (infoRows[i].$4.isNotEmpty)
                   Text(
@@ -57,6 +58,7 @@ class SideControlBlock extends StatelessWidget {
                       color: cs.onSurface.withValues(alpha: 0.85),
                     ),
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 if (i < infoRows.length - 1) const SizedBox(height: 4),
               ],

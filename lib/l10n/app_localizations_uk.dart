@@ -553,4 +553,22 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get printButton => 'Друкувати';
+
+  @override
+  String get notesScreenTitle => 'Notes';
+
+  @override
+  String get helpButton => 'Help';
+
+  @override
+  String get toolsScreenTitle => 'Tools';
+
+  @override
+  String get pageHoldovers => 'Holdovers';
+
+  @override
+  String get pageTrajectoryInfo => 'Trajectory info';
+
+  @override
+  String get pageTrajectoryChart => 'Trajectory chart';
 }

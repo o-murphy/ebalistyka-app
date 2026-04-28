@@ -1,6 +1,6 @@
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_sight_tile_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_sight_tile_body.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
@@ -10,8 +10,8 @@ import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/collection_item.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:go_router/go_router.dart';

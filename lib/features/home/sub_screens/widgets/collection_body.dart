@@ -1,4 +1,4 @@
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:flutter/material.dart';
 
 class BaseCollectionBody extends StatefulWidget {

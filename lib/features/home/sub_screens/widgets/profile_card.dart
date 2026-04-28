@@ -1,6 +1,6 @@
 import 'package:ebalistyka/features/home/profiles_vm.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_control_tile.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_sections.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

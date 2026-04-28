@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -48,42 +48,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     with WizardFormMixin<AmmoWizardScreen> {
   late final TextEditingController _projectileNameCtrl;
 
-  late double _caliberRaw;
-  double? _weightRaw;
-  double? _lengthRaw;
-  late DragType _dragType;
-  late bool _useMultiBcG1;
-  late bool _useMultiBcG7;
-  double? _bcG1;
-  double? _bcG7;
-  List<({double vMps, double bc})>? _multiBcG1Table;
-  List<({double vMps, double bc})>? _multiBcG7Table;
-  List<({double mach, double cd})>? _customDragTable;
-  List<({double tempC, double vMps})>? _powderSensTable;
-  double? _mvRaw;
-  late double _mvTempRaw;
-  late double _zeroDistRaw;
-  late double _zeroLookAngleRaw;
-  late double _zeroTempRaw;
-  late double _zeroAltRaw;
-  late double _zeroPressureRaw;
-  late double _zeroHumidityRaw;
-  late bool _usePowderSensitivity;
-  late double _powderSensRaw;
-  late bool _zeroUseDiffPowderTemp;
-  late double _zeroPowderTempRaw;
-  late bool _zeroUseCoriolis;
-  late double _zeroLatitudeRaw;
-  late double _zeroAzimuthRaw;
-
   final _scrollController = ScrollController();
   final _powderSensKey = GlobalKey();
   final _coriolisKey = GlobalKey();
 
-  late double _offsetXRaw;
-  late Unit _offsetXUnit;
-  late double _offsetYRaw;
-  late Unit _offsetYUnit;
+  NotifierProvider<AmmoWizardNotifier, AmmoWizardState> get _provider =>
+      ammoWizardProvider(
+        (initial: widget.initial, caliberInch: widget.caliberInch),
+      );
 
   @override
   String get initialName => widget.initial?.name ?? '';
@@ -92,65 +64,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
   String get initialVendor => widget.initial?.vendor ?? '';
 
   @override
+  void onNameChanged() {
+    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    super.onNameChanged();
+  }
+
+  @override
   void initState() {
     super.initState();
-    final a = widget.initial;
+    _projectileNameCtrl = TextEditingController(
+      text: widget.initial?.projectileName ?? '',
+    );
     _scheduleCaliberMismatchToast();
-    _projectileNameCtrl = TextEditingController(text: a?.projectileName ?? '');
-    final caliberRaw = a != null && a.caliberInch > 0
-        ? a.caliber.in_(FC.projectileDiameter.rawUnit)
-        : null;
-    _caliberRaw =
-        caliberRaw ??
-        Distance.inch(
-          widget.caliberInch ?? FC.projectileDiameter.minRaw,
-        ).in_(FC.projectileDiameter.rawUnit);
-    _weightRaw = (a != null && a.weightGrain > 0)
-        ? a.weight.in_(FC.projectileWeight.rawUnit)
-        : null;
-    _lengthRaw = (a != null && a.lengthInch > 0)
-        ? a.length.in_(FC.projectileLength.rawUnit)
-        : null;
-    _dragType = a?.dragType ?? DragType.g1;
-    _useMultiBcG1 = a?.useMultiBcG1 ?? false;
-    _useMultiBcG7 = a?.useMultiBcG7 ?? false;
-    _bcG1 = (a != null && a.bcG1 > 0) ? a.bcG1 : null;
-    _bcG7 = (a != null && a.bcG7 > 0) ? a.bcG7 : null;
-    _multiBcG1Table = _decodeTable(a?.multiBcTableG1VMps, a?.multiBcTableG1Bc);
-    _multiBcG7Table = _decodeTable(a?.multiBcTableG7VMps, a?.multiBcTableG7Bc);
-    _customDragTable = _decodeCustomTable(
-      a?.customDragTableMach,
-      a?.customDragTableCd,
-    );
-    _powderSensTable = _decodePowderSensTable(
-      a?.powderSensitivityTC,
-      a?.powderSensitivityVMps,
-    );
-    _mvRaw = a?.mv?.in_(FC.muzzleVelocity.rawUnit);
-    _mvTempRaw = a?.mvTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
-    _zeroDistRaw = a?.zeroDistance.in_(FC.zeroDistance.rawUnit) ?? 100.0;
-    _zeroLookAngleRaw = a?.zeroLookAngle.in_(FC.lookAngle.rawUnit) ?? 0.0;
-    _zeroTempRaw = a?.zeroTemperature.in_(FC.temperature.rawUnit) ?? 15.0;
-    _zeroAltRaw = a?.zeroAltitude.in_(FC.altitude.rawUnit) ?? 0.0;
-    _zeroPressureRaw = a?.zeroPressure.in_(FC.pressure.rawUnit) ?? 1013;
-    _zeroHumidityRaw = a?.zeroHumidityFrac ?? 0.0;
-    _usePowderSensitivity = a?.usePowderSensitivity ?? false;
-    _powderSensRaw = a?.powderSensitivityFrac ?? 0.0;
-    _zeroUseDiffPowderTemp = a?.zeroUseDiffPowderTemperature ?? false;
-    _zeroPowderTempRaw = a?.zeroPowderTemp.in_(FC.temperature.rawUnit) ?? 15.0;
-    _zeroUseCoriolis = a?.zeroUseCoriolis ?? false;
-    _zeroLatitudeRaw = a?.zeroLatitudeDeg ?? 0.0;
-    _zeroAzimuthRaw = a?.zeroAzimuthDeg ?? 0.0;
-
-    _offsetYUnit = a?.zeroOffsetYUnitValue ?? Unit.mil;
-    _offsetYRaw = a == null
-        ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
-        : Angular(a.zeroOffsetY, _offsetYUnit).in_(FC.adjustment.rawUnit);
-
-    _offsetXUnit = a?.zeroOffsetXUnitValue ?? Unit.mil;
-    _offsetXRaw = a == null
-        ? Angular.mil(0.1).in_(FC.adjustment.rawUnit)
-        : Angular(a.zeroOffsetX, _offsetXUnit).in_(FC.adjustment.rawUnit);
   }
 
   @override
@@ -160,33 +85,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     super.dispose();
   }
 
-  static List<({double vMps, double bc})>? _decodeTable(
-    Float64List? vMps,
-    Float64List? bcs,
-  ) {
-    if (vMps == null || bcs == null || vMps.isEmpty) return null;
-    return List.generate(vMps.length, (i) => (vMps: vMps[i], bc: bcs[i]));
-  }
-
-  static List<({double mach, double cd})>? _decodeCustomTable(
-    Float64List? mach,
-    Float64List? cd,
-  ) {
-    if (mach == null || cd == null || mach.isEmpty) return null;
-    return List.generate(mach.length, (i) => (mach: mach[i], cd: cd[i]));
-  }
-
-  static List<({double tempC, double vMps})>? _decodePowderSensTable(
-    Float64List? tempC,
-    Float64List? vMps,
-  ) {
-    if (tempC == null || vMps == null || tempC.isEmpty) return null;
-    return List.generate(tempC.length, (i) => (tempC: tempC[i], vMps: vMps[i]));
-  }
-
   void _scheduleCaliberMismatchToast() {
     final weaponCaliber = widget.caliberInch;
-    final ammoCaliber = widget.initial?.caliberInch;
+    final ammoCaliber = widget.initial?.caliber.in_(Unit.inch);
     if (weaponCaliber == null || ammoCaliber == null) return;
     if ((weaponCaliber - ammoCaliber).abs() < 0.0001) return;
 
@@ -198,10 +99,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           duration: const Duration(seconds: 6),
           action: SnackBarAction(
             label: 'Update',
-            onPressed: () => setState(
-              () => _caliberRaw = Distance.inch(
-                weaponCaliber,
-              ).in_(FC.projectileDiameter.rawUnit),
+            onPressed: () => ref.read(_provider.notifier).updateCaliberRaw(
+              Distance.inch(weaponCaliber).in_(FC.projectileDiameter.rawUnit),
             ),
           ),
         ),
@@ -224,143 +123,11 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     });
   }
 
-  // ── Validation ────────────────────────────────────────────────────────────
-
-  bool get _isValid {
-    if (!isNameValid) return false;
-    if (_caliberRaw <= 0) return false;
-    if ((_weightRaw ?? 0) <= 0) return false;
-    if ((_lengthRaw ?? 0) <= 0) return false;
-    if ((_mvRaw ?? 0) <= 0) return false;
-    if (_dragType == DragType.g1) {
-      if (_useMultiBcG1) {
-        if (_multiBcG1Table == null || _multiBcG1Table!.isEmpty) return false;
-      } else if ((_bcG1 ?? 0) <= 0) {
-        return false;
-      }
-    }
-    if (_dragType == DragType.g7) {
-      if (_useMultiBcG7) {
-        if (_multiBcG7Table == null || _multiBcG7Table!.isEmpty) return false;
-      } else if ((_bcG7 ?? 0) <= 0) {
-        return false;
-      }
-    }
-    if (_dragType == DragType.custom) {
-      if (_customDragTable == null || _customDragTable!.isEmpty) return false;
-    }
-    return true;
-  }
-
-  // ── Build result ──────────────────────────────────────────────────────────
-
-  Ammo _buildAmmo() {
-    final ammo = widget.initial ?? Ammo();
-    ammo.name = nameCtrl.text.trim();
-    ammo.vendor = vendorCtrl.text.trim().isEmpty
-        ? null
-        : vendorCtrl.text.trim();
-    ammo.projectileName = _projectileNameCtrl.text.trim().isEmpty
-        ? null
-        : _projectileNameCtrl.text.trim();
-    ammo.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
-    ammo.weightGrain = _weightRaw != null
-        ? Weight(_weightRaw!, FC.projectileWeight.rawUnit).in_(Unit.grain)
-        : -1.0;
-    ammo.lengthInch = _lengthRaw != null
-        ? Distance(_lengthRaw!, FC.projectileLength.rawUnit).in_(Unit.inch)
-        : -1.0;
-    ammo.dragType = _dragType;
-    ammo.useMultiBcG1 = _useMultiBcG1;
-    ammo.useMultiBcG7 = _useMultiBcG7;
-    ammo.bcG1 = _bcG1 ?? -1.0;
-    ammo.bcG7 = _bcG7 ?? -1.0;
-    final g1 = _multiBcG1Table;
-    if (g1 != null && g1.isNotEmpty) {
-      ammo.multiBcTableG1VMps = Float64List.fromList(
-        g1.map((r) => r.vMps).toList(),
-      );
-      ammo.multiBcTableG1Bc = Float64List.fromList(
-        g1.map((r) => r.bc).toList(),
-      );
-    } else {
-      ammo.multiBcTableG1VMps = null;
-      ammo.multiBcTableG1Bc = null;
-    }
-    final g7 = _multiBcG7Table;
-    if (g7 != null && g7.isNotEmpty) {
-      ammo.multiBcTableG7VMps = Float64List.fromList(
-        g7.map((r) => r.vMps).toList(),
-      );
-      ammo.multiBcTableG7Bc = Float64List.fromList(
-        g7.map((r) => r.bc).toList(),
-      );
-    } else {
-      ammo.multiBcTableG7VMps = null;
-      ammo.multiBcTableG7Bc = null;
-    }
-    final custom = _customDragTable;
-    if (custom != null && custom.isNotEmpty) {
-      ammo.customDragTableMach = Float64List.fromList(
-        custom.map((r) => r.mach).toList(),
-      );
-      ammo.customDragTableCd = Float64List.fromList(
-        custom.map((r) => r.cd).toList(),
-      );
-    } else {
-      ammo.customDragTableMach = null;
-      ammo.customDragTableCd = null;
-    }
-    ammo.muzzleVelocityMps = _mvRaw != null
-        ? Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps)
-        : -1.0;
-    ammo.mvTemperature = Temperature(_mvTempRaw, FC.temperature.rawUnit);
-
-    ammo.zeroDistance = Distance(_zeroDistRaw, FC.zeroDistance.rawUnit);
-    ammo.zeroLookAngle = Angular(_zeroLookAngleRaw, FC.lookAngle.rawUnit);
-    ammo.zeroTemperature = Temperature(_zeroTempRaw, FC.temperature.rawUnit);
-    ammo.zeroPressure = Pressure(_zeroPressureRaw, FC.pressure.rawUnit);
-    ammo.zeroHumidityFrac = _zeroHumidityRaw;
-    ammo.zeroAltitude = Distance(_zeroAltRaw, FC.altitude.rawUnit);
-    ammo.usePowderSensitivity = _usePowderSensitivity;
-    ammo.powderSensitivity = Ratio.fraction(_powderSensRaw);
-    final psTable = _powderSensTable;
-    if (psTable != null && psTable.isNotEmpty) {
-      ammo.powderSensitivityTC = Float64List.fromList(
-        psTable.map((r) => r.tempC).toList(),
-      );
-      ammo.powderSensitivityVMps = Float64List.fromList(
-        psTable.map((r) => r.vMps).toList(),
-      );
-    } else {
-      ammo.powderSensitivityTC = null;
-      ammo.powderSensitivityVMps = null;
-    }
-    ammo.zeroUseDiffPowderTemperature = _zeroUseDiffPowderTemp;
-    ammo.zeroPowderTemp = Temperature(
-      _zeroPowderTempRaw,
-      FC.temperature.rawUnit,
-    );
-    ammo.zeroUseCoriolis = _zeroUseCoriolis;
-    ammo.zeroLatitudeDeg = _zeroLatitudeRaw;
-    ammo.zeroAzimuthDeg = _zeroAzimuthRaw;
-
-    ammo.zeroOffsetYUnitValue = _offsetYUnit;
-    ammo.zeroOffsetY = Angular(
-      _offsetYRaw,
-      FC.adjustment.rawUnit,
-    ).in_(_offsetYUnit);
-    ammo.zeroOffsetXUnitValue = _offsetXUnit;
-    ammo.zeroOffsetX = Angular(
-      _offsetXRaw,
-      FC.adjustment.rawUnit,
-    ).in_(_offsetXUnit);
-    return ammo;
-  }
-
   void _onSave() {
-    if (!_isValid) return;
-    commitSave(_buildAmmo);
+    final notifier = ref.read(_provider.notifier);
+    notifier.updateVendor(vendorCtrl.text);
+    notifier.updateProjectileName(_projectileNameCtrl.text);
+    commitSave(ref.read(_provider).buildAmmo);
   }
 
   // ── Navigation ────────────────────────────────────────────────────────────
@@ -368,46 +135,47 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
   Future<void> _navigateToDragTableEditor() async {
     final result = await context.push<List<({double mach, double cd})>>(
       Routes.ammoEditDragTable,
-      extra: _customDragTable,
+      extra: ref.read(_provider).customDragTable,
     );
     if (!mounted || result == null) return;
-    setState(() => _customDragTable = result.isEmpty ? null : result);
+    ref
+        .read(_provider.notifier)
+        .updateCustomDragTable(result.isEmpty ? null : result);
   }
 
   Future<void> _navigateToPowderSensTable() async {
-    final mvMps = _mvRaw == null
+    final st = ref.read(_provider);
+    final mvMps = st.mvRaw == null
         ? null
-        : Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
+        : Velocity(st.mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
     final tempC = Temperature(
-      _mvTempRaw,
+      st.mvTempRaw,
       FC.temperature.rawUnit,
     ).in_(Unit.celsius);
     final result = await context.push<PowderSensTableResult>(
       Routes.ammoEditPowderSensTable,
-      extra: (table: _powderSensTable, mvMps: mvMps, tempC: tempC),
+      extra: (table: st.powderSensTable, mvMps: mvMps, tempC: tempC),
     );
     if (!mounted || result == null) return;
-    setState(() {
-      _powderSensTable = result.table.isEmpty ? null : result.table;
-      final sens = result.sensitivity;
-      // Only update coefficient when table has valid pairs — empty table
-      // preserves the manually-entered coefficient.
-      if (sens != null && result.table.isNotEmpty) {
-        _powderSensRaw = sens.clamp(0.0, double.infinity);
-      }
-    });
+    final sens = result.sensitivity;
+    ref.read(_provider.notifier).updatePowderSensTable(
+      result.table.isEmpty ? null : result.table,
+      sensitivityFrac: sens != null && result.table.isNotEmpty
+          ? sens.clamp(0.0, double.infinity)
+          : null,
+    );
   }
 
   Future<void> _navigateToMultiBcEditor(DragType dt) async {
-    final table = dt == DragType.g1 ? _multiBcG1Table : _multiBcG7Table;
-    final bc = dt == DragType.g1 ? _bcG1 : _bcG7;
+    final st = ref.read(_provider);
+    final table = dt == DragType.g1 ? st.multiBcG1Table : st.multiBcG7Table;
+    final bc = dt == DragType.g1 ? st.bcG1 : st.bcG7;
     final route = dt == DragType.g1
         ? Routes.ammoEditMultiBcG1
         : Routes.ammoEditMultiBcG7;
-
-    final mvMps = _mvRaw == null
+    final mvMps = st.mvRaw == null
         ? null
-        : Velocity(_mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
+        : Velocity(st.mvRaw!, FC.muzzleVelocity.rawUnit).in_(Unit.mps);
 
     final result = await context.push<List<({double vMps, double bc})>>(
       route,
@@ -415,13 +183,15 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     );
 
     if (!mounted || result == null) return;
-    setState(() {
-      if (dt == DragType.g1) {
-        _multiBcG1Table = result.isEmpty ? null : result;
-      } else {
-        _multiBcG7Table = result.isEmpty ? null : result;
-      }
-    });
+    if (dt == DragType.g1) {
+      ref
+          .read(_provider.notifier)
+          .updateMultiBcG1Table(result.isEmpty ? null : result);
+    } else {
+      ref
+          .read(_provider.notifier)
+          .updateMultiBcG7Table(result.isEmpty ? null : result);
+    }
   }
 
   // ── Build ─────────────────────────────────────────────────────────────────
@@ -442,7 +212,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           useMulti ? '$dtName Multi-BC mode' : '$dtName Single BC mode',
         ),
         value: useMulti,
-        onChanged: (v) => setState(() => onMultiChanged(v)),
+        onChanged: onMultiChanged,
         dense: true,
       ),
       if (!useMulti)
@@ -453,7 +223,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           displayUnit: Unit.fraction,
           icon: IconDef.dragModel,
           isRequired: true,
-          onChanged: (v) => setState(() => onBcChanged(v)),
+          onChanged: onBcChanged,
         ),
       if (useMulti)
         Builder(
@@ -485,7 +255,8 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     ];
   }
 
-  Widget _buildDragModel() {
+  Widget _buildDragModel(AmmoWizardState st) {
+    final notifier = ref.read(_provider.notifier);
     return Column(
       children: [
         Padding(
@@ -498,36 +269,36 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                 ButtonSegment(value: DragType.g7, label: Text('G7')),
                 ButtonSegment(value: DragType.custom, label: Text('CUSTOM')),
               ],
-              selected: {_dragType},
-              onSelectionChanged: (s) => setState(() => _dragType = s.first),
+              selected: {st.dragType},
+              onSelectionChanged: (s) => notifier.updateDragType(s.first),
             ),
           ),
         ),
-        if (_dragType == DragType.g1)
+        if (st.dragType == DragType.g1)
           ..._buildBcSection(
             dt: DragType.g1,
-            useMulti: _useMultiBcG1,
-            multiTable: _multiBcG1Table,
-            bcRaw: _bcG1,
-            onMultiChanged: (v) => _useMultiBcG1 = v,
-            onBcChanged: (v) => _bcG1 = v,
+            useMulti: st.useMultiBcG1,
+            multiTable: st.multiBcG1Table,
+            bcRaw: st.bcG1,
+            onMultiChanged: notifier.updateUseMultiBcG1,
+            onBcChanged: notifier.updateBcG1,
           ),
-        if (_dragType == DragType.g7)
+        if (st.dragType == DragType.g7)
           ..._buildBcSection(
             dt: DragType.g7,
-            useMulti: _useMultiBcG7,
-            multiTable: _multiBcG7Table,
-            bcRaw: _bcG7,
-            onMultiChanged: (v) => _useMultiBcG7 = v,
-            onBcChanged: (v) => _bcG7 = v,
+            useMulti: st.useMultiBcG7,
+            multiTable: st.multiBcG7Table,
+            bcRaw: st.bcG7,
+            onMultiChanged: notifier.updateUseMultiBcG7,
+            onBcChanged: notifier.updateBcG7,
           ),
-        if (_dragType == DragType.custom)
+        if (st.dragType == DragType.custom)
           Builder(
             builder: (context) {
               final theme = Theme.of(context);
               final isEmpty =
-                  _customDragTable == null || _customDragTable!.isEmpty;
-              final count = _customDragTable?.length ?? 0;
+                  st.customDragTable == null || st.customDragTable!.isEmpty;
+              final count = st.customDragTable?.length ?? 0;
               return ListTile(
                 tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
                 leading: Icon(
@@ -553,8 +324,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final st = ref.watch(_provider);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
+    final notifier = ref.read(_provider.notifier);
 
     return BaseScreen(
       title: wizardTitle('New Ammo'),
@@ -562,7 +335,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
       showBack: false,
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
-        onSave: _isValid ? _onSave : null,
+        onSave: st.isValid ? _onSave : null,
       ),
       body: ListView(
         controller: _scrollController,
@@ -596,29 +369,29 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           InfoListTile(
             label: 'Caliber',
             value: formatter.diameter(
-              Distance(_caliberRaw, FC.projectileDiameter.rawUnit),
+              Distance(st.caliberRaw, FC.projectileDiameter.rawUnit),
             ),
             icon: IconDef.caliber,
           ),
           NullableUnitValueFieldTile(
             title: 'Weight',
-            rawValue: _weightRaw,
+            rawValue: st.weightRaw,
             constraints: FC.projectileWeight,
             displayUnit: units.weightUnit,
             icon: IconDef.weigth,
             isRequired: true,
-            onChanged: (v) => setState(() => _weightRaw = v),
+            onChanged: notifier.updateWeightRaw,
           ),
           NullableUnitValueFieldTile(
             title: 'Length',
-            rawValue: _lengthRaw,
+            rawValue: st.lengthRaw,
             constraints: FC.projectileLength,
             displayUnit: units.lengthUnit,
             icon: IconDef.length,
             isRequired: true,
-            onChanged: (v) => setState(() => _lengthRaw = v),
+            onChanged: notifier.updateLengthRaw,
           ),
-          _buildDragModel(),
+          _buildDragModel(st),
 
           // ── Cartridge ──────────────────────────────────────────────
           const TileDivider(),
@@ -626,28 +399,28 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           NullableUnitValueFieldTile(
             title: 'Muzzle velocity',
             subtitle: "Measured / Vendor provided",
-            rawValue: _mvRaw,
+            rawValue: st.mvRaw,
             constraints: FC.muzzleVelocity,
             displayUnit: units.velocityUnit,
             icon: IconDef.velocity,
             isRequired: true,
-            onChanged: (v) => setState(() => _mvRaw = v),
+            onChanged: notifier.updateMvRaw,
           ),
           UnitValueFieldTile(
             title: 'Muzzle velocity temperature',
             subtitle: 'Powder temperature at the time of measurement',
-            rawValue: _mvTempRaw,
+            rawValue: st.mvTempRaw,
             constraints: FC.temperature,
             displayUnit: units.temperatureUnit,
             icon: IconDef.temperature,
-            onChanged: (v) => setState(() => _mvTempRaw = v),
+            onChanged: notifier.updateMvTempRaw,
           ),
           SwitchListTile(
             title: const Text('Powder temperature sensitivity'),
             secondary: const Icon(IconDef.powderTemperature),
-            value: _usePowderSensitivity,
+            value: st.usePowderSensitivity,
             onChanged: (v) {
-              setState(() => _usePowderSensitivity = v);
+              notifier.updateUsePowderSensitivity(v);
               if (v) _scrollTo(_powderSensKey);
             },
             dense: true,
@@ -659,71 +432,71 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           UnitValueFieldTile(
             title: 'Distance',
             subtitle: 'Zeroing distance',
-            rawValue: _zeroDistRaw,
+            rawValue: st.zeroDistRaw,
             constraints: FC.zeroDistance,
             displayUnit: units.distanceUnit,
             icon: IconDef.range,
-            onChanged: (v) => setState(() => _zeroDistRaw = v),
+            onChanged: notifier.updateZeroDistRaw,
           ),
           UnitValueFieldTile(
             title: 'Look angle',
             subtitle: 'Zeroing look angle',
-            rawValue: _zeroLookAngleRaw,
+            rawValue: st.zeroLookAngleRaw,
             constraints: FC.lookAngle,
             displayUnit: units.angularUnit,
             icon: IconDef.angle,
-            onChanged: (v) => setState(() => _zeroLookAngleRaw = v),
+            onChanged: notifier.updateZeroLookAngleRaw,
           ),
           UnitValueFieldTile(
             title: 'Temperature',
             subtitle: 'Zeroing atmospheric temperature',
-            rawValue: _zeroTempRaw,
+            rawValue: st.zeroTempRaw,
             constraints: FC.temperature,
             displayUnit: units.temperatureUnit,
             icon: IconDef.temperature,
-            onChanged: (v) => setState(() => _zeroTempRaw = v),
+            onChanged: notifier.updateZeroTempRaw,
           ),
           UnitValueFieldTile(
             title: 'Pressure',
             subtitle: 'Zeroing atmospheric pressure',
-            rawValue: _zeroPressureRaw,
+            rawValue: st.zeroPressureRaw,
             constraints: FC.pressure,
             displayUnit: units.pressureUnit,
             icon: IconDef.pressure,
-            onChanged: (v) => setState(() => _zeroPressureRaw = v),
+            onChanged: notifier.updateZeroPressureRaw,
           ),
           UnitValueFieldTile(
             title: 'Humidity',
             subtitle: 'Zeroing atmospheric humidity',
-            rawValue: _zeroHumidityRaw,
+            rawValue: st.zeroHumidityRaw,
             constraints: FC.humidity,
             displayUnit: Unit.percent,
             icon: IconDef.humidity,
-            onChanged: (v) => setState(() => _zeroHumidityRaw = v),
+            onChanged: notifier.updateZeroHumidityRaw,
           ),
           UnitValueFieldTile(
             title: 'Altitude',
             subtitle: 'Zeroing altitude',
-            rawValue: _zeroAltRaw,
+            rawValue: st.zeroAltRaw,
             constraints: FC.altitude,
             displayUnit: units.distanceUnit,
             icon: IconDef.altitude,
-            onChanged: (v) => setState(() => _zeroAltRaw = v),
+            onChanged: notifier.updateZeroAltRaw,
           ),
 
           // ── Powder sensitivity ──────────────────────────────────────────────
-          if (_usePowderSensitivity) ...[
+          if (st.usePowderSensitivity) ...[
             const TileDivider(),
             PowderSensSection(
               key: _powderSensKey,
               showToggle: false,
-              usePowderSensitivity: _usePowderSensitivity,
-              useDiffPowderTemp: _zeroUseDiffPowderTemp,
+              usePowderSensitivity: st.usePowderSensitivity,
+              useDiffPowderTemp: st.zeroUseDiffPowderTemp,
               temperatureUnit: units.temperatureUnit,
-              powderTempRaw: _zeroPowderTempRaw,
-              powderSensRaw: _powderSensRaw,
+              powderTempRaw: st.zeroPowderTempRaw,
+              powderSensRaw: st.powderSensRaw,
               mvValue: () {
-                final ammo = _buildAmmo();
+                final ammo = st.buildAmmo();
                 if (!ammo.isReadyForCalculation) return null;
                 return formatter.velocity(
                   ammo.toZeroAmmo().getVelocityForTemp(
@@ -732,20 +505,18 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                 );
               }(),
               sensitivityValue: formatter.powderSensitivity(
-                Ratio.fraction(_powderSensRaw),
+                Ratio.fraction(st.powderSensRaw),
               ),
-              onDiffTempToggled: (v) =>
-                  setState(() => _zeroUseDiffPowderTemp = v),
-              onPowderTempChanged: (v) =>
-                  setState(() => _zeroPowderTempRaw = v),
-              onPowderSensChanged: (v) => setState(() => _powderSensRaw = v),
+              onDiffTempToggled: notifier.updateZeroUseDiffPowderTemp,
+              onPowderTempChanged: notifier.updateZeroPowderTempRaw,
+              onPowderSensChanged: notifier.updatePowderSensRaw,
             ),
             ListTile(
               leading: const Icon(IconDef.powderTemperature),
               title: const Text('Calculate from measurements'),
               subtitle: Text(
-                _powderSensTable != null
-                    ? '${_powderSensTable!.length} measurement${_powderSensTable!.length == 1 ? '' : 's'}'
+                st.powderSensTable != null
+                    ? '${st.powderSensTable!.length} measurement${st.powderSensTable!.length == 1 ? '' : 's'}'
                     : 'Tap to add T→V measurements',
               ),
               trailing: const Icon(IconDef.chevronRight),
@@ -760,30 +531,30 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
             yLabel: 'Vertical offset',
             xLabel: 'Horizontal offset',
             unitLabel: 'Click unit',
-            yRaw: _offsetYRaw,
-            xRaw: _offsetXRaw,
-            yUnits: _offsetYUnit,
-            xUnits: _offsetXUnit,
-            onYChanged: (v) => setState(() => _offsetYRaw = v),
-            onXChanged: (v) => setState(() => _offsetXRaw = v),
-            onYUnitChanged: (u) => setState(() => _offsetYUnit = u),
-            onXUnitChanged: (u) => setState(() => _offsetXUnit = u),
+            yRaw: st.offsetYRaw,
+            xRaw: st.offsetXRaw,
+            yUnits: st.offsetYUnit,
+            xUnits: st.offsetXUnit,
+            onYChanged: notifier.updateOffsetYRaw,
+            onXChanged: notifier.updateOffsetXRaw,
+            onYUnitChanged: notifier.updateOffsetYUnit,
+            onXUnitChanged: notifier.updateOffsetXUnit,
           ),
 
           // ── Zeroing coriolis ────────────────────────────────────────
           const TileDivider(),
           CoriolisSection(
             key: _coriolisKey,
-            useCoriolis: _zeroUseCoriolis,
-            latitudeRaw: _zeroLatitudeRaw,
-            azimuthRaw: _zeroAzimuthRaw,
+            useCoriolis: st.zeroUseCoriolis,
+            latitudeRaw: st.zeroLatitudeRaw,
+            azimuthRaw: st.zeroAzimuthRaw,
             angularUnit: Unit.degree,
             onCoriolisToggled: (v) {
-              setState(() => _zeroUseCoriolis = v);
+              notifier.updateZeroUseCoriolis(v);
               if (v) _scrollTo(_coriolisKey);
             },
-            onLatitudeChanged: (v) => setState(() => _zeroLatitudeRaw = v),
-            onAzimuthChanged: (v) => setState(() => _zeroAzimuthRaw = v),
+            onLatitudeChanged: notifier.updateZeroLatitudeRaw,
+            onAzimuthChanged: notifier.updateZeroAzimuthRaw,
           ),
         ],
       ),

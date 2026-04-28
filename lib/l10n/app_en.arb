@@ -439,5 +439,17 @@
     "confirmButton": "Confirm",
     "@confirmButton": {},
     "printButton": "Print",
-    "@printButton": {}
+    "@printButton": {},
+    "notesScreenTitle": "Notes",
+    "@notesScreenTitle": {},
+    "helpButton": "Help",
+    "@helpButton": {},
+    "toolsScreenTitle": "Tools",
+    "@toolsScreenTitle": {},
+    "pageHoldovers": "Holdovers",
+    "@pageHoldovers": {},
+    "pageTrajectoryInfo": "Trajectory info",
+    "@pageTrajectoryInfo": {},
+    "pageTrajectoryChart": "Trajectory chart",
+    "@pageTrajectoryChart": {}
 }

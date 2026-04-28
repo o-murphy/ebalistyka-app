@@ -1177,6 +1177,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Print'**
   String get printButton;
+
+  /// No description provided for @notesScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesScreenTitle;
+
+  /// No description provided for @helpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get helpButton;
+
+  /// No description provided for @toolsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get toolsScreenTitle;
+
+  /// No description provided for @pageHoldovers.
+  ///
+  /// In en, this message translates to:
+  /// **'Holdovers'**
+  String get pageHoldovers;
+
+  /// No description provided for @pageTrajectoryInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory info'**
+  String get pageTrajectoryInfo;
+
+  /// No description provided for @pageTrajectoryChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajectory chart'**
+  String get pageTrajectoryChart;
 }
 
 class _AppLocalizationsDelegate
