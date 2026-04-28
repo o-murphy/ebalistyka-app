@@ -1,9 +1,9 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:bclibc_ffi/unit.dart' show Distance;
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
@@ -37,40 +37,21 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     with WizardFormMixin<WeaponWizardScreen> {
   late final TextEditingController _caliberNameCtrl;
 
-  // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
-  // caliberDiameter: Unit.millimeter (FC.bulletDiameter)
-  late double _caliberRaw;
-  // twist magnitude: Unit.inch (FC.twist) — always positive, direction via _rightHand
-  late double _twistRaw;
-  late bool _rightHand;
-
-  // ── Extra fields ──────────────────────────────────────────────────────────
-  bool _showExtraFields = false;
-  late double? _barrelLengthRaw;
-
   @override
   String get initialName => widget.initial?.name ?? '';
 
   @override
   String get initialVendor => widget.initial?.vendor ?? '';
 
+  NotifierProvider<WeaponWizardNotifier, WeaponWizardState> get _provider =>
+      weaponWizardProvider((initial: widget.initial));
+
   @override
   void initState() {
     super.initState();
-    final w = widget.initial;
-    _caliberNameCtrl = TextEditingController(text: w?.caliberName ?? '');
-    _caliberRaw = (w != null && w.caliberInch > 0)
-        ? w.caliber.in_(FC.projectileDiameter.rawUnit)
-        : Distance.inch(0.338).in_(FC.projectileDiameter.rawUnit);
-    final twistAbs = w?.twist.in_(FC.twist.rawUnit).abs() ?? 0.0;
-    _twistRaw = twistAbs > 0 ? twistAbs : FC.twist.minRaw;
-    _rightHand = w != null ? w.isRightHandTwist : true;
-
-    // Initialize barrel length from an existing value, if any
-    _barrelLengthRaw = w?.barrelLength?.in_(FC.barrelLength.rawUnit);
-
-    // Show the section if there is a value in the database
-    _showExtraFields = _barrelLengthRaw != null;
+    _caliberNameCtrl = TextEditingController(
+      text: widget.initial?.caliberName ?? '',
+    );
   }
 
   @override
@@ -79,48 +60,27 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     super.dispose();
   }
 
-  // ── Validation ────────────────────────────────────────────────────────────
-
-  bool get _isValid {
-    if (!isNameValid) return false;
-    if (_caliberRaw <= 0) return false;
-    if (_twistRaw < 0) return false;
-    return true;
-  }
-
-  // ── Build result ──────────────────────────────────────────────────────────
-
-  Weapon _buildWeapon() {
-    final weapon = widget.initial ?? Weapon();
-    weapon.name = nameCtrl.text.trim();
-    weapon.vendor = vendorCtrl.text.trim().isEmpty
-        ? null
-        : vendorCtrl.text.trim();
-    weapon.caliberName = _caliberNameCtrl.text.trim();
-    weapon.caliber = Distance(_caliberRaw, FC.projectileDiameter.rawUnit);
-    weapon.twist = Distance(
-      _rightHand ? _twistRaw : -_twistRaw,
-      FC.twist.rawUnit,
-    );
-    weapon.barrelLength = (_showExtraFields && _barrelLengthRaw != null)
-        ? Distance(_barrelLengthRaw!, FC.barrelLength.rawUnit)
-        : null;
-    return weapon;
+  @override
+  void onNameChanged() {
+    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    super.onNameChanged();
   }
 
   void _onSave() {
-    if (!_isValid) return;
-    commitSave(_buildWeapon);
+    final notifier = ref.read(_provider.notifier);
+    notifier.updateVendor(vendorCtrl.text);
+    notifier.updateCaliberName(_caliberNameCtrl.text);
+    commitSave(ref.read(_provider).buildWeapon);
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final st = ref.watch(_provider);
+    final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
     final formatter = ref.watch(unitFormatterProvider);
     final caliberEditable = widget.caliberEditable ?? widget.initial == null;
-    final twistDirIcon = _rightHand ? IconDef.twistR : IconDef.twistL;
+    final twistDirIcon = st.rightHand ? IconDef.twistR : IconDef.twistL;
 
     return BaseScreen(
       title: wizardTitle('New Rifle'),
@@ -128,7 +88,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
       showBack: false,
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
-        onSave: _isValid ? _onSave : null,
+        onSave: st.isValid ? _onSave : null,
       ),
       body: ListView(
         children: [
@@ -160,11 +120,11 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           if (caliberEditable)
             UnitValueFieldTile(
               title: 'Caliber diameter',
-              rawValue: _caliberRaw,
+              rawValue: st.caliberRaw,
               constraints: FC.projectileDiameter,
               displayUnit: units.diameterUnit,
               icon: IconDef.caliber,
-              onChanged: (v) => setState(() => _caliberRaw = v),
+              onChanged: notifier.updateCaliberRaw,
             )
           else
             InfoListTile(
@@ -176,19 +136,19 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           const ListSectionTile('Hardware'),
           UnitValueFieldTile(
             title: 'Twist rate',
-            rawValue: _twistRaw,
+            rawValue: st.twistRaw,
             constraints: FC.twist,
             displayUnit: units.twistUnit,
             symbol: '1:${units.twistUnit.symbol}',
             icon: twistDirIcon,
-            onChanged: (v) => setState(() => _twistRaw = v),
+            onChanged: notifier.updateTwistRaw,
           ),
           SwitchListTile(
             secondary: Icon(twistDirIcon),
             title: const Text('Twist direction'),
-            subtitle: Text(_rightHand ? 'right' : 'left'),
-            value: _rightHand,
-            onChanged: (v) => setState(() => _rightHand = v),
+            subtitle: Text(st.rightHand ? 'right' : 'left'),
+            value: st.rightHand,
+            onChanged: notifier.updateRightHand,
             dense: true,
           ),
           // ── Extra fields section ────────────────────────────────────
@@ -197,21 +157,20 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
             secondary: const Icon(IconDef.moreHoriz),
             title: const Text('Additional parameters'),
             subtitle: const Text('Barrel length, etc.'),
-            value: _showExtraFields,
-            onChanged: (v) => setState(() => _showExtraFields = v),
+            value: st.showExtraFields,
+            onChanged: notifier.updateShowExtraFields,
             dense: true,
           ),
-          if (_showExtraFields) ...[
+          if (st.showExtraFields) ...[
             const SizedBox(height: 8),
             NullableUnitValueFieldTile(
               title: 'Barrel length',
-              rawValue: _barrelLengthRaw,
+              rawValue: st.barrelLengthRaw,
               constraints: FC.barrelLength,
               displayUnit: units.barrelLengthUnit,
               icon: IconDef.length,
-              onChanged: (v) => setState(() => _barrelLengthRaw = v),
+              onChanged: notifier.updateBarrelLengthRaw,
             ),
-            // You can add other additional fields here in the future
           ],
         ],
       ),

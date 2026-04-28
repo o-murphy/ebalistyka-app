@@ -7,6 +7,7 @@
 import 'dart:async';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -174,12 +175,18 @@ HomeUiReady _makeReady({
 
 Widget _scoped(HomeUiState state, Widget child) => ProviderScope(
   overrides: [homeVmProvider.overrideWith(() => _FakeHomeVM(state))],
-  child: MaterialApp(home: Scaffold(body: child)),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: Scaffold(body: child),
+  ),
 );
 
 Widget _scopedLoading(Widget child) => ProviderScope(
   overrides: [homeVmProvider.overrideWith(() => _NeverReadyHomeVM())],
-  child: MaterialApp(home: Scaffold(body: child)),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: Scaffold(body: child),
+  ),
 );
 
 // ── HomeChartPage ─────────────────────────────────────────────────────────────

@@ -15,6 +15,8 @@ import 'package:ebalistyka/core/services/ballistics_service.dart';
 import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:flutter/widgets.dart' show Locale;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 
@@ -195,6 +197,9 @@ ProviderContainer _makeContainer({
       unitSettingsProvider.overrideWith((ref) => units ?? UnitSettings()),
       ballisticsServiceProvider.overrideWithValue(
         _FakeBallisticsService(result ?? _makeResult()),
+      ),
+      appLocalizationsProvider.overrideWithValue(
+        lookupAppLocalizations(const Locale('en')),
       ),
       if (reticle != null)
         reticleSettingsProvider.overrideWith((ref) => reticle),

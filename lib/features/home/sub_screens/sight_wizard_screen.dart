@@ -1,8 +1,9 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
-import 'package:bclibc_ffi/unit.dart' show Angular, Distance, Unit;
+import 'package:bclibc_ffi/unit.dart' show Unit;
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/features/home/sub_screens/sight_wizard_notifier.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -32,111 +33,30 @@ class SightWizardScreen extends ConsumerStatefulWidget {
 
 class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
     with WizardFormMixin<SightWizardScreen> {
-  // ── Draft state (all raw values in FC rawUnits) ───────────────────────────
-  // sightHeight / horizontalOffset: Unit.millimeter (FC.sightHeight)
-  late double _sightHeightRaw;
-  late double _horizontalOffsetRaw;
-
-  // focalPlane enum
-  late FocalPlane _focalPlane;
-
-  // clicks: raw in FC.adjustment.rawUnit (mil), display unit stored separately
-  late double _vClickRaw;
-  late Unit _vClickUnit;
-  late double _hClickRaw;
-  late Unit _hClickUnit;
-
-  // magnification: dimensionless scalar (FC.magnification, Unit.scalar)
-  late double _minMagRaw;
-  late double _maxMagRaw;
-
-  late String? _reticleImage;
-
   @override
   String get initialName => widget.initial?.name ?? '';
 
   @override
   String get initialVendor => widget.initial?.vendor ?? '';
 
+  NotifierProvider<SightWizardNotifier, SightWizardState> get _provider =>
+      sightWizardProvider((initial: widget.initial));
+
   @override
-  void initState() {
-    super.initState();
-    final s = widget.initial;
-
-    _sightHeightRaw = s?.sightHeight.in_(FC.sightHeight.rawUnit) ?? 0.0;
-    _horizontalOffsetRaw =
-        s?.horizontalOffset.in_(FC.sightHeight.rawUnit) ?? 0.0;
-
-    _focalPlane = s?.focalPlane ?? FocalPlane.ffp;
-
-    _vClickUnit = s?.verticalClickUnitValue ?? Unit.mil;
-    _vClickRaw = s != null
-        ? Angular(s.verticalClick, _vClickUnit).in_(FC.adjustment.rawUnit)
-        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
-
-    _hClickUnit = s?.horizontalClickUnitValue ?? Unit.mil;
-    _hClickRaw = s != null
-        ? Angular(s.horizontalClick, _hClickUnit).in_(FC.adjustment.rawUnit)
-        : Angular.mil(0.1).in_(FC.adjustment.rawUnit);
-
-    final storedMin = s?.minMagnification ?? 0.0;
-    final storedMax = s?.maxMagnification ?? 0.0;
-    _minMagRaw = storedMin > 0 ? storedMin : 1.0;
-    _maxMagRaw = storedMax > 0 ? storedMax : 1.0;
-
-    _reticleImage = s?.reticleImage;
-  }
-
-  // ── Validation ────────────────────────────────────────────────────────────
-
-  bool get _isValid {
-    if (!isNameValid) return false;
-    if (_minMagRaw <= 0) return false;
-    if (_maxMagRaw <= 0) return false;
-    if (_vClickRaw <= 0) return false;
-    if (_hClickRaw <= 0) return false;
-    return true;
-  }
-
-  // ── Build result ──────────────────────────────────────────────────────────
-
-  Sight _buildSight() {
-    final sight = widget.initial ?? Sight();
-    sight.name = nameCtrl.text.trim();
-    sight.vendor = vendorCtrl.text.trim().isEmpty
-        ? null
-        : vendorCtrl.text.trim();
-    sight.sightHeight = Distance(_sightHeightRaw, FC.sightHeight.rawUnit);
-    sight.horizontalOffset = Distance(
-      _horizontalOffsetRaw,
-      FC.sightHeight.rawUnit,
-    );
-    sight.focalPlane = _focalPlane;
-    sight.verticalClickUnitValue = _vClickUnit;
-    sight.verticalClick = Angular(
-      _vClickRaw,
-      FC.adjustment.rawUnit,
-    ).in_(_vClickUnit);
-    sight.horizontalClickUnitValue = _hClickUnit;
-    sight.horizontalClick = Angular(
-      _hClickRaw,
-      FC.adjustment.rawUnit,
-    ).in_(_hClickUnit);
-    sight.minMagnification = _minMagRaw;
-    sight.maxMagnification = _maxMagRaw;
-    sight.reticleImage = _reticleImage;
-    return sight;
+  void onNameChanged() {
+    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    super.onNameChanged();
   }
 
   void _onSave() {
-    if (!_isValid) return;
-    commitSave(_buildSight);
+    ref.read(_provider.notifier).updateVendor(vendorCtrl.text);
+    commitSave(ref.read(_provider).buildSight);
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    final st = ref.watch(_provider);
+    final notifier = ref.read(_provider.notifier);
     final units = ref.watch(unitSettingsProvider);
 
     return BaseScreen(
@@ -145,7 +65,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
       showBack: false,
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
-        onSave: _isValid ? _onSave : null,
+        onSave: st.isValid ? _onSave : null,
       ),
       body: ListView(
         children: [
@@ -169,19 +89,19 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           const ListSectionTile('Mounting'),
           UnitValueFieldTile(
             title: 'Sight height',
-            rawValue: _sightHeightRaw,
+            rawValue: st.sightHeightRaw,
             constraints: FC.sightHeight,
             displayUnit: units.sightHeightUnit,
             icon: IconDef.height,
-            onChanged: (v) => setState(() => _sightHeightRaw = v),
+            onChanged: notifier.updateSightHeightRaw,
           ),
           UnitValueFieldTile(
             title: 'Horizontal offset',
-            rawValue: _horizontalOffsetRaw,
+            rawValue: st.horizontalOffsetRaw,
             constraints: FC.sightHeight,
             displayUnit: units.sightHeightUnit,
             icon: IconDef.horizontalOffset,
-            onChanged: (v) => setState(() => _horizontalOffsetRaw = v),
+            onChanged: notifier.updateHorizontalOffsetRaw,
           ),
           // ── Reticle ────────────────────────────────────────────────
           const TileDivider(),
@@ -189,7 +109,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           ListTile(
             leading: const Icon(IconDef.sight),
             title: const Text('Reticle pattern'),
-            subtitle: Text(_reticleImage ?? 'default'),
+            subtitle: Text(st.reticleImage ?? 'default'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               final route = widget.initial != null
@@ -197,10 +117,10 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
                   : Routes.sightReticlePicker;
               final result = await context.push<String?>(
                 route,
-                extra: _reticleImage,
+                extra: st.reticleImage,
               );
               if (result != null && mounted) {
-                setState(() => _reticleImage = result);
+                notifier.updateReticleImage(result);
               }
             },
             dense: true,
@@ -226,27 +146,27 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
                   icon: Icon(IconDef.lwir),
                 ),
               ],
-              selected: {_focalPlane},
-              onSelectionChanged: (s) => setState(() => _focalPlane = s.first),
+              selected: {st.focalPlane},
+              onSelectionChanged: (s) => notifier.updateFocalPlane(s.first),
             ),
           ),
           UnitValueFieldTile(
             title: 'Min magnification',
-            rawValue: _minMagRaw,
+            rawValue: st.minMagRaw,
             constraints: FC.magnification,
             displayUnit: Unit.scalar,
             symbol: 'x',
             icon: IconDef.magnificationMin,
-            onChanged: (v) => setState(() => _minMagRaw = v),
+            onChanged: notifier.updateMinMagRaw,
           ),
           UnitValueFieldTile(
             title: 'Max magnification',
-            rawValue: _maxMagRaw,
+            rawValue: st.maxMagRaw,
             constraints: FC.magnification,
             displayUnit: Unit.scalar,
             symbol: 'x',
             icon: IconDef.magnificationMax,
-            onChanged: (v) => setState(() => _maxMagRaw = v),
+            onChanged: notifier.updateMaxMagRaw,
           ),
           // ── Clicks ────────────────────────────────────────────────
           const TileDivider(),
@@ -256,14 +176,14 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
             yLabel: 'Vertical click',
             xLabel: 'Horizontal click',
             unitLabel: 'Click unit',
-            yRaw: _vClickRaw,
-            xRaw: _hClickRaw,
-            yUnits: _vClickUnit,
-            xUnits: _hClickUnit,
-            onYChanged: (v) => setState(() => _vClickRaw = v),
-            onXChanged: (v) => setState(() => _hClickRaw = v),
-            onYUnitChanged: (u) => setState(() => _vClickUnit = u),
-            onXUnitChanged: (u) => setState(() => _hClickUnit = u),
+            yRaw: st.vClickRaw,
+            xRaw: st.hClickRaw,
+            yUnits: st.vClickUnit,
+            xUnits: st.hClickUnit,
+            onYChanged: notifier.updateVClickRaw,
+            onXChanged: notifier.updateHClickRaw,
+            onYUnitChanged: notifier.updateVClickUnit,
+            onXUnitChanged: notifier.updateHClickUnit,
           ),
         ],
       ),

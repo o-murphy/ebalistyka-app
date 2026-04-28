@@ -210,7 +210,7 @@ void main() {
   // ── isValid ───────────────────────────────────────────────────────────────────
 
   group('AmmoWizardFormState.isValid', () {
-    AmmoWizardFormState _valid() =>
+    AmmoWizardFormState valid() =>
         AmmoWizardFormState.fromAmmo(
           initial: null,
           caliberInch: 0.308,
@@ -223,46 +223,46 @@ void main() {
         );
 
     test('false when name is empty', () {
-      expect(_valid().copyWith(name: '').isValid, false);
+      expect(valid().copyWith(name: '').isValid, false);
     });
 
     test('false when name is whitespace only', () {
-      final s = _valid().copyWith(name: '   ');
+      final s = valid().copyWith(name: '   ');
       expect(s.isValid, false);
     });
 
     test('false when caliberRaw is zero', () {
-      expect(_valid().copyWith(caliberRaw: 0.0).isValid, false);
+      expect(valid().copyWith(caliberRaw: 0.0).isValid, false);
     });
 
     test('false when weightRaw is null', () {
       expect(
-        _valid().copyWith(weightRaw: null, clearWeight: true).isValid,
+        valid().copyWith(weightRaw: null, clearWeight: true).isValid,
         false,
       );
     });
 
     test('false when weightRaw is zero', () {
-      expect(_valid().copyWith(weightRaw: 0.0).isValid, false);
+      expect(valid().copyWith(weightRaw: 0.0).isValid, false);
     });
 
     test('false when lengthRaw is null', () {
       expect(
-        _valid().copyWith(lengthRaw: null, clearLength: true).isValid,
+        valid().copyWith(lengthRaw: null, clearLength: true).isValid,
         false,
       );
     });
 
     test('false when mvRaw is null', () {
-      expect(_valid().copyWith(mvRaw: null, clearMv: true).isValid, false);
+      expect(valid().copyWith(mvRaw: null, clearMv: true).isValid, false);
     });
 
     test('false when mvRaw is zero', () {
-      expect(_valid().copyWith(mvRaw: 0.0).isValid, false);
+      expect(valid().copyWith(mvRaw: 0.0).isValid, false);
     });
 
     test('false for G1 single-BC when bcG1 is null', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g1,
         useMultiBcG1: false,
         bcG1: null,
@@ -272,7 +272,7 @@ void main() {
     });
 
     test('false for G1 single-BC when bcG1 is zero', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g1,
         useMultiBcG1: false,
         bcG1: 0.0,
@@ -281,7 +281,7 @@ void main() {
     });
 
     test('false for G1 multi-BC when table is null', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g1,
         useMultiBcG1: true,
         multiBcG1Table: null,
@@ -291,7 +291,7 @@ void main() {
     });
 
     test('false for G1 multi-BC when table is empty', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g1,
         useMultiBcG1: true,
         multiBcG1Table: [],
@@ -300,7 +300,7 @@ void main() {
     });
 
     test('true for G1 multi-BC with non-empty table', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g1,
         useMultiBcG1: true,
         multiBcG1Table: [(vMps: 800.0, bc: 0.4)],
@@ -309,7 +309,7 @@ void main() {
     });
 
     test('false for G7 single-BC when bcG7 is null', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g7,
         useMultiBcG7: false,
         bcG7: null,
@@ -319,7 +319,7 @@ void main() {
     });
 
     test('true for G7 single-BC with positive bcG7', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g7,
         useMultiBcG7: false,
         bcG7: 0.475,
@@ -328,7 +328,7 @@ void main() {
     });
 
     test('false for G7 multi-BC when table is empty', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.g7,
         useMultiBcG7: true,
         multiBcG7Table: [],
@@ -337,7 +337,7 @@ void main() {
     });
 
     test('false for custom drag when table is null', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.custom,
         customDragTable: null,
         clearCustomDragTable: true,
@@ -346,7 +346,7 @@ void main() {
     });
 
     test('false for custom drag when table is empty', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.custom,
         customDragTable: [],
       );
@@ -354,7 +354,7 @@ void main() {
     });
 
     test('true for custom drag with non-empty table', () {
-      final s = _valid().copyWith(
+      final s = valid().copyWith(
         dragType: DragType.custom,
         customDragTable: [(mach: 0.5, cd: 0.284)],
       );
@@ -362,7 +362,7 @@ void main() {
     });
 
     test('true with all required fields for G1', () {
-      expect(_valid().isValid, true);
+      expect(valid().isValid, true);
     });
   });
 
