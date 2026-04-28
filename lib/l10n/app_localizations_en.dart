@@ -569,4 +569,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageTrajectoryChart => 'Trajectory chart';
+
+  @override
+  String get lookAngle => 'Look angle';
+
+  @override
+  String get targetRange => 'Target range';
+
+  @override
+  String get notYetAvaliable => 'not yet available';
+
+  @override
+  String get holdoversVertical => 'Hold';
+
+  @override
+  String get holdoversHorizontal => 'Windage';
+
+  @override
+  String get adjustmentDisplayDisabled => 'Adjustment Display disabled!';
+
+  @override
+  String get adjustmentDisplayDisabledHint => 'Enable';
+
+  @override
+  String get error => 'Error';
 }

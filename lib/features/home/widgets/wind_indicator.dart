@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
@@ -72,6 +73,8 @@ class _WindIndicatorState extends State<WindIndicator> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
@@ -100,6 +103,7 @@ class _WindIndicatorState extends State<WindIndicator> {
               primaryColor: Theme.of(context).colorScheme.primary,
               markerFillColor: Theme.of(context).colorScheme.primaryContainer,
               markerIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              l10n: l10n,
             ),
             child: const SizedBox.expand(),
           ),
@@ -115,6 +119,7 @@ class WindPainter extends CustomPainter {
   final Color primaryColor;
   final Color markerFillColor;
   final Color markerIconColor;
+  final AppLocalizations l10n;
 
   WindPainter({
     required this.angle,
@@ -122,6 +127,7 @@ class WindPainter extends CustomPainter {
     required this.primaryColor,
     required this.markerFillColor,
     required this.markerIconColor,
+    required this.l10n,
   });
 
   @override
@@ -283,7 +289,7 @@ class WindPainter extends CustomPainter {
 
     final directionTextPainter = TextPainter(
       text: TextSpan(
-        text: 'Wind direction',
+        text: l10n.windDirection,
         style: TextStyle(color: color.withValues(alpha: 0.55), fontSize: 11),
       ),
       textDirection: TextDirection.ltr,

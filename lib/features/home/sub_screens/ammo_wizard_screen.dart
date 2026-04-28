@@ -53,9 +53,10 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
   final _coriolisKey = GlobalKey();
 
   NotifierProvider<AmmoWizardNotifier, AmmoWizardState> get _provider =>
-      ammoWizardProvider(
-        (initial: widget.initial, caliberInch: widget.caliberInch),
-      );
+      ammoWizardProvider((
+        initial: widget.initial,
+        caliberInch: widget.caliberInch,
+      ));
 
   @override
   String get initialName => widget.initial?.name ?? '';
@@ -99,9 +100,13 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           duration: const Duration(seconds: 6),
           action: SnackBarAction(
             label: 'Update',
-            onPressed: () => ref.read(_provider.notifier).updateCaliberRaw(
-              Distance.inch(weaponCaliber).in_(FC.projectileDiameter.rawUnit),
-            ),
+            onPressed: () => ref
+                .read(_provider.notifier)
+                .updateCaliberRaw(
+                  Distance.inch(
+                    weaponCaliber,
+                  ).in_(FC.projectileDiameter.rawUnit),
+                ),
           ),
         ),
       );
@@ -158,12 +163,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     );
     if (!mounted || result == null) return;
     final sens = result.sensitivity;
-    ref.read(_provider.notifier).updatePowderSensTable(
-      result.table.isEmpty ? null : result.table,
-      sensitivityFrac: sens != null && result.table.isNotEmpty
-          ? sens.clamp(0.0, double.infinity)
-          : null,
-    );
+    ref
+        .read(_provider.notifier)
+        .updatePowderSensTable(
+          result.table.isEmpty ? null : result.table,
+          sensitivityFrac: sens != null && result.table.isNotEmpty
+              ? sens.clamp(0.0, double.infinity)
+              : null,
+        );
   }
 
   Future<void> _navigateToMultiBcEditor(DragType dt) async {

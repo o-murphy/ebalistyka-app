@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,7 @@ class HomeTablePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(homeVmProvider);
     final vmState = vmAsync.value;
+    final l10n = AppLocalizations.of(context)!;
 
     if (vmState is HomeUiNoData) {
       return EmptyStatePlaceholder(
@@ -21,7 +23,7 @@ class HomeTablePage extends ConsumerWidget {
       );
     }
     if (vmState is HomeUiError) {
-      return Center(child: Text('Error: ${vmState.message}'));
+      return Center(child: Text('${l10n.error}: ${vmState.message}'));
     }
     if (vmAsync.isLoading || vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());

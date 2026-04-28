@@ -125,7 +125,7 @@ class SettingsScreen extends ConsumerWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: FilledButton.icon(
+                  child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.export),
                     label: Text(l10n.actionExportBackup),
                     onPressed: () async {
@@ -136,7 +136,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: FilledButton.icon(
+                  child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.import),
                     label: Text(l10n.actionImportBackup),
                     onPressed: () async {

@@ -66,7 +66,7 @@ class AdjustmentDisplayScreen extends ConsumerWidget {
             dense: true,
           ),
           SwitchListTile(
-            title: Text(l10n.unitMoa),
+            title: Text(l10n.unitMil),
             value: settings.homeShowMil,
             onChanged: (v) => notifier.setAdjustmentToggle('showMil', v),
             dense: true,

@@ -474,7 +474,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sectionalDensity => 'Поперечне навантаження';
 
   @override
-  String get gyrostabilitySg => 'Гіроскопічна стабільність (Sg)';
+  String get gyrostabilitySg => 'Гіроскопічна стабільність (ФГС)';
 
   @override
   String get conditions => 'Умови';
@@ -555,20 +555,44 @@ class AppLocalizationsUk extends AppLocalizations {
   String get printButton => 'Друкувати';
 
   @override
-  String get notesScreenTitle => 'Notes';
+  String get notesScreenTitle => 'Нотатки';
 
   @override
-  String get helpButton => 'Help';
+  String get helpButton => 'Допомога';
 
   @override
-  String get toolsScreenTitle => 'Tools';
+  String get toolsScreenTitle => 'Інструменти';
 
   @override
-  String get pageHoldovers => 'Holdovers';
+  String get pageHoldovers => 'Поправки';
 
   @override
-  String get pageTrajectoryInfo => 'Trajectory info';
+  String get pageTrajectoryInfo => 'Інформація про траекторію';
 
   @override
-  String get pageTrajectoryChart => 'Trajectory chart';
+  String get pageTrajectoryChart => 'Графік траекторії';
+
+  @override
+  String get lookAngle => 'Кут цілі';
+
+  @override
+  String get targetRange => 'Відстань до цілі';
+
+  @override
+  String get notYetAvaliable => 'поки що не доступно';
+
+  @override
+  String get holdoversVertical => 'Винос по вертикалі';
+
+  @override
+  String get holdoversHorizontal => 'Вітрознос';
+
+  @override
+  String get adjustmentDisplayDisabled => 'Відображення поправок вимкнено!';
+
+  @override
+  String get adjustmentDisplayDisabledHint => 'Увімкнути';
+
+  @override
+  String get error => 'Помилка';
 }

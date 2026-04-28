@@ -451,5 +451,21 @@
     "pageTrajectoryInfo": "Trajectory info",
     "@pageTrajectoryInfo": {},
     "pageTrajectoryChart": "Trajectory chart",
-    "@pageTrajectoryChart": {}
+    "@pageTrajectoryChart": {},
+    "lookAngle": "Look angle",
+    "@lookAngle": {},
+    "targetRange": "Target range",
+    "@targetRange": {},
+    "notYetAvaliable": "not yet available",
+    "@notYetAvaliable": {},
+    "holdoversVertical": "Hold",
+    "@holdoversVertical": {},
+    "holdoversHorizontal": "Windage",
+    "@holdoversHorizontal": {},
+    "adjustmentDisplayDisabled": "Adjustment Display disabled!",
+    "@adjustmentDisplayDisabled": {},
+    "adjustmentDisplayDisabledHint": "Enable",
+    "@adjustmentDisplayDisabledHint": {},
+    "error": "Error",
+    "@error": {}
 }

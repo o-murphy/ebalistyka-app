@@ -1213,6 +1213,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trajectory chart'**
   String get pageTrajectoryChart;
+
+  /// No description provided for @lookAngle.
+  ///
+  /// In en, this message translates to:
+  /// **'Look angle'**
+  String get lookAngle;
+
+  /// No description provided for @targetRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Target range'**
+  String get targetRange;
+
+  /// No description provided for @notYetAvaliable.
+  ///
+  /// In en, this message translates to:
+  /// **'not yet available'**
+  String get notYetAvaliable;
+
+  /// No description provided for @holdoversVertical.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get holdoversVertical;
+
+  /// No description provided for @holdoversHorizontal.
+  ///
+  /// In en, this message translates to:
+  /// **'Windage'**
+  String get holdoversHorizontal;
+
+  /// No description provided for @adjustmentDisplayDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment Display disabled!'**
+  String get adjustmentDisplayDisabled;
+
+  /// No description provided for @adjustmentDisplayDisabledHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get adjustmentDisplayDisabledHint;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
 }
 
 class _AppLocalizationsDelegate
