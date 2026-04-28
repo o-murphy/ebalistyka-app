@@ -9,6 +9,7 @@ import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class AnglesConvertorScreen extends ConsumerWidget {
   const AnglesConvertorScreen({super.key});
@@ -70,7 +71,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
             title: l10n.outputUnit,
             icon: IconDef.heightConvertor,
           ),
-          const Divider(height: 24),
+          const SectionDivider(),
 
           ListSectionTile(l10n.sectionAngles),
           _buildInfoTile(state.mil),
@@ -80,7 +81,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
           _buildInfoTile(state.inchPer100Yd),
           _buildInfoTile(state.degrees),
 
-          const Divider(height: 24),
+          const SectionDivider(),
 
           ListSectionTile(l10n.sectionAdjustmentAtDistance),
           InfoListTile(

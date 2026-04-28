@@ -10,9 +10,9 @@ class TemperatureConvertorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(temperatureConvertorVmProvider);
     final notifier = ref.read(temperatureConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
     return SimpleConvertorScreen(
       title: l10n.temperatureConvertorTitle,
       hintText: l10n.enterTemperature,

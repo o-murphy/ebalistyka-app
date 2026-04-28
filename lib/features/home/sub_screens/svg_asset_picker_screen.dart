@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,7 +49,7 @@ class SvgAssetPickerScreen extends ConsumerWidget {
       isSubscreen: true,
       body: listAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (error, _) => ErrorDisplay(error: error),
         data: (ids) {
           final selected = currentId ?? defaultId;
           final sorted = [

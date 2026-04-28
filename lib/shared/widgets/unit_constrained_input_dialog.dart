@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
@@ -103,6 +104,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
     final theme = Theme.of(context);
     final ctx = widget.pickerContext;
     final sym = ctx.symbol ?? ctx.displayUnit.symbol;
+    final l10n = AppLocalizations.of(context)!;
 
     final canSave =
         _errorText == null && (!_isNullValue || (ctx.allowNull == true));
@@ -161,7 +163,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
               Expanded(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Dismiss'),
+                  child: Text(l10n.discardButton),
                 ),
               ),
               const SizedBox(width: 12),
@@ -173,7 +175,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
                           ctx.onChanged(_isNullValue ? null : _editRaw);
                           Navigator.pop(context);
                         },
-                  child: const Text('OK'),
+                  child: Text(l10n.confirmButton),
                 ),
               ),
             ],

@@ -5,10 +5,7 @@ import 'package:ebalistyka/core/extensions/conditions_extensions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 
 extension ProfileExtension on Profile {
-  bool get isReadyForCalculation {
-    final ammo = this.ammo.target;
-    return ammo != null && ammo.isReadyForCalculation;
-  }
+  bool get isReadyForCalculation => ammo.target?.isReadyForCalculation ?? false;
 
   Velocity getCalculatedZeroVelocity() {
     final ammo = this.ammo.target!;

@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,8 +12,10 @@ class ReticlePickerScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SvgAssetPickerScreen(
-      title: 'Select Reticle',
+      title: l10n.selectReticle,
       defaultId: defaultReticleId,
       currentId: currentReticleId,
       watchList: (ref) => ref.watch(reticleListProvider),

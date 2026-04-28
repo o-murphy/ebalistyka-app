@@ -1,9 +1,11 @@
 import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_body.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_item_tile.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,14 +26,18 @@ class AmmoCollectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collectionAsync = ref.watch(builtinCollectionProvider);
-    final title = filterBullet ? 'Bullet Collection' : 'Cartridge Collection';
+    final l10n = AppLocalizations.of(context)!;
+
+    final title = filterBullet
+        ? l10n.bulletCollectionScreenTitle
+        : l10n.cartridgeCollectionScreenTitle;
 
     return BaseScreen(
       title: title,
       isSubscreen: true,
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => ErrorDisplay(error: error),
         data: (collection) {
           final all = filterBullet ? collection.bullets : collection.cartridges;
           final items = caliberInch != null

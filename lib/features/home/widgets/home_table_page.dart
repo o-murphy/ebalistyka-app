@@ -1,4 +1,5 @@
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +22,7 @@ class HomeTablePage extends ConsumerWidget {
       );
     }
     if (vmState is HomeUiError) {
-      return Center(child: Text('Error: ${vmState.message}'));
+      return ErrorDisplay(error: vmState.message);
     }
     if (vmAsync.isLoading || vmState is! HomeUiReady) {
       return const Center(child: CircularProgressIndicator());

@@ -10,9 +10,9 @@ class PressureConvertorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(pressureConvertorVmProvider);
     final notifier = ref.read(pressureConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
     return SimpleConvertorScreen(
       title: l10n.pressureConvertorTitle,
       hintText: l10n.enterPressure,

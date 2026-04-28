@@ -1,9 +1,11 @@
 import 'package:ebalistyka/features/tables/details_table_mv.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class DetailsTable extends ConsumerWidget {
   const DetailsTable({super.key});
@@ -29,6 +31,7 @@ class DetailsTableContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     Widget row(String label, String value) => ListTile(
       dense: true,
@@ -48,38 +51,41 @@ class DetailsTableContent extends StatelessWidget {
 
     final items = <Widget>[
       // Rifle
-      section('Weapon'),
-      row('Name', v(details.weaponName.isNotEmpty ? details.weaponName : null)),
-      row('Caliber', v(details.caliber)),
-      row('Twist', v(details.twist)),
-      row('Zero distance', v(details.zeroDist)),
-      const Divider(height: 1),
+      section(l10n.weapon),
+      row(
+        l10n.weaponName,
+        v(details.weaponName.isNotEmpty ? details.weaponName : null),
+      ),
+      row(l10n.caliber, v(details.caliber)),
+      row(l10n.twistRate, v(details.twist)),
+      row(l10n.zeroDistance, v(details.zeroDist)),
+      const TileDivider(),
 
       // Cartridge
-      section('Cartridge'),
-      row('Zero MV', v(details.zeroMv)),
-      row('Current MV', v(details.currentMv)),
-      const Divider(height: 1),
+      section(l10n.cartridge),
+      row(l10n.zeroMv, v(details.zeroMv)),
+      row(l10n.currentMv, v(details.currentMv)),
+      const TileDivider(),
 
       // Projectile
-      section('Projectile'),
-      row('Drag model', v(details.dragModel)),
-      row('BC', v(details.bc)),
-      row('Length', v(details.bulletLen)),
-      row('Diameter', v(details.bulletDiam)),
-      row('Weight', v(details.bulletWeight)),
-      row('Form factor', v(details.formFactor)),
-      row('Sectional density', v(details.sectionalDensity)),
-      row('Gyrostability (Sg)', v(details.gyroStability)),
-      const Divider(height: 1),
+      section(l10n.projectile),
+      row(l10n.dragModel, v(details.dragModel)),
+      row(l10n.bc, v(details.bc)),
+      row(l10n.length, v(details.bulletLen)),
+      row(l10n.caliber, v(details.bulletDiam)),
+      row(l10n.weight, v(details.bulletWeight)),
+      row(l10n.formFactor, v(details.formFactor)),
+      row(l10n.sectionalDensity, v(details.sectionalDensity)),
+      row(l10n.gyrostabilitySg, v(details.gyroStability)),
+      const TileDivider(),
 
       // Conditions
-      section('Conditions'),
-      row('Temperature', v(details.temperature)),
-      row('Humidity', v(details.humidity)),
-      row('Pressure', v(details.pressure)),
-      row('Wind speed', v(details.windSpeed)),
-      row('Wind direction', v(details.windDir)),
+      section(l10n.conditions),
+      row(l10n.temperature, v(details.temperature)),
+      row(l10n.humidity, v(details.humidity)),
+      row(l10n.pressure, v(details.pressure)),
+      row(l10n.windSpeed, v(details.windSpeed)),
+      row(l10n.windDirection, v(details.windDir)),
     ];
 
     return ListView(children: items);

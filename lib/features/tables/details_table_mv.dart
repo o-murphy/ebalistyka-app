@@ -93,12 +93,12 @@ DetailsTableData _buildDetails(
 
   return DetailsTableData(
     weaponName: weapon.name,
-    caliber: weapon.caliberInch > 0 ? formatter.diameter(weapon.caliber) : null,
-    twist: weapon.twistInch.abs() > 0 ? formatter.twist(weapon.twist) : null,
+    caliber: formatter.diameter(weapon.caliber),
+    twist: formatter.twist(weapon.twist),
     dragModel: switch (ammo.dragType) {
       DragType.g1 => 'G1',
       DragType.g7 => 'G7',
-      DragType.custom => 'Custom',
+      DragType.custom => 'CUSTOM',
     },
     bc: displayBc > 0
         ? displayBc.toStringAsFixed(FC.ballisticCoefficient.accuracy)

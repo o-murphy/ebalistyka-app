@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
@@ -60,12 +61,14 @@ class PowderSensSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showContent = !showToggle || usePowderSensitivity;
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (showToggle)
           SwitchListTile(
-            title: const Text('Powder temperature sensitivity'),
+            title: Text(l10n.usePowderSensitivity),
             secondary: const Icon(IconDef.powderTemperature),
             value: usePowderSensitivity,
             onChanged: onSensitivityToggled,
@@ -74,8 +77,8 @@ class PowderSensSection extends StatelessWidget {
         if (showContent) ...[
           if (powderSensRaw != null)
             UnitValueFieldTile(
-              title: 'Powder sensitivity',
-              subtitle: 'Velocity change per 15°C temperature delta',
+              title: l10n.powderSensitivity,
+              subtitle: l10n.velocityChangePer15C,
               rawValue: powderSensRaw!,
               constraints: FC.powderSensitivity,
               displayUnit: Unit.percent,
@@ -84,16 +87,16 @@ class PowderSensSection extends StatelessWidget {
             )
           else if (sensitivityValue != null)
             InfoListTile(
-              label: 'Powder sensitivity',
+              label: l10n.powderSensitivity,
               value: sensitivityValue!,
               icon: IconDef.powderSensitivity,
             ),
           SwitchListTile(
-            title: const Text('Use different powder temperature'),
+            title: Text(l10n.useDifferentPowderTemperature),
             subtitle: Text(
               useDiffPowderTemp
-                  ? 'Uses powder temperature'
-                  : 'Uses atmospheric temperature',
+                  ? l10n.usesPowderTemperature
+                  : l10n.usesAtmoTemperature,
             ),
             secondary: const Icon(IconDef.temperature),
             value: useDiffPowderTemp,
@@ -102,7 +105,7 @@ class PowderSensSection extends StatelessWidget {
           ),
           if (useDiffPowderTemp && powderTempRaw != null)
             UnitValueFieldTile(
-              title: 'Powder temperature',
+              title: l10n.powderTemperature,
               rawValue: powderTempRaw!,
               constraints: FC.temperature,
               displayUnit: temperatureUnit,
@@ -112,8 +115,8 @@ class PowderSensSection extends StatelessWidget {
           if (mvValue != null)
             InfoListTile(
               label: useDiffPowderTemp
-                  ? 'Muzzle velocity at powder temperature'
-                  : 'Muzzle velocity at atmospheric temperature',
+                  ? l10n.mvAtPowderTemp
+                  : l10n.mvAtAtmoTemp,
               value: mvValue!,
               icon: IconDef.velocity,
             ),

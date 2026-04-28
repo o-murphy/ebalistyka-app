@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Display settings ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionUnitsSettings),
@@ -76,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => context.push(Routes.settingsUnits),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Home screen props ─────────────────────────────────────────────────
           ListSectionTile(l10n.sectionHomeSettings),
@@ -114,7 +116,7 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => notifier.setChartDistanceStep(v),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Profiles ───────────────────────────────────────────────────
           ListSectionTile(l10n.sectionBackup),
@@ -123,7 +125,7 @@ class SettingsScreen extends ConsumerWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: FilledButton.icon(
+                  child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.export),
                     label: Text(l10n.actionExportBackup),
                     onPressed: () async {
@@ -134,7 +136,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: FilledButton.icon(
+                  child: FilledButton.tonalIcon(
                     icon: const Icon(IconDef.import),
                     label: Text(l10n.actionImportBackup),
                     onPressed: () async {
@@ -144,12 +146,10 @@ class SettingsScreen extends ConsumerWidget {
                         await EbcpService.restoreFromExport(file, ref);
                       } catch (e) {
                         if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${l10n.errorImportBackupFailed}: $e',
-                            ),
-                          ),
+                        showFeedback(
+                          context,
+                          '${l10n.errorImportBackupFailed}: $e',
+                          isError: true,
                         );
                       }
                     },
@@ -158,7 +158,7 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Links ──────────────────────────────────────────────────────
           ListSectionTile(l10n.sectionLinks),
@@ -168,7 +168,7 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () =>
-                _launchUrl("https://github.com/o-murphy/ebalistyka-app"),
+                _launchUrl('https://github.com/o-murphy/ebalistyka-app'),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
@@ -185,7 +185,7 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () {},
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── About ──────────────────────────────────────────────────────
           ListSectionTile(l10n.sectionAbout),
@@ -212,7 +212,7 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
             onTap: () => _launchUrl(
-              "https://github.com/o-murphy/ebalistyka-app/blob/main/CHANGELOG.md",
+              'https://github.com/o-murphy/ebalistyka-app/blob/main/CHANGELOG.md',
             ),
           ),
 
@@ -251,7 +251,7 @@ void _showLanguageDialog(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
             ),
-            const Divider(height: 1),
+            const TileDivider(),
 
             RadioGroup<String>(
               groupValue: current,
@@ -294,22 +294,22 @@ class _ThemeSelector extends StatelessWidget {
         ButtonSegment(
           value: ThemeMode.system,
           icon: Icon(Icons.brightness_auto_outlined),
-          label: Text(l10n.themeSystem),
+          label: Text(l10n.themeSystem, overflow: TextOverflow.ellipsis),
         ),
         ButtonSegment(
           value: ThemeMode.light,
           icon: Icon(Icons.light_mode_outlined),
-          label: Text(l10n.themeLight),
+          label: Text(l10n.themeLight, overflow: TextOverflow.ellipsis),
         ),
         ButtonSegment(
           value: ThemeMode.dark,
           icon: Icon(Icons.dark_mode_outlined),
-          label: Text(l10n.themeDark),
+          label: Text(l10n.themeDark, overflow: TextOverflow.ellipsis),
         ),
       ],
       selected: {current},
       onSelectionChanged: (s) => onChanged(s.first),
-      style: const ButtonStyle(
+      style: ButtonStyle(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),

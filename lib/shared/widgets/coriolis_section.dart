@@ -1,5 +1,6 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,13 @@ class CoriolisSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SwitchListTile(
-          title: const Text('Coriolis effect'),
+          title: Text(l10n.sectionCoriolisEffect),
           secondary: const Icon(IconDef.coriolis),
           value: useCoriolis,
           onChanged: onCoriolisToggled,
@@ -40,7 +43,7 @@ class CoriolisSection extends StatelessWidget {
         ),
         if (useCoriolis) ...[
           UnitValueFieldTile(
-            title: 'Latitude',
+            title: l10n.latitude,
             rawValue: latitudeRaw,
             constraints: FC.latitude,
             displayUnit: angularUnit,
@@ -49,7 +52,7 @@ class CoriolisSection extends StatelessWidget {
             onChanged: onLatitudeChanged,
           ),
           UnitValueFieldTile(
-            title: 'Azimuth',
+            title: l10n.azimuth,
             rawValue: azimuthRaw,
             constraints: FC.azimuth,
             displayUnit: angularUnit,

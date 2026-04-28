@@ -1,4 +1,5 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/features/conditions/conditions_vm.dart';
 import 'package:ebalistyka/features/conditions/widgets/temperature_control.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class ConditionsScreen extends ConsumerWidget {
   const ConditionsScreen({super.key});
@@ -26,9 +28,11 @@ class ConditionsScreen extends ConsumerWidget {
 
     final notifier = ref.read(conditionsVmProvider.notifier);
 
+    final l10n = AppLocalizations.of(context)!;
+
     final UnitPickerContext altCtx = UnitPickerContext(
       context,
-      label: 'Altitude',
+      label: l10n.altitude,
       rawValue: state.altitude.rawValue,
       constraints: RC.altitude,
       displayUnit: state.altitude.displayUnit,
@@ -37,7 +41,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     final UnitPickerContext humCtx = UnitPickerContext(
       context,
-      label: 'Humidity',
+      label: l10n.humidity,
       rawValue: state.humidity.rawValue,
       constraints: RC.humidity,
       displayUnit: state.humidity.displayUnit,
@@ -47,7 +51,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     final UnitPickerContext pressCtx = UnitPickerContext(
       context,
-      label: 'Pressure',
+      label: l10n.pressure,
       rawValue: state.pressure.rawValue,
       constraints: RC.pressure,
       displayUnit: state.pressure.displayUnit,
@@ -55,7 +59,7 @@ class ConditionsScreen extends ConsumerWidget {
     );
 
     return BaseScreen(
-      title: 'Conditions',
+      title: l10n.conditionsScreenTitle,
       body: ListView(
         children: [
           // ── Temperature — big centred control ──────────────────────────
@@ -67,7 +71,7 @@ class ConditionsScreen extends ConsumerWidget {
               onChanged: (v) => notifier.updateTemperature(v),
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
           Padding(
@@ -76,7 +80,7 @@ class ConditionsScreen extends ConsumerWidget {
               items: [
                 IconValueButton(
                   icon: IconDef.altitude,
-                  label: 'Altitude',
+                  label: l10n.altitude,
                   heroTag: 'cond-alt',
                   value:
                       '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
@@ -84,7 +88,7 @@ class ConditionsScreen extends ConsumerWidget {
                 ),
                 IconValueButton(
                   icon: IconDef.humidity,
-                  label: 'Humidity',
+                  label: l10n.humidity,
                   heroTag: 'cond-hum',
                   value:
                       '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
@@ -93,7 +97,7 @@ class ConditionsScreen extends ConsumerWidget {
 
                 IconValueButton(
                   icon: IconDef.velocity,
-                  label: 'Pressure',
+                  label: l10n.pressure,
                   heroTag: 'cond-press',
                   value:
                       '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
@@ -102,7 +106,7 @@ class ConditionsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Powder sensitivity ─────────────────────────────────────────
           PowderSensSection(
@@ -116,7 +120,7 @@ class ConditionsScreen extends ConsumerWidget {
             onDiffTempToggled: notifier.setDiffPowderTemp,
             onPowderTempChanged: notifier.updatePowderTemp,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           // ── Coriolis ───────────────────────────────────────────────────
           CoriolisSection(
             useCoriolis: state.coriolisOn,

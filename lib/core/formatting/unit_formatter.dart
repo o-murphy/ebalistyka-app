@@ -4,21 +4,21 @@ import 'package:bclibc_ffi/unit.dart';
 /// ViewModel і Widget never call .in_() directly.
 abstract interface class UnitFormatter {
   // --- Formatted strings (with unit) ---
-  String velocity(Velocity dim); // "888 m/s"
-  String distance(Distance dim); // "300 m"
+  String velocity(Velocity? dim); // "888 m/s"
+  String distance(Distance? dim); // "300 m"
   String temperature(Temperature dim); // "15 °C"
   String pressure(Pressure dim); // "1013 hPa"
-  String drop(Distance dim); // "−12.5 cm"
+  String drop(Distance? dim); // "−12.5 cm"
   String windage(Distance dim); // "3.2 cm"
   String adjustment(Angular dim); // "3.45 MIL"
-  String energy(Energy dim); // "4200 J"
+  String energy(Energy? dim); // "4200 J"
 
-  String weight(Weight dim); // "250 gr"
-  String length(Distance dim); // "2.00 inch"
-  String diameter(Distance dim); // "0.338 inch"
+  String weight(Weight? dim); // "250 gr"
+  String length(Distance? dim); // "2.00 inch"
+  String diameter(Distance? dim); // "0.338 inch"
 
-  String sightHeight(Distance dim); // "8.5 mm"
-  String twist(Distance dim); // "1:10 inch"
+  String sightHeight(Distance? dim); // "8.5 mm"
+  String twist(Distance? dim); // "1:10 inch"
   String barrelLength(Distance dim); // "24.0 inch"
   String humidity(Ratio dim); // "50 %"
   String mach(double mach); // "0.85 M"
@@ -30,9 +30,9 @@ abstract interface class UnitFormatter {
   String windSpeed(Velocity dim);
   String windDirection(Angular dim);
 
-  String magnificationRange(double min, double max);
+  String magnificationRange(double? min, double? max);
 
-  String click(double value, Unit unit);
+  String click(double? value, Unit? unit);
 
   // --- Current unit symbols ---
   String get velocitySymbol;

@@ -7,6 +7,7 @@
 import 'dart:async';
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -174,12 +175,18 @@ HomeUiReady _makeReady({
 
 Widget _scoped(HomeUiState state, Widget child) => ProviderScope(
   overrides: [homeVmProvider.overrideWith(() => _FakeHomeVM(state))],
-  child: MaterialApp(home: Scaffold(body: child)),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: Scaffold(body: child),
+  ),
 );
 
 Widget _scopedLoading(Widget child) => ProviderScope(
   overrides: [homeVmProvider.overrideWith(() => _NeverReadyHomeVM())],
-  child: MaterialApp(home: Scaffold(body: child)),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    home: Scaffold(body: child),
+  ),
 );
 
 // ── HomeChartPage ─────────────────────────────────────────────────────────────
@@ -376,14 +383,16 @@ void main() {
       expect(find.textContaining('MRAD'), findsWidgets);
     });
 
-    testWidgets('shows Enable units message when elevation is empty', (
-      tester,
-    ) async {
+    testWidgets('shows disabled panel when elevation is empty', (tester) async {
       final state = _makeReady(adjustment: AdjustmentData.empty);
       await tester.pumpWidget(_scoped(state, const HomeReticlePage()));
       await tester.pump();
 
-      expect(find.textContaining('Enable units'), findsOneWidget);
+      expect(
+        find.textContaining('Adjustment Display disabled'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Enable'), findsOneWidget);
     });
   });
 

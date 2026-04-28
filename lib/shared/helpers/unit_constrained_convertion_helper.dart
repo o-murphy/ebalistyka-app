@@ -43,7 +43,8 @@ class UnitConversionHelper {
   double get displayMax => toDisplay(constraints.maxRaw);
   double get stepRaw => constraints.stepRaw;
 
-  String formatDisplayValue(double value) => value.toStringAsFixed(accuracy);
+  String formatDisplayValue(double value) =>
+      (value == 0.0 ? 0.0 : value).toStringAsFixed(accuracy);
 
   /// Validates a double value and returns raw.
   double? validateDisplayValue(double displayValue) {

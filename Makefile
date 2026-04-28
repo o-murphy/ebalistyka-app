@@ -6,6 +6,7 @@
 		proto-setup \
         objectbox-generate objectbox-setup objectbox-clean \
 		generate-localization \
+		generate-collection \
 		test format clean run run-clean
 
 # Cross-platform helpers
@@ -84,10 +85,19 @@ objectbox-clean:
 objectbox-admin:
 	cd packages/ebalistyka_db && ./admin.sh
 
+generate-collection:
+	python3 scripts/merge_collections.py \
+	assets/json/base.json assets/json/ammo_plus.json \
+	--map assets/json/map.json \
+	--out assets/json/collection.json \
+	--near-dupes \
+	--near-dupes-threshold 0.0
+
 generate: build-bclibc ffigen \
 	objectbox-generate \
 	generate-a7p generate-localization \
-	generate-reticles generate-icons
+	generate-reticles generate-icons \
+	generate-collection
 
 # Run all tests (native must be built first)
 test: build-bclibc

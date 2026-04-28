@@ -245,6 +245,8 @@ DetailsTableData? _getDetails(ProviderContainer container) {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 void main() {
+  setUpAll(TestWidgetsFlutterBinding.ensureInitialized);
+
   group('TablesViewModel — basic ready state', () {
     late ProviderContainer container;
     late _FakeBallisticsService service;

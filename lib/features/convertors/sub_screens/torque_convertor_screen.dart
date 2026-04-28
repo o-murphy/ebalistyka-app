@@ -10,9 +10,9 @@ class TorqueConvertorScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(torqueConvertorVmProvider);
     final notifier = ref.read(torqueConvertorVmProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
     return SimpleConvertorScreen(
       title: l10n.torqueConvertorTitle,
       hintText: l10n.enterTorque,

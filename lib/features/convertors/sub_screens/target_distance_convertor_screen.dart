@@ -9,6 +9,7 @@ import 'package:ebalistyka/shared/widgets/reticle_view.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_with_unit_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class TargetDistanceConvertorScreen extends ConsumerWidget {
   const TargetDistanceConvertorScreen({super.key});
@@ -53,14 +54,14 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
             label: l10n.inputAngularSize,
             icon: IconDef.angleConvertor,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           ListSectionTile(l10n.sectionDistanceMetric),
           InfoListTile(
             label: state.meters.labelBuilder(l10n),
             value: state.meters.formattedValue,
             icon: IconDef.distanceConvertor,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           ListSectionTile(l10n.sectionDistanceImperial),
           InfoListTile(
             label: state.yards.labelBuilder(l10n),
@@ -72,7 +73,7 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
             value: state.feet.formattedValue,
             icon: IconDef.distanceConvertor,
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: AspectRatio(

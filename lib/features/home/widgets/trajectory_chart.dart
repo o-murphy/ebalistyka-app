@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
 
@@ -44,6 +45,8 @@ class TrajectoryChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: LayoutBuilder(
@@ -68,6 +71,7 @@ class TrajectoryChart extends StatelessWidget {
               textColor: cs.onSurface,
               selectedColor: cs.tertiary,
               subsonicLineColor: showSubsonicLine ? cs.tertiary : null,
+              l10n: l10n,
             ),
             child: const SizedBox.expand(),
           ),
@@ -82,6 +86,7 @@ class _ChartPainter extends CustomPainter {
   final int? selectedIndex;
   final Color heightColor, velColor, gridColor, textColor, selectedColor;
   final Color? subsonicLineColor;
+  final AppLocalizations l10n;
 
   static const _ml = 28.0, _mr = 24.0, _mt = 16.0, _mb = 14.0;
 
@@ -93,6 +98,7 @@ class _ChartPainter extends CustomPainter {
     required this.gridColor,
     required this.textColor,
     required this.selectedColor,
+    required this.l10n,
     this.subsonicLineColor,
   });
 
@@ -229,12 +235,12 @@ class _ChartPainter extends CustomPainter {
     );
 
     // Legend — above the grid in the top margin
-    _drawLegendItem(canvas, Offset(_ml + 8, 2), heightColor, 'Height');
+    _drawLegendItem(canvas, Offset(_ml + 8, 2), heightColor, l10n.columnHeight);
     _drawLegendItem(
       canvas,
       Offset(_ml + 80, 2),
       velColor,
-      'Velocity',
+      l10n.columnVelocity,
       dashed: true,
     );
   }

@@ -7,13 +7,15 @@ import 'package:ebalistyka/core/providers/app_state_provider.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
-import 'package:ebalistyka/features/home/sub_screens/profiles/widgets/profile_card.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/profile_card.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/text_input_dialog.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -70,57 +72,63 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
   // ── Add (bottom sheet) ────────────────────────────────────────────────────
 
-  Future<String?> _askProfileName({String? initial}) => showTextInputDialog(
-    context,
-    title: 'New Profile',
-    initialValue: initial,
-    labelText: 'Profile name',
-    confirmLabel: 'Next',
-  );
+  Future<String?> _askProfileName({String? initial}) {
+    final l10n = AppLocalizations.of(context)!;
+    return showTextInputDialog(
+      context,
+      title: l10n.newProfile,
+      initialValue: initial,
+      labelText: l10n.profileName,
+      confirmLabel: l10n.nextButton,
+    );
+  }
 
-  Future<void> _showAddSheet() => showActionSheet(
-    context,
-    title: 'Add Profile',
-    entries: [
-      ActionSheetItem(
-        icon: IconDef.addCircle,
-        title: 'Create new',
-        onTap: () async {
-          final name = await _askProfileName();
-          if (name == null || !mounted) return;
-          final weapon = await context.push<Weapon?>(
-            Routes.profileAddWeaponCreate,
-          );
-          if (weapon != null && mounted) {
-            await ref
-                .read(profilesActionsProvider.notifier)
-                .createProfile(name, weapon);
-          }
-        },
-      ),
-      ActionSheetItem(
-        icon: IconDef.openCollection,
-        title: 'From collection',
-        onTap: () async {
-          final name = await _askProfileName();
-          if (name == null || !mounted) return;
-          final weapon = await context.push<Weapon?>(
-            Routes.profileAddWeaponCollection,
-          );
-          if (weapon != null && mounted) {
-            await ref
-                .read(profilesActionsProvider.notifier)
-                .createProfile(name, weapon);
-          }
-        },
-      ),
-      ActionSheetItem(
-        icon: IconDef.import,
-        title: 'Import from file',
-        onTap: _importFromFile,
-      ),
-    ],
-  );
+  Future<void> _showAddSheet() {
+    final l10n = AppLocalizations.of(context)!;
+    return showActionSheet(
+      context,
+      title: l10n.addProfileDialogTitle,
+      entries: [
+        ActionSheetItem(
+          icon: IconDef.addCircle,
+          title: l10n.createNewAction,
+          onTap: () async {
+            final name = await _askProfileName();
+            if (name == null || !mounted) return;
+            final weapon = await context.push<Weapon?>(
+              Routes.profileAddWeaponCreate,
+            );
+            if (weapon != null && mounted) {
+              await ref
+                  .read(profilesActionsProvider.notifier)
+                  .createProfile(name, weapon);
+            }
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.openCollection,
+          title: l10n.fromCollectionAction,
+          onTap: () async {
+            final name = await _askProfileName();
+            if (name == null || !mounted) return;
+            final weapon = await context.push<Weapon?>(
+              Routes.profileAddWeaponCollection,
+            );
+            if (weapon != null && mounted) {
+              await ref
+                  .read(profilesActionsProvider.notifier)
+                  .createProfile(name, weapon);
+            }
+          },
+        ),
+        ActionSheetItem(
+          icon: IconDef.import,
+          title: l10n.actionImportFromFile,
+          onTap: _importFromFile,
+        ),
+      ],
+    );
+  }
 
   Future<void> _importFromFile() async {
     try {
@@ -131,9 +139,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
+      showFeedback(context, 'Import failed: $e', isError: true);
     }
   }
 
@@ -152,11 +158,12 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
   Future<void> _onRemove(String profileId) async {
     final name = ref.read(profileCardProvider(profileId))?.name;
     if (name == null) return;
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showConfirmDialog(
       context,
-      title: 'Remove profile',
-      content: 'Remove "$name" and its weapon?',
-      confirmLabel: 'Remove',
+      title: l10n.removeProfile,
+      content: l10n.removeProfileContent(name),
+      confirmLabel: l10n.removeAction,
       isDestructive: true,
     );
     if (confirmed) {
@@ -192,9 +199,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         (profileExport.ammo != null && profileExport.sight != null);
 
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     await showActionSheet(
       context,
-      title: 'Export format',
+      title: l10n.exportFormatDialogTitle,
       entries: [
         ActionSheetItem(
           icon: IconDef.export,
@@ -210,44 +218,44 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         ActionSheetItem(
           icon: IconDef.export,
           title: '.a7p (Archer Ballistic Profile)',
-          subtitle: !a7pExportable ? "Select ammo and sight first" : null,
+          subtitle: !a7pExportable ? l10n.selectAmmoSightHint : null,
           onTap: !a7pExportable
               ? null
               : () => showActionSheet(
                   context,
-                  title: "Select range",
+                  title: l10n.selectRangeDialogTitle,
                   entries: [
                     ActionSheetItem(
-                      title: "Subsonic",
-                      subtitle: "25-400m",
+                      title: l10n.rangeSubsonic,
+                      subtitle: '25-400m',
                       onTap: () => A7pService.shareFile(
                         profileExport,
                         A7pRange.subsonic,
                       ),
                     ),
                     ActionSheetItem(
-                      title: "Low",
-                      subtitle: "100-700m",
+                      title: l10n.rangeLow,
+                      subtitle: '100-700m',
                       onTap: () => A7pService.shareFile(
                         profileExport,
                         A7pRange.subsonic,
                       ),
                     ),
                     ActionSheetItem(
-                      title: "Middle",
-                      subtitle: "100-1000m",
+                      title: l10n.rangeMiddle,
+                      subtitle: '100-1000m',
                       onTap: () =>
                           A7pService.shareFile(profileExport, A7pRange.medium),
                     ),
                     ActionSheetItem(
-                      title: "Long",
-                      subtitle: "100-1700m",
+                      title: l10n.rangeLong,
+                      subtitle: '100-1700m',
                       onTap: () =>
                           A7pService.shareFile(profileExport, A7pRange.long),
                     ),
                     ActionSheetItem(
-                      title: "Ultra long",
-                      subtitle: "100-2000m",
+                      title: l10n.rangeUltraLong,
+                      subtitle: '100-2000m',
                       onTap: () =>
                           A7pService.shareFile(profileExport, A7pRange.ultra),
                     ),
@@ -340,6 +348,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // ── Paging listener ───────────────────────────────────────────────────────
     // Fires ONLY when profiles are added/removed or the active profile changes.
     // Content-only changes (ammo, sight, weapon edits) do NOT fire this because
@@ -377,7 +386,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
     if (paging.orderedIds.isEmpty) {
       return BaseScreen(
-        title: 'Select Profile',
+        title: l10n.selectProfile,
         floatingActionButton: FloatingActionButton(
           heroTag: 'generalFab',
           onPressed: _showAddSheet,
@@ -386,12 +395,12 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           elevation: 6,
           child: const Icon(IconDef.add),
         ),
-        body: const Center(child: Text('No profiles. Tap + to add one.')),
+        body: Center(child: Text(l10n.noProfiles)),
       );
     }
 
     return BaseScreen(
-      title: "My Profiles",
+      title: l10n.myProfiles,
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: _showAddSheet,

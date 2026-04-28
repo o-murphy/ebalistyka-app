@@ -167,14 +167,14 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
   Future<void> setUnit(String key, Unit unit) async {
     final s = _loadOrCreate(_owner);
     switch (key) {
-      case 'angular':
-        s.angularUnit = unit;
+      case 'velocity':
+        s.velocityUnit = unit;
         break;
       case 'distance':
         s.distanceUnit = unit;
         break;
-      case 'velocity':
-        s.velocityUnit = unit;
+      case 'sightHeight':
+        s.sightHeightUnit = unit;
         break;
       case 'pressure':
         s.pressureUnit = unit;
@@ -202,6 +202,9 @@ class UnitSettingsNotifier extends AsyncNotifier<UnitSettings> {
         break;
       case 'targetSize':
         s.targetSizeUnit = unit;
+        break;
+      case 'angular':
+        s.angularUnit = unit;
         break;
     }
     _store.box<UnitSettings>().put(s); // remove await

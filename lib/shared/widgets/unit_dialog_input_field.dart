@@ -1,5 +1,5 @@
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -40,7 +40,7 @@ class UnitDialogInputField extends StatelessWidget {
         signed: true,
       ),
       textAlign: TextAlign.center,
-      style: theme.textTheme.headlineSmall?.copyWith(
+      style: theme.textTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
         color: errorText != null
             ? theme.colorScheme.error
@@ -57,6 +57,9 @@ class UnitDialogInputField extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
         suffixText: sym,
+        suffixStyle: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
         suffixIcon: allowNull && controller.text.isNotEmpty
             ? IconButton(
                 icon: const Icon(IconDef.clear, size: 18),

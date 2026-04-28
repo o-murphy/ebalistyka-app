@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 // ── Entries ───────────────────────────────────────────────────────────────────
 
@@ -57,10 +58,10 @@ Future<void> showActionSheet(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
           ),
-          const Divider(height: 1),
+          const TileDivider(),
           for (final entry in entries)
             switch (entry) {
-              ActionSheetDivider() => const Divider(height: 1),
+              ActionSheetDivider() => const TileDivider(),
               ActionSheetItem(
                 :final icon,
                 :final title,

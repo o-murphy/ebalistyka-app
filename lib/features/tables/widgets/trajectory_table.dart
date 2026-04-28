@@ -1,6 +1,8 @@
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
 
@@ -29,7 +31,7 @@ class TrajectoryTable extends ConsumerWidget {
     }
 
     if (vmState is TrajectoryTablesUiError) {
-      return Center(child: Text('Error: ${vmState.message}'));
+      return ErrorDisplay(error: vmState.message);
     }
 
     if (vmState is TrajectoryTablesUiReady) {
@@ -64,6 +66,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     final hdrStyle = theme.textTheme.labelSmall?.copyWith(
       fontWeight: FontWeight.bold,
@@ -84,7 +87,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
       context: context,
       builder: (dlgCtx) => AlertDialog(
         title: Text(
-          'Range: ${colIndex < t.distanceHeaders.length ? t.distanceHeaders[colIndex] : "—"} ${t.distanceUnit}',
+          '${l10n.columnRange}: ${colIndex < t.distanceHeaders.length ? t.distanceHeaders[colIndex] : "—"} ${t.distanceUnit}',
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -113,7 +116,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dlgCtx),
-            child: const Text('Close'),
+            child: Text(l10n.closeButton),
           ),
         ],
       ),
@@ -129,14 +132,14 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _SectionTitle(text: 'Trajectory'),
+          _SectionTitle(text: l10n.tablesSectionTrajectory),
           Expanded(
             child: DataTable2(
               columnSpacing: 12,
               horizontalMargin: 12,
               minWidth: 80 + (nMetrics * 75),
               fixedLeftColumns: 1,
-              headingRowHeight: 52,
+              headingRowHeight: 64,
               dataRowHeight: 40,
               headingRowColor: WidgetStateProperty.all(
                 cs.surfaceContainerHighest,
@@ -154,8 +157,24 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
               ),
               columns: [
                 DataColumn2(
-                  label: Center(
-                    child: Text("Range, ${t.distanceUnit}", style: hdrStyle),
+                  label: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        l10n.columnRange,
+                        style: hdrStyle,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                      Text(
+                        t.distanceUnit,
+                        style: subStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                   fixedWidth: 70,
                 ),
@@ -169,9 +188,16 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
                         Text(
                           t.rows[mi].label,
                           style: hdrStyle,
-                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          softWrap: true,
+                          maxLines: 2,
+                          overflow: TextOverflow.visible,
                         ),
-                        Text(t.rows[mi].unitSymbol, style: subStyle),
+                        Text(
+                          t.rows[mi].unitSymbol,
+                          style: subStyle,
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                     numeric: true,
@@ -246,7 +272,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _SectionTitle(text: 'Zero Crossings'),
+          _SectionTitle(text: l10n.tablesSectionZeroCrossing),
           SizedBox(
             height:
                 52 + (nPoints * 40.0) + 2, // Dynamic height for list of zeros
@@ -262,8 +288,24 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
               ),
               columns: [
                 DataColumn2(
-                  label: Center(
-                    child: Text("Range, ${t.distanceUnit}", style: hdrStyle),
+                  label: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        l10n.columnRange,
+                        style: hdrStyle,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                      Text(
+                        t.distanceUnit,
+                        style: subStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                   fixedWidth: 70,
                 ),
@@ -331,12 +373,12 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
             color: Colors.redAccent.withValues(alpha: 0.2),
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              children: const [
-                Icon(Icons.warning_outlined, color: Colors.red),
-                SizedBox(width: 8),
+              children: [
+                const Icon(Icons.warning_outlined, color: Colors.red),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Zero crossings not found in the current trajectory range!',
+                    l10n.errorZeroCrossingNotFound,
                     style: TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,

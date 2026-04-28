@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bclibc_ffi/unit.dart';
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -16,21 +16,21 @@ import 'package:ebalistyka/core/providers/service_providers.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 
-sealed class ShotDetailsUiState {
-  const ShotDetailsUiState();
+sealed class ShotInfoUiState {
+  const ShotInfoUiState();
 }
 
-class ShotDetailsLoading extends ShotDetailsUiState {
-  const ShotDetailsLoading();
+class ShotInfoLoading extends ShotInfoUiState {
+  const ShotInfoLoading();
 }
 
-class ShotDetailsError extends ShotDetailsUiState {
+class ShotInfoError extends ShotInfoUiState {
   final String? message;
   final EmptyStateType type;
-  const ShotDetailsError({this.message, this.type = EmptyStateType.error});
+  const ShotInfoError({this.message, this.type = EmptyStateType.error});
 }
 
-class ShotDetailsReady extends ShotDetailsUiState {
+class ShotInfoReady extends ShotInfoUiState {
   // Velocity section
   final String currentMv;
   final String zeroMv;
@@ -46,12 +46,12 @@ class ShotDetailsReady extends ShotDetailsUiState {
 
   // Trajectory section
   final String shotDistance;
-  final String heightAtTarget;
+  final String apexHeight;
   final String maxHeightDistance;
   final String windage;
   final String timeToTarget;
 
-  const ShotDetailsReady({
+  const ShotInfoReady({
     required this.currentMv,
     required this.zeroMv,
     required this.speedOfSound,
@@ -60,16 +60,16 @@ class ShotDetailsReady extends ShotDetailsUiState {
     required this.energyAtTarget,
     required this.gyroscopicStability,
     required this.shotDistance,
-    required this.heightAtTarget,
+    required this.apexHeight,
     required this.maxHeightDistance,
     required this.windage,
     required this.timeToTarget,
   });
 }
 
-class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
+class ShotInfoViewModel extends AsyncNotifier<ShotInfoUiState> {
   @override
-  Future<ShotDetailsUiState> build() async {
+  Future<ShotInfoUiState> build() async {
     ref.listen<AsyncValue<ShotContext?>>(shotContextProvider, (_, next) {
       if (next.hasValue) unawaited(_recalculate());
     }, fireImmediately: true);
@@ -94,21 +94,21 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
     }
   }
 
-  Future<ShotDetailsUiState> _calculate() async {
+  Future<ShotInfoUiState> _calculate() async {
     try {
       final ctx = await ref.read(shotContextProvider.future);
       final settings = await ref.read(settingsProvider.future);
       final formatter = ref.read(unitFormatterProvider);
 
       if (ctx == null) {
-        return const ShotDetailsError(type: EmptyStateType.noProfile);
+        return const ShotInfoError(type: EmptyStateType.noProfile);
       }
       if (ctx.profile.ammo.target == null) {
-        return const ShotDetailsError(type: EmptyStateType.noAmmo);
+        return const ShotInfoError(type: EmptyStateType.noAmmo);
       }
 
       if (!ctx.profile.isReadyForCalculation) {
-        return const ShotDetailsError(type: EmptyStateType.incompleteAmmo);
+        return const ShotInfoError(type: EmptyStateType.incompleteAmmo);
       }
 
       final profile = ctx.profile;
@@ -125,11 +125,11 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
 
       return _buildReadyState(profile, conditions, formatter, result.hitResult);
     } catch (e) {
-      return ShotDetailsError(message: e.toString());
+      return ShotInfoError(message: e.toString());
     }
   }
 
-  ShotDetailsReady _buildReadyState(
+  ShotInfoReady _buildReadyState(
     Profile profile,
     ShootingConditions conditions,
     UnitFormatter formatter,
@@ -169,30 +169,26 @@ class ShotDetailsViewModel extends AsyncNotifier<ShotDetailsUiState> {
       );
     }
 
-    return ShotDetailsReady(
+    return ShotInfoReady(
       currentMv: formatter.velocity(curVelocity),
       zeroMv: formatter.velocity(zeroVelocity),
       speedOfSound: soundSpeedFps == null
           ? nullStr
           : formatter.velocity(Velocity.fps(soundSpeedFps)),
       velocityAtTarget: formatter.velocity(atTarget.velocity),
-      energyAtMuzzle: firstPoint == null
-          ? nullStr
-          : formatter.energy(firstPoint.energy),
+      energyAtMuzzle: formatter.energy(firstPoint?.energy),
       energyAtTarget: formatter.energy(atTarget.energy),
       gyroscopicStability: sgStr,
       shotDistance: formatter.distance(conditions.distance),
-      heightAtTarget: formatter.drop(atTarget.height),
-      maxHeightDistance: apexPoint == null
-          ? nullStr
-          : formatter.distance(apexPoint.distance),
+      apexHeight: formatter.drop(apexPoint?.height),
+      maxHeightDistance: formatter.distance(apexPoint?.distance),
       windage: formatter.drop(atTarget.windage),
       timeToTarget: formatter.time(atTarget.time),
     );
   }
 }
 
-final shotDetailsVmProvider =
-    AsyncNotifierProvider<ShotDetailsViewModel, ShotDetailsUiState>(
-      ShotDetailsViewModel.new,
+final shotInfoVmProvider =
+    AsyncNotifierProvider<ShotInfoViewModel, ShotInfoUiState>(
+      ShotInfoViewModel.new,
     );

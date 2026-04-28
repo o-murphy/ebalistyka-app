@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -23,6 +25,7 @@ class TableConfigScreen extends ConsumerWidget {
     final cfg = ref.watch(tablesSettingsProvider);
     final notifier = ref.read(tablesSettingsNotifierProvider.notifier);
     final distanceUnit = ref.watch(unitSettingsProvider).distanceUnit;
+    final l10n = AppLocalizations.of(context)!;
 
     void save(void Function(TablesSettings) mutate) {
       final updated = TablesSettings()
@@ -56,16 +59,16 @@ class TableConfigScreen extends ConsumerWidget {
     }
 
     return BaseScreen(
-      title: 'Table Configuration',
+      title: l10n.tableConfigScreenTitle,
       isSubscreen: true,
       body: ListView(
         children: [
           // ── Range ──────────────────────────────────────────────────────
-          const ListSectionTile('Range'),
+          ListSectionTile(l10n.tablesConfigSectionDistance),
 
           _ConstrainedDistanceTile(
             icon: Icons.first_page_outlined,
-            label: 'Start distance',
+            label: l10n.tablesConfigDistanceStart,
             rawValueM: cfg.distanceStartMeter,
             constraints: FC.tableRange,
             displayUnit: distanceUnit,
@@ -75,7 +78,7 @@ class TableConfigScreen extends ConsumerWidget {
 
           _ConstrainedDistanceTile(
             icon: Icons.last_page_outlined,
-            label: 'End distance',
+            label: l10n.tablesConfigDistanceEnd,
             rawValueM: cfg.distanceEndMeter,
             constraints: FC.tableRange,
             displayUnit: distanceUnit,
@@ -85,80 +88,80 @@ class TableConfigScreen extends ConsumerWidget {
 
           _ConstrainedDistanceTile(
             icon: IconDef.range,
-            label: 'Distance step',
+            label: l10n.tablesConfigDistanceStep,
             rawValueM: cfg.distanceStepMeter,
             constraints: FC.distanceStep,
             displayUnit: distanceUnit,
             onChanged: (v) => save((s) => s.distanceStepMeter = v),
           ),
 
-          const Divider(height: 1),
+          const TileDivider(),
 
           // ── Extra tables ───────────────────────────────────────────────
-          const ListSectionTile('Extra'),
+          ListSectionTile(l10n.tablesConfigSectionExtra),
 
           SwitchListTile(
             secondary: const Icon(Icons.swap_vert_outlined),
-            title: const Text('Show zero crossings table'),
+            title: Text(l10n.tablesConfigShowZeroCrossingTable),
             value: cfg.showZeros,
             onChanged: (v) => save((s) => s.showZeros = v),
             dense: true,
           ),
           SwitchListTile(
             secondary: const Icon(IconDef.velocity),
-            title: const Text('Show subsonic transition'),
+            title: Text(l10n.tablesConfigShowSubsonicTransition),
             value: cfg.showSubsonicTransition,
             onChanged: (v) => save((s) => s.showSubsonicTransition = v),
             dense: true,
           ),
 
-          const Divider(height: 1),
-          const ListSectionTile('Visible columns'),
+          const TileDivider(),
+          ListSectionTile(l10n.tablesConfigSectionVisibleColumns),
 
           for (final col in _columnDefs)
             if (!col.alwaysOn)
               SwitchListTile(
-                title: Text(col.label),
+                title: Text(col.labelBuilder(l10n)),
                 value: !cfg.hiddenCols.contains(col.id),
                 onChanged: (v) => toggleCol(col.id, v),
                 dense: true,
               ),
 
-          const Divider(height: 1),
-          const ListSectionTile('Adjustment columns'),
+          const TileDivider(),
+          ListSectionTile(l10n.tablesConfigSectionAdjustmentColumns),
 
           SwitchListTile(
-            title: const Text('MRAD'),
+            title: Text(l10n.unitMrad),
             value: cfg.showMrad,
             onChanged: (v) => save((s) => s.showMrad = v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MOA'),
+            title: Text(l10n.unitMoa),
             value: cfg.showMoa,
             onChanged: (v) => save((s) => s.showMoa = v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('MIL'),
+            title: Text(l10n.unitMil),
             value: cfg.showMil,
             onChanged: (v) => save((s) => s.showMil = v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('cm/100m'),
+            title: Text(l10n.unitCmPer100m),
             value: cfg.showCmPer100m,
             onChanged: (v) => save((s) => s.showCmPer100m = v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('in/100yd'),
+            title: Text(l10n.unitInPer100Yd),
             value: cfg.showInPer100yd,
             onChanged: (v) => save((s) => s.showInPer100yd = v),
             dense: true,
           ),
           SwitchListTile(
-            title: const Text('Clicks'),
+            title: Text(l10n.unitClicks),
             value: cfg.showInClicks,
             onChanged: (v) => save((s) => s.showInClicks = v),
             dense: true,
@@ -224,21 +227,21 @@ class _ConstrainedDistanceTile extends StatelessWidget {
 
 class _ColEntry {
   final String id;
-  final String label;
+  final String Function(AppLocalizations l10n) labelBuilder;
   final bool alwaysOn;
-  const _ColEntry(this.id, this.label, {this.alwaysOn = false});
+  const _ColEntry(this.id, this.labelBuilder, {this.alwaysOn = false});
 }
 
-const _columnDefs = [
-  _ColEntry('range', 'Range', alwaysOn: true),
-  _ColEntry('time', 'Time'),
-  _ColEntry('velocity', 'Velocity'),
-  _ColEntry('height', 'Height'),
-  _ColEntry('drop', 'Drop (slant height)'),
-  _ColEntry('adjDrop', 'Drop adjustment'),
-  _ColEntry('wind', 'Windage'),
-  _ColEntry('adjWind', 'Windage adjustment'),
-  _ColEntry('mach', 'Mach'),
-  _ColEntry('drag', 'Drag coefficient'),
-  _ColEntry('energy', 'Energy'),
+final _columnDefs = [
+  _ColEntry('range', (l10n) => l10n.columnRange, alwaysOn: true),
+  _ColEntry('time', (l10n) => l10n.columnTime),
+  _ColEntry('velocity', (l10n) => l10n.columnVelocity),
+  _ColEntry('height', (l10n) => l10n.columnHeight),
+  _ColEntry('drop', (l10n) => l10n.columnDrop),
+  _ColEntry('adjDrop', (l10n) => l10n.columnDropAngle),
+  _ColEntry('wind', (l10n) => l10n.columnWind),
+  _ColEntry('adjWind', (l10n) => l10n.columnWindAngle),
+  _ColEntry('mach', (l10n) => l10n.columnMach),
+  _ColEntry('drag', (l10n) => l10n.columnDrag),
+  _ColEntry('energy', (l10n) => l10n.columnEnergy),
 ];

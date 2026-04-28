@@ -1,5 +1,6 @@
 # ebalistyka
 
+[![Made in Ukraine](https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7&style=flat-square)](https://stand-with-ukraine.pp.ua)
 [![Flutter](https://img.shields.io/badge/Flutter-3.41.6-02569B?logo=flutter)](https://flutter.dev)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 ![Version](https://img.shields.io/badge/version-0.1.2-orange)
@@ -16,7 +17,7 @@
 > [!WARNING]
 > **Alpha software.** Expect breaking changes, incomplete features, and rough edges.
 
-A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance C++ ballistic solver engine with RK4/Euler integration.
+A cross-platform ballistic trajectory calculator built with Flutter. Powered by [bclibc](external/bclibc) — a high-performance (3-DOF + spin drift) C++ ballistic solver engine with RK4/Euler integration.
 
 _UI/UX inspired by the [**Strilets**](https://download.strilets.tech/) ballistic calculator app_
 

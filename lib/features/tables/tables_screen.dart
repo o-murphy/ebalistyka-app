@@ -2,6 +2,8 @@ import 'package:ebalistyka/features/tables/details_table_mv.dart';
 import 'package:ebalistyka/features/tables/table_html_exporter.dart';
 import 'package:ebalistyka/features/tables/trajectory_tables_vm.dart';
 import 'package:ebalistyka/features/tables/widgets/details_table.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +17,8 @@ class TablesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return DefaultTabController(
       initialIndex: 0,
       length: 2,
@@ -24,23 +28,23 @@ class TablesScreen extends ConsumerWidget {
           return AnimatedBuilder(
             animation: tabController,
             builder: (context, _) => BaseScreen(
-              title: 'Tables',
+              title: l10n.tablesScreenTitle,
               actions: [
                 if (tabController.index == 0)
                   IconButton(
                     icon: const Icon(Icons.tune_outlined),
                     onPressed: () => context.push(Routes.tableConfig),
-                    tooltip: 'Configure',
+                    tooltip: l10n.tooltipConfigure,
                   ),
                 IconButton(
                   icon: const Icon(Icons.share_outlined),
                   onPressed: () => _onShare(context, ref),
-                  tooltip: 'Share',
+                  tooltip: l10n.tooltipShare,
                 ),
               ],
-              withTabs: const [
-                Tab(text: "Trajectory"),
-                Tab(text: "Details"),
+              withTabs: [
+                Tab(text: l10n.tabTrajectory),
+                Tab(text: l10n.tabDetails),
               ],
               body: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
@@ -62,10 +66,13 @@ class TablesScreen extends ConsumerWidget {
     final brightness = Theme.of(context).brightness;
     final isDarkMode = brightness == Brightness.dark;
 
+    final l10n = ref.read(appLocalizationsProvider);
+
     await TableHtmlExporter.share(
       details: details,
       tables: vmState,
       darkMode: isDarkMode,
+      l10n: l10n,
     );
   }
 }

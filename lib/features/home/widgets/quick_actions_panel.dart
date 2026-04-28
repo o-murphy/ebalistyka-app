@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
@@ -23,21 +24,22 @@ class QuickActionsPanel extends ConsumerWidget {
     if (conditions == null) return const SizedBox.shrink();
 
     final units = ref.watch(unitSettingsProvider);
-    final fmt = ref.watch(unitFormatterProvider);
+    final formatter = ref.watch(unitFormatterProvider);
     final notifier = ref.read(shotConditionsProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     final windMps = conditions.windSpeedMps;
-    final windDisplay = fmt.windSpeed(conditions.windSpeed);
+    final windDisplay = formatter.windSpeed(conditions.windSpeed);
 
     final lookDeg = conditions.lookAngle.in_(Unit.degree);
     final lookDisplay = '${lookDeg.toFixedSafe(FC.lookAngle.accuracy)}°';
 
-    final distDisplay = fmt.distance(conditions.distance);
+    final distDisplay = formatter.distance(conditions.distance);
     final distM = conditions.distanceMeter;
 
     final UnitPickerContext windSpeedCtx = UnitPickerContext(
       context,
-      label: 'Wind speed',
+      label: l10n.windSpeed,
       rawValue: windMps,
       constraints: RC.windSpeed,
       displayUnit: units.velocityUnit,
@@ -46,7 +48,7 @@ class QuickActionsPanel extends ConsumerWidget {
 
     final UnitPickerContext lookAngleCtx = UnitPickerContext(
       context,
-      label: 'Look angle',
+      label: l10n.lookAngle,
       rawValue: lookDeg,
       constraints: RC.lookAngle,
       displayUnit: Unit.degree,
@@ -55,7 +57,7 @@ class QuickActionsPanel extends ConsumerWidget {
 
     final UnitPickerContext targetRangeCtx = UnitPickerContext(
       context,
-      label: 'Target range',
+      label: l10n.targetRange,
       rawValue: distM,
       constraints: RC.targetDistance,
       displayUnit: units.distanceUnit,
@@ -68,21 +70,21 @@ class QuickActionsPanel extends ConsumerWidget {
         IconValueButton(
           icon: IconDef.windSpeed,
           value: windDisplay,
-          label: 'Wind speed',
+          label: l10n.windSpeed,
           heroTag: 'qa-wind',
           onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
         ),
         IconValueButton(
           icon: IconDef.angle,
           value: lookDisplay,
-          label: 'Look angle',
+          label: l10n.lookAngle,
           heroTag: 'qa-angle',
           onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
         ),
         IconValueButton(
           icon: IconDef.range,
           value: distDisplay,
-          label: 'Target range',
+          label: l10n.targetRange,
           heroTag: 'qa-range',
           onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
         ),

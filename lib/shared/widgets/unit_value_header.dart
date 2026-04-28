@@ -1,4 +1,4 @@
-import 'package:ebalistyka/shared/consts.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:flutter/material.dart';
 import 'package:bclibc_ffi/unit.dart';
 
@@ -29,7 +29,7 @@ class UnitValueHeader extends StatelessWidget {
     Color headerColor;
 
     if (errorText != null) {
-      displayHeader = "Invalid";
+      displayHeader = 'Invalid';
       headerColor = theme.colorScheme.error;
     } else if (isNullValue) {
       displayHeader = nullStr;

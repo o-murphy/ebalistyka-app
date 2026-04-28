@@ -1,5 +1,8 @@
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -7,21 +10,29 @@ import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 
 class UnitFormatterImpl implements UnitFormatter {
   final UnitSettings _u;
+  final AppLocalizations _l10n;
 
-  UnitFormatterImpl(this._u);
+  UnitFormatterImpl(this._u, this._l10n);
 
-  String _fmt(Dimension dim, FieldConstraints fc, Unit unit) {
+  String _fmt(
+    Dimension? dim,
+    FieldConstraints fc,
+    Unit unit, [
+    bool Function(Dimension)? condition,
+  ]) {
+    if (dim == null || condition?.call(dim) == false) return nullStr;
     final accuracy = fc.accuracyFor(unit);
-    return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.symbol}';
+    return '${dim.in_(unit).toFixedSafe(accuracy)} ${unit.localizedSymbol(_l10n)}';
   }
 
   // --- Formatted strings ---
 
   @override
-  String velocity(Velocity dim) => _fmt(dim, FC.velocity, _u.velocityUnit);
+  String velocity(Velocity? dim) =>
+      _fmt(dim, FC.velocity, _u.velocityUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String distance(Distance dim) =>
+  String distance(Distance? dim) =>
       _fmt(dim, FC.targetDistance, _u.distanceUnit);
 
   @override
@@ -32,7 +43,7 @@ class UnitFormatterImpl implements UnitFormatter {
   String pressure(Pressure dim) => _fmt(dim, FC.pressure, _u.pressureUnit);
 
   @override
-  String drop(Distance dim) => _fmt(dim, FC.drop, _u.dropUnit);
+  String drop(Distance? dim) => _fmt(dim, FC.drop, _u.dropUnit);
 
   @override
   String windage(Distance dim) => drop(dim);
@@ -41,24 +52,26 @@ class UnitFormatterImpl implements UnitFormatter {
   String adjustment(Angular dim) => _fmt(dim, FC.adjustment, _u.adjustmentUnit);
 
   @override
-  String energy(Energy dim) => _fmt(dim, FC.energy, _u.energyUnit);
+  String energy(Energy? dim) => _fmt(dim, FC.energy, _u.energyUnit);
 
   @override
-  String weight(Weight dim) => _fmt(dim, FC.projectileWeight, _u.weightUnit);
+  String weight(Weight? dim) =>
+      _fmt(dim, FC.projectileWeight, _u.weightUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String length(Distance dim) => _fmt(dim, FC.projectileLength, _u.lengthUnit);
+  String length(Distance? dim) =>
+      _fmt(dim, FC.projectileLength, _u.lengthUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String diameter(Distance dim) =>
-      _fmt(dim, FC.projectileDiameter, _u.diameterUnit);
+  String diameter(Distance? dim) =>
+      _fmt(dim, FC.projectileDiameter, _u.diameterUnit, (dim) => dim.raw > 0.0);
 
   @override
-  String sightHeight(Distance dim) =>
+  String sightHeight(Distance? dim) =>
       _fmt(dim, FC.sightHeight, _u.sightHeightUnit);
 
   @override
-  String twist(Distance dim) => '1:${_fmt(dim, FC.twist, _u.twistUnit)}';
+  String twist(Distance? dim) => '1:${_fmt(dim, FC.twist, _u.twistUnit)}';
 
   @override
   String barrelLength(Distance dim) =>
@@ -68,7 +81,7 @@ class UnitFormatterImpl implements UnitFormatter {
   String humidity(Ratio dim) => _fmt(dim, FC.humidity, Unit.percent);
 
   @override
-  String mach(double m) => '${m.toFixedSafe(2)} M';
+  String mach(double m) => '${m.toFixedSafe(2)} ${_l10n.unitMachSym}';
 
   @override
   String time(double seconds) => '${seconds.toFixedSafe(3)} s';
@@ -76,14 +89,15 @@ class UnitFormatterImpl implements UnitFormatter {
   @override
   String powderSensitivity(Ratio dim) {
     final accuracy = FC.powderSensitivity.accuracyFor(Unit.percent);
-    return '${dim.in_(Unit.percent).toFixedSafe(accuracy)} %/15°C';
+    return '${dim.in_(Unit.percent).toFixedSafe(accuracy)} ${_l10n.powderSensUnit}';
   }
 
   @override
   String torque(Torque dim) => _fmt(dim, FC.torque, _u.torqueUnit);
 
   @override
-  String targetSize(Angular dim) => _fmt(dim, FC.targetSize, _u.targetSizeUnit);
+  String targetSize(Angular dim) =>
+      _fmt(dim, FC.targetSize, _u.targetSizeUnit, (dim) => dim.raw >= 0.0);
 
   @override
   String windSpeed(Velocity dim) => _fmt(dim, FC.windSpeed, _u.velocityUnit);
@@ -92,34 +106,35 @@ class UnitFormatterImpl implements UnitFormatter {
   String windDirection(Angular dim) => _fmt(dim, FC.windDirection, Unit.degree);
 
   @override
-  String magnificationRange(double min, double max) =>
-      "${min.toFixedSafe(0)}-${max.toFixedSafe(0)}x";
+  String magnificationRange(double? min, double? max) =>
+      "${min?.toFixedSafe(0) ?? "?"}-${max?.toFixedSafe(0) ?? "?"}x";
 
   @override
-  String click(double value, Unit unit) => adjustment(Angular(value, unit));
-
+  String click(double? value, Unit? unit) => value == null || unit == null
+      ? nullStr
+      : adjustment(Angular(value, unit));
   // --- Symbols ---
 
   @override
-  String get velocitySymbol => _u.velocityUnit.symbol;
+  String get velocitySymbol => _u.velocityUnit.localizedSymbol(_l10n);
   @override
-  String get distanceSymbol => _u.distanceUnit.symbol;
+  String get distanceSymbol => _u.distanceUnit.localizedSymbol(_l10n);
   @override
-  String get temperatureSymbol => _u.temperatureUnit.symbol;
+  String get temperatureSymbol => _u.temperatureUnit.localizedSymbol(_l10n);
   @override
-  String get pressureSymbol => _u.pressureUnit.symbol;
+  String get pressureSymbol => _u.pressureUnit.localizedSymbol(_l10n);
   @override
-  String get dropSymbol => _u.dropUnit.symbol;
+  String get dropSymbol => _u.dropUnit.localizedSymbol(_l10n);
   @override
-  String get adjustmentSymbol => _u.adjustmentUnit.symbol;
+  String get adjustmentSymbol => _u.adjustmentUnit.localizedSymbol(_l10n);
   @override
-  String get energySymbol => _u.energyUnit.symbol;
+  String get energySymbol => _u.energyUnit.localizedSymbol(_l10n);
   @override
-  String get weightSymbol => _u.weightUnit.symbol;
+  String get weightSymbol => _u.weightUnit.localizedSymbol(_l10n);
   @override
-  String get sightHeightSymbol => _u.sightHeightUnit.symbol;
+  String get sightHeightSymbol => _u.sightHeightUnit.localizedSymbol(_l10n);
   @override
-  String get barrelLengthSymbol => _u.barrelLengthUnit.symbol;
+  String get barrelLengthSymbol => _u.barrelLengthUnit.localizedSymbol(_l10n);
 
   // --- Input conversion (for input dialogs) ---
 

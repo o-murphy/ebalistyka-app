@@ -116,6 +116,8 @@ Future<ConditionsUiState> _waitForConditions(
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 void main() {
+  setUpAll(TestWidgetsFlutterBinding.ensureInitialized);
+
   group('ConditionsViewModel — metric units (defaults)', () {
     late ProviderContainer container;
     late ConditionsUiState state;

@@ -64,9 +64,9 @@ abstract final class CollectionParser {
       ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
       ..caliberName = j['caliberName'] as String? ?? ''
       ..twist = Distance.inch((j['twistInch'] as num).toDouble())
-      ..barrelLength = barrelRaw != null
-          ? Distance.inch(barrelRaw.toDouble())
-          : null;
+      ..barrelLength = barrelRaw == null
+          ? null
+          : Distance.inch(barrelRaw.toDouble());
   }
 
   // ── Ammo ───────────────────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ abstract final class CollectionParser {
       ..caliberInch = (j['caliberInch'] as num?)?.toDouble() ?? -1.0
       ..weightGrain = (j['weightGrain'] as num?)?.toDouble() ?? -1.0
       ..lengthInch = (j['lengthInch'] as num?)?.toDouble() ?? -1.0
-      ..muzzleVelocityMps = mvRaw != null ? mvRaw.toDouble() : -1.0
+      ..muzzleVelocityMps = mvRaw?.toDouble() ?? -1.0
       ..mvTemperature = Temperature.celsius(
         (j['muzzleVelocityTemperatureC'] as num? ?? 15.0).toDouble(),
       )
@@ -98,15 +98,11 @@ abstract final class CollectionParser {
     // BC values — useMultiBcG1/G7 inferred from table presence
     final bcG1Raw = j['bcG1'] as num?;
     final bcG7Raw = j['bcG7'] as num?;
-    if (dragType == DragType.g7) {
-      ammo.bcG7 = bcG7Raw?.toDouble() ?? -1.0;
-      _applyMultiBc(ammo, _decodeJsonList(j['multiBcG7Table']), isG7: true);
-    } else if (dragType == DragType.g1) {
-      ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
-      _applyMultiBc(ammo, _decodeJsonList(j['multiBcG1Table']), isG7: false);
-    } else if (dragType == DragType.custom) {
-      _applyCustomDrag(ammo, _decodeJsonList(j['customDragTable']));
-    }
+    ammo.bcG7 = bcG7Raw?.toDouble() ?? -1.0;
+    ammo.bcG1 = bcG1Raw?.toDouble() ?? -1.0;
+    _applyMultiBc(ammo, _decodeJsonList(j['multiBcG7Table']), isG7: true);
+    _applyMultiBc(ammo, _decodeJsonList(j['multiBcG1Table']), isG7: false);
+    _applyCustomDrag(ammo, _decodeJsonList(j['customDragTable']));
 
     // Powder sensitivity table [{tC, vMps}] — inferred from presence
     final sensTable = _decodeJsonList(j['powderSensitivityTable']);
@@ -137,12 +133,16 @@ abstract final class CollectionParser {
     if (isG7) {
       ammo.multiBcTableG7VMps = Float64List.fromList(vList);
       ammo.multiBcTableG7Bc = Float64List.fromList(bcList);
-      ammo.bcG7 = bcList.first;
+      if (ammo.bcG7 <= 0) {
+        ammo.bcG7 = bcList.first;
+      }
       ammo.useMultiBcG7 = true;
     } else {
       ammo.multiBcTableG1VMps = Float64List.fromList(vList);
       ammo.multiBcTableG1Bc = Float64List.fromList(bcList);
-      ammo.bcG1 = bcList.first;
+      if (ammo.bcG1 <= 0) {
+        ammo.bcG1 = bcList.first;
+      }
       ammo.useMultiBcG1 = true;
     }
   }

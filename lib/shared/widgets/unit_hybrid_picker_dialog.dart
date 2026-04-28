@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/unit_dialog_input_field.dart';
@@ -149,6 +150,8 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
     final ctx = widget.pickerContext;
     final sym = ctx.symbol ?? ctx.displayUnit.symbol;
 
+    final l10n = AppLocalizations.of(context)!;
+
     final canSave =
         _errorText == null && (!_isNullValue || (ctx.allowNull == true));
 
@@ -202,7 +205,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
               Expanded(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Dismiss'),
+                  child: Text(l10n.discardButton),
                 ),
               ),
               const SizedBox(width: 12),
@@ -214,7 +217,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
                           ctx.onChanged(_isNullValue ? null : _currentRawValue);
                           Navigator.pop(context);
                         },
-                  child: const Text('Save'),
+                  child: Text(l10n.confirmButton),
                 ),
               ),
             ],

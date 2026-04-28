@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:bclibc_ffi/unit.dart';
@@ -72,12 +74,14 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
   @override
   AnglesConvertorUiState build() {
     final convertorsState = ref.watch(convertorStateProvider);
+    final l10n = ref.watch(appLocalizationsProvider);
     return _buildState(
       convertorsState.anglesConvDistanceValueMeter,
       convertorsState.anglesConvDistanceUnit,
       convertorsState.anglesConvAngularValueMil,
       convertorsState.anglesConvAngularUnit,
       convertorsState.anglesConvOutputUnit,
+      l10n,
     );
   }
 
@@ -208,6 +212,7 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
     double rawMil,
     Unit angularUnit,
     Unit outputUnit,
+    AppLocalizations l10n,
   ) {
     // Distance
     final metersRaw = rawMeters;
@@ -259,14 +264,14 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
 
       // Distance
       meters: AnglesConvertorField(
-        label: 'Meters',
+        label: l10n.unitMeters,
         formattedValue: _formatValue(metersRaw, 0, Unit.meter.symbol),
         value: metersRaw,
         symbol: Unit.meter.symbol,
         decimals: 0,
       ),
       yards: AnglesConvertorField(
-        label: 'Yards',
+        label: l10n.unitYards,
         formattedValue: _formatValue(yardsRaw, 0, Unit.yard.symbol),
         value: yardsRaw,
         symbol: Unit.yard.symbol,
@@ -275,42 +280,42 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
 
       // Angle conversion
       mil: AnglesConvertorField(
-        label: 'MIL',
+        label: l10n.unitMil,
         formattedValue: _formatValue(milRaw, 1, Unit.mil.symbol),
         value: milRaw,
         symbol: Unit.mil.symbol,
         decimals: 1,
       ),
       moa: AnglesConvertorField(
-        label: 'MOA',
+        label: l10n.unitMoa,
         formattedValue: _formatValue(moaRaw, 1, Unit.moa.symbol),
         value: moaRaw,
         symbol: Unit.moa.symbol,
         decimals: 1,
       ),
       cmPer100m: AnglesConvertorField(
-        label: 'cm/100m',
+        label: l10n.unitCmPer100m,
         formattedValue: _formatValue(cmPer100mRaw, 1, 'cm/100m'),
         value: cmPer100mRaw,
         symbol: 'cm/100m',
         decimals: 1,
       ),
       inchPer100Yd: AnglesConvertorField(
-        label: 'in/100yd',
+        label: l10n.unitInPer100Yd,
         formattedValue: _formatValue(inchPer100YdRaw, 2, 'in/100yd'),
         value: inchPer100YdRaw,
         symbol: 'in/100yd',
         decimals: 2,
       ),
       mrad: AnglesConvertorField(
-        label: 'MRAD',
+        label: l10n.unitMrad,
         formattedValue: _formatValue(mradRaw, 2, Unit.mRad.symbol),
         value: mradRaw,
         symbol: Unit.mRad.symbol,
         decimals: 2,
       ),
       degrees: AnglesConvertorField(
-        label: 'Degrees',
+        label: l10n.unitDegrees,
         formattedValue: _formatValue(degreesRaw, 2, Unit.degree.symbol),
         value: degreesRaw,
         symbol: Unit.degree.symbol,

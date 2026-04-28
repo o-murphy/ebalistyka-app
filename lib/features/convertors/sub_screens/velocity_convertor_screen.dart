@@ -13,6 +13,7 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
+import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 class VelocityConvertorScreen extends ConsumerWidget {
   const VelocityConvertorScreen({super.key});
@@ -38,7 +39,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
             options: const [Unit.mps, Unit.kmh, Unit.fps, Unit.mph, Unit.mach],
             hintText: l10n.enterVelocity,
           ),
-          const Divider(height: 24),
+          const SectionDivider(),
 
           ListSectionTile(l10n.sectionMetric),
           _buildInfoTile(state.mps, l10n),
@@ -63,10 +64,10 @@ class VelocityConvertorScreen extends ConsumerWidget {
           _buildInfoTile(state.mach, l10n),
 
           if (state.useCustomAtmo) ...[
-            Divider(height: 1),
+            const TileDivider(),
             ListSectionTile(l10n.sectionAtmosphere),
             UnitValueFieldTile(
-              title: l10n.atmoTemperature,
+              title: l10n.temperature,
               rawValue: state.atmoTemperatureC,
               constraints: FC.temperature,
               displayUnit: units.temperatureUnit,
@@ -74,7 +75,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoTemperature,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoPressure,
+              title: l10n.pressure,
               rawValue: state.atmoPressureHPa,
               constraints: FC.pressure,
               displayUnit: units.pressureUnit,
@@ -82,7 +83,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoPressure,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoHumidity,
+              title: l10n.humidity,
               rawValue: state.atmoHumidityFrac,
               constraints: FC.humidity,
               displayUnit: Unit.percent,
@@ -90,7 +91,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
               onChanged: notifier.updateAtmoHumidity,
             ),
             UnitValueFieldTile(
-              title: l10n.atmoAltitude,
+              title: l10n.altitude,
               rawValue: state.atmoAltitudeMeter,
               constraints: FC.altitude,
               displayUnit: units.distanceUnit,

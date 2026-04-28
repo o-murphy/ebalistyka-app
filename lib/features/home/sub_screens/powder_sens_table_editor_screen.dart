@@ -2,7 +2,8 @@ import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +22,7 @@ typedef PowderSensTableResult = ({
 ///   - `sensitivity` — arithmetic mean of `calcPowderSensCoeff` for all
 ///                     valid pairs; `null` if no valid pairs exist
 ///   - whole result `null` → discarded (no change)
-class PowderSensTableEditorScreen extends ConsumerWidget {
+class PowderSensTableEditorScreen extends ConsumerStatefulWidget {
   const PowderSensTableEditorScreen({
     this.initialTable,
     this.referenceMvMps,
@@ -38,36 +39,90 @@ class PowderSensTableEditorScreen extends ConsumerWidget {
   final double? referenceTempC;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PowderSensTableEditorScreen> createState() =>
+      _PowderSensTableEditorScreenState();
+}
+
+class _PowderSensTableEditorScreenState
+    extends ConsumerState<PowderSensTableEditorScreen> {
+  double? _preview;
+
+  // ── Live preview ──────────────────────────────────────────────────────────
+
+  void _onRowsChanged(List<(double, double)> rows) {
+    setState(() => _preview = _computePreview(rows));
+  }
+
+  /// Computes averaged pairwise powder-sensitivity coefficient from display-unit
+  /// pairs (tempDisplay, vDisplay). Unit-agnostic: [calcPowderSensCoeff] uses
+  /// only ratios and differences.
+  static double? _computePreview(List<(double, double)> rows) {
+    if (rows.isEmpty) return null;
+    if (rows.length == 1) return 0.0;
+
+    final sorted = [...rows]..sort((a, b) => a.$1.compareTo(b.$1));
+    final coeffs = <double>[];
+    for (var i = 0; i < sorted.length - 1; i++) {
+      final c = calcPowderSensCoeff(
+        sorted[i].$2,
+        sorted[i].$1,
+        sorted[i + 1].$2,
+        sorted[i + 1].$1,
+      );
+      if (c != null) coeffs.add(c);
+    }
+    if (coeffs.isEmpty) return 0.0;
+    return coeffs.reduce((a, b) => a + b) / coeffs.length;
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
     final units = ref.watch(unitSettingsProvider);
+    final l10n = AppLocalizations.of(context)!;
     final vUnit = units.velocityUnit;
     final tUnit = units.temperatureUnit;
     final vAcc = FC.muzzleVelocity.accuracyFor(vUnit);
     final tAcc = FC.temperature.accuracyFor(tUnit);
 
     // Local vars for Dart nullable field promotion
-    final mvMps = referenceMvMps;
-    final refTempC = referenceTempC;
+    final mvMps = widget.referenceMvMps;
+    final refTempC = widget.referenceTempC;
 
-    final initialRows = initialTable?.map((r) {
+    final initialRows = widget.initialTable?.map((r) {
       final tDisplay = Temperature.celsius(r.tempC).in_(tUnit);
       final vDisplay = Velocity.mps(r.vMps).in_(vUnit);
       return (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc));
     }).toList();
 
-    return _PowderSensEditorScreen(
-      initialRows: initialRows,
-      col1Header: 'T (${tUnit.symbol})',
-      col2Header: 'V (${vUnit.symbol})',
-      // Pass reference values in display units for live preview
-      referenceMvDisplay: mvMps != null && mvMps > 0
-          ? Velocity.mps(mvMps).in_(vUnit)
-          : null,
-      referenceTDisplay: refTempC != null
-          ? Temperature.celsius(refTempC).in_(tUnit)
-          : null,
-      vUnit: vUnit,
-      tUnit: tUnit,
+    // Pre-fill row 0 with the reference MV / T₀ when no existing table.
+    List<(String, String)>? prefilled = initialRows;
+    if ((prefilled == null || prefilled.isEmpty) &&
+        mvMps != null &&
+        mvMps > 0 &&
+        refTempC != null) {
+      final tDisplay = Temperature.celsius(refTempC).in_(tUnit);
+      final vDisplay = Velocity.mps(mvMps).in_(vUnit);
+      prefilled = [
+        (tDisplay.toStringAsFixed(tAcc), vDisplay.toStringAsFixed(vAcc)),
+      ];
+    }
+
+    return TwoColumnTableEditorScreen(
+      title: l10n.powderSensTableEditorTitle,
+      rowCount: _kPowderSensRowCount,
+      col1Header: '${l10n.temperature} (${tUnit.symbol})',
+      col2Header: '${l10n.columnVelocity} (${vUnit.symbol})',
+      col1Hint: '0',
+      col2Hint: '0',
+      initialRows: prefilled,
+      sortAscending: true,
+      col1Signed: true,
+      col1RequirePositive: false,
+      headerChild: _SensitivityPreview(sensitivity: _preview),
+      onRowsParsed: _onRowsChanged,
+      footerText: l10n.nonPositiveRowsHint,
       onSave: (rawRows) {
         final table = rawRows
             .map(
@@ -108,178 +163,7 @@ class PowderSensTableEditorScreen extends ConsumerWidget {
   }
 }
 
-// ── Internal screen ───────────────────────────────────────────────────────────
-
-class _PowderSensEditorScreen extends StatefulWidget {
-  const _PowderSensEditorScreen({
-    required this.col1Header,
-    required this.col2Header,
-    required this.onSave,
-    required this.onDiscard,
-    required this.vUnit,
-    required this.tUnit,
-    this.initialRows,
-    this.referenceMvDisplay,
-    this.referenceTDisplay,
-  });
-
-  final String col1Header;
-  final String col2Header;
-  final List<(String, String)>? initialRows;
-
-  /// Reference MV in the *display* velocity unit — for live preview.
-  final double? referenceMvDisplay;
-
-  /// Reference temperature in the *display* temperature unit — for live preview.
-  final double? referenceTDisplay;
-
-  final Unit vUnit;
-  final Unit tUnit;
-
-  /// Receives filtered + sorted (tempDisplay, vDisplay) raw double pairs.
-  final void Function(List<(double, double)>) onSave;
-  final VoidCallback onDiscard;
-
-  @override
-  State<_PowderSensEditorScreen> createState() =>
-      _PowderSensEditorScreenState();
-}
-
-class _PowderSensEditorScreenState extends State<_PowderSensEditorScreen> {
-  late final List<TextEditingController> _tCtrls;
-  late final List<TextEditingController> _vCtrls;
-
-  @override
-  void initState() {
-    super.initState();
-    _tCtrls = List.generate(
-      _kPowderSensRowCount,
-      (_) => TextEditingController(),
-    );
-    _vCtrls = List.generate(
-      _kPowderSensRowCount,
-      (_) => TextEditingController(),
-    );
-    final rows = widget.initialRows;
-    if (rows != null && rows.isNotEmpty) {
-      final count = rows.length.clamp(0, _kPowderSensRowCount);
-      for (var i = 0; i < count; i++) {
-        _tCtrls[i].text = rows[i].$1;
-        _vCtrls[i].text = rows[i].$2;
-      }
-    } else {
-      // Pre-fill row 0 with the reference MV / T₀ so the user starts
-      // from the known reference point and only needs to add deltas.
-      final refT = widget.referenceTDisplay;
-      final refV = widget.referenceMvDisplay;
-      if (refT != null && refV != null && refV > 0) {
-        final tAcc = FC.temperature.accuracyFor(widget.tUnit);
-        final vAcc = FC.muzzleVelocity.accuracyFor(widget.vUnit);
-        _tCtrls[0].text = refT.toStringAsFixed(tAcc);
-        _vCtrls[0].text = refV.toStringAsFixed(vAcc);
-      }
-    }
-    for (final c in [..._tCtrls, ..._vCtrls]) {
-      c.addListener(_onChanged);
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final c in [..._tCtrls, ..._vCtrls]) {
-      c.removeListener(_onChanged);
-      c.dispose();
-    }
-    super.dispose();
-  }
-
-  void _onChanged() => setState(() {});
-
-  // ── Live sensitivity preview ──────────────────────────────────────────────
-
-  /// Returns the averaged pairwise coefficient, 0 for a single valid row,
-  /// or null for no valid rows.
-  ///
-  /// Works in *display* units — unit-agnostic since [calcPowderSensCoeff]
-  /// uses only ratios and differences.
-  double? _computePreview() {
-    final valid = <(double, double)>[];
-    for (var i = 0; i < _kPowderSensRowCount; i++) {
-      final t = double.tryParse(_tCtrls[i].text.trim());
-      final v = double.tryParse(_vCtrls[i].text.trim()) ?? 0.0;
-      if (t == null || v <= 0) continue;
-      valid.add((t, v));
-    }
-    if (valid.isEmpty) return null;
-    if (valid.length == 1) return 0.0;
-
-    valid.sort((a, b) => a.$1.compareTo(b.$1));
-    final coeffs = <double>[];
-    for (var i = 0; i < valid.length - 1; i++) {
-      final c = calcPowderSensCoeff(
-        valid[i].$2,
-        valid[i].$1,
-        valid[i + 1].$2,
-        valid[i + 1].$1,
-      );
-      if (c != null) coeffs.add(c);
-    }
-    if (coeffs.isEmpty) return 0.0;
-    return coeffs.reduce((a, b) => a + b) / coeffs.length;
-  }
-
-  // ── Save ──────────────────────────────────────────────────────────────────
-
-  void _handleSave() {
-    final rows = <(double, double)>[];
-    for (var i = 0; i < _kPowderSensRowCount; i++) {
-      final t = double.tryParse(_tCtrls[i].text.trim());
-      final v = double.tryParse(_vCtrls[i].text.trim()) ?? 0.0;
-      if (t == null || v <= 0) continue;
-      rows.add((t, v));
-    }
-    rows.sort((a, b) => a.$1.compareTo(b.$1));
-    widget.onSave(rows);
-  }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
-
-  @override
-  Widget build(BuildContext context) {
-    final preview = _computePreview();
-
-    return BaseScreen(
-      title: 'Powder Sensitivity Table',
-      isSubscreen: true,
-      showBack: false,
-      bottomBar: _ActionBar(onDiscard: widget.onDiscard, onSave: _handleSave),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        children: [
-          _SensitivityPreview(sensitivity: preview),
-          const SizedBox(height: 8),
-          _Header(col1: widget.col1Header, col2: widget.col2Header),
-          const Divider(height: 16),
-          for (var i = 0; i < _kPowderSensRowCount; i++) ...[
-            _RowEditor(index: i, tCtrl: _tCtrls[i], vCtrl: _vCtrls[i]),
-            if (i < _kPowderSensRowCount - 1) const SizedBox(height: 8),
-          ],
-          const SizedBox(height: 16),
-          Text(
-            'Rows with empty or non-positive velocity are ignored.\n'
-            'Temperature may be negative, zero, or positive.\n'
-            'Sensitivity is averaged across all valid pairs.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Sub-widgets ───────────────────────────────────────────────────────────────
+// ── Widgets ───────────────────────────────────────────────────────────────────
 
 class _SensitivityPreview extends StatelessWidget {
   const _SensitivityPreview({required this.sensitivity});
@@ -289,11 +173,12 @@ class _SensitivityPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isError = sensitivity == null;
 
     final String label;
     if (sensitivity == null) {
-      label = 'No measurements yet';
+      label = l10n.noMeasurementsYet;
     } else {
       final acc = FC.powderSensitivity.accuracyFor(Unit.percent);
       final pct = Ratio.fraction(sensitivity!).in_(Unit.percent);
@@ -313,7 +198,7 @@ class _SensitivityPreview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Calculated sensitivity',
+                    l10n.calculatedSensitivity,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: isError
                           ? theme.colorScheme.onErrorContainer
@@ -332,115 +217,6 @@ class _SensitivityPreview extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.col1, required this.col2});
-  final String col1;
-  final String col2;
-
-  @override
-  Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelLarge;
-    return Row(
-      children: [
-        const SizedBox(width: 32),
-        Expanded(
-          child: Text(col1, style: style, textAlign: TextAlign.center),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(col2, style: style, textAlign: TextAlign.center),
-        ),
-      ],
-    );
-  }
-}
-
-class _RowEditor extends StatelessWidget {
-  const _RowEditor({
-    required this.index,
-    required this.tCtrl,
-    required this.vCtrl,
-  });
-
-  final int index;
-  final TextEditingController tCtrl;
-  final TextEditingController vCtrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 28,
-          child: Text(
-            '${index + 1}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Expanded(
-          child: TextField(
-            controller: tCtrl,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-              signed: true,
-            ),
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration(
-              hintText: '0',
-              isDense: true,
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: TextField(
-            controller: vCtrl,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration(
-              hintText: '0',
-              isDense: true,
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({required this.onDiscard, required this.onSave});
-
-  final VoidCallback onDiscard;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Row(
-          children: [
-            OutlinedButton(onPressed: onDiscard, child: const Text('Discard')),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton(onPressed: onSave, child: const Text('Save')),
             ),
           ],
         ),
