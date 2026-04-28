@@ -98,7 +98,7 @@ DetailsTableData _buildDetails(
     dragModel: switch (ammo.dragType) {
       DragType.g1 => 'G1',
       DragType.g7 => 'G7',
-      DragType.custom => 'Custom',
+      DragType.custom => 'CUSTOM',
     },
     bc: displayBc > 0
         ? displayBc.toStringAsFixed(FC.ballisticCoefficient.accuracy)

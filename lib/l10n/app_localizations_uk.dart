@@ -462,6 +462,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get bc => 'Балістичний коефіцієнт';
 
   @override
+  String get bcShort => 'БК';
+
+  @override
   String get length => 'Довжина';
 
   @override
@@ -631,4 +634,70 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get timeToTarget => 'Час до цілі';
+
+  @override
+  String get placeholderSearch => 'Пошук';
+
+  @override
+  String get actions => 'Дії';
+
+  @override
+  String get editAction => 'Редагувати';
+
+  @override
+  String get duplicateAction => 'Створити копію';
+
+  @override
+  String get exportAction => 'Експортувати';
+
+  @override
+  String get importAction => 'Імпортувати';
+
+  @override
+  String get removeAction => 'Видалити';
+
+  @override
+  String get rightHand => 'Правий';
+
+  @override
+  String get leftHand => 'Лівий';
+
+  @override
+  String get rightHandFull => 'Правий';
+
+  @override
+  String get leftHandFull => 'Лівий';
+
+  @override
+  String get selectButton => 'Select';
+
+  @override
+  String get goToCalculationsButton => 'До розрахунків';
+
+  @override
+  String get selectAmmoSightHint => 'Спершу оберіть снаряд і приціл';
+
+  @override
+  String get selectSightHint => 'Оберіть приціл';
+
+  @override
+  String get selectAmmoHint => 'Оберіть снаряд';
+
+  @override
+  String get weaponName => 'Назва зброї';
+
+  @override
+  String get twistDirection => 'Напрямок нарізів';
+
+  @override
+  String get drumAdjustment => 'Ручні поправки';
+
+  @override
+  String get bulletCollection => 'Колекція патронів';
+
+  @override
+  String get cartridgeCollection => 'Колекція куль';
+
+  @override
+  String get caliberMatchingError => 'Калібр снаряду і зброї відрізняється';
 }

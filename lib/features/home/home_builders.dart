@@ -8,6 +8,7 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
@@ -63,6 +64,7 @@ String? buildAdjustedMessageLine(
   ReticleSettings reticle, {
   required double vClickSizeMil,
   required double hClickSizeMil,
+  required AppLocalizations l10n,
 }) {
   final vAdj = reticle.verticalAdjustment;
   final hAdj = reticle.horizontalAdjustment;
@@ -87,7 +89,7 @@ String? buildAdjustedMessageLine(
           );
     parts.add(part);
   }
-  return 'Drum adjustment: ${parts.join(' / ')}';
+  return '${l10n.drumAdjustment}: ${parts.join(' / ')}';
 }
 
 String buildCartridgeInfoLine(

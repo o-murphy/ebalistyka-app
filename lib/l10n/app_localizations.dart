@@ -995,8 +995,14 @@ abstract class AppLocalizations {
   /// Ballistic coefficient field label
   ///
   /// In en, this message translates to:
-  /// **'BC'**
+  /// **'Ballistic coefficient'**
   String get bc;
+
+  /// No description provided for @bcShort.
+  ///
+  /// In en, this message translates to:
+  /// **'BC'**
+  String get bcShort;
 
   /// Bullet length field label
   ///
@@ -1061,7 +1067,7 @@ abstract class AppLocalizations {
   /// No description provided for @altitude.
   ///
   /// In en, this message translates to:
-  /// **'Висота'**
+  /// **'Altitude'**
   String get altitude;
 
   /// No description provided for @powderTemperature.
@@ -1333,6 +1339,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time to target'**
   String get timeToTarget;
+
+  /// No description provided for @placeholderSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get placeholderSearch;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @editAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editAction;
+
+  /// No description provided for @duplicateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicateAction;
+
+  /// No description provided for @exportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get exportAction;
+
+  /// No description provided for @importAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importAction;
+
+  /// No description provided for @removeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeAction;
+
+  /// No description provided for @rightHand.
+  ///
+  /// In en, this message translates to:
+  /// **'RH'**
+  String get rightHand;
+
+  /// No description provided for @leftHand.
+  ///
+  /// In en, this message translates to:
+  /// **'LH'**
+  String get leftHand;
+
+  /// No description provided for @rightHandFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get rightHandFull;
+
+  /// No description provided for @leftHandFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get leftHandFull;
+
+  /// No description provided for @selectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectButton;
+
+  /// No description provided for @goToCalculationsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to calculations'**
+  String get goToCalculationsButton;
+
+  /// No description provided for @selectAmmoSightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ammo and sight first'**
+  String get selectAmmoSightHint;
+
+  /// No description provided for @selectSightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select sight'**
+  String get selectSightHint;
+
+  /// No description provided for @selectAmmoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ammo'**
+  String get selectAmmoHint;
+
+  /// No description provided for @weaponName.
+  ///
+  /// In en, this message translates to:
+  /// **'Weapon name'**
+  String get weaponName;
+
+  /// No description provided for @twistDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Twist direction'**
+  String get twistDirection;
+
+  /// No description provided for @drumAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual adjustments'**
+  String get drumAdjustment;
+
+  /// No description provided for @bulletCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Bullet Collection'**
+  String get bulletCollection;
+
+  /// No description provided for @cartridgeCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cartridge Collection'**
+  String get cartridgeCollection;
+
+  /// No description provided for @caliberMatchingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo caliber differs from weapon caliber'**
+  String get caliberMatchingError;
 }
 
 class _AppLocalizationsDelegate

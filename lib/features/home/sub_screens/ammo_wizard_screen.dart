@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -76,7 +77,12 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     _projectileNameCtrl = TextEditingController(
       text: widget.initial?.projectileName ?? '',
     );
-    _scheduleCaliberMismatchToast();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        _scheduleCaliberMismatchToast(l10n: l10n);
+      }
+    });
   }
 
   @override
@@ -86,7 +92,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     super.dispose();
   }
 
-  void _scheduleCaliberMismatchToast() {
+  void _scheduleCaliberMismatchToast({required AppLocalizations l10n}) {
     final weaponCaliber = widget.caliberInch;
     final ammoCaliber = widget.initial?.caliber.in_(Unit.inch);
     if (weaponCaliber == null || ammoCaliber == null) return;
@@ -96,7 +102,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Ammo caliber differs from weapon caliber'),
+          content: Text(l10n.caliberMatchingError),
           duration: const Duration(seconds: 6),
           action: SnackBarAction(
             label: 'Update',

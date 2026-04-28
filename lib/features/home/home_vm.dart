@@ -18,6 +18,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/core/services/ballistics_service.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
@@ -56,6 +57,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     final units = ref.read(unitSettingsProvider);
     final reticle = ref.read(reticleSettingsProvider);
     final formatter = ref.read(unitFormatterProvider);
+    final l10n = ref.read(appLocalizationsProvider);
 
     if (ctx == null || settings == null) {
       state = const AsyncData(HomeUiNoData(type: EmptyStateType.noProfile));
@@ -104,6 +106,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         units: units,
         formatter: formatter,
         result: result,
+        l10n: l10n,
       );
       if (!ref.mounted) return;
 
@@ -221,6 +224,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
     required UnitSettings units,
     required UnitFormatter formatter,
     required BallisticsResult result,
+    required AppLocalizations l10n,
   }) async {
     final hit = result.hitResult;
     final targetM = conditions.distanceMeter;
@@ -273,6 +277,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
         reticle,
         vClickSizeMil: verticalClickSizeMil,
         hClickSizeMil: horizontalClickSizeMil,
+        l10n: l10n,
       );
     }
 

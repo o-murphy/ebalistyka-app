@@ -9,6 +9,7 @@
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/ammo_svg_view.dart';
@@ -25,6 +26,8 @@ class CollectionAmmoTileBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Stack(
@@ -72,7 +75,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                     Row(
                       children: [
                         _buildBcRow(
-                          "G1 BC",
+                          'G1 ${l10n.bcShort}',
                           ammo.bcG1,
                           DragType.g1,
                           ammo.dragType == DragType.g1,
@@ -80,7 +83,7 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         _buildBcRow(
-                          "G7 BC",
+                          'G7 ${l10n.bcShort}',
                           ammo.bcG7,
                           DragType.g7,
                           ammo.dragType == DragType.g7,

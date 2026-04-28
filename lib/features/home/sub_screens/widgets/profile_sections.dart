@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/features/home/profiles_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
@@ -20,29 +21,30 @@ class ProfileWeaponSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final twistDirIcon = data.rightHanded ? IconDef.twistR : IconDef.twistL;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
         ListSectionTile(
-          "Weapon",
+          l10n.weapon,
           onTap: onEdit,
           trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.weapon),
           title: Text(data.weaponName),
-          subtitle: const Text("Weapon name"),
+          subtitle: Text(l10n.weaponName),
           dense: true,
         ),
         InfoListTile(
-          label: "Caliber",
+          label: l10n.caliber,
           value: data.weaponCaliber,
           icon: IconDef.caliber,
         ),
-        InfoListTile(label: "Twist", value: data.twist, icon: twistDirIcon),
+        InfoListTile(label: l10n.twist, value: data.twist, icon: twistDirIcon),
         InfoListTile(
-          label: "Twist direction",
-          value: data.rightHanded ? 'right' : 'left',
+          label: l10n.twistDirection,
+          value: data.rightHanded ? l10n.rightHandFull : l10n.rightHandFull,
           icon: twistDirIcon,
         ),
       ],

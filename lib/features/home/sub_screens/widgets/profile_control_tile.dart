@@ -1,3 +1,4 @@
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
@@ -73,6 +74,7 @@ class ProfileControlTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return SizedBox(
       height: 160,
@@ -109,7 +111,7 @@ class ProfileControlTile extends StatelessWidget {
                 buttonForegroundColor: hasSight
                     ? colorScheme.onSecondaryContainer
                     : colorScheme.onTertiaryContainer,
-                hintText: "Select sight",
+                hintText: l10n.selectSightHint,
                 hintIcon: Icons.arrow_back,
                 hintColor: colorScheme.tertiary,
                 hintPosition: _HintPosition.right,
@@ -131,7 +133,7 @@ class ProfileControlTile extends StatelessWidget {
                 buttonForegroundColor: hasAmmo
                     ? colorScheme.onPrimaryContainer
                     : colorScheme.onTertiaryContainer,
-                hintText: "Select ammo",
+                hintText: l10n.selectAmmoHint,
                 hintIcon: Icons.arrow_forward,
                 hintColor: colorScheme.tertiary,
                 hintPosition: _HintPosition.left,

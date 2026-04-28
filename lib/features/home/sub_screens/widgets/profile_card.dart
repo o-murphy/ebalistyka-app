@@ -1,6 +1,7 @@
 import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_control_tile.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_sections.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -148,6 +149,7 @@ class _ProfileActionsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     if (isComplete) {
       return ColoredBox(
@@ -159,7 +161,9 @@ class _ProfileActionsBar extends StatelessWidget {
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
             ),
-            child: Text(!isActive ? 'Select' : 'Go to calculations'),
+            child: Text(
+              !isActive ? l10n.selectButton : l10n.goToCalculationsButton,
+            ),
           ),
         ),
       );
@@ -172,7 +176,7 @@ class _ProfileActionsBar extends StatelessWidget {
         child: SizedBox(
           width: double.infinity,
           child: Text(
-            'Select ammo and sight first',
+            l10n.selectAmmoSightHint,
             textAlign: TextAlign.center,
             style: TextStyle(color: colorScheme.onErrorContainer),
           ),

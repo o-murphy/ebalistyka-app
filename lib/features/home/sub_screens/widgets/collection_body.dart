@@ -1,4 +1,5 @@
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class BaseCollectionBody extends StatefulWidget {
@@ -24,6 +25,8 @@ class _BaseCollectionBodyState extends State<BaseCollectionBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final filtered = _query.isEmpty
         ? widget.tiles
         : widget.tiles
@@ -41,7 +44,7 @@ class _BaseCollectionBodyState extends State<BaseCollectionBody> {
             title: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search',
+                labelText: l10n.placeholderSearch,
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),

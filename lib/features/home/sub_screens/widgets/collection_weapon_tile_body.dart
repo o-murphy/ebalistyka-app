@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/weapon_svg_view.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -14,6 +15,7 @@ class CollectionWeaponTileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     final twistIcon = weapon.isRightHandTwist ? IconDef.twistR : IconDef.twistL;
     final twistStr = formatter.twist(weapon.twist);
@@ -110,7 +112,9 @@ class CollectionWeaponTileBody extends ConsumerWidget {
                             Icon(twistIcon, size: 14),
                             const SizedBox(width: 6),
                             Text(
-                              weapon.isRightHandTwist ? 'RH' : 'LH',
+                              weapon.isRightHandTwist
+                                  ? l10n.rightHand
+                                  : l10n.leftHand,
                               style: const TextStyle(fontSize: 12),
                             ),
                           ],

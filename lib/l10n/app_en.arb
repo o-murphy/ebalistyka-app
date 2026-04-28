@@ -352,10 +352,12 @@
     "@dragModel": {
         "description": "Drag model field label"
     },
-    "bc": "BC",
+    "bc": "Ballistic coefficient",
     "@bc": {
         "description": "Ballistic coefficient field label"
     },
+    "bcShort": "BC",
+    "@bcShort": {},
     "length": "Length",
     "@length": {
         "description": "Bullet length field label"
@@ -394,7 +396,7 @@
     "@pressure": {
         "description": "Pressure field label"
     },
-    "altitude": "Висота",
+    "altitude": "Altitude",
     "@altitude": {},
     "powderTemperature": "Powder temperature",
     "@powderTemperature": {},
@@ -489,5 +491,49 @@
     "windage": "Windage",
     "@windage": {},
     "timeToTarget": "Time to target",
-    "@timeToTarget": {}
+    "@timeToTarget": {},
+    "placeholderSearch": "Search",
+    "@placeholderSearch": {},
+    "actions": "Actions",
+    "@actions": {},
+    "editAction": "Edit",
+    "@editAction": {},
+    "duplicateAction": "Duplicate",
+    "@duplicateAction": {},
+    "exportAction": "Export",
+    "@exportAction": {},
+    "importAction": "Import",
+    "@importAction": {},
+    "removeAction": "Remove",
+    "@removeAction": {},
+    "rightHand": "RH",
+    "@rightHand": {},
+    "leftHand": "LH",
+    "@leftHand": {},
+    "rightHandFull": "Right",
+    "@rightHandFull": {},
+    "leftHandFull": "Left",
+    "@leftHandFull": {},
+    "selectButton": "Select",
+    "@selectButton": {},
+    "goToCalculationsButton": "Go to calculations",
+    "@goToCalculationsButton": {},
+    "selectAmmoSightHint": "Select ammo and sight first",
+    "@selectAmmoSightHint": {},
+    "selectSightHint": "Select sight",
+    "@selectSightHint": {},
+    "selectAmmoHint": "Select ammo",
+    "@selectAmmoHint": {},
+    "weaponName": "Weapon name",
+    "@weaponName": {},
+    "twistDirection": "Twist direction",
+    "@twistDirection": {},
+    "drumAdjustment": "Manual adjustments",
+    "@drumAdjustment": {},
+    "bulletCollection": "Bullet Collection",
+    "@bulletCollection": {},
+    "cartridgeCollection": "Cartridge Collection",
+    "@cartridgeCollection": {},
+    "caliberMatchingError": "Ammo caliber differs from weapon caliber",
+    "@caliberMatchingError": {}
 }

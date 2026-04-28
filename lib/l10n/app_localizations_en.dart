@@ -457,7 +457,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dragModel => 'Drag model';
 
   @override
-  String get bc => 'BC';
+  String get bc => 'Ballistic coefficient';
+
+  @override
+  String get bcShort => 'BC';
 
   @override
   String get length => 'Length';
@@ -490,7 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pressure => 'Pressure';
 
   @override
-  String get altitude => 'Висота';
+  String get altitude => 'Altitude';
 
   @override
   String get powderTemperature => 'Powder temperature';
@@ -629,4 +632,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeToTarget => 'Time to target';
+
+  @override
+  String get placeholderSearch => 'Search';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get editAction => 'Edit';
+
+  @override
+  String get duplicateAction => 'Duplicate';
+
+  @override
+  String get exportAction => 'Export';
+
+  @override
+  String get importAction => 'Import';
+
+  @override
+  String get removeAction => 'Remove';
+
+  @override
+  String get rightHand => 'RH';
+
+  @override
+  String get leftHand => 'LH';
+
+  @override
+  String get rightHandFull => 'Right';
+
+  @override
+  String get leftHandFull => 'Left';
+
+  @override
+  String get selectButton => 'Select';
+
+  @override
+  String get goToCalculationsButton => 'Go to calculations';
+
+  @override
+  String get selectAmmoSightHint => 'Select ammo and sight first';
+
+  @override
+  String get selectSightHint => 'Select sight';
+
+  @override
+  String get selectAmmoHint => 'Select ammo';
+
+  @override
+  String get weaponName => 'Weapon name';
+
+  @override
+  String get twistDirection => 'Twist direction';
+
+  @override
+  String get drumAdjustment => 'Manual adjustments';
+
+  @override
+  String get bulletCollection => 'Bullet Collection';
+
+  @override
+  String get cartridgeCollection => 'Cartridge Collection';
+
+  @override
+  String get caliberMatchingError => 'Ammo caliber differs from weapon caliber';
 }

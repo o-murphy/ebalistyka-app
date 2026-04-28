@@ -204,7 +204,7 @@ ProfileCardData _buildCardData(
     weight: formatter.weight(ammo?.weight),
     sightId: sight?.id,
     sightFingerprint: _sightFingerprint(sight),
-    sightName: sight?.name ?? 'Not selected',
+    sightName: sight?.name ?? nullStr,
     sightHeight: formatter.sightHeight(sight?.sightHeight),
     focalPlane: sight?.focalPlane ?? FocalPlane.ffp,
     reticleImage: sight?.reticleImage?.isNotEmpty == true
