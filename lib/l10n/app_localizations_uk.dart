@@ -669,7 +669,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get leftHandFull => 'Лівий';
 
   @override
-  String get selectButton => 'Select';
+  String get selectButton => 'Вибрати';
 
   @override
   String get goToCalculationsButton => 'До розрахунків';
