@@ -14,13 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 #### UI
 - **Navigation bar labels** — applied `NavigationBarTheme` with `fontSize: 11` and `TextOverflow.ellipsis` so long localized labels truncate gracefully instead of overflowing
+- **Home screen** — prettified condition indicators, page labels, wind direction display
 
 ### Fixed
 
 #### UI
 - **Wheel picker / hybrid wheel picker `-0.0`** — `UnitConversionHelper.formatDisplayValue` now normalises IEEE 754 negative zero before `toStringAsFixed`, so the wheel displays `0.0` instead of `-0.0`
 
+### Added
+
+#### Localization
+- **Home screen (UA/EN)** — main screen labels, page titles (`Holdovers`, `Trajectory Info`, `Trajectory Chart`), condition indicator labels, wind direction, tool/notes button labels
+- **Shot details screen (UA/EN)** — partial: ~20 keys for `ShotInfoScreen`
+- **Ammo collection (UA/EN)** — partial: collection tile body and list UI keys
+
 ### Refactored
+
+#### Code Quality — Split `ammo_wizard_screen.dart` (#7.1, priority 6)
+- Extracted 3 pure parser functions to `lib/features/home/sub_screens/ammo_wizard_parsers.dart` (`decodeBcTable`, `decodeCustomDragTable`, `decodePowderSensTable`)
+- Created `AmmoWizardNotifier` (`ammo_wizard_notifier.dart`) — `@immutable AmmoWizardState` with `isValid`, `fromAmmo()`, `buildAmmo()`, `copyWith()`; Riverpod 3.x `NotifierProvider.family`
+- All 30 `setState` calls removed from `ammo_wizard_screen.dart`; screen reduced 827 → 611 lines
+- 77 new tests: 20 parser tests + 57 notifier tests (isValid, fromAmmo roundtrip, buildAmmo unit conversions)
 
 #### Code Quality — Split `home_vm.dart` (#7.1, priority 5)
 - Extracted `home_ui_state.dart` — all 7 UI state classes (`HomeUiState`, `HomeUiReady`, `HomeUiNoData`, `HomeUiError`, `HomeConditionsUiState`, `ReticleUiState`, `HomeChartUiState`, `HomeChartPointInfo`)

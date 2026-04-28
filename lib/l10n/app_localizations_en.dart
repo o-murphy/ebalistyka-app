@@ -691,10 +691,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drumAdjustment => 'Manual adjustments';
 
   @override
-  String get bulletCollection => 'Bullet Collection';
+  String get bulletCollectionScreenTitle => 'Bullet Collection';
 
   @override
-  String get cartridgeCollection => 'Cartridge Collection';
+  String get cartridgeCollectionScreenTitle => 'Cartridge Collection';
 
   @override
   String get caliberMatchingError => 'Ammo caliber differs from weapon caliber';

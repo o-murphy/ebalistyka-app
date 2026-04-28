@@ -28,8 +28,8 @@ class AmmoCollectionScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     final title = filterBullet
-        ? l10n.bulletCollection
-        : l10n.cartridgeCollection;
+        ? l10n.bulletCollectionScreenTitle
+        : l10n.cartridgeCollectionScreenTitle;
 
     return BaseScreen(
       title: title,

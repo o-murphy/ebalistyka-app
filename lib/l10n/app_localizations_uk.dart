@@ -693,10 +693,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get drumAdjustment => 'Ручні поправки';
 
   @override
-  String get bulletCollection => 'Колекція патронів';
+  String get bulletCollectionScreenTitle => 'Колекція патронів';
 
   @override
-  String get cartridgeCollection => 'Колекція куль';
+  String get cartridgeCollectionScreenTitle => 'Колекція куль';
 
   @override
   String get caliberMatchingError => 'Калібр снаряду і зброї відрізняється';

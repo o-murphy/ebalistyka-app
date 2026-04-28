@@ -530,10 +530,10 @@
     "@twistDirection": {},
     "drumAdjustment": "Manual adjustments",
     "@drumAdjustment": {},
-    "bulletCollection": "Bullet Collection",
-    "@bulletCollection": {},
-    "cartridgeCollection": "Cartridge Collection",
-    "@cartridgeCollection": {},
+    "bulletCollectionScreenTitle": "Bullet Collection",
+    "@bulletCollectionScreenTitle": {},
+    "cartridgeCollectionScreenTitle": "Cartridge Collection",
+    "@cartridgeCollectionScreenTitle": {},
     "caliberMatchingError": "Ammo caliber differs from weapon caliber",
     "@caliberMatchingError": {}
 }

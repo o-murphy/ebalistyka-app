@@ -226,7 +226,7 @@
     "weaponName": "Назва зброї",
     "twistDirection": "Напрямок нарізів",
     "drumAdjustment": "Ручні поправки",
-    "bulletCollection": "Колекція патронів",
-    "cartridgeCollection": "Колекція куль",
+    "bulletCollectionScreenTitle": "Колекція патронів",
+    "cartridgeCollectionScreenTitle": "Колекція куль",
     "caliberMatchingError": "Калібр снаряду і зброї відрізняється"
 }

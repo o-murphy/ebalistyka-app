@@ -1454,17 +1454,17 @@ abstract class AppLocalizations {
   /// **'Manual adjustments'**
   String get drumAdjustment;
 
-  /// No description provided for @bulletCollection.
+  /// No description provided for @bulletCollectionScreenTitle.
   ///
   /// In en, this message translates to:
   /// **'Bullet Collection'**
-  String get bulletCollection;
+  String get bulletCollectionScreenTitle;
 
-  /// No description provided for @cartridgeCollection.
+  /// No description provided for @cartridgeCollectionScreenTitle.
   ///
   /// In en, this message translates to:
   /// **'Cartridge Collection'**
-  String get cartridgeCollection;
+  String get cartridgeCollectionScreenTitle;
 
   /// No description provided for @caliberMatchingError.
   ///
