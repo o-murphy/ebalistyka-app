@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  desktop_updater
   objectbox_flutter_libs
   screen_retriever_windows
   share_plus
