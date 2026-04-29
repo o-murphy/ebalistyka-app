@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`AdjustmentInputWithClicks`** — click suffix pluralizes reactively on keystroke
 - **Ukrainian `unitCmPer100mSym`** — `"cm/100m"` → `"см/100м"`
 - **Android keyboard overlap** — `resizeToAvoidBottomInset: false` on `_ScaffoldWithNav`; keyboard overlays shell content instead of shrinking it; sub-screens (`BaseScreen`) retain default `true`
+- **Desktop window size** — removed erroneous `* devicePixelRatio` multiplication; `window_manager` takes logical pixels, not physical; window now opens at correct `375×812` logical size
 
 
 ## [0.1.3] - 2026-04-28

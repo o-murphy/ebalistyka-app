@@ -45,14 +45,8 @@ void main() async {
   if (isDesktop) {
     await windowManager.ensureInitialized();
 
-    final double ratio =
-        PlatformDispatcher.instance.views.first.devicePixelRatio;
-
-    final size = Size(
-      _windowInitialWidth * ratio,
-      _windowInitialHeight * ratio,
-    );
-    final minSize = Size(_windowMinWidth * ratio, _windowMinHeight * ratio);
+    const size = Size(_windowInitialWidth, _windowInitialHeight);
+    const minSize = Size(_windowMinWidth, _windowMinHeight);
 
     WindowOptions windowOptions = WindowOptions(
       size: size,
