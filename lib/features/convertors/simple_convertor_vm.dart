@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -37,17 +39,18 @@ abstract class SimpleConvertorVm extends Notifier<SimpleConvertorUiState> {
   Future<void> saveInputUnit(Unit unit);
 
   FieldConstraints getConstraintsForUnit(Unit unit);
-  List<ConvertorSection> buildSections(double rawBase);
+  List<ConvertorSection> buildSections(double rawBase, AppLocalizations l10n);
 
   @override
   SimpleConvertorUiState build() {
     final s = ref.watch(convertorStateProvider);
+    final l10n = ref.watch(appLocalizationsProvider);
     final rawBase = getRawBase(s);
     final inputUnit = getInputUnit(s);
     return SimpleConvertorUiState(
       rawValue: rawBase.convert(baseUnit, inputUnit),
       inputUnit: inputUnit,
-      sections: buildSections(rawBase),
+      sections: buildSections(rawBase, l10n),
     );
   }
 
@@ -70,13 +73,15 @@ abstract class SimpleConvertorVm extends Notifier<SimpleConvertorUiState> {
     Unit toUnit,
     String Function(AppLocalizations) labelBuilder,
     int decimals,
+    AppLocalizations l10n,
   ) {
     final value = rawBase.convert(baseUnit, toUnit);
+    final sym = toUnit.localizedSymbol(l10n);
     return GenericConvertorField(
       labelBuilder: labelBuilder,
-      formattedValue: _fmt(value, decimals, toUnit.symbol),
+      formattedValue: _fmt(value, decimals, sym),
       value: value,
-      symbol: toUnit.symbol,
+      symbol: sym,
       decimals: decimals,
     );
   }

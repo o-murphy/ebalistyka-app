@@ -484,6 +484,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitDegreesSym => '°';
 
   @override
+  String get unitSecondSym => 's';
+
+  @override
   String get enterLength => 'Enter length';
 
   @override
@@ -784,6 +787,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gyrostabilitySg => 'Gyroscopic stability factor (Sg)';
+
+  @override
+  String get sgAbbr => 'Sg';
 
   @override
   String get customDragTable => 'Custom Drag Table';

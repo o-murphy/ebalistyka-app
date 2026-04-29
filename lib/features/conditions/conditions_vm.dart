@@ -2,6 +2,7 @@ import 'package:bclibc_ffi/bclibc.dart' as bclibc;
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
@@ -180,6 +181,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: tempUnit,
         inputField: InputField.temperature,
         formatter: formatter,
+        l10n: l10n,
       ),
       altitude: _field(
         label: l10n.altitude,
@@ -188,6 +190,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: distUnit,
         inputField: InputField.distance,
         formatter: formatter,
+        l10n: l10n,
       ),
       humidity: _field(
         label: l10n.humidity,
@@ -196,6 +199,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: Unit.percent,
         inputField: InputField.humidity,
         formatter: formatter,
+        l10n: l10n,
       ),
       pressure: _field(
         label: l10n.pressure,
@@ -204,6 +208,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: pressUnit,
         inputField: InputField.pressure,
         formatter: formatter,
+        l10n: l10n,
       ),
       powderTemperature: (powderSensOn && useDiffPowderTemp)
           ? _field(
@@ -213,6 +218,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
               displayUnit: tempUnit,
               inputField: InputField.temperature,
               formatter: formatter,
+              l10n: l10n,
             )
           : null,
       powderSensOn: powderSensOn,
@@ -225,6 +231,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: Unit.degree,
         inputField: InputField.lookAngle,
         formatter: formatter,
+        l10n: l10n,
       ),
       azimuth: _field(
         label: l10n.azimuth,
@@ -233,6 +240,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
         displayUnit: Unit.degree,
         inputField: InputField.lookAngle,
         formatter: formatter,
+        l10n: l10n,
       ),
       mvAtPowderTemp: (powderSensOn && mvStr.isNotEmpty) ? mvStr : null,
       powderSensitivity: (powderSensOn && sensStr.isNotEmpty) ? sensStr : null,
@@ -246,6 +254,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
     required Unit displayUnit,
     required InputField inputField,
     required UnitFormatter formatter,
+    required AppLocalizations l10n,
   }) {
     final displayValue = formatter.rawToInput(rawValue, inputField);
     final displayMin = _convertFcBound(fc.minRaw, fc.rawUnit, displayUnit);
@@ -257,7 +266,7 @@ class ConditionsViewModel extends AsyncNotifier<ConditionsUiState> {
       label: label,
       displayValue: displayValue,
       rawValue: rawValue,
-      symbol: displayUnit.symbol,
+      symbol: displayUnit.localizedSymbol(l10n),
       displayMin: displayMin,
       displayMax: displayMax,
       displayStep: displayStep,

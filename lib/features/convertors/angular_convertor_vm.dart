@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
@@ -265,68 +266,68 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       // Distance
       meters: AnglesConvertorField(
         label: l10n.unitMeters,
-        formattedValue: _formatValue(metersRaw, 0, Unit.meter.symbol),
+        formattedValue: _formatValue(metersRaw, 0, Unit.meter.localizedSymbol(l10n)),
         value: metersRaw,
-        symbol: Unit.meter.symbol,
+        symbol: Unit.meter.localizedSymbol(l10n),
         decimals: 0,
       ),
       yards: AnglesConvertorField(
         label: l10n.unitYards,
-        formattedValue: _formatValue(yardsRaw, 0, Unit.yard.symbol),
+        formattedValue: _formatValue(yardsRaw, 0, Unit.yard.localizedSymbol(l10n)),
         value: yardsRaw,
-        symbol: Unit.yard.symbol,
+        symbol: Unit.yard.localizedSymbol(l10n),
         decimals: 0,
       ),
 
       // Angle conversion
       mil: AnglesConvertorField(
         label: l10n.unitMil,
-        formattedValue: _formatValue(milRaw, 1, Unit.mil.symbol),
+        formattedValue: _formatValue(milRaw, 1, Unit.mil.localizedSymbol(l10n)),
         value: milRaw,
-        symbol: Unit.mil.symbol,
+        symbol: Unit.mil.localizedSymbol(l10n),
         decimals: 1,
       ),
       moa: AnglesConvertorField(
         label: l10n.unitMoa,
-        formattedValue: _formatValue(moaRaw, 1, Unit.moa.symbol),
+        formattedValue: _formatValue(moaRaw, 1, Unit.moa.localizedSymbol(l10n)),
         value: moaRaw,
-        symbol: Unit.moa.symbol,
+        symbol: Unit.moa.localizedSymbol(l10n),
         decimals: 1,
       ),
       cmPer100m: AnglesConvertorField(
         label: l10n.unitCmPer100m,
-        formattedValue: _formatValue(cmPer100mRaw, 1, 'cm/100m'),
+        formattedValue: _formatValue(cmPer100mRaw, 1, Unit.cmPer100m.localizedSymbol(l10n)),
         value: cmPer100mRaw,
-        symbol: 'cm/100m',
+        symbol: Unit.cmPer100m.localizedSymbol(l10n),
         decimals: 1,
       ),
       inchPer100Yd: AnglesConvertorField(
         label: l10n.unitInPer100Yd,
-        formattedValue: _formatValue(inchPer100YdRaw, 2, 'in/100yd'),
+        formattedValue: _formatValue(inchPer100YdRaw, 2, Unit.inPer100Yd.localizedSymbol(l10n)),
         value: inchPer100YdRaw,
-        symbol: 'in/100yd',
+        symbol: Unit.inPer100Yd.localizedSymbol(l10n),
         decimals: 2,
       ),
       mrad: AnglesConvertorField(
         label: l10n.unitMrad,
-        formattedValue: _formatValue(mradRaw, 2, Unit.mRad.symbol),
+        formattedValue: _formatValue(mradRaw, 2, Unit.mRad.localizedSymbol(l10n)),
         value: mradRaw,
-        symbol: Unit.mRad.symbol,
+        symbol: Unit.mRad.localizedSymbol(l10n),
         decimals: 2,
       ),
       degrees: AnglesConvertorField(
         label: l10n.unitDegrees,
-        formattedValue: _formatValue(degreesRaw, 2, Unit.degree.symbol),
+        formattedValue: _formatValue(degreesRaw, 2, Unit.degree.localizedSymbol(l10n)),
         value: degreesRaw,
-        symbol: Unit.degree.symbol,
+        symbol: Unit.degree.localizedSymbol(l10n),
         decimals: 2,
       ),
 
       // Distance calculations in the selected unit
-      oneMilAtDistance: _formatValue(oneMilValue, 1, outputUnit.symbol),
-      angleInMoaAtDistance: _formatValue(angleMoaValue, 1, outputUnit.symbol),
-      oneMoaAtDistance: _formatValue(oneMoaValue, 1, outputUnit.symbol),
-      angleInMilAtDistance: _formatValue(angleMilValue, 1, outputUnit.symbol),
+      oneMilAtDistance: _formatValue(oneMilValue, 1, outputUnit.localizedSymbol(l10n)),
+      angleInMoaAtDistance: _formatValue(angleMoaValue, 1, outputUnit.localizedSymbol(l10n)),
+      oneMoaAtDistance: _formatValue(oneMoaValue, 1, outputUnit.localizedSymbol(l10n)),
+      angleInMilAtDistance: _formatValue(angleMilValue, 1, outputUnit.localizedSymbol(l10n)),
     );
   }
 }

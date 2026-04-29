@@ -324,6 +324,8 @@
     "@unitInPer100YdSym": {"description": "Unit symbol: inches per 100 yards"},
     "unitDegreesSym": "°",
     "@unitDegreesSym": {"description": "Unit symbol: degrees (angle)"},
+    "unitSecondSym": "s",
+    "@unitSecondSym": {"description": "Unit symbol: seconds (time)"},
 
     "enterLength": "Enter length",
     "@enterLength": {"description": "Hint text for a length input field in converters"},
@@ -532,6 +534,8 @@
     "@sectionalDensity": {"description": "Field label for projectile sectional density"},
     "gyrostabilitySg": "Gyroscopic stability factor (Sg)",
     "@gyrostabilitySg": {"description": "Field label for the gyroscopic stability factor Sg"},
+    "sgAbbr": "Sg",
+    "@sgAbbr": {"description": "Short abbreviation for the gyroscopic stability factor"},
     "customDragTable": "Custom Drag Table",
     "@customDragTable": {"description": "Label for a user-defined custom drag function table"},
     "multiBcTable": "Multi-BC Table",

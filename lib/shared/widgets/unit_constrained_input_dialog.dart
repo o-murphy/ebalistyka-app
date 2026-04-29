@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -103,8 +104,8 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ctx = widget.pickerContext;
-    final sym = ctx.symbol ?? ctx.displayUnit.symbol;
     final l10n = AppLocalizations.of(context)!;
+    final sym = ctx.symbol ?? ctx.displayUnit.localizedSymbol(l10n);
 
     final canSave =
         _errorText == null && (!_isNullValue || (ctx.allowNull == true));

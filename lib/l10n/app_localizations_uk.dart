@@ -486,6 +486,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitDegreesSym => '°';
 
   @override
+  String get unitSecondSym => 'с';
+
+  @override
   String get enterLength => 'Введіть довжину';
 
   @override
@@ -785,6 +788,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get gyrostabilitySg => 'Гіроскопічна стабільність (ФГС)';
+
+  @override
+  String get sgAbbr => 'ФГС';
 
   @override
   String get customDragTable => 'Власна таблиця опору';

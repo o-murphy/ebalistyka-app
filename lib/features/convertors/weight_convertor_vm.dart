@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -36,40 +37,15 @@ class WeightConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawGrain) => [
+  List<ConvertorSection> buildSections(double rawGrain, AppLocalizations l10n) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(
-        rawGrain,
-        Unit.gram,
-        (l10n) => l10n.unitGrams,
-        FC.convertorWeight.accuracyFor(Unit.gram),
-      ),
-      fieldFor(
-        rawGrain,
-        Unit.kilogram,
-        (l10n) => l10n.unitKilograms,
-        FC.convertorWeight.accuracyFor(Unit.kilogram),
-      ),
+      fieldFor(rawGrain, Unit.gram, (l10n) => l10n.unitGrams, FC.convertorWeight.accuracyFor(Unit.gram), l10n),
+      fieldFor(rawGrain, Unit.kilogram, (l10n) => l10n.unitKilograms, FC.convertorWeight.accuracyFor(Unit.kilogram), l10n),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(
-        rawGrain,
-        Unit.grain,
-        (l10n) => l10n.unitGrains,
-        FC.convertorWeight.accuracyFor(Unit.grain),
-      ),
-      fieldFor(
-        rawGrain,
-        Unit.pound,
-        (l10n) => l10n.unitPounds,
-        FC.convertorWeight.accuracyFor(Unit.pound),
-      ),
-      fieldFor(
-        rawGrain,
-        Unit.ounce,
-        (l10n) => l10n.unitOunces,
-        FC.convertorWeight.accuracyFor(Unit.ounce),
-      ),
+      fieldFor(rawGrain, Unit.grain, (l10n) => l10n.unitGrains, FC.convertorWeight.accuracyFor(Unit.grain), l10n),
+      fieldFor(rawGrain, Unit.pound, (l10n) => l10n.unitPounds, FC.convertorWeight.accuracyFor(Unit.pound), l10n),
+      fieldFor(rawGrain, Unit.ounce, (l10n) => l10n.unitOunces, FC.convertorWeight.accuracyFor(Unit.ounce), l10n),
     ]),
   ];
 }

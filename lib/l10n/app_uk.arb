@@ -166,6 +166,7 @@
     "unitCmPer100mSym": "cm/100m",
     "unitInPer100YdSym": "in/100yd",
     "unitDegreesSym": "°",
+    "unitSecondSym": "с",
 
     "enterLength": "Введіть довжину",
     "enterWeight": "Введіть вагу",
@@ -274,6 +275,7 @@
     "formFactor": "Коефіцієнт форми",
     "sectionalDensity": "Поперечне навантаження",
     "gyrostabilitySg": "Гіроскопічна стабільність (ФГС)",
+    "sgAbbr": "ФГС",
     "customDragTable": "Власна таблиця опору",
     "multiBcTable": "Таблиця мульти-БК",
     "twoColumnEditorFooter": "Рядки з нульовими значеннями ігноруються під час збереження.",

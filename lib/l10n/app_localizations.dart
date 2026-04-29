@@ -1046,6 +1046,12 @@ abstract class AppLocalizations {
   /// **'°'**
   String get unitDegreesSym;
 
+  /// Unit symbol: seconds (time)
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get unitSecondSym;
+
   /// Hint text for a length input field in converters
   ///
   /// In en, this message translates to:
@@ -1645,6 +1651,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gyroscopic stability factor (Sg)'**
   String get gyrostabilitySg;
+
+  /// Short abbreviation for the gyroscopic stability factor
+  ///
+  /// In en, this message translates to:
+  /// **'Sg'**
+  String get sgAbbr;
 
   /// Label for a user-defined custom drag function table
   ///

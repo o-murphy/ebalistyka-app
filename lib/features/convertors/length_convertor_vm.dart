@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -36,40 +37,15 @@ class LengthConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawInch) => [
+  List<ConvertorSection> buildSections(double rawInch, AppLocalizations l10n) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(
-        rawInch,
-        Unit.centimeter,
-        (l10n) => l10n.unitCentimeters,
-        FC.convertorLength.accuracyFor(Unit.centimeter),
-      ),
-      fieldFor(
-        rawInch,
-        Unit.meter,
-        (l10n) => l10n.unitMeters,
-        FC.convertorLength.accuracyFor(Unit.meter),
-      ),
+      fieldFor(rawInch, Unit.centimeter, (l10n) => l10n.unitCentimeters, FC.convertorLength.accuracyFor(Unit.centimeter), l10n),
+      fieldFor(rawInch, Unit.meter, (l10n) => l10n.unitMeters, FC.convertorLength.accuracyFor(Unit.meter), l10n),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(
-        rawInch,
-        Unit.inch,
-        (l10n) => l10n.unitInches,
-        FC.convertorLength.accuracyFor(Unit.inch),
-      ),
-      fieldFor(
-        rawInch,
-        Unit.foot,
-        (l10n) => l10n.unitFeet,
-        FC.convertorLength.accuracyFor(Unit.foot),
-      ),
-      fieldFor(
-        rawInch,
-        Unit.yard,
-        (l10n) => l10n.unitYards,
-        FC.convertorLength.accuracyFor(Unit.yard),
-      ),
+      fieldFor(rawInch, Unit.inch, (l10n) => l10n.unitInches, FC.convertorLength.accuracyFor(Unit.inch), l10n),
+      fieldFor(rawInch, Unit.foot, (l10n) => l10n.unitFeet, FC.convertorLength.accuracyFor(Unit.foot), l10n),
+      fieldFor(rawInch, Unit.yard, (l10n) => l10n.unitYards, FC.convertorLength.accuracyFor(Unit.yard), l10n),
     ]),
   ];
 }

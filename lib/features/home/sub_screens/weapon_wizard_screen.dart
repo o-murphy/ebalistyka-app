@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/home/sub_screens/weapon_wizard_notifier.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/mixins/wizard_form_mixin.dart';
@@ -141,7 +142,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
             rawValue: st.twistRaw,
             constraints: FC.twist,
             displayUnit: units.twistUnit,
-            symbol: '1:${units.twistUnit.symbol}',
+            symbol: '1:${units.twistUnit.localizedSymbol(l10n)}',
             icon: twistDirIcon,
             onChanged: notifier.updateTwistRaw,
           ),
