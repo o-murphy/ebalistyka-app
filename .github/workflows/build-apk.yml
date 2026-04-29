@@ -67,6 +67,10 @@ on:
 env:
   FLUTTER_VERSION: "3.41.6"
 
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prepare-version:
     runs-on: ubuntu-latest
