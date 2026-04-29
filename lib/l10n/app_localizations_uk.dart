@@ -1179,4 +1179,18 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get rangeUltraLong => 'Надальня';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Доступна нова версія $version';
+  }
+
+  @override
+  String get viewReleaseAction => 'Переглянути';
+
+  @override
+  String get checkForUpdatesLabel => 'Перевірити оновлення';
+
+  @override
+  String get upToDateMessage => 'У вас остання версія';
 }

@@ -7,6 +7,8 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_tile.dart';
+import 'package:ebalistyka/update/update_checker.dart';
+import 'package:ebalistyka/update/update_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,11 +26,33 @@ final _packageInfoProvider = FutureProvider<PackageInfo>(
   (_) => PackageInfo.fromPlatform(),
 );
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _checkingUpdate = false;
+
+  Future<void> _checkForUpdates() async {
+    setState(() => _checkingUpdate = true);
+    try {
+      final release = await checkForUpdate();
+      if (!mounted) return;
+      if (release != null) {
+        showUpdateBottomSheet(context, release);
+      } else {
+        showFeedback(context, AppLocalizations.of(context)!.upToDateMessage);
+      }
+    } finally {
+      if (mounted) setState(() => _checkingUpdate = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider).value ?? GeneralSettings();
 
     final notifier = ref.read(settingsProvider.notifier);
@@ -175,14 +199,18 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.labelPrivacyPolicy),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () => _launchUrl(
+              'https://github.com/o-murphy/ebalistyka-app/blob/main/PRIVACY_POLICY.md',
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: Text(l10n.labelTermsOfUse),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () => _launchUrl(
+              'https://github.com/o-murphy/ebalistyka-app/blob/main/TERMS.md',
+            ),
           ),
 
           const TileDivider(),
@@ -205,6 +233,18 @@ class SettingsScreen extends ConsumerWidget {
               style: tt.bodySmall,
             ),
             dense: true,
+          ),
+          ListTile(
+            leading: _checkingUpdate
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.system_update_outlined),
+            title: Text(l10n.checkForUpdatesLabel),
+            dense: true,
+            onTap: _checkingUpdate ? null : _checkForUpdates,
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),

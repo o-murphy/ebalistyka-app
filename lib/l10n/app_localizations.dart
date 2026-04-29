@@ -2383,6 +2383,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ultra long'**
   String get rangeUltraLong;
+
+  /// SnackBar message shown when a newer GitHub release exists
+  ///
+  /// In en, this message translates to:
+  /// **'New version {version} is available'**
+  String updateAvailable(String version);
+
+  /// SnackBar action button label to open the GitHub release page
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get viewReleaseAction;
+
+  /// Settings list tile label for the manual update check button
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates'**
+  String get checkForUpdatesLabel;
+
+  /// SnackBar message shown when no newer version is available
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re up to date'**
+  String get upToDateMessage;
 }
 
 class _AppLocalizationsDelegate

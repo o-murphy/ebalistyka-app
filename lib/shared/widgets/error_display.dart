@@ -8,7 +8,6 @@ class ErrorDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Отримуємо локалізацію тут, щоб віджет був автономним
     final l10n = AppLocalizations.of(context)!;
 
     return Center(child: Text('${l10n.error}: $error'));

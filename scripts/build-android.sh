@@ -6,7 +6,7 @@
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
-#   build_number  Integer build number (git rev-list --count HEAD — monotonically increasing).
+#   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
 #   --fat         Build a single fat APK instead of per-ABI split (optional).
 #
 # Signing (optional — falls back to debug key if not set):
@@ -33,10 +33,6 @@ BUILD_NAME="${BUILD_NAME#v}"
 # Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
 BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
-# ── Pubspec version ──────────────────────────────────────────────────────────
-sed -i "s/^version:.*/version: ${BASE}+${BUILD_NUMBER}/" pubspec.yaml
-echo "pubspec version → ${BASE}+${BUILD_NUMBER}"
-
 # ── Android signing ──────────────────────────────────────────────────────────
 if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
     echo "Setting up Android release signing…"
@@ -54,9 +50,13 @@ fi
 
 # ── Build ────────────────────────────────────────────────────────────────────
 if [ "$FAT" = "--fat" ]; then
-    flutter build apk --release
+    flutter build apk --release \
+      --build-name="$BASE" \
+      --build-number="$BUILD_NUMBER"
 else
-    flutter build apk --release --split-per-abi
+    flutter build apk --release --split-per-abi \
+      --build-name="$BASE" \
+      --build-number="$BUILD_NUMBER"
 fi
 
 # ── Package ──────────────────────────────────────────────────────────────────
