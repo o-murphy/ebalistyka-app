@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.1.4] - 2026-04-28
+
 ### Added
 
 - **In-app update checker** — on startup checks GitHub Releases (at most once per 24 h); shows a bottom sheet with "View" button if a newer version is available; manual check available in Settings → About; `INTERNET` permission added to `AndroidManifest.xml`
