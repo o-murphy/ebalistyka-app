@@ -6,7 +6,7 @@
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
-#   build_number  Integer build number (git rev-list --count HEAD — monotonically increasing).
+#   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
 #   --fat         Build a single fat APK instead of per-ABI split (optional).
 #
 # Signing (optional — falls back to debug key if not set):
@@ -54,9 +54,13 @@ fi
 
 # ── Build ────────────────────────────────────────────────────────────────────
 if [ "$FAT" = "--fat" ]; then
-    flutter build apk --release
+    flutter build apk --release \
+      --build-name="$BASE" \
+      --build-number="$BUILD_NUMBER"
 else
-    flutter build apk --release --split-per-abi
+    flutter build apk --release --split-per-abi \
+      --build-name="$BASE" \
+      --build-number="$BUILD_NUMBER"
 fi
 
 # ── Package ──────────────────────────────────────────────────────────────────

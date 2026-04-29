@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_updater
   objectbox_flutter_libs
   screen_retriever_linux
   url_launcher_linux
