@@ -794,6 +794,8 @@
     "@updateAvailable": {"description": "SnackBar message shown when a newer GitHub release exists", "placeholders": {"version": {"type": "String"}}},
     "viewReleaseAction": "View",
     "@viewReleaseAction": {"description": "SnackBar action button label to open the GitHub release page"},
+    "openInPlayStoreAction": "Open in Google Play",
+    "@openInPlayStoreAction": {"description": "Button label to open the Google Play Store page for the update"},
     "checkForUpdatesLabel": "Check for updates",
     "@checkForUpdatesLabel": {"description": "Settings list tile label for the manual update check button"},
     "upToDateMessage": "You're up to date",

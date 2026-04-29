@@ -411,6 +411,7 @@
     "rangeUltraLong": "Надальня",
     "updateAvailable": "Доступна нова версія {version}",
     "viewReleaseAction": "Переглянути",
+    "openInPlayStoreAction": "Відкрити в Google Play",
     "checkForUpdatesLabel": "Перевірити оновлення",
     "upToDateMessage": "У вас остання версія"
 }

@@ -1185,6 +1185,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewReleaseAction => 'View';
 
   @override
+  String get openInPlayStoreAction => 'Open in Google Play';
+
+  @override
   String get checkForUpdatesLabel => 'Check for updates';
 
   @override

@@ -2396,6 +2396,12 @@ abstract class AppLocalizations {
   /// **'View'**
   String get viewReleaseAction;
 
+  /// Button label to open the Google Play Store page for the update
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Play'**
+  String get openInPlayStoreAction;
+
   /// Settings list tile label for the manual update check button
   ///
   /// In en, this message translates to:

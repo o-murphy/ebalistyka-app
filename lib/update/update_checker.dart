@@ -15,17 +15,25 @@ class GithubRelease {
   final String tagName;
   final String htmlUrl;
   final bool prerelease;
+  final bool isPlayStore;
+  final String packageName;
 
   const GithubRelease({
     required this.tagName,
     required this.htmlUrl,
     required this.prerelease,
+    required this.isPlayStore,
+    required this.packageName,
   });
 }
 
 /// Hits the GitHub API and returns the latest [GithubRelease] if it is newer
 /// than [currentVersion], or null if already up-to-date / on error.
-Future<GithubRelease?> _fetchIfNewer(String currentVersion) async {
+Future<GithubRelease?> _fetchIfNewer(
+  String currentVersion, {
+  required bool isPlayStore,
+  required String packageName,
+}) async {
   final response = await http
       .get(
         Uri.parse('https://api.github.com/repos/$_repoSlug/releases/latest'),
@@ -49,6 +57,8 @@ Future<GithubRelease?> _fetchIfNewer(String currentVersion) async {
     tagName: tagName,
     htmlUrl: htmlUrl,
     prerelease: prerelease,
+    isPlayStore: isPlayStore,
+    packageName: packageName,
   );
 }
 
@@ -57,7 +67,12 @@ Future<GithubRelease?> _fetchIfNewer(String currentVersion) async {
 Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
-    final result = await _fetchIfNewer(info.version);
+    final isPlayStore = info.installerStore == 'com.android.vending';
+    final result = await _fetchIfNewer(
+      info.version,
+      isPlayStore: isPlayStore,
+      packageName: info.packageName,
+    );
     final appSupport = await getApplicationSupportDirectory();
     await File(
       '${appSupport.path}/$_lastCheckFile',
@@ -86,8 +101,13 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     }
 
     final info = await PackageInfo.fromPlatform();
+    final isPlayStore = info.installerStore == 'com.android.vending';
     await checkFile.writeAsString(DateTime.now().toIso8601String());
-    return _fetchIfNewer(info.version);
+    return _fetchIfNewer(
+      info.version,
+      isPlayStore: isPlayStore,
+      packageName: info.packageName,
+    );
   } catch (e) {
     debugPrint('Update check failed: $e');
     return null;

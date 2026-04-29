@@ -1189,6 +1189,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get viewReleaseAction => 'Переглянути';
 
   @override
+  String get openInPlayStoreAction => 'Відкрити в Google Play';
+
+  @override
   String get checkForUpdatesLabel => 'Перевірити оновлення';
 
   @override

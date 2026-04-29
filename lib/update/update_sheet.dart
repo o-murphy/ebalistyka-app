@@ -75,14 +75,20 @@ class _UpdateSheet extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 icon: const Icon(Icons.open_in_new_outlined),
-                label: Text(l10n.viewReleaseAction),
+                label: Text(
+                  release.isPlayStore
+                      ? l10n.openInPlayStoreAction
+                      : l10n.viewReleaseAction,
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  final url = release.isPlayStore
+                      ? Uri.parse(
+                          'https://play.google.com/store/apps/details?id=${release.packageName}',
+                        )
+                      : Uri.parse(release.htmlUrl);
                   unawaited(
-                    launchUrl(
-                      Uri.parse(release.htmlUrl),
-                      mode: LaunchMode.externalApplication,
-                    ),
+                    launchUrl(url, mode: LaunchMode.externalApplication),
                   );
                 },
               ),
