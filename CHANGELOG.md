@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Unit symbols — full audit** — all remaining `unit.symbol`/`unit.label` call sites replaced with `localizedSymbol(l10n)`/`localizedLabel(l10n)` across 22+ files; new ARB keys: `unitSecondSym` (`s`/`с`), `sgAbbr` (`Sg`/`ФГС`), `nClicks` (ICU plural: `click`/`clicks`, `клік`/`кліка`/`кліків`)
+- **`AdjustmentDisplayPanel`** — click values pluralized via `nClicks(count)`; Sg abbreviation localized
+- **`AdjustmentInputWithClicks`** — click suffix pluralizes reactively on keystroke
+- **Ukrainian `unitCmPer100mSym`** — `"cm/100m"` → `"см/100м"`
+
 
 ## [0.1.3] - 2026-04-28
 

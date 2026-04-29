@@ -836,6 +836,12 @@ abstract class AppLocalizations {
   /// **'Clicks'**
   String get unitClicks;
 
+  /// Pluralized click count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{click} other{clicks}}'**
+  String nClicks(int count);
+
   /// Unit name: joule (energy)
   ///
   /// In en, this message translates to:

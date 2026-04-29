@@ -285,7 +285,13 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             FC.targetDistance.accuracyFor(distUnit),
           ),
           if (!hidden.contains('time'))
-            ('time', l10n.columnTime, (_) => l10n.unitSecondSym, (r) => r.time, 3),
+            (
+              'time',
+              l10n.columnTime,
+              (_) => l10n.unitSecondSym,
+              (r) => r.time,
+              3,
+            ),
           if (!hidden.contains('velocity'))
             (
               'velocity',

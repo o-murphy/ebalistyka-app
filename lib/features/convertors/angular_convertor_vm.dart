@@ -266,14 +266,22 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       // Distance
       meters: AnglesConvertorField(
         label: l10n.unitMeters,
-        formattedValue: _formatValue(metersRaw, 0, Unit.meter.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          metersRaw,
+          0,
+          Unit.meter.localizedSymbol(l10n),
+        ),
         value: metersRaw,
         symbol: Unit.meter.localizedSymbol(l10n),
         decimals: 0,
       ),
       yards: AnglesConvertorField(
         label: l10n.unitYards,
-        formattedValue: _formatValue(yardsRaw, 0, Unit.yard.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          yardsRaw,
+          0,
+          Unit.yard.localizedSymbol(l10n),
+        ),
         value: yardsRaw,
         symbol: Unit.yard.localizedSymbol(l10n),
         decimals: 0,
@@ -296,38 +304,70 @@ class AnglesConvertorViewModel extends Notifier<AnglesConvertorUiState> {
       ),
       cmPer100m: AnglesConvertorField(
         label: l10n.unitCmPer100m,
-        formattedValue: _formatValue(cmPer100mRaw, 1, Unit.cmPer100m.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          cmPer100mRaw,
+          1,
+          Unit.cmPer100m.localizedSymbol(l10n),
+        ),
         value: cmPer100mRaw,
         symbol: Unit.cmPer100m.localizedSymbol(l10n),
         decimals: 1,
       ),
       inchPer100Yd: AnglesConvertorField(
         label: l10n.unitInPer100Yd,
-        formattedValue: _formatValue(inchPer100YdRaw, 2, Unit.inPer100Yd.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          inchPer100YdRaw,
+          2,
+          Unit.inPer100Yd.localizedSymbol(l10n),
+        ),
         value: inchPer100YdRaw,
         symbol: Unit.inPer100Yd.localizedSymbol(l10n),
         decimals: 2,
       ),
       mrad: AnglesConvertorField(
         label: l10n.unitMrad,
-        formattedValue: _formatValue(mradRaw, 2, Unit.mRad.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          mradRaw,
+          2,
+          Unit.mRad.localizedSymbol(l10n),
+        ),
         value: mradRaw,
         symbol: Unit.mRad.localizedSymbol(l10n),
         decimals: 2,
       ),
       degrees: AnglesConvertorField(
         label: l10n.unitDegrees,
-        formattedValue: _formatValue(degreesRaw, 2, Unit.degree.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          degreesRaw,
+          2,
+          Unit.degree.localizedSymbol(l10n),
+        ),
         value: degreesRaw,
         symbol: Unit.degree.localizedSymbol(l10n),
         decimals: 2,
       ),
 
       // Distance calculations in the selected unit
-      oneMilAtDistance: _formatValue(oneMilValue, 1, outputUnit.localizedSymbol(l10n)),
-      angleInMoaAtDistance: _formatValue(angleMoaValue, 1, outputUnit.localizedSymbol(l10n)),
-      oneMoaAtDistance: _formatValue(oneMoaValue, 1, outputUnit.localizedSymbol(l10n)),
-      angleInMilAtDistance: _formatValue(angleMilValue, 1, outputUnit.localizedSymbol(l10n)),
+      oneMilAtDistance: _formatValue(
+        oneMilValue,
+        1,
+        outputUnit.localizedSymbol(l10n),
+      ),
+      angleInMoaAtDistance: _formatValue(
+        angleMoaValue,
+        1,
+        outputUnit.localizedSymbol(l10n),
+      ),
+      oneMoaAtDistance: _formatValue(
+        oneMoaValue,
+        1,
+        outputUnit.localizedSymbol(l10n),
+      ),
+      angleInMilAtDistance: _formatValue(
+        angleMilValue,
+        1,
+        outputUnit.localizedSymbol(l10n),
+      ),
     );
   }
 }

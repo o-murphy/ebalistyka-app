@@ -39,11 +39,29 @@ class TorqueConvertorViewModel extends SimpleConvertorVm {
   @override
   List<ConvertorSection> buildSections(double rawNm, AppLocalizations l10n) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(rawNm, Unit.newtonMeter, (l10n) => l10n.unitNewtonMeter, FC.convertorTorque.accuracyFor(Unit.newtonMeter), l10n),
+      fieldFor(
+        rawNm,
+        Unit.newtonMeter,
+        (l10n) => l10n.unitNewtonMeter,
+        FC.convertorTorque.accuracyFor(Unit.newtonMeter),
+        l10n,
+      ),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(rawNm, Unit.footPoundTorque, (l10n) => l10n.unitFootPound, FC.convertorTorque.accuracyFor(Unit.footPoundTorque), l10n),
-      fieldFor(rawNm, Unit.inchPound, (l10n) => l10n.unitInchPound, FC.convertorTorque.accuracyFor(Unit.inchPound), l10n),
+      fieldFor(
+        rawNm,
+        Unit.footPoundTorque,
+        (l10n) => l10n.unitFootPound,
+        FC.convertorTorque.accuracyFor(Unit.footPoundTorque),
+        l10n,
+      ),
+      fieldFor(
+        rawNm,
+        Unit.inchPound,
+        (l10n) => l10n.unitInchPound,
+        FC.convertorTorque.accuracyFor(Unit.inchPound),
+        l10n,
+      ),
     ]),
   ];
 }

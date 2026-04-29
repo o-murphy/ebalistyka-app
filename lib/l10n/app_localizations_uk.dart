@@ -381,6 +381,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitClicks => 'Кліки';
 
   @override
+  String nClicks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'кліків',
+      many: 'кліків',
+      few: 'кліка',
+      one: 'клік',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get unitJoule => 'Джоуль';
 
   @override
@@ -477,7 +490,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitMradSym => 'MRAD';
 
   @override
-  String get unitCmPer100mSym => 'cm/100m';
+  String get unitCmPer100mSym => 'см/100м';
 
   @override
   String get unitInPer100YdSym => 'in/100yd';
@@ -971,7 +984,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get holdoversVertical => 'Винос по вертикалі';
 
   @override
-  String get holdoversHorizontal => 'Вітрознос';
+  String get holdoversHorizontal => 'Винос по горизонталі';
 
   @override
   String get adjustmentDisplayDisabled => 'Відображення поправок вимкнено!';

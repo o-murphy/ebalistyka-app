@@ -37,15 +37,48 @@ class WeightConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawGrain, AppLocalizations l10n) => [
+  List<ConvertorSection> buildSections(
+    double rawGrain,
+    AppLocalizations l10n,
+  ) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(rawGrain, Unit.gram, (l10n) => l10n.unitGrams, FC.convertorWeight.accuracyFor(Unit.gram), l10n),
-      fieldFor(rawGrain, Unit.kilogram, (l10n) => l10n.unitKilograms, FC.convertorWeight.accuracyFor(Unit.kilogram), l10n),
+      fieldFor(
+        rawGrain,
+        Unit.gram,
+        (l10n) => l10n.unitGrams,
+        FC.convertorWeight.accuracyFor(Unit.gram),
+        l10n,
+      ),
+      fieldFor(
+        rawGrain,
+        Unit.kilogram,
+        (l10n) => l10n.unitKilograms,
+        FC.convertorWeight.accuracyFor(Unit.kilogram),
+        l10n,
+      ),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(rawGrain, Unit.grain, (l10n) => l10n.unitGrains, FC.convertorWeight.accuracyFor(Unit.grain), l10n),
-      fieldFor(rawGrain, Unit.pound, (l10n) => l10n.unitPounds, FC.convertorWeight.accuracyFor(Unit.pound), l10n),
-      fieldFor(rawGrain, Unit.ounce, (l10n) => l10n.unitOunces, FC.convertorWeight.accuracyFor(Unit.ounce), l10n),
+      fieldFor(
+        rawGrain,
+        Unit.grain,
+        (l10n) => l10n.unitGrains,
+        FC.convertorWeight.accuracyFor(Unit.grain),
+        l10n,
+      ),
+      fieldFor(
+        rawGrain,
+        Unit.pound,
+        (l10n) => l10n.unitPounds,
+        FC.convertorWeight.accuracyFor(Unit.pound),
+        l10n,
+      ),
+      fieldFor(
+        rawGrain,
+        Unit.ounce,
+        (l10n) => l10n.unitOunces,
+        FC.convertorWeight.accuracyFor(Unit.ounce),
+        l10n,
+      ),
     ]),
   ];
 }

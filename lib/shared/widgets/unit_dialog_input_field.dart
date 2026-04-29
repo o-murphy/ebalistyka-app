@@ -32,7 +32,8 @@ class UnitDialogInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final sym = symbol ?? displayUnit.localizedSymbol(AppLocalizations.of(context)!);
+    final sym =
+        symbol ?? displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
     return TextField(
       controller: controller,

@@ -186,14 +186,22 @@ class TargetAtDistanceConvertorViewModel
       ),
       yards: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitYards,
-        formattedValue: _fmt(distanceYd, ydAcc, Unit.yard.localizedSymbol(l10n)),
+        formattedValue: _fmt(
+          distanceYd,
+          ydAcc,
+          Unit.yard.localizedSymbol(l10n),
+        ),
         value: distanceYd,
         symbol: Unit.yard.localizedSymbol(l10n),
         decimals: ydAcc,
       ),
       feet: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitFeet,
-        formattedValue: _fmt(distanceFt, ftAcc, Unit.foot.localizedSymbol(l10n)),
+        formattedValue: _fmt(
+          distanceFt,
+          ftAcc,
+          Unit.foot.localizedSymbol(l10n),
+        ),
         value: distanceFt,
         symbol: Unit.foot.localizedSymbol(l10n),
         decimals: ftAcc,

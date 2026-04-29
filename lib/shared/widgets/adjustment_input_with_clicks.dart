@@ -9,9 +9,6 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
 import 'package:flutter/material.dart';
 
-const _clicksSymbol = 'click';
-const _clicksLabel = 'Clicks';
-
 /// Like [UnitInputWithPicker] but also exposes a "Clicks" pseudo-unit.
 ///
 /// [displayUnit] == null means clicks mode; the input field shows the
@@ -97,6 +94,9 @@ class _ClicksInputFieldState extends State<_ClicksInputField> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: _format(_clicks));
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
     _focusNode = FocusNode()
       ..addListener(() {
         if (!_focusNode.hasFocus && mounted) _submit();
@@ -127,6 +127,8 @@ class _ClicksInputFieldState extends State<_ClicksInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final count = (int.tryParse(_controller.text) ?? 0).abs();
     return TextField(
       controller: _controller,
       focusNode: _focusNode,
@@ -138,10 +140,13 @@ class _ClicksInputFieldState extends State<_ClicksInputField> {
       style: Theme.of(
         context,
       ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
-      decoration: const InputDecoration(
-        suffixText: _clicksSymbol,
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: InputDecoration(
+        suffixText: l10n.nClicks(count),
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
+        ),
       ),
       onSubmitted: (_) => _submit(),
     );
@@ -165,7 +170,8 @@ class _AdjUnitPickerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final symbol = current?.symbol ?? _clicksSymbol;
+    final l10n = AppLocalizations.of(context)!;
+    final symbol = current?.localizedSymbol(l10n) ?? l10n.nClicks(1);
     return SizedBox(
       width: 60,
       child: InkWell(
@@ -216,7 +222,7 @@ class _AdjUnitPickerButton extends StatelessWidget {
                 ),
                 const TileDivider(),
                 ListTile(
-                  title: const Text('$_clicksLabel ($_clicksSymbol)'),
+                  title: Text('${l10n.unitClicks} (${l10n.nClicks(1)})'),
                   trailing: current == null ? const Icon(IconDef.apply) : null,
                   onTap: () {
                     onChanged(null);

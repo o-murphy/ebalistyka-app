@@ -149,7 +149,9 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ctx = widget.pickerContext;
-    final sym = ctx.symbol ?? ctx.displayUnit.localizedSymbol(AppLocalizations.of(context)!);
+    final sym =
+        ctx.symbol ??
+        ctx.displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
     final l10n = AppLocalizations.of(context)!;
 

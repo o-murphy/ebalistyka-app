@@ -253,6 +253,8 @@
     "@unitDegrees": {"description": "Unit name: degrees (angle)"},
     "unitClicks": "Clicks",
     "@unitClicks": {"description": "Unit name: scope adjustment clicks"},
+    "nClicks": "{count, plural, =1{click} other{clicks}}",
+    "@nClicks": {"description": "Pluralized click count", "placeholders": {"count": {"type": "int"}}},
     "unitJoule": "Joule",
     "@unitJoule": {"description": "Unit name: joule (energy)"},
 

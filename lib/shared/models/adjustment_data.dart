@@ -3,12 +3,14 @@ class AdjustmentValue {
   final bool isPositive;
   final String symbol;
   final int decimals;
+  final bool isClicks;
 
   const AdjustmentValue({
     required this.absValue,
     required this.isPositive,
     required this.symbol,
     required this.decimals,
+    this.isClicks = false,
   });
 
   String get formatted => '${absValue.toStringAsFixed(decimals)} $symbol';

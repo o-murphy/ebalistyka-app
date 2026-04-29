@@ -132,8 +132,10 @@ AdjustmentData buildAdjustment(
     if (settings.homeShowMrad) (Unit.mRad, Unit.mRad.localizedSymbol(l10n)),
     if (settings.homeShowMoa) (Unit.moa, Unit.moa.localizedSymbol(l10n)),
     if (settings.homeShowMil) (Unit.mil, Unit.mil.localizedSymbol(l10n)),
-    if (settings.homeShowCmPer100m) (Unit.cmPer100m, Unit.cmPer100m.localizedSymbol(l10n)),
-    if (settings.homeShowInPer100yd) (Unit.inPer100Yd, Unit.inPer100Yd.localizedSymbol(l10n)),
+    if (settings.homeShowCmPer100m)
+      (Unit.cmPer100m, Unit.cmPer100m.localizedSymbol(l10n)),
+    if (settings.homeShowInPer100yd)
+      (Unit.inPer100Yd, Unit.inPer100Yd.localizedSymbol(l10n)),
   ];
 
   final elevValues = dispUnits.map((u) {
@@ -157,6 +159,7 @@ AdjustmentData buildAdjustment(
         isPositive: clicks >= 0,
         symbol: l10n.unitClicks,
         decimals: 0,
+        isClicks: true,
       ),
     );
   }
@@ -182,6 +185,7 @@ AdjustmentData buildAdjustment(
         isPositive: clicks >= 0,
         symbol: l10n.unitClicks,
         decimals: 0,
+        isClicks: true,
       ),
     );
   }

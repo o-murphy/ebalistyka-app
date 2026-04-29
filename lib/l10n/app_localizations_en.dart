@@ -379,6 +379,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitClicks => 'Clicks';
 
   @override
+  String nClicks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'clicks',
+      one: 'click',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get unitJoule => 'Joule';
 
   @override

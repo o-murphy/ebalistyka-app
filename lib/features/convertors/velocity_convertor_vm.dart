@@ -175,7 +175,10 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     return '${value.toStringAsFixed(decimals)} $symbol';
   }
 
-  VelocityConvertorUiState _buildState(ConvertorsState s, AppLocalizations l10n) {
+  VelocityConvertorUiState _buildState(
+    ConvertorsState s,
+    AppLocalizations l10n,
+  ) {
     final inputUnit = s.velocityUnit;
     final useCustom = s.velocityMachUseCustomAtmo;
     final atmo = _buildAtmo(s);
@@ -216,28 +219,44 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       atmoAltitudeMeter: s.velocityAtmoAltitude.in_(Unit.meter),
       mps: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMps,
-        formattedValue: _formatValue(rawMps, mpsAccuracy, Unit.mps.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          rawMps,
+          mpsAccuracy,
+          Unit.mps.localizedSymbol(l10n),
+        ),
         value: rawMps,
         symbol: Unit.mps.localizedSymbol(l10n),
         decimals: mpsAccuracy,
       ),
       kmh: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitKmh,
-        formattedValue: _formatValue(kmhRaw, kmhAccuracy, Unit.kmh.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          kmhRaw,
+          kmhAccuracy,
+          Unit.kmh.localizedSymbol(l10n),
+        ),
         value: kmhRaw,
         symbol: Unit.kmh.localizedSymbol(l10n),
         decimals: kmhAccuracy,
       ),
       fps: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitFps,
-        formattedValue: _formatValue(fpsRaw, fpsAccuracy, Unit.fps.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          fpsRaw,
+          fpsAccuracy,
+          Unit.fps.localizedSymbol(l10n),
+        ),
         value: fpsRaw,
         symbol: Unit.fps.localizedSymbol(l10n),
         decimals: fpsAccuracy,
       ),
       mph: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMph,
-        formattedValue: _formatValue(mphRaw, mphAccuracy, Unit.mph.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          mphRaw,
+          mphAccuracy,
+          Unit.mph.localizedSymbol(l10n),
+        ),
         value: mphRaw,
         symbol: Unit.mph.localizedSymbol(l10n),
         decimals: mphAccuracy,
@@ -245,7 +264,11 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       mach: GenericConvertorField(
         labelBuilder: (l10n) =>
             useCustom ? l10n.unitMachCustom : l10n.unitMachIcao,
-        formattedValue: _formatValue(machRaw, 3, Unit.mach.localizedSymbol(l10n)),
+        formattedValue: _formatValue(
+          machRaw,
+          3,
+          Unit.mach.localizedSymbol(l10n),
+        ),
         value: machRaw,
         symbol: Unit.mach.localizedSymbol(l10n),
         decimals: 3,

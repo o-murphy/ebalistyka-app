@@ -37,18 +37,55 @@ class PressureConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawMmHg, AppLocalizations l10n) => [
-    ConvertorSection((l10n) => l10n.sectionCommon, [
-      fieldFor(rawMmHg, Unit.atm, (l10n) => l10n.unitAtmosphere, FC.convertorPressure.accuracyFor(Unit.atm), l10n),
-      fieldFor(rawMmHg, Unit.hPa, (l10n) => l10n.unitHPa, FC.convertorPressure.accuracyFor(Unit.hPa), l10n),
-      fieldFor(rawMmHg, Unit.bar, (l10n) => l10n.unitBar, FC.convertorPressure.accuracyFor(Unit.bar), l10n),
-    ]),
-    ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(rawMmHg, Unit.psi, (l10n) => l10n.unitPsi, FC.convertorPressure.accuracyFor(Unit.psi), l10n),
-      fieldFor(rawMmHg, Unit.inHg, (l10n) => l10n.unitInHg, FC.convertorPressure.accuracyFor(Unit.inHg), l10n),
-      fieldFor(rawMmHg, Unit.mmHg, (l10n) => l10n.unitMmHg, FC.convertorPressure.accuracyFor(Unit.mmHg), l10n),
-    ]),
-  ];
+  List<ConvertorSection> buildSections(double rawMmHg, AppLocalizations l10n) =>
+      [
+        ConvertorSection((l10n) => l10n.sectionCommon, [
+          fieldFor(
+            rawMmHg,
+            Unit.atm,
+            (l10n) => l10n.unitAtmosphere,
+            FC.convertorPressure.accuracyFor(Unit.atm),
+            l10n,
+          ),
+          fieldFor(
+            rawMmHg,
+            Unit.hPa,
+            (l10n) => l10n.unitHPa,
+            FC.convertorPressure.accuracyFor(Unit.hPa),
+            l10n,
+          ),
+          fieldFor(
+            rawMmHg,
+            Unit.bar,
+            (l10n) => l10n.unitBar,
+            FC.convertorPressure.accuracyFor(Unit.bar),
+            l10n,
+          ),
+        ]),
+        ConvertorSection((l10n) => l10n.sectionImperial, [
+          fieldFor(
+            rawMmHg,
+            Unit.psi,
+            (l10n) => l10n.unitPsi,
+            FC.convertorPressure.accuracyFor(Unit.psi),
+            l10n,
+          ),
+          fieldFor(
+            rawMmHg,
+            Unit.inHg,
+            (l10n) => l10n.unitInHg,
+            FC.convertorPressure.accuracyFor(Unit.inHg),
+            l10n,
+          ),
+          fieldFor(
+            rawMmHg,
+            Unit.mmHg,
+            (l10n) => l10n.unitMmHg,
+            FC.convertorPressure.accuracyFor(Unit.mmHg),
+            l10n,
+          ),
+        ]),
+      ];
 }
 
 final pressureConvertorVmProvider =

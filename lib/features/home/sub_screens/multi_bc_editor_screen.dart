@@ -65,7 +65,8 @@ class MultiBcEditorScreen extends ConsumerWidget {
     return TwoColumnTableEditorScreen(
       title: '$dtName ${l10n.multiBcTable}',
       rowCount: kMultiBcRowCount,
-      col1Header: '${l10n.columnVelocity} (${velocityUnit.localizedSymbol(l10n)})',
+      col1Header:
+          '${l10n.columnVelocity} (${velocityUnit.localizedSymbol(l10n)})',
       col2Header: l10n.bcShort,
       col1Hint: '0',
       col2Hint: '0.000',

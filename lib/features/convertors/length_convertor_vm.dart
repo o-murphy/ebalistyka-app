@@ -37,17 +37,48 @@ class LengthConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawInch, AppLocalizations l10n) => [
-    ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(rawInch, Unit.centimeter, (l10n) => l10n.unitCentimeters, FC.convertorLength.accuracyFor(Unit.centimeter), l10n),
-      fieldFor(rawInch, Unit.meter, (l10n) => l10n.unitMeters, FC.convertorLength.accuracyFor(Unit.meter), l10n),
-    ]),
-    ConvertorSection((l10n) => l10n.sectionImperial, [
-      fieldFor(rawInch, Unit.inch, (l10n) => l10n.unitInches, FC.convertorLength.accuracyFor(Unit.inch), l10n),
-      fieldFor(rawInch, Unit.foot, (l10n) => l10n.unitFeet, FC.convertorLength.accuracyFor(Unit.foot), l10n),
-      fieldFor(rawInch, Unit.yard, (l10n) => l10n.unitYards, FC.convertorLength.accuracyFor(Unit.yard), l10n),
-    ]),
-  ];
+  List<ConvertorSection> buildSections(double rawInch, AppLocalizations l10n) =>
+      [
+        ConvertorSection((l10n) => l10n.sectionMetric, [
+          fieldFor(
+            rawInch,
+            Unit.centimeter,
+            (l10n) => l10n.unitCentimeters,
+            FC.convertorLength.accuracyFor(Unit.centimeter),
+            l10n,
+          ),
+          fieldFor(
+            rawInch,
+            Unit.meter,
+            (l10n) => l10n.unitMeters,
+            FC.convertorLength.accuracyFor(Unit.meter),
+            l10n,
+          ),
+        ]),
+        ConvertorSection((l10n) => l10n.sectionImperial, [
+          fieldFor(
+            rawInch,
+            Unit.inch,
+            (l10n) => l10n.unitInches,
+            FC.convertorLength.accuracyFor(Unit.inch),
+            l10n,
+          ),
+          fieldFor(
+            rawInch,
+            Unit.foot,
+            (l10n) => l10n.unitFeet,
+            FC.convertorLength.accuracyFor(Unit.foot),
+            l10n,
+          ),
+          fieldFor(
+            rawInch,
+            Unit.yard,
+            (l10n) => l10n.unitYards,
+            FC.convertorLength.accuracyFor(Unit.yard),
+            l10n,
+          ),
+        ]),
+      ];
 }
 
 final lengthConvertorVmProvider =
