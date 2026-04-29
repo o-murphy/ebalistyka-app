@@ -199,14 +199,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: Text(l10n.labelPrivacyPolicy),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () => _launchUrl(
+              'https://github.com/o-murphy/ebalistyka-app/blob/main/PRIVACY_POLICY.md',
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: Text(l10n.labelTermsOfUse),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () {},
+            onTap: () => _launchUrl(
+              'https://github.com/o-murphy/ebalistyka-app/blob/main/TERMS.md',
+            ),
           ),
 
           const TileDivider(),
