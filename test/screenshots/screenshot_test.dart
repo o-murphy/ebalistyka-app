@@ -29,7 +29,7 @@ final _phone = ScreenshotDevice(
   platform: TargetPlatform.android,
   resolution: const Size(1080, 1920),
   pixelRatio: 3.0,
-  goldenSubFolder: 'phoneScreenshots',
+  goldenSubFolder: 'phoneScreenshots/',
   frameBuilder: ScreenshotFrame.androidPhone,
 );
 
@@ -38,7 +38,7 @@ final _tablet7 = ScreenshotDevice(
   platform: TargetPlatform.android,
   resolution: const Size(1200, 1920),
   pixelRatio: 2.0,
-  goldenSubFolder: 'sevenInchScreenshots',
+  goldenSubFolder: 'sevenInchScreenshots/',
   frameBuilder: ScreenshotFrame.androidTablet,
 );
 
@@ -47,7 +47,7 @@ final _tablet10 = ScreenshotDevice(
   platform: TargetPlatform.android,
   resolution: const Size(1600, 2560),
   pixelRatio: 2.0,
-  goldenSubFolder: 'tenInchScreenshots',
+  goldenSubFolder: 'tenInchScreenshots/',
   frameBuilder: ScreenshotFrame.androidTablet,
 );
 
