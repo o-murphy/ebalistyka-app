@@ -1,4 +1,6 @@
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,8 @@ class UnitDialogInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final sym = symbol ?? displayUnit.symbol;
+    final sym =
+        symbol ?? displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
     return TextField(
       controller: controller,

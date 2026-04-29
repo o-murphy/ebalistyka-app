@@ -1,3 +1,4 @@
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
@@ -28,9 +29,9 @@ class TempControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final sym = displayUnit.symbol;
-    final inputAcc = _fc.accuracy;
     final l10n = AppLocalizations.of(context)!;
+    final sym = displayUnit.localizedSymbol(l10n);
+    final inputAcc = _fc.accuracy;
 
     final UnitPickerContext tempCtx = UnitPickerContext(
       context,

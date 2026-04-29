@@ -379,6 +379,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitClicks => 'Clicks';
 
   @override
+  String nClicks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'clicks',
+      one: 'click',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get unitJoule => 'Joule';
 
   @override
@@ -482,6 +493,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitDegreesSym => '°';
+
+  @override
+  String get unitSecondSym => 's';
 
   @override
   String get enterLength => 'Enter length';
@@ -784,6 +798,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gyrostabilitySg => 'Gyroscopic stability factor (Sg)';
+
+  @override
+  String get sgAbbr => 'Sg';
 
   @override
   String get customDragTable => 'Custom Drag Table';

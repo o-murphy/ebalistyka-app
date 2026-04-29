@@ -6,7 +6,7 @@
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
-#   build_number  Integer build number (github.run_number).
+#   build_number  Integer build number (git rev-list --count HEAD — monotonically increasing).
 #   --fat         Build a single fat APK instead of per-ABI split (optional).
 #
 # Signing (optional — falls back to debug key if not set):

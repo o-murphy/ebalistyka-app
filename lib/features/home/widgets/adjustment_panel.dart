@@ -140,7 +140,10 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
                 style: valStyle?.copyWith(color: cs.primary),
               ),
               SizedBox(width: 8),
-              Text(v.symbol, style: unitStyle),
+              Text(
+                v.isClicks ? l10n.nClicks(v.absValue.round()) : v.symbol,
+                style: unitStyle,
+              ),
             ],
           ),
         );

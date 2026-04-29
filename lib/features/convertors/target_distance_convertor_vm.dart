@@ -4,7 +4,9 @@ import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/core/providers/shot_context_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:riverpod/riverpod.dart';
@@ -55,6 +57,7 @@ class TargetAtDistanceConvertorViewModel
   @override
   TargetAtDistanceConvertorUiState build() {
     final s = ref.watch(convertorStateProvider);
+    final l10n = ref.watch(appLocalizationsProvider);
     final reticleImage = ref
         .watch(shotContextProvider)
         .value
@@ -70,6 +73,7 @@ class TargetAtDistanceConvertorViewModel
       angularUnit: s.distanceConvTargetSizeAngularUnitValue,
       reticleImageId: reticleImage,
       targetImageId: targetImage,
+      l10n: l10n,
     );
   }
 
@@ -153,6 +157,7 @@ class TargetAtDistanceConvertorViewModel
     required Unit angularUnit,
     required String? reticleImageId,
     required String? targetImageId,
+    required AppLocalizations l10n,
   }) {
     // Mil-relation: 1 mil = 1 mm at 1 m → distance_m = size_mm / angular_mil
     final sizeMm = sizeInch.convert(Unit.inch, Unit.millimeter);
@@ -174,23 +179,31 @@ class TargetAtDistanceConvertorViewModel
       targetImageId: targetImageId,
       meters: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMeters,
-        formattedValue: _fmt(distanceM, mAcc, Unit.meter.symbol),
+        formattedValue: _fmt(distanceM, mAcc, Unit.meter.localizedSymbol(l10n)),
         value: distanceM,
-        symbol: Unit.meter.symbol,
+        symbol: Unit.meter.localizedSymbol(l10n),
         decimals: mAcc,
       ),
       yards: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitYards,
-        formattedValue: _fmt(distanceYd, ydAcc, Unit.yard.symbol),
+        formattedValue: _fmt(
+          distanceYd,
+          ydAcc,
+          Unit.yard.localizedSymbol(l10n),
+        ),
         value: distanceYd,
-        symbol: Unit.yard.symbol,
+        symbol: Unit.yard.localizedSymbol(l10n),
         decimals: ydAcc,
       ),
       feet: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitFeet,
-        formattedValue: _fmt(distanceFt, ftAcc, Unit.foot.symbol),
+        formattedValue: _fmt(
+          distanceFt,
+          ftAcc,
+          Unit.foot.localizedSymbol(l10n),
+        ),
         value: distanceFt,
-        symbol: Unit.foot.symbol,
+        symbol: Unit.foot.localizedSymbol(l10n),
         decimals: ftAcc,
       ),
     );

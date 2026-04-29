@@ -381,6 +381,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitClicks => 'Кліки';
 
   @override
+  String nClicks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'кліків',
+      many: 'кліків',
+      few: 'кліка',
+      one: 'клік',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get unitJoule => 'Джоуль';
 
   @override
@@ -477,13 +490,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get unitMradSym => 'MRAD';
 
   @override
-  String get unitCmPer100mSym => 'cm/100m';
+  String get unitCmPer100mSym => 'см/100м';
 
   @override
   String get unitInPer100YdSym => 'in/100yd';
 
   @override
   String get unitDegreesSym => '°';
+
+  @override
+  String get unitSecondSym => 'с';
 
   @override
   String get enterLength => 'Введіть довжину';
@@ -787,6 +803,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get gyrostabilitySg => 'Гіроскопічна стабільність (ФГС)';
 
   @override
+  String get sgAbbr => 'ФГС';
+
+  @override
   String get customDragTable => 'Власна таблиця опору';
 
   @override
@@ -965,7 +984,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get holdoversVertical => 'Винос по вертикалі';
 
   @override
-  String get holdoversHorizontal => 'Вітрознос';
+  String get holdoversHorizontal => 'Винос по горизонталі';
 
   @override
   String get adjustmentDisplayDisabled => 'Відображення поправок вимкнено!';

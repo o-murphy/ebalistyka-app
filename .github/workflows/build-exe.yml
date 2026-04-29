@@ -13,6 +13,10 @@ on:
       - ".github/workflows/build.yml"
   workflow_dispatch:
 
+concurrency:
+  group: build-exe-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prepare-version:
     runs-on: ubuntu-latest

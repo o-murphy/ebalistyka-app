@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -42,9 +43,18 @@ class TemperatureConvertorViewModel extends SimpleConvertorVm {
   }
 
   @override
-  List<ConvertorSection> buildSections(double rawFahrenheit) => [
+  List<ConvertorSection> buildSections(
+    double rawFahrenheit,
+    AppLocalizations l10n,
+  ) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
-      fieldFor(rawFahrenheit, Unit.celsius, (l10n) => l10n.unitCelsius, 1),
+      fieldFor(
+        rawFahrenheit,
+        Unit.celsius,
+        (l10n) => l10n.unitCelsius,
+        1,
+        l10n,
+      ),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
       fieldFor(
@@ -52,6 +62,7 @@ class TemperatureConvertorViewModel extends SimpleConvertorVm {
         Unit.fahrenheit,
         (l10n) => l10n.unitFahrenheit,
         1,
+        l10n,
       ),
     ]),
   ];

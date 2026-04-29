@@ -5,6 +5,7 @@ import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
 import 'package:ebalistyka/features/convertors/simple_convertor_vm.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -36,13 +37,14 @@ class TorqueConvertorViewModel extends SimpleConvertorVm {
   );
 
   @override
-  List<ConvertorSection> buildSections(double rawNm) => [
+  List<ConvertorSection> buildSections(double rawNm, AppLocalizations l10n) => [
     ConvertorSection((l10n) => l10n.sectionMetric, [
       fieldFor(
         rawNm,
         Unit.newtonMeter,
         (l10n) => l10n.unitNewtonMeter,
         FC.convertorTorque.accuracyFor(Unit.newtonMeter),
+        l10n,
       ),
     ]),
     ConvertorSection((l10n) => l10n.sectionImperial, [
@@ -51,12 +53,14 @@ class TorqueConvertorViewModel extends SimpleConvertorVm {
         Unit.footPoundTorque,
         (l10n) => l10n.unitFootPound,
         FC.convertorTorque.accuracyFor(Unit.footPoundTorque),
+        l10n,
       ),
       fieldFor(
         rawNm,
         Unit.inchPound,
         (l10n) => l10n.unitInchPound,
         FC.convertorTorque.accuracyFor(Unit.inchPound),
+        l10n,
       ),
     ]),
   ];

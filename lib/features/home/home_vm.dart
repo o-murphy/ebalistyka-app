@@ -245,6 +245,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       profile,
       conditions,
       formatter,
+      l10n,
     );
 
     final vAdjMil = reticle.verticalAdjInClicks
@@ -322,6 +323,7 @@ class HomeViewModel extends AsyncNotifier<HomeUiState> {
       horizontalClickSizeMil,
       verticalClickSizeMil,
       settings,
+      l10n,
     );
 
     final targetSvg = await ref

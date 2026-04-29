@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/core/extensions/profile_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/extensions/sight_extensions.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
@@ -279,17 +280,23 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
           (
             'range',
             l10n.columnRange,
-            (_) => distUnit.symbol,
+            (_) => distUnit.localizedSymbol(l10n),
             (r) => r.distance.in_(distUnit),
             FC.targetDistance.accuracyFor(distUnit),
           ),
           if (!hidden.contains('time'))
-            ('time', l10n.columnTime, (_) => 's', (r) => r.time, 3),
+            (
+              'time',
+              l10n.columnTime,
+              (_) => l10n.unitSecondSym,
+              (r) => r.time,
+              3,
+            ),
           if (!hidden.contains('velocity'))
             (
               'velocity',
               l10n.columnVelocity,
-              (_) => velUnit.symbol,
+              (_) => velUnit.localizedSymbol(l10n),
               (r) => r.velocity.in_(velUnit),
               FC.velocity.accuracyFor(velUnit),
             ),
@@ -297,7 +304,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'height',
               l10n.columnHeight,
-              (_) => dropUnit.symbol,
+              (_) => dropUnit.localizedSymbol(l10n),
               (r) => r.height.in_(dropUnit),
               FC.drop.accuracyFor(dropUnit),
             ),
@@ -305,7 +312,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'drop',
               l10n.columnDrop,
-              (_) => dropUnit.symbol,
+              (_) => dropUnit.localizedSymbol(l10n),
               (r) => r.slantHeight.in_(dropUnit),
               FC.drop.accuracyFor(dropUnit),
             ),
@@ -313,7 +320,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'adjDrop_${u.name}',
               l10n.columnDropAngle,
-              (_) => u.symbol,
+              (_) => u.localizedSymbol(l10n),
               (bclibc.TrajectoryData r) => r.dropAngle.in_(u),
               FC.adjustment.accuracyFor(u),
             ),
@@ -321,7 +328,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'dropClicks',
               l10n.columnDropClicks,
-              (_) => 'clicks',
+              (_) => l10n.unitClicks,
               (bclibc.TrajectoryData r) => verticalClickSizeMil > 0.0
                   ? r.dropAngle.in_(Unit.mil) / verticalClickSizeMil
                   : 0.0,
@@ -331,7 +338,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'wind',
               l10n.columnWind,
-              (_) => dropUnit.symbol,
+              (_) => dropUnit.localizedSymbol(l10n),
               (r) => r.windage.in_(dropUnit),
               FC.drop.accuracyFor(dropUnit),
             ),
@@ -339,7 +346,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'adjWind_${u.name}',
               l10n.columnWindAngle,
-              (_) => u.symbol,
+              (_) => u.localizedSymbol(l10n),
               (bclibc.TrajectoryData r) => r.windageAngle.in_(u),
               FC.adjustment.accuracyFor(u),
             ),
@@ -347,7 +354,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'windClicks',
               l10n.columnWindClicks,
-              (_) => 'clicks',
+              (_) => l10n.unitClicks,
               (bclibc.TrajectoryData r) => horizontalClickSizeMil > 0.0
                   ? r.windageAngle.in_(Unit.mil) / horizontalClickSizeMil
                   : 0.0,
@@ -361,7 +368,7 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
             (
               'energy',
               l10n.columnEnergy,
-              (_) => energyUnit.symbol,
+              (_) => energyUnit.localizedSymbol(l10n),
               (r) => r.energy.in_(energyUnit),
               FC.energy.accuracyFor(energyUnit),
             ),

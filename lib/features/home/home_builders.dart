@@ -8,6 +8,7 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/core/formatting/unit_formatter.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/helpers/drag_model_info_formatter.dart';
@@ -96,6 +97,7 @@ String buildCartridgeInfoLine(
   Profile profile,
   ShootingConditions conditions,
   UnitFormatter formatter,
+  AppLocalizations l10n,
 ) {
   final ammo = profile.ammo.target!;
   final weapon = profile.weapon.target;
@@ -110,7 +112,7 @@ String buildCartridgeInfoLine(
     final bcWeapon = weapon.toWeapon(sightHeight);
     final currentShot = profile.toCurrentShot(conditions, bcWeapon);
     final sg = currentShot.calculateStabilityCoefficient();
-    sgStr = 'Sg ${sg.toFixedSafe(2)}';
+    sgStr = '${l10n.sgAbbr} ${sg.toFixedSafe(2)}';
   }
 
   return '${ammo.projectileName ?? ammo.name};  $mvStr;  $dragStr${sgStr != null ? ';  $sgStr' : ''}';
@@ -124,13 +126,16 @@ AdjustmentData buildAdjustment(
   double horizontalClickSizeMil,
   double verticalClickSizeMil,
   GeneralSettings settings,
+  AppLocalizations l10n,
 ) {
   final dispUnits = <(Unit, String)>[
-    if (settings.homeShowMrad) (Unit.mRad, 'MRAD'),
-    if (settings.homeShowMoa) (Unit.moa, 'MOA'),
-    if (settings.homeShowMil) (Unit.mil, 'MIL'),
-    if (settings.homeShowCmPer100m) (Unit.cmPer100m, 'cm/100m'),
-    if (settings.homeShowInPer100yd) (Unit.inPer100Yd, 'in/100yd'),
+    if (settings.homeShowMrad) (Unit.mRad, Unit.mRad.localizedSymbol(l10n)),
+    if (settings.homeShowMoa) (Unit.moa, Unit.moa.localizedSymbol(l10n)),
+    if (settings.homeShowMil) (Unit.mil, Unit.mil.localizedSymbol(l10n)),
+    if (settings.homeShowCmPer100m)
+      (Unit.cmPer100m, Unit.cmPer100m.localizedSymbol(l10n)),
+    if (settings.homeShowInPer100yd)
+      (Unit.inPer100Yd, Unit.inPer100Yd.localizedSymbol(l10n)),
   ];
 
   final elevValues = dispUnits.map((u) {
@@ -152,8 +157,9 @@ AdjustmentData buildAdjustment(
       AdjustmentValue(
         absValue: clicks.abs(),
         isPositive: clicks >= 0,
-        symbol: 'Clicks',
+        symbol: l10n.unitClicks,
         decimals: 0,
+        isClicks: true,
       ),
     );
   }
@@ -177,8 +183,9 @@ AdjustmentData buildAdjustment(
       AdjustmentValue(
         absValue: clicks.abs(),
         isPositive: clicks >= 0,
-        symbol: 'Clicks',
+        symbol: l10n.unitClicks,
         decimals: 0,
+        isClicks: true,
       ),
     );
   }
@@ -230,7 +237,7 @@ FormattedTableData buildHomeTable(
       <(String, String, double? Function(bclibc.TrajectoryData), int)>[
         (
           'Height',
-          dropUnit.symbol,
+          dropUnit.localizedSymbol(l10n),
           (p) => p.height.in_(dropUnit),
           FC.drop.accuracyFor(dropUnit),
         ),
@@ -238,19 +245,19 @@ FormattedTableData buildHomeTable(
         ('Elev', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
         (
           'Windage',
-          dropUnit.symbol,
+          dropUnit.localizedSymbol(l10n),
           (p) => p.windage.in_(dropUnit),
           FC.drop.accuracyFor(dropUnit),
         ),
         (
           'Velocity',
-          velUnit.symbol,
+          velUnit.localizedSymbol(l10n),
           (p) => p.velocity.in_(velUnit),
           FC.velocity.accuracyFor(velUnit),
         ),
         (
           'Energy',
-          energyUnit.symbol,
+          energyUnit.localizedSymbol(l10n),
           (p) => p.energy.in_(energyUnit),
           FC.energy.accuracyFor(energyUnit),
         ),
@@ -306,7 +313,7 @@ FormattedTableData buildHomeTable(
   return FormattedTableData(
     distanceHeaders: distHeaders,
     rows: rows,
-    distanceUnit: distUnit.symbol,
+    distanceUnit: distUnit.localizedSymbol(l10n),
   );
 }
 

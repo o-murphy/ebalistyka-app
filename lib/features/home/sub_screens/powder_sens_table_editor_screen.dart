@@ -2,6 +2,7 @@ import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
@@ -112,8 +113,8 @@ class _PowderSensTableEditorScreenState
     return TwoColumnTableEditorScreen(
       title: l10n.powderSensTableEditorTitle,
       rowCount: _kPowderSensRowCount,
-      col1Header: '${l10n.temperature} (${tUnit.symbol})',
-      col2Header: '${l10n.columnVelocity} (${vUnit.symbol})',
+      col1Header: '${l10n.temperature} (${tUnit.localizedSymbol(l10n)})',
+      col2Header: '${l10n.columnVelocity} (${vUnit.localizedSymbol(l10n)})',
       col1Hint: '0',
       col2Hint: '0',
       initialRows: prefilled,

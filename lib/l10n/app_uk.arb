@@ -130,6 +130,7 @@
     "unitInPer100Yd": "дюйм/100ярд",
     "unitDegrees": "Градуси",
     "unitClicks": "Кліки",
+    "nClicks": "{count, plural, one{клік} few{кліка} many{кліків} other{кліків}}",
     "unitJoule": "Джоуль",
 
     "unitMillimeterSym": "мм",
@@ -163,9 +164,10 @@
     "unitMilSym": "MIL",
     "unitMoaSym": "MOA",
     "unitMradSym": "MRAD",
-    "unitCmPer100mSym": "cm/100m",
+    "unitCmPer100mSym": "см/100м",
     "unitInPer100YdSym": "in/100yd",
     "unitDegreesSym": "°",
+    "unitSecondSym": "с",
 
     "enterLength": "Введіть довжину",
     "enterWeight": "Введіть вагу",
@@ -274,6 +276,7 @@
     "formFactor": "Коефіцієнт форми",
     "sectionalDensity": "Поперечне навантаження",
     "gyrostabilitySg": "Гіроскопічна стабільність (ФГС)",
+    "sgAbbr": "ФГС",
     "customDragTable": "Власна таблиця опору",
     "multiBcTable": "Таблиця мульти-БК",
     "twoColumnEditorFooter": "Рядки з нульовими значеннями ігноруються під час збереження.",
@@ -335,7 +338,7 @@
     "windage": "Вітрознос",
     "timeToTarget": "Час до цілі",
     "holdoversVertical": "Винос по вертикалі",
-    "holdoversHorizontal": "Вітрознос",
+    "holdoversHorizontal": "Винос по горизонталі",
     "adjustmentDisplayDisabled": "Відображення поправок вимкнено!",
     "adjustmentDisplayDisabledHint": "Увімкнути",
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart' as fc;
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
@@ -79,7 +80,7 @@ class _UnitWheelPickerState extends State<UnitWheelPicker> {
             isNullValue: false,
             displayValue: displayValue,
             unit: widget.displayUnit,
-            symbol: widget.displayUnit.symbol,
+            symbol: widget.displayUnit.localizedSymbol(l10n),
             errorText: null,
             accuracy: _helper.accuracy,
           ),

@@ -1,3 +1,5 @@
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -32,10 +34,11 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
   final IconData? icon;
   final String? subtitle;
 
-  String get _sym => symbol ?? displayUnit.symbol;
+  String _sym(BuildContext context) =>
+      symbol ?? displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
   /// Get display value to display (in case of null returns nullStr)
-  String _getDisplayText() {
+  String _getDisplayText(BuildContext context) {
     // For nullable, rawValue can be null, but we can't check for it in the base class
     // Therefore, this method must be overridden in descendants
     throw UnimplementedError();
@@ -55,7 +58,7 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_getDisplayText(), style: _getDisplayTextStyle(theme)),
+          Text(_getDisplayText(context), style: _getDisplayTextStyle(theme)),
           const SizedBox(width: 8),
           Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
         ],
@@ -83,12 +86,12 @@ class UnitValueFieldTile extends UnitValueFieldTileBase<double> {
   });
 
   @override
-  String _getDisplayText() {
+  String _getDisplayText(BuildContext context) {
     final helper = UnitConversionHelper(
       constraints: constraints,
       displayUnit: displayUnit,
     );
-    return '${helper.formatDisplayValue(helper.toDisplay(rawValue))} $_sym';
+    return '${helper.formatDisplayValue(helper.toDisplay(rawValue))} ${_sym(context)}';
   }
 
   @override
@@ -129,14 +132,14 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
   bool get _isEmpty => rawValue == null;
 
   @override
-  String _getDisplayText() {
+  String _getDisplayText(BuildContext context) {
     if (_isEmpty) return isRequired ? 'Required' : nullStr;
 
     final helper = UnitConversionHelper(
       constraints: constraints,
       displayUnit: displayUnit,
     );
-    return '${helper.formatDisplayValue(helper.toDisplay(rawValue!))} $_sym';
+    return '${helper.formatDisplayValue(helper.toDisplay(rawValue!))} ${_sym(context)}';
   }
 
   @override
@@ -167,7 +170,7 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_getDisplayText(), style: _getDisplayTextStyle(theme)),
+          Text(_getDisplayText(context), style: _getDisplayTextStyle(theme)),
           const SizedBox(width: 8),
           Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
         ],

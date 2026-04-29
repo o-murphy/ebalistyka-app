@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/helpers/unit_constrained_convertion_helper.dart';
@@ -148,7 +149,9 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ctx = widget.pickerContext;
-    final sym = ctx.symbol ?? ctx.displayUnit.symbol;
+    final sym =
+        ctx.symbol ??
+        ctx.displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
     final l10n = AppLocalizations.of(context)!;
 

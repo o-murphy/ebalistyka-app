@@ -4,8 +4,10 @@ import 'package:bclibc_ffi/bclibc.dart';
 import 'package:ebalistyka/core/extensions/convertors_extensions.dart';
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/providers/convertors_notifier.dart';
+import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
+import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
@@ -45,7 +47,8 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
   @override
   VelocityConvertorUiState build() {
     final s = ref.watch(convertorStateProvider);
-    return _buildState(s);
+    final l10n = ref.watch(appLocalizationsProvider);
+    return _buildState(s, l10n);
   }
 
   void updateRawValue(double? rawValueInInputUnit) {
@@ -172,7 +175,10 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
     return '${value.toStringAsFixed(decimals)} $symbol';
   }
 
-  VelocityConvertorUiState _buildState(ConvertorsState s) {
+  VelocityConvertorUiState _buildState(
+    ConvertorsState s,
+    AppLocalizations l10n,
+  ) {
     final inputUnit = s.velocityUnit;
     final useCustom = s.velocityMachUseCustomAtmo;
     final atmo = _buildAtmo(s);
@@ -213,38 +219,58 @@ class VelocityConvertorViewModel extends Notifier<VelocityConvertorUiState> {
       atmoAltitudeMeter: s.velocityAtmoAltitude.in_(Unit.meter),
       mps: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMps,
-        formattedValue: _formatValue(rawMps, mpsAccuracy, Unit.mps.symbol),
+        formattedValue: _formatValue(
+          rawMps,
+          mpsAccuracy,
+          Unit.mps.localizedSymbol(l10n),
+        ),
         value: rawMps,
-        symbol: Unit.mps.symbol,
+        symbol: Unit.mps.localizedSymbol(l10n),
         decimals: mpsAccuracy,
       ),
       kmh: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitKmh,
-        formattedValue: _formatValue(kmhRaw, kmhAccuracy, Unit.kmh.symbol),
+        formattedValue: _formatValue(
+          kmhRaw,
+          kmhAccuracy,
+          Unit.kmh.localizedSymbol(l10n),
+        ),
         value: kmhRaw,
-        symbol: Unit.kmh.symbol,
+        symbol: Unit.kmh.localizedSymbol(l10n),
         decimals: kmhAccuracy,
       ),
       fps: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitFps,
-        formattedValue: _formatValue(fpsRaw, fpsAccuracy, Unit.fps.symbol),
+        formattedValue: _formatValue(
+          fpsRaw,
+          fpsAccuracy,
+          Unit.fps.localizedSymbol(l10n),
+        ),
         value: fpsRaw,
-        symbol: Unit.fps.symbol,
+        symbol: Unit.fps.localizedSymbol(l10n),
         decimals: fpsAccuracy,
       ),
       mph: GenericConvertorField(
         labelBuilder: (l10n) => l10n.unitMph,
-        formattedValue: _formatValue(mphRaw, mphAccuracy, Unit.mph.symbol),
+        formattedValue: _formatValue(
+          mphRaw,
+          mphAccuracy,
+          Unit.mph.localizedSymbol(l10n),
+        ),
         value: mphRaw,
-        symbol: Unit.mph.symbol,
+        symbol: Unit.mph.localizedSymbol(l10n),
         decimals: mphAccuracy,
       ),
       mach: GenericConvertorField(
         labelBuilder: (l10n) =>
             useCustom ? l10n.unitMachCustom : l10n.unitMachIcao,
-        formattedValue: _formatValue(machRaw, 3, Unit.mach.symbol),
+        formattedValue: _formatValue(
+          machRaw,
+          3,
+          Unit.mach.localizedSymbol(l10n),
+        ),
         value: machRaw,
-        symbol: Unit.mach.symbol,
+        symbol: Unit.mach.localizedSymbol(l10n),
         decimals: 3,
       ),
     );
