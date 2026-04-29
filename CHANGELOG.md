@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **In-app update checker** — on startup checks GitHub Releases (at most once per 24 h); shows a bottom sheet with "View" button if a newer version is available; manual check available in Settings → About; `INTERNET` permission added to `AndroidManifest.xml`
+
+### Fixed
+
+- **CI — version not passed to `flutter build apk`** — `--build-name` and `--build-number` flags now explicitly passed; `flutter pub get` moved after `pubspec.yaml` version patch in all workflows (`build.yml`, `build-apk.yml`) so Flutter sees the correct version before dependency resolution
+- **CI — build number consistency** — `git rev-list --count` changed to `--first-parent` across all workflows to exclude merge commits from feature branches
+
+### Removed
+
+- **`desktop_updater` dependency** — removed; package does not support GitHub Releases artifacts (MSIX / tar.gz / AppImage / APK)
+
+---
 
 ## [0.1.4] - 2026-04-28
 
