@@ -405,6 +405,7 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(child: widget.shell),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(

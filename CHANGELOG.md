@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`AdjustmentDisplayPanel`** — click values pluralized via `nClicks(count)`; Sg abbreviation localized
 - **`AdjustmentInputWithClicks`** — click suffix pluralizes reactively on keystroke
 - **Ukrainian `unitCmPer100mSym`** — `"cm/100m"` → `"см/100м"`
+- **Android keyboard overlap** — `resizeToAvoidBottomInset: false` on `_ScaffoldWithNav`; keyboard overlays shell content instead of shrinking it; sub-screens (`BaseScreen`) retain default `true`
 
 
 ## [0.1.3] - 2026-04-28
