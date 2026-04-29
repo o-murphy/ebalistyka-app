@@ -152,9 +152,17 @@ jobs:
             bclibc-android-
 
       - name: Install Flutter dependencies
+        run: flutter clean
+
+      - name: Set pubspec version
         run: |
-          flutter clean
-          flutter pub get
+          BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
+          NUM=${{ steps.meta.outputs.build_number }}
+          sed -i "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
+          echo "pubspec version → ${BASE}+${NUM}"
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
 
       - name: Build & sign APKs
         env:

@@ -33,10 +33,6 @@ BUILD_NAME="${BUILD_NAME#v}"
 # Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
 BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
-# ── Pubspec version ──────────────────────────────────────────────────────────
-sed -i "s/^version:.*/version: ${BASE}+${BUILD_NUMBER}/" pubspec.yaml
-echo "pubspec version → ${BASE}+${BUILD_NUMBER}"
-
 # ── Android signing ──────────────────────────────────────────────────────────
 if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
     echo "Setting up Android release signing…"

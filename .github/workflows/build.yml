@@ -163,18 +163,19 @@ jobs:
 
       - name: Install Flutter dependencies
         shell: bash
-        run: |
-          flutter clean
-          flutter pub get
+        run: flutter clean
 
       - name: Set pubspec version
         shell: bash
         run: |
-          # Strip pre-release suffix: "0.1.0-dev" → "0.1.0"
           BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
           NUM=${{ steps.meta.outputs.build_number }}
           sed -i "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
           echo "pubspec version → ${BASE}+${NUM}"
+
+      - name: Get Flutter dependencies
+        shell: bash
+        run: flutter pub get
 
       - name: Build bundle
         shell: bash
