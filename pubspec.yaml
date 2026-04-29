@@ -93,7 +93,15 @@ flutter:
   uses-material-design: true
   generate: true
 
+  fonts:
+    - family: monospace
+      fonts:
+        - asset: assets/fonts/DejaVuSansMono.ttf
+        - asset: assets/fonts/DejaVuSansMono-Bold.ttf
+          weight: 700
+
   assets:
+    - assets/fonts/
     - assets/
     - assets/json/
     - assets/svg/logo/
