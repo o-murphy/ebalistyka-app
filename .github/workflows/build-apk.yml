@@ -113,7 +113,7 @@ jobs:
         run: |
           BUILD_NAME="${{ inputs.build_name || needs.prepare-version.outputs.version }}"
           BUILD_NAME="${BUILD_NAME#v}"
-          BUILD_NUMBER="${{ github.run_number }}"
+          BUILD_NUMBER=$(git rev-list --count HEAD)
           BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
           BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
           echo "build_name=$BUILD_NAME"           >> $GITHUB_OUTPUT
