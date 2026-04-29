@@ -1175,4 +1175,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rangeUltraLong => 'Ultra long';
+
+  @override
+  String updateAvailable(String version) {
+    return 'New version $version is available';
+  }
+
+  @override
+  String get viewReleaseAction => 'View';
+
+  @override
+  String get checkForUpdatesLabel => 'Check for updates';
+
+  @override
+  String get upToDateMessage => 'You\'re up to date';
 }

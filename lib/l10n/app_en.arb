@@ -789,5 +789,13 @@
     "rangeLong": "Long",
     "@rangeLong": {"description": "Range option: long range (100–1700 m)"},
     "rangeUltraLong": "Ultra long",
-    "@rangeUltraLong": {"description": "Range option: ultra long range (100–2000 m)"}
+    "@rangeUltraLong": {"description": "Range option: ultra long range (100–2000 m)"},
+    "updateAvailable": "New version {version} is available",
+    "@updateAvailable": {"description": "SnackBar message shown when a newer GitHub release exists", "placeholders": {"version": {"type": "String"}}},
+    "viewReleaseAction": "View",
+    "@viewReleaseAction": {"description": "SnackBar action button label to open the GitHub release page"},
+    "checkForUpdatesLabel": "Check for updates",
+    "@checkForUpdatesLabel": {"description": "Settings list tile label for the manual update check button"},
+    "upToDateMessage": "You're up to date",
+    "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"}
 }

@@ -408,5 +408,9 @@
     "rangeLow": "Ближня",
     "rangeMiddle": "Середня",
     "rangeLong": "Дальня",
-    "rangeUltraLong": "Надальня"
+    "rangeUltraLong": "Надальня",
+    "updateAvailable": "Доступна нова версія {version}",
+    "viewReleaseAction": "Переглянути",
+    "checkForUpdatesLabel": "Перевірити оновлення",
+    "upToDateMessage": "У вас остання версія"
 }

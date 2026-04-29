@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import 'features/home/home_screen.dart';
 import 'features/home/sub_screens/home_sub_screens.dart';
+import 'update/update_sheet.dart';
 import 'features/conditions/conditions_screen.dart';
 import 'features/tables/tables_screen.dart';
 import 'features/tables/sub_screens/tables_config_screen.dart';
@@ -406,7 +407,7 @@ class _ScaffoldWithNavState extends ConsumerState<_ScaffoldWithNav> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(child: widget.shell),
+      body: UpdateListener(child: SafeArea(child: widget.shell)),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           labelTextStyle: WidgetStateProperty.all(
