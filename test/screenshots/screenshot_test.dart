@@ -1,14 +1,18 @@
-// Generate Play-Store-ready tablet screenshots:
+// Generate Play-Store-ready screenshots:
 //   flutter test --update-goldens test/screenshots/
 //
-// Output goes to screenshots/<lang>/sevenInchScreenshots/ and
-//                screenshots/<lang>/tenInchScreenshots/
+// Output:
+//   screenshots/en/phoneScreenshots/      — 1080×1920 (9:16, "highly recommended")
+//   screenshots/en/sevenInchScreenshots/  — 1200×1920 physical
+//   screenshots/en/tenInchScreenshots/    — 1600×2560 physical
 
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/features/home/home_vm.dart';
 import 'package:ebalistyka/features/home/widgets/home_chart_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_reticle_page.dart';
 import 'package:ebalistyka/features/home/widgets/home_table_page.dart';
+import 'package:ebalistyka/features/tables/details_table_mv.dart';
+import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/models/adjustment_data.dart';
 import 'package:ebalistyka/shared/models/chart_point.dart';
@@ -20,7 +24,16 @@ import 'package:golden_screenshot/golden_screenshot.dart';
 
 // ── Devices ───────────────────────────────────────────────────────────────────
 
-// 7" portrait: 1200×1920 physical px (600×960 logical) — Play Store compliant
+// Phone portrait 9:16 — 1080×1920 physical (360×640 logical) — Play Store "highly recommended"
+final _phone = ScreenshotDevice(
+  platform: TargetPlatform.android,
+  resolution: const Size(1080, 1920),
+  pixelRatio: 3.0,
+  goldenSubFolder: 'phoneScreenshots',
+  frameBuilder: ScreenshotFrame.androidPhone,
+);
+
+// 7" portrait — 1200×1920 physical (600×960 logical)
 final _tablet7 = ScreenshotDevice(
   platform: TargetPlatform.android,
   resolution: const Size(1200, 1920),
@@ -29,7 +42,7 @@ final _tablet7 = ScreenshotDevice(
   frameBuilder: ScreenshotFrame.androidTablet,
 );
 
-// 10" portrait: 1600×2560 physical px (800×1280 logical) — Play Store compliant
+// 10" portrait — 1600×2560 physical (800×1280 logical)
 final _tablet10 = ScreenshotDevice(
   platform: TargetPlatform.android,
   resolution: const Size(1600, 2560),
@@ -38,7 +51,7 @@ final _tablet10 = ScreenshotDevice(
   frameBuilder: ScreenshotFrame.androidTablet,
 );
 
-final _devices = [_tablet7, _tablet10];
+final _allDevices = [_phone, _tablet7, _tablet10];
 
 // ── Fake ViewModel ────────────────────────────────────────────────────────────
 
@@ -53,7 +66,7 @@ class _FakeHomeVM extends HomeViewModel {
   void selectChartPoint(int index) {}
 }
 
-// ── Fixture ───────────────────────────────────────────────────────────────────
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 
 final _homeState = HomeUiReady(
   profileName: 'Tactical .308',
@@ -208,6 +221,28 @@ final _homeState = HomeUiReady(
   ),
 );
 
+const _shotDetails = DetailsTableData(
+  weaponName: 'Remington 700',
+  caliber: '7.62 mm',
+  twist: '1:11"',
+  dragModel: 'G7',
+  bc: '0.301',
+  zeroMv: '800 m/s',
+  currentMv: '797 m/s',
+  zeroDist: '100 m',
+  bulletLen: '33.0 mm',
+  bulletDiam: '7.82 mm',
+  bulletWeight: '11.3 g',
+  formFactor: '0.980',
+  sectionalDensity: '0.295',
+  gyroStability: '1.42',
+  temperature: '20 °C',
+  humidity: '50 %',
+  pressure: '1013 hPa',
+  windSpeed: '5.0 m/s',
+  windDir: '90°',
+);
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 Widget _scope(Widget app) => ProviderScope(
@@ -215,9 +250,13 @@ Widget _scope(Widget app) => ProviderScope(
   child: app,
 );
 
-void _screenshot(String name, Widget Function() factory) {
+void _screenshot(
+  String name,
+  Widget Function() factory, {
+  List<ScreenshotDevice>? devices,
+}) {
   testGoldens(name, (tester) async {
-    for (final device in _devices) {
+    for (final device in devices ?? _allDevices) {
       await tester.pumpWidget(
         _scope(
           ScreenshotApp(
@@ -239,9 +278,10 @@ void _screenshot(String name, Widget Function() factory) {
 
 void main() {
   setUpAll(loadAppFonts);
-  ScreenshotDevice.screenshotsFolder = 'screenshots';
+  ScreenshotDevice.screenshotsFolder = 'screenshots/';
 
   _screenshot('1_chart', () => const HomeChartPage());
   _screenshot('2_table', () => const HomeTablePage());
   _screenshot('3_reticle', () => const HomeReticlePage());
+  _screenshot('4_shot_details', () => const DetailsTableContent(details: _shotDetails));
 }
