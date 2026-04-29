@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [0.1.4] - 2026-04-28
+
 ### Fixed
 
 - **Unit symbols — full audit** — all remaining `unit.symbol`/`unit.label` call sites replaced with `localizedSymbol(l10n)`/`localizedLabel(l10n)` across 22+ files; new ARB keys: `unitSecondSym` (`s`/`с`), `sgAbbr` (`Sg`/`ФГС`), `nClicks` (ICU plural: `click`/`clicks`, `клік`/`кліка`/`кліків`)
