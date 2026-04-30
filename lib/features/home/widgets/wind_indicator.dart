@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -21,13 +22,33 @@ class WindIndicator extends StatefulWidget {
   State<WindIndicator> createState() => _WindIndicatorState();
 }
 
-class _WindIndicatorState extends State<WindIndicator> {
+class _WindIndicatorState extends State<WindIndicator>
+    with SingleTickerProviderStateMixin {
   late double angle;
+  late AnimationController _snapController;
+  double _snapStartAngle = 0;
+  double _snapDelta = 0;
 
   @override
   void initState() {
     super.initState();
     angle = widget.initialAngle;
+    _snapController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 380),
+    )..addListener(() {
+        setState(() {
+          angle = _snapStartAngle +
+              _snapDelta *
+                  Curves.easeOutCubic.transform(_snapController.value);
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    _snapController.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,8 +59,24 @@ class _WindIndicatorState extends State<WindIndicator> {
     }
   }
 
-  // Updates local visual state only — does NOT notify parent.
-  void _updateAngle(Offset localPosition, Size size) {
+  // Animates to [targetAngle] along the shorter arc, then commits.
+  void _snapToAngle(double targetAngle) {
+    _snapController.stop();
+    _snapStartAngle = angle;
+    double delta = targetAngle - angle;
+    // Normalize to shorter arc [-π, π]
+    while (delta > pi) { delta -= 2 * pi; }
+    while (delta < -pi) { delta += 2 * pi; }
+    _snapDelta = delta;
+    unawaited(_snapController.forward(from: 0).whenComplete(() {
+      if (mounted) {
+        setState(() => angle = targetAngle);
+        _commit();
+      }
+    }));
+  }
+
+  double _angleFromPosition(Offset localPosition, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final rawAngle = atan2(
       localPosition.dy - center.dy,
@@ -47,15 +84,15 @@ class _WindIndicatorState extends State<WindIndicator> {
     );
     double degrees = (rawAngle * 180 / pi + 90) % 360;
     if (degrees < 0) degrees += 360;
-    setState(() {
-      angle = (degrees.roundToDouble() - 90) * pi / 180;
-    });
+    return (degrees.roundToDouble() - 90) * pi / 180;
   }
 
-  void _reset() {
-    setState(() => angle = -pi / 2); // 12 o'clock = 0°
-    _commit();
+  // Updates local visual state only — does NOT notify parent.
+  void _updateAngle(Offset localPosition, Size size) {
+    setState(() => angle = _angleFromPosition(localPosition, size));
   }
+
+  void _reset() => _snapToAngle(-pi / 2);
 
   // Commits the current angle to the parent (called on gesture end / tap).
   void _commit() {
@@ -78,34 +115,40 @@ class _WindIndicatorState extends State<WindIndicator> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
-        return GestureDetector(
-          onDoubleTap: _reset,
-          onPanUpdate: (details) => _updateAngle(details.localPosition, size),
-          onPanEnd: (_) => _commit(),
-          onTapUp: (_) => _commit(),
-          onTapDown: (details) {
+        return Listener(
+          onPointerDown: (event) {
             final center = Offset(size.width / 2, size.height / 2);
-            final dist = (details.localPosition - center).distance;
+            final dist = (event.localPosition - center).distance;
             final innerR = min(size.width, size.height) * 0.5 * 0.8;
-            if (dist < innerR * 0.4 && widget.onDirectionTap != null) {
-              double deg = (angle * 180 / pi + 90) % 360;
-              if (deg < 0) deg += 360;
-              widget.onDirectionTap!(deg.roundToDouble());
+            if (dist < innerR * 0.4) {
+              if (widget.onDirectionTap != null) {
+                double deg = (angle * 180 / pi + 90) % 360;
+                if (deg < 0) deg += 360;
+                widget.onDirectionTap!(deg.roundToDouble());
+              }
             } else {
-              _updateAngle(details.localPosition, size);
-              // Don't commit on tap down - only commit on pan end or center tap
+              _snapToAngle(_angleFromPosition(event.localPosition, size));
             }
           },
-          child: CustomPaint(
-            painter: WindPainter(
-              angle: angle,
-              color: Theme.of(context).colorScheme.onSurface,
-              primaryColor: Theme.of(context).colorScheme.primary,
-              markerFillColor: Theme.of(context).colorScheme.primaryContainer,
-              markerIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              l10n: l10n,
+          child: GestureDetector(
+            onDoubleTap: _reset,
+            onPanStart: (details) {
+              _snapController.stop();
+              setState(() => angle = _angleFromPosition(details.localPosition, size));
+            },
+            onPanUpdate: (details) => _updateAngle(details.localPosition, size),
+            onPanEnd: (_) => _commit(),
+            child: CustomPaint(
+              painter: WindPainter(
+                angle: angle,
+                color: Theme.of(context).colorScheme.onSurface,
+                primaryColor: Theme.of(context).colorScheme.primary,
+                markerFillColor: Theme.of(context).colorScheme.primaryContainer,
+                markerIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                l10n: l10n,
+              ),
+              child: const SizedBox.expand(),
             ),
-            child: const SizedBox.expand(),
           ),
         );
       },
