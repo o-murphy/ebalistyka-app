@@ -201,7 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                       if (ammo == null) return;
                                       final result = await context.push<Ammo?>(
                                         Routes.profileEditAmmo,
-                                        extra: (ammo, weapon?.caliberInch),
+                                        extra: (ammo, weapon?.caliberInch, weapon?.id),
                                       );
                                       if (result != null && context.mounted) {
                                         await ref
