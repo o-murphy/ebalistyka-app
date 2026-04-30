@@ -172,15 +172,13 @@ class ReticleView extends ConsumerWidget {
       }
 
       if (showAdjLines ?? true) {
-        // Adjustment lines (targeting crosshair)
-        buffer.writeln(
-          '  <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" ',
-        );
-        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
-        buffer.writeln(
-          '  <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" ',
-        );
-        buffer.writeln('        stroke="$lineColor" stroke-width="$sw"/>');
+        buffer.writeln('''
+          <line x1="$offsetXMil" y1="0" x2="$offsetXMil" y2="$offsetYMil" stroke="$lineColor" stroke-width="${sw * 1.5}"/>
+          <line x1="$offsetXMil" y1="${-milHeight}" x2="$offsetXMil" y2="$milHeight" stroke="$lineColor" stroke-width="$sw" stroke-dasharray="0.1"/>
+          <line x1="0" y1="$offsetYMil" x2="$offsetXMil" y2="$offsetYMil" stroke="$lineColor" stroke-width="${sw * 1.5}"/>
+          <line x1="${-milWidth}" y1="$offsetYMil" x2="$milWidth" y2="$offsetYMil" stroke="$lineColor" stroke-width="$sw" stroke-dasharray="0.1"/>
+          <circle cx="$offsetXMil" cy="$offsetYMil" r="0.2" fill="$lineColor"/>
+        ''');
       }
     }
 
