@@ -69,26 +69,23 @@ class ConvertorScreen extends StatelessWidget {
       title: l10n.convertorsScreenTitle,
       body: Align(
         alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 160,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1,
-            ),
-            itemCount: _convertors.length,
-            itemBuilder: (context, i) {
-              final config = _convertors[i];
-              return _ConvertorTile(
-                type: config.type,
-                label: config.labelBuilder(l10n),
-                icon: config.icon,
-              );
-            },
+        child: GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 160,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1,
           ),
+          itemCount: _convertors.length,
+          itemBuilder: (context, i) {
+            final config = _convertors[i];
+            return _ConvertorTile(
+              type: config.type,
+              label: config.labelBuilder(l10n),
+              icon: config.icon,
+            );
+          },
         ),
       ),
     );

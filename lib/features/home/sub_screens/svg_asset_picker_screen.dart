@@ -56,8 +56,14 @@ class SvgAssetPickerScreen extends ConsumerWidget {
             if (ids.contains(selected)) selected,
             ...ids.where((id) => id != selected),
           ];
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 375,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             itemCount: sorted.length,
             itemBuilder: (context, i) => _SvgAssetTile(
               assetId: sorted[i],
@@ -88,56 +94,72 @@ class _SvgAssetTile extends ConsumerWidget {
   static const double clipRadius = 12.0;
 
   @override
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final svgAsync = watchSvg(ref, assetId);
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: isSelected
-            ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: cs.primary, width: 2),
-              )
-            : null,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      assetId,
-                      style: tt.titleMedium?.copyWith(
-                        color: isSelected ? cs.primary : null,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                      ),
-                    ),
-                    const Spacer(),
-                    if (isSelected)
-                      Icon(Icons.check_circle, color: cs.primary, size: 20),
-                  ],
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: isSelected
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: cs.primary, width: 2),
+            )
+          : null,
+      child: InkWell(
+        onTap: onTap,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: svgAsync.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => const SizedBox.shrink(),
+                  data: (svg) => _buildPreview(svg, cs),
                 ),
-                const SizedBox(height: 10),
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: svgAsync.when(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (_, _) => const SizedBox.shrink(),
-                    data: (svg) => _buildPreview(svg, cs),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Text(
+                  assetId,
+                  style: tt.bodyLarge?.copyWith(
+                    color: isSelected ? cs.primary : Colors.white,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(0, 1),
+                        blurRadius: 2,
+                        color: Colors.black.withAlpha(100),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              if (isSelected)
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check,
+                      color: cs.onPrimary,
+                      size: 16,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
