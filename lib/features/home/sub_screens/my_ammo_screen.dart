@@ -294,7 +294,7 @@ class MyAmmoScreen extends ConsumerWidget {
                   onEdit: () async {
                     final result = await context.push<Ammo?>(
                       Routes.profileEditAmmo,
-                      extra: (item, defaultCaliberInch),
+                      extra: (item, defaultCaliberInch, weapon?.id),
                     );
                     if (result != null && context.mounted) {
                       await ref

@@ -2,6 +2,8 @@ import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+const _unset = Object();
+
 // ── Ammo filter ───────────────────────────────────────────────────────────────
 
 @immutable
@@ -23,6 +25,22 @@ class AmmoFilterState {
       calibers.isNotEmpty ||
       minWeightGrain != null ||
       maxWeightGrain != null;
+
+  AmmoFilterState copyWith({
+    Set<String>? vendors,
+    Set<double>? calibers,
+    Object? minWeightGrain = _unset,
+    Object? maxWeightGrain = _unset,
+  }) => AmmoFilterState(
+    vendors: vendors ?? this.vendors,
+    calibers: calibers ?? this.calibers,
+    minWeightGrain: minWeightGrain == _unset
+        ? this.minWeightGrain
+        : minWeightGrain as double?,
+    maxWeightGrain: maxWeightGrain == _unset
+        ? this.maxWeightGrain
+        : maxWeightGrain as double?,
+  );
 }
 
 class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
@@ -41,12 +59,7 @@ class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
     } else {
       s.add(vendor);
     }
-    state = AmmoFilterState(
-      vendors: s,
-      calibers: state.calibers,
-      minWeightGrain: state.minWeightGrain,
-      maxWeightGrain: state.maxWeightGrain,
-    );
+    state = state.copyWith(vendors: s);
   }
 
   void toggleCaliber(double caliberInch) {
@@ -56,27 +69,12 @@ class AmmoFilterNotifier extends Notifier<AmmoFilterState> {
     } else {
       s.add(caliberInch);
     }
-    state = AmmoFilterState(
-      vendors: state.vendors,
-      calibers: s,
-      minWeightGrain: state.minWeightGrain,
-      maxWeightGrain: state.maxWeightGrain,
-    );
+    state = state.copyWith(calibers: s);
   }
 
-  void setMinWeight(double? v) => state = AmmoFilterState(
-    vendors: state.vendors,
-    calibers: state.calibers,
-    minWeightGrain: v,
-    maxWeightGrain: state.maxWeightGrain,
-  );
+  void setMinWeight(double? v) => state = state.copyWith(minWeightGrain: v);
 
-  void setMaxWeight(double? v) => state = AmmoFilterState(
-    vendors: state.vendors,
-    calibers: state.calibers,
-    minWeightGrain: state.minWeightGrain,
-    maxWeightGrain: v,
-  );
+  void setMaxWeight(double? v) => state = state.copyWith(maxWeightGrain: v);
 
   void apply({
     required Set<String> vendors,
@@ -118,6 +116,14 @@ class SightFilterState {
   final Set<FocalPlane> focalPlanes;
 
   bool get isActive => vendors.isNotEmpty || focalPlanes.isNotEmpty;
+
+  SightFilterState copyWith({
+    Set<String>? vendors,
+    Set<FocalPlane>? focalPlanes,
+  }) => SightFilterState(
+    vendors: vendors ?? this.vendors,
+    focalPlanes: focalPlanes ?? this.focalPlanes,
+  );
 }
 
 class SightFilterNotifier extends Notifier<SightFilterState> {
@@ -131,7 +137,7 @@ class SightFilterNotifier extends Notifier<SightFilterState> {
     } else {
       s.add(vendor);
     }
-    state = SightFilterState(vendors: s, focalPlanes: state.focalPlanes);
+    state = state.copyWith(vendors: s);
   }
 
   void toggleFocalPlane(FocalPlane fp) {
@@ -141,13 +147,13 @@ class SightFilterNotifier extends Notifier<SightFilterState> {
     } else {
       s.add(fp);
     }
-    state = SightFilterState(vendors: state.vendors, focalPlanes: s);
+    state = state.copyWith(focalPlanes: s);
   }
 
   void apply({
     required Set<String> vendors,
     required Set<FocalPlane> focalPlanes,
-  }) => state = SightFilterState(vendors: vendors, focalPlanes: focalPlanes);
+  }) => state = state.copyWith(vendors: vendors, focalPlanes: focalPlanes);
 
   void reset() => state = const SightFilterState();
 }
@@ -171,6 +177,9 @@ class WeaponFilterState {
   final Set<String> vendors;
 
   bool get isActive => vendors.isNotEmpty;
+
+  WeaponFilterState copyWith({Set<String>? vendors}) =>
+      WeaponFilterState(vendors: vendors ?? this.vendors);
 }
 
 class WeaponFilterNotifier extends Notifier<WeaponFilterState> {
@@ -184,11 +193,11 @@ class WeaponFilterNotifier extends Notifier<WeaponFilterState> {
     } else {
       s.add(vendor);
     }
-    state = WeaponFilterState(vendors: s);
+    state = state.copyWith(vendors: s);
   }
 
   void apply({required Set<String> vendors}) =>
-      state = WeaponFilterState(vendors: vendors);
+      state = state.copyWith(vendors: vendors);
 
   void reset() => state = const WeaponFilterState();
 }

@@ -7,6 +7,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_field.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -171,10 +172,12 @@ class _AmmoFilterSheetState extends ConsumerState<_AmmoFilterSheet> {
 
     final draftIsDefault =
         _vendors.isEmpty &&
-        _calibers ==
-            (widget.defaultCaliberInch != null
-                ? {widget.defaultCaliberInch!}
-                : <double>{}) &&
+        setEquals(
+          _calibers,
+          widget.defaultCaliberInch != null
+              ? {widget.defaultCaliberInch!}
+              : <double>{},
+        ) &&
         _minWeightGrain == null &&
         _maxWeightGrain == null;
 
@@ -427,7 +430,7 @@ class _WeaponFilterSheetState extends ConsumerState<_WeaponFilterSheet> {
   }
 }
 
-// ── Widgets ───────────────────────────────��───────────────────────────────────
+// ── Widgets ───────────────────────────────────────────────────────────────────
 
 class _FilterSheetLayout extends StatelessWidget {
   const _FilterSheetLayout({
