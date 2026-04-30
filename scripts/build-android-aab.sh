@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Build Flutter Android APKs (per-ABI split + universal fat) and place them in artifacts/.
+# Build Flutter Android App Bundle (AAB) and place it in artifacts/.
 #
 # Usage:
-#   build-android.sh <build_name> <build_number>
+#   build-android-aab.sh <build_name> <build_number>
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
@@ -15,10 +15,7 @@
 #   ANDROID_KEY_PASSWORD         Key password.
 #
 # Outputs:
-#   artifacts/ebalistyka_android_arm64.apk
-#   artifacts/ebalistyka_android_armeabi_v7a.apk
-#   artifacts/ebalistyka_android_x86_64.apk
-#   artifacts/ebalistyka_android_universal.apk
+#   artifacts/ebalistyka_android.aab
 
 set -euo pipefail
 
@@ -51,24 +48,15 @@ else
     echo "ANDROID_KEYSTORE_BASE64 not set — using debug signing"
 fi
 
-# ── Build per-ABI split APKs ─────────────────────────────────────────────────
-flutter build apk --release --split-per-abi \
+# ── Build AAB ────────────────────────────────────────────────────────────────
+flutter build appbundle --release \
   --build-name="$BASE" \
   --build-number="$BUILD_NUMBER"
 
-# Copy split APKs immediately — Gradle stale-output cleanup in the next build
-# may remove files produced by a differently-configured assembleRelease run.
+# ── Package ──────────────────────────────────────────────────────────────────
 mkdir -p artifacts
-cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
 
-# ── Build universal (fat) APK ────────────────────────────────────────────────
-flutter build apk --release \
-  --build-name="$BASE" \
-  --build-number="$BUILD_NUMBER"
+cp build/app/outputs/bundle/release/app-release.aab artifacts/ebalistyka_android.aab
 
-cp build/app/outputs/flutter-apk/app-release.apk artifacts/ebalistyka_android_universal.apk
-
-echo "=== APK artifacts ==="
+echo "=== AAB artifacts ==="
 ls -lh artifacts/
