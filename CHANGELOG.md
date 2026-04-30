@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Wind indicator — tap-to-set animation** — tapping anywhere on the ring animates the marker along the shorter arc to the tapped position (`easeOutCubic`, 380 ms) then commits; drag continues to follow the finger instantly; double-tap resets to North (0°); uses `Listener.onPointerDown` for zero-latency response (avoids GestureDetector disambiguation delay)
 - **`UnitDialogInputField.autofocus` parameter** — exposes autofocus as an optional parameter (default `true`); `UnitHybridPicker` passes `autofocus: isDesktop` so the keyboard does not auto-open on mobile when the hybrid picker dialog is shown
 - **`isDesktop` helper** — migrated from `dart:io` `Platform` checks to `defaultTargetPlatform` (no native-platform dependency, works in tests)
+- **Quick-action long-press reset** — long-pressing the Wind Speed or Look Angle button in `QuickActionsPanel` resets the value to 0 and shows a snackbar confirmation; `windSpeedWasReset` / `lookAngleWasReset` l10n keys added (EN + UA)
+- **Filter panel** — `My Ammo`, `My Weapon`, and `My Sight` screens now have a working filter button; bottom sheet with `ExpansionTile` sections per category; vendor multi-select with item-count badges; caliber multi-select (ammo); focal-plane toggle (sight); weight range via `UnitConstrainedInputField` (ammo min/max); filter badge shows active state; filter state persisted in `AmmoFilterNotifier` / `SightFilterNotifier` / `WeaponFilterNotifier`; same filter panel wired to collection screens
 
 ### Fixed
 
@@ -26,6 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Collection update error propagation** — `_fetchLatestCollectionCommit` now throws on non-200 HTTP status instead of silently returning `null` (previously treated as "up to date"); manual check in Settings now shows the actual network error in a snackbar
 - **Caliber mismatch not triggered on ammo select** — `onSelect` in `MyAmmoScreen` previously had no caliber check at all; mismatch action sheet is now shown before the ammo is applied
 - **Caliber mismatch not triggered on ammo edit** — `onEdit` previously passed the ammo's own caliber as the weapon reference caliber, so the mismatch check always exited early; now correctly passes the weapon's caliber
+- **Filter state `copyWith`** — `AmmoFilterState`, `SightFilterState`, and `WeaponFilterState` now expose `copyWith`; notifier mutation methods use it instead of repeating all fields
+- **Filter sheet `draftIsDefault` check** — caliber comparison now uses `setEquals` instead of `==` so `Set<double>` equality is correctly detected
+
+### Changed
+
+- **Seed profile data** — default profile updated: weapon → Cadex Defence Kraken CDX-MC (.338 LM, 9.5″ twist, 26″ barrel), ammo → Hornady 285 GR ELD-M (G7 BC 0.397, MV 827 m/s), sight → Nightforce ATACR 7-35×56 F1 (0.1 MIL clicks)
 
 
 ## [0.1.5] - 2026-04-29
