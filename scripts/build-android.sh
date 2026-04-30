@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# Build Flutter Android APKs and place them in artifacts/.
+# Build Flutter Android APKs (per-ABI split + universal fat) and place them in artifacts/.
 #
 # Usage:
-#   build-android.sh <build_name> <build_number> [--fat]
+#   build-android.sh <build_name> <build_number>
 #
 # Arguments:
 #   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
 #   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
-#   --fat         Build a single fat APK instead of per-ABI split (optional).
 #
 # Signing (optional — falls back to debug key if not set):
 #   ANDROID_KEYSTORE_BASE64      Base64-encoded .jks/.p12 keystore file.
@@ -19,14 +18,12 @@
 #   artifacts/ebalistyka_android_arm64.apk
 #   artifacts/ebalistyka_android_armeabi_v7a.apk
 #   artifacts/ebalistyka_android_x86_64.apk
-#   — or —
-#   artifacts/ebalistyka_android.apk          (when --fat)
+#   artifacts/ebalistyka_android_universal.apk
 
 set -euo pipefail
 
 BUILD_NAME="${1:-0.1.0-dev}"
 BUILD_NUMBER="${2:-0}"
-FAT="${3:-}"
 
 # Strip leading 'v'
 BUILD_NAME="${BUILD_NAME#v}"
@@ -48,28 +45,23 @@ else
     echo "ANDROID_KEYSTORE_BASE64 not set — using debug signing"
 fi
 
-# ── Build ────────────────────────────────────────────────────────────────────
-if [ "$FAT" = "--fat" ]; then
-    flutter build apk --release \
-      --build-name="$BASE" \
-      --build-number="$BUILD_NUMBER"
-else
-    flutter build apk --release --split-per-abi \
-      --build-name="$BASE" \
-      --build-number="$BUILD_NUMBER"
-fi
+# ── Build per-ABI split APKs ─────────────────────────────────────────────────
+flutter build apk --release --split-per-abi \
+  --build-name="$BASE" \
+  --build-number="$BUILD_NUMBER"
+
+# ── Build universal (fat) APK ────────────────────────────────────────────────
+flutter build apk --release \
+  --build-name="$BASE" \
+  --build-number="$BUILD_NUMBER"
 
 # ── Package ──────────────────────────────────────────────────────────────────
 mkdir -p artifacts
 
-if [ "$FAT" = "--fat" ]; then
-    cp build/app/outputs/flutter-apk/app-release.apk \
-       artifacts/ebalistyka_android.apk
-else
-    cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
-    cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-    cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
-fi
+cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
+cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
+cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
+cp build/app/outputs/flutter-apk/app-release.apk              artifacts/ebalistyka_android_universal.apk
 
 echo "=== APK artifacts ==="
 ls -lh artifacts/
