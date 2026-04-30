@@ -27,6 +27,12 @@ BUILD_NAME="${BUILD_NAME#v}"
 # Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
 BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
+# ── Cleanup trap ─────────────────────────────────────────────────────────────
+cleanup() {
+    rm -f android/ebalistyka.keystore android/key.properties
+}
+trap cleanup EXIT
+
 # ── Android signing ──────────────────────────────────────────────────────────
 if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
     echo "Setting up Android release signing…"

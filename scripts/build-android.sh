@@ -30,6 +30,12 @@ BUILD_NAME="${BUILD_NAME#v}"
 # Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
 BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
+# ── Cleanup trap ─────────────────────────────────────────────────────────────
+cleanup() {
+    rm -f android/ebalistyka.keystore android/key.properties
+}
+trap cleanup EXIT
+
 # ── Android signing ──────────────────────────────────────────────────────────
 if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
     echo "Setting up Android release signing…"
@@ -50,18 +56,19 @@ flutter build apk --release --split-per-abi \
   --build-name="$BASE" \
   --build-number="$BUILD_NUMBER"
 
+# Copy split APKs immediately — Gradle stale-output cleanup in the next build
+# may remove files produced by a differently-configured assembleRelease run.
+mkdir -p artifacts
+cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
+cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
+cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
+
 # ── Build universal (fat) APK ────────────────────────────────────────────────
 flutter build apk --release \
   --build-name="$BASE" \
   --build-number="$BUILD_NUMBER"
 
-# ── Package ──────────────────────────────────────────────────────────────────
-mkdir -p artifacts
-
-cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   artifacts/ebalistyka_android_arm64.apk
-cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/ebalistyka_android_armeabi_v7a.apk
-cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyka_android_x86_64.apk
-cp build/app/outputs/flutter-apk/app-release.apk              artifacts/ebalistyka_android_universal.apk
+cp build/app/outputs/flutter-apk/app-release.apk artifacts/ebalistyka_android_universal.apk
 
 echo "=== APK artifacts ==="
 ls -lh artifacts/
