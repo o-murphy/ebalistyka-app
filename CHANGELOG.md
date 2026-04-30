@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 
+## [0.1.7] - 2026-04-30
+
+### Fixed
+- **AmmoWizardScreen Hotfix** - AmmoWizardScreen arguments and it's `state.extra` atributes
+
+### Changed
+- **Improved ReticleView Holdovers Highlight** — much more readable holdovers overlays
+- **Optimized Reticles generator** — uses `stroke-dasharray` for dashed lines instead of Path's
+- **Reticle/Target picker screen layout** — uses grid layout with wrap for high-dpi devices
+
+
 ## [0.1.6] - 2026-04-30
 
 ### Added

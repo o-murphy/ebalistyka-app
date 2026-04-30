@@ -6,14 +6,14 @@
     <g id="clipgroup-0" clip-path="url(#clip0)">
       <rect id="fill-0" x="-30" y="-30" width="60" height="60" fill="transparent"/>
       <path id="cross-0" d="M -1 0 L 1 0 M 0 -1 L 0 1" fill="none" stroke="red" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
-      <line id="hline-0" x1="2" y1="0" x2="20" y2="0" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="hline-1" x1="-2" y1="0" x2="-20" y2="0" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-0" x1="0" y1="-10" x2="0" y2="-2" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-1" x1="0" y1="20" x2="0" y2="2" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-2" x1="-2" y1="-1" x2="-2" y2="1" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-3" x1="2" y1="-1" x2="2" y2="1" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-4" x1="-20" y1="-1" x2="-20" y2="1" stroke="onSurface" stroke-width="0.0625"/>
-      <line id="vline-5" x1="20" y1="-1" x2="20" y2="1" stroke="onSurface" stroke-width="0.0625"/>
+      <line id="hline-0" x1="2" y1="0" x2="20" y2="0" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="hline-1" x1="-2" y1="0" x2="-20" y2="0" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-0" x1="0" y1="-10" x2="0" y2="-2" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-1" x1="0" y1="20" x2="0" y2="2" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-2" x1="-2" y1="-1" x2="-2" y2="1" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-3" x1="2" y1="-1" x2="2" y2="1" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-4" x1="-20" y1="-1" x2="-20" y2="1" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
+      <line id="vline-5" x1="20" y1="-1" x2="20" y2="1" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
       <path id="hruler-0" d="M 20 0 L 20 1 M 18 0 L 18 1 M 16 0 L 16 1 M 14 0 L 14 1 M 12 0 L 12 1 M 10 0 L 10 1 M 8 0 L 8 1 M 6 0 L 6 1 M 4 0 L 4 1 M 2 0 L 2 1" fill="none" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
       <path id="hruler-1" d="M -20 0 L -20 1 M -18 0 L -18 1 M -16 0 L -16 1 M -14 0 L -14 1 M -12 0 L -12 1 M -10 0 L -10 1 M -8 0 L -8 1 M -6 0 L -6 1 M -4 0 L -4 1 M -2 0 L -2 1" fill="none" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
       <path id="hruler-2" d="M 20 0 L 20 0.5 M 19 0 L 19 0.5 M 18 0 L 18 0.5 M 17 0 L 17 0.5 M 16 0 L 16 0.5 M 15 0 L 15 0.5 M 14 0 L 14 0.5 M 13 0 L 13 0.5 M 12 0 L 12 0.5 M 11 0 L 11 0.5 M 10 0 L 10 0.5 M 9 0 L 9 0.5 M 8 0 L 8 0.5 M 7 0 L 7 0.5 M 6 0 L 6 0.5 M 5 0 L 5 0.5 M 4 0 L 4 0.5 M 3 0 L 3 0.5 M 2 0 L 2 0.5" fill="none" stroke="onSurface" stroke-width="0.0625" stroke-linejoin="miter" stroke-linecap="miter"/>
