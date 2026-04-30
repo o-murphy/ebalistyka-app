@@ -305,7 +305,6 @@ class MilReticleSVGCanvas {
     if (dashLen != null && gapLen != null) {
       if (dashLen <= 0 && gapLen <= 0) {
         _warn('line', 'dashLen and gapLen are both <= 0');
-        // Можна або повернутись, або встановити значення за замовчуванням
         actualDash = 0.001;
         actualGap = 0.001;
       } else {
