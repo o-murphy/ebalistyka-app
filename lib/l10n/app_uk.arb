@@ -413,5 +413,16 @@
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
     "checkForUpdatesLabel": "Перевірити оновлення",
-    "upToDateMessage": "У вас остання версія"
+    "upToDateMessage": "У вас остання версія",
+
+    "filterTitle": "Фільтр",
+    "filterResetAction": "Скинути",
+    "filterWeightMin": "Мін",
+    "filterWeightMax": "Макс",
+    "filterApplyAction": "Застосувати",
+
+    "caliberMismatchTitle": "Невідповідність калібру",
+    "caliberMismatchWarning": "Патрон: {ammo} · Зброя: {weapon}",
+    "updateAmmoCaliberAction": "Оновити калібр патрона",
+    "updateWeaponCaliberAction": "Оновити калібр зброї"
 }

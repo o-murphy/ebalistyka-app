@@ -1,8 +1,12 @@
-import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
 import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
+import 'package:ebalistyka/core/providers/formatter_provider.dart';
+import 'package:ebalistyka/core/services/ebcp_service.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/filter_providers.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_ammo_tile_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/filter_sheet.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -67,7 +71,10 @@ class MyAmmoScreen extends ConsumerWidget {
               Routes.profileEditAmmo,
               extra: (
                 template,
-                template.caliberInch > 0 ? template.caliberInch : null,
+                weapon != null && weapon.caliberInch > 0
+                    ? weapon.caliberInch
+                    : null,
+                weapon?.id,
               ),
             );
             if (result != null && context.mounted) {
@@ -88,7 +95,10 @@ class MyAmmoScreen extends ConsumerWidget {
               Routes.profileEditAmmo,
               extra: (
                 template,
-                template.caliberInch > 0 ? template.caliberInch : null,
+                weapon != null && weapon.caliberInch > 0
+                    ? weapon.caliberInch
+                    : null,
+                weapon?.id,
               ),
             );
             if (result != null && context.mounted) {
@@ -143,6 +153,7 @@ class MyAmmoScreen extends ConsumerWidget {
     final appStateAsync = ref.watch(appStateProvider);
     final appState = ref.watch(appStateProvider).value;
     final l10n = AppLocalizations.of(context)!;
+    final formatter = ref.watch(unitFormatterProvider);
 
     final cartridges = appState?.ammo ?? [];
     final profile = profileId != null
@@ -156,9 +167,31 @@ class MyAmmoScreen extends ConsumerWidget {
         .where((w) => w.id == profile?.weapon.targetId)
         .firstOrNull;
 
-    final filtered = weapon != null
-        ? cartridges.where((a) => a.caliber.raw == weapon.caliber.raw)
-        : cartridges;
+    final defaultCaliberInch = weapon != null && weapon.caliberInch > 0
+        ? weapon.caliberInch
+        : null;
+
+    final filter = ref.watch(ammoFilterProvider(defaultCaliberInch));
+
+    final filtered = cartridges.where((a) {
+      if (filter.calibers.isNotEmpty &&
+          !filter.calibers.contains(a.caliberInch)) {
+        return false;
+      }
+      if (filter.vendors.isNotEmpty &&
+          !filter.vendors.contains(a.vendor ?? '')) {
+        return false;
+      }
+      if (filter.minWeightGrain != null &&
+          a.weightGrain < filter.minWeightGrain!) {
+        return false;
+      }
+      if (filter.maxWeightGrain != null &&
+          a.weightGrain > filter.maxWeightGrain!) {
+        return false;
+      }
+      return true;
+    });
 
     final sorted = [
       ...filtered.where((a) => a.id == selectedId),
@@ -178,8 +211,15 @@ class MyAmmoScreen extends ConsumerWidget {
       ),
       actions: [
         IconButton(
-          onPressed: () => debugPrint('Filter button (will call bottom toast)'),
-          icon: Icon(IconDef.filter),
+          onPressed: () => showAmmoFilterSheet(
+            context,
+            allItems: cartridges,
+            defaultCaliberInch: defaultCaliberInch,
+          ),
+          icon: Badge(
+            isLabelVisible: filter.isActive,
+            child: Icon(IconDef.filter),
+          ),
         ),
       ],
       body: appStateAsync.when(
@@ -201,6 +241,51 @@ class MyAmmoScreen extends ConsumerWidget {
                   onSelect: () async {
                     final pid = profileId ?? profile?.id.toString();
                     if (pid == null) return;
+
+                    final wc = defaultCaliberInch;
+                    final ac = item.caliberInch;
+                    if (wc != null && ac > 0 && (wc - ac).abs() >= 0.0001) {
+                      bool proceed = false;
+                      await showActionSheet(
+                        context,
+                        title: l10n.caliberMismatchTitle,
+                        subtitle: l10n.caliberMismatchWarning(
+                          formatter.diameter(Distance.inch(ac)),
+                          formatter.diameter(Distance.inch(wc)),
+                        ),
+                        entries: [
+                          ActionSheetItem(
+                            icon: IconDef.ammo,
+                            title: l10n.updateAmmoCaliberAction,
+                            subtitle:
+                                '${formatter.diameter(Distance.inch(ac))} → ${formatter.diameter(Distance.inch(wc))}',
+                            onTap: () async {
+                              item.caliber = Distance.inch(wc);
+                              await ref
+                                  .read(appStateProvider.notifier)
+                                  .saveAmmo(item);
+                              proceed = true;
+                            },
+                          ),
+                          if (weapon != null)
+                            ActionSheetItem(
+                              icon: IconDef.weapon,
+                              title: l10n.updateWeaponCaliberAction,
+                              subtitle:
+                                  '${formatter.diameter(Distance.inch(wc))} → ${formatter.diameter(Distance.inch(ac))}',
+                              onTap: () async {
+                                weapon.caliber = Distance.inch(ac);
+                                await ref
+                                    .read(appStateProvider.notifier)
+                                    .saveWeapon(weapon);
+                                proceed = true;
+                              },
+                            ),
+                        ],
+                      );
+                      if (!proceed || !context.mounted) return;
+                    }
+
                     await ref
                         .read(appStateProvider.notifier)
                         .setProfileAmmo(pid, item.id);
@@ -209,10 +294,7 @@ class MyAmmoScreen extends ConsumerWidget {
                   onEdit: () async {
                     final result = await context.push<Ammo?>(
                       Routes.profileEditAmmo,
-                      extra: (
-                        item,
-                        item.caliberInch > 0 ? item.caliberInch : null,
-                      ),
+                      extra: (item, defaultCaliberInch),
                     );
                     if (result != null && context.mounted) {
                       await ref

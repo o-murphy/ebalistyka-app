@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,6 +72,8 @@ void main() async {
   final appSupport = await getApplicationSupportDirectory();
   final (store, dbWasReset) = await _openStore(appSupport.path);
   debugPrint('DB path: ${appSupport.path}');
+
+  debugAppInfoConstants();
 
   runApp(
     ProviderScope(

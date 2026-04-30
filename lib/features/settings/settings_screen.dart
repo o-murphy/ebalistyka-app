@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/services/ebcp_service.dart';
@@ -191,26 +192,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('GitHub'),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () =>
-                _launchUrl('https://github.com/o-murphy/ebalistyka-app'),
+            onTap: () => _launchUrl(repoUrl),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: Text(l10n.labelPrivacyPolicy),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/PRIVACY_POLICY.md',
-            ),
+            onTap: () => _launchUrl(privacyPolicyUrl),
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: Text(l10n.labelTermsOfUse),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/TERMS.md',
-            ),
+            onTap: () => _launchUrl(tosUrl),
           ),
 
           const TileDivider(),
@@ -251,9 +247,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: Text(l10n.labelChangelog),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/CHANGELOG.md',
-            ),
+            onTap: () => _launchUrl(changelogUrl),
           ),
 
           const SizedBox(height: 16),

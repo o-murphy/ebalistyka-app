@@ -1196,4 +1196,33 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get upToDateMessage => 'У вас остання версія';
+
+  @override
+  String get filterTitle => 'Фільтр';
+
+  @override
+  String get filterResetAction => 'Скинути';
+
+  @override
+  String get filterWeightMin => 'Мін';
+
+  @override
+  String get filterWeightMax => 'Макс';
+
+  @override
+  String get filterApplyAction => 'Застосувати';
+
+  @override
+  String get caliberMismatchTitle => 'Невідповідність калібру';
+
+  @override
+  String caliberMismatchWarning(String ammo, String weapon) {
+    return 'Патрон: $ammo · Зброя: $weapon';
+  }
+
+  @override
+  String get updateAmmoCaliberAction => 'Оновити калібр патрона';
+
+  @override
+  String get updateWeaponCaliberAction => 'Оновити калібр зброї';
 }

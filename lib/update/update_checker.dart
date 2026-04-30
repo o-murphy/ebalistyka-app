@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
-
-const _repoSlug = 'o-murphy/ebalistyka-app';
-const _checkIntervalHours = 24;
-const _lastCheckFile = 'last_update_check';
 
 class GithubRelease {
   final String tagName;
@@ -36,7 +33,7 @@ Future<GithubRelease?> _fetchIfNewer(
 }) async {
   final response = await http
       .get(
-        Uri.parse('https://api.github.com/repos/$_repoSlug/releases/latest'),
+        Uri.parse(releasesUrl),
         headers: {'Accept': 'application/vnd.github+json'},
       )
       .timeout(const Duration(seconds: 10));
@@ -67,7 +64,7 @@ Future<GithubRelease?> _fetchIfNewer(
 Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == 'com.android.vending';
+    final isPlayStore = info.installerStore == googlePlayinstallerSource;
     final result = await _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
@@ -75,7 +72,7 @@ Future<GithubRelease?> checkForUpdate() async {
     );
     final appSupport = await getApplicationSupportDirectory();
     await File(
-      '${appSupport.path}/$_lastCheckFile',
+      '${appSupport.path}/$lastCheckFile',
     ).writeAsString(DateTime.now().toIso8601String());
     return result;
   } catch (e) {
@@ -88,20 +85,20 @@ Future<GithubRelease?> checkForUpdate() async {
 final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
   try {
     final appSupport = await getApplicationSupportDirectory();
-    final checkFile = File('${appSupport.path}/$_lastCheckFile');
+    final checkFile = File('${appSupport.path}/$lastCheckFile');
 
     if (await checkFile.exists()) {
       final lastCheck = DateTime.tryParse(
         (await checkFile.readAsString()).trim(),
       );
       if (lastCheck != null &&
-          DateTime.now().difference(lastCheck).inHours < _checkIntervalHours) {
+          DateTime.now().difference(lastCheck).inHours < checkIntervalHours) {
         return null;
       }
     }
 
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == 'com.android.vending';
+    final isPlayStore = info.installerStore == googlePlayinstallerSource;
     await checkFile.writeAsString(DateTime.now().toIso8601String());
     return _fetchIfNewer(
       info.version,
@@ -131,4 +128,31 @@ List<int>? _parseSemver(String v) {
   final nums = parts.take(3).map(int.tryParse).toList();
   if (nums.any((n) => n == null)) return null;
   return nums.cast<int>();
+}
+
+class CollectionCommit {
+  final String sha;
+
+  const CollectionCommit({required this.sha});
+}
+
+/// Hits the GitHub API and returns the latest [GithubRelease] if it is newer
+/// than [currentVersion], or null if already up-to-date / on error.
+Future<CollectionCommit?> _fetchIfNewerCommit(
+  String currentVersion, {
+  required bool isPlayStore,
+  required String packageName,
+}) async {
+  final response = await http
+      .get(
+        Uri.parse(lastCommitHashUrl),
+        headers: {'Accept': 'application/vnd.github+json'},
+      )
+      .timeout(const Duration(seconds: 10));
+
+  if (response.statusCode != 200) return null;
+
+  final data = jsonDecode(response.body) as List<Map<String, dynamic>>;
+  final sha = (data[0]['tag_name'] as String?) ?? '';
+  return CollectionCommit(sha: sha);
 }

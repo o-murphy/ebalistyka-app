@@ -1192,4 +1192,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upToDateMessage => 'You\'re up to date';
+
+  @override
+  String get filterTitle => 'Filter';
+
+  @override
+  String get filterResetAction => 'Reset';
+
+  @override
+  String get filterWeightMin => 'Min';
+
+  @override
+  String get filterWeightMax => 'Max';
+
+  @override
+  String get filterApplyAction => 'Apply';
+
+  @override
+  String get caliberMismatchTitle => 'Caliber mismatch';
+
+  @override
+  String caliberMismatchWarning(String ammo, String weapon) {
+    return 'Ammo: $ammo · Weapon: $weapon';
+  }
+
+  @override
+  String get updateAmmoCaliberAction => 'Update ammo caliber';
+
+  @override
+  String get updateWeaponCaliberAction => 'Update weapon caliber';
 }

@@ -42,37 +42,49 @@ class CollectionAmmoTileBody extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Vendor + Name - top
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (ammo.vendor != null && ammo.vendor!.isNotEmpty)
-                      Text(
-                        ammo.vendor!,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (ammo.vendor != null && ammo.vendor!.isNotEmpty)
+                        Text(
+                          ammo.vendor!,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                          overflow: TextOverflow.visible,
+                          softWrap: true,
                         ),
-                      ),
-                    Text(
-                      ammo.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    if (ammo.projectileName != null &&
-                        ammo.projectileName!.isNotEmpty)
                       Text(
-                        ammo.projectileName!,
-                        style: const TextStyle(fontSize: 13),
+                        ammo.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        overflow: TextOverflow.visible,
+                        softWrap: true,
                       ),
-                  ],
+                      if (ammo.projectileName != null &&
+                          ammo.projectileName!.isNotEmpty)
+                        Text(
+                          ammo.projectileName!,
+                          style: const TextStyle(fontSize: 13),
+                          overflow: TextOverflow.visible,
+                          softWrap: true,
+                        ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 8),
                 // Bottom information
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    // First row - BC values and velocity
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
                       children: [
                         _buildBcRow(
                           'G1 ${l10n.bcShort}',
@@ -81,7 +93,6 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                           ammo.dragType == DragType.g1,
                           cs,
                         ),
-                        const SizedBox(width: 12),
                         _buildBcRow(
                           'G7 ${l10n.bcShort}',
                           ammo.bcG7,
@@ -89,7 +100,6 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                           ammo.dragType == DragType.g7,
                           cs,
                         ),
-                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -97,14 +107,19 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             const SizedBox(width: 6),
                             Text(
                               formatter.velocity(ammo.mv),
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
                             ),
                           ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Row(
+                    // Second row - Caliber, weight, length
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -114,10 +129,11 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.diameter(ammo.caliber),
                               style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
                             ),
                           ],
                         ),
-                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -126,10 +142,11 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.weight(ammo.weight),
                               style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
                             ),
                           ],
                         ),
-                        const SizedBox(width: 12),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -138,6 +155,8 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                             Text(
                               formatter.length(ammo.length),
                               style: const TextStyle(fontSize: 12),
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
                             ),
                           ],
                         ),
@@ -164,6 +183,8 @@ class CollectionAmmoTileBody extends ConsumerWidget {
             color: isPrimary ? cs.primary : null,
             fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
           ),
+          overflow: TextOverflow.visible,
+          softWrap: true,
         ),
       ],
     );

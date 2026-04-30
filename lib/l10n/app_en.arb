@@ -799,5 +799,31 @@
     "checkForUpdatesLabel": "Check for updates",
     "@checkForUpdatesLabel": {"description": "Settings list tile label for the manual update check button"},
     "upToDateMessage": "You're up to date",
-    "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"}
+    "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"},
+
+    "filterTitle": "Filter",
+    "@filterTitle": {"description": "Title of the filter bottom sheet"},
+    "filterResetAction": "Reset",
+    "@filterResetAction": {"description": "Button label to reset all active filters"},
+    "filterWeightMin": "Min",
+    "@filterWeightMin": {"description": "Label for the minimum weight filter input"},
+    "filterWeightMax": "Max",
+    "@filterWeightMax": {"description": "Label for the maximum weight filter input"},
+    "filterApplyAction": "Apply",
+    "@filterApplyAction": {"description": "Button label to apply the current filter selection"},
+
+    "caliberMismatchTitle": "Caliber mismatch",
+    "@caliberMismatchTitle": {"description": "Title of the caliber mismatch action sheet"},
+    "caliberMismatchWarning": "Ammo: {ammo} · Weapon: {weapon}",
+    "@caliberMismatchWarning": {
+        "description": "Subtitle showing ammo vs weapon caliber values in mismatch sheet",
+        "placeholders": {
+            "ammo": {"type": "String"},
+            "weapon": {"type": "String"}
+        }
+    },
+    "updateAmmoCaliberAction": "Update ammo caliber",
+    "@updateAmmoCaliberAction": {"description": "Action sheet option to set the ammo caliber to match the weapon"},
+    "updateWeaponCaliberAction": "Update weapon caliber",
+    "@updateWeaponCaliberAction": {"description": "Action sheet option to set the weapon caliber to match the ammo"}
 }
