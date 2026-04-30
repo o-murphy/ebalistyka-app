@@ -75,6 +75,9 @@ jobs:
 
   build-android-aab:
     needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-aab.yml
     with:
       build_name: ${{ needs.prepare-version.outputs.version }}

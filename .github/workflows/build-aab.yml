@@ -53,6 +53,17 @@ on:
         type: choice
         options: [ release, debug ]
 
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "android/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "scripts/build-android-aab.sh"
+      - ".github/workflows/build-aab.yml"
+
 env:
   FLUTTER_VERSION: "3.41.6"
 
@@ -172,3 +183,17 @@ jobs:
           path: artifacts/
           retention-days: ${{ inputs.retention_days || 30 }}
           if-no-files-found: error
+
+
+  pr-summary:
+    needs: [ build ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Android AAB
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}
