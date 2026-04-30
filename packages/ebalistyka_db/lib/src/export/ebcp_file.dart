@@ -30,7 +30,7 @@ class EbcpFile {
     final bytes = utf8.encode(jsonEncode(toJson()));
     final archive = Archive()
       ..addFile(ArchiveFile(_kEntryName, bytes.length, bytes));
-    return Uint8List.fromList(ZipEncoder().encode(archive));
+    return Uint8List.fromList(ZipEncoder().encode(archive)!);
   }
 
   /// Decodes a .ebcp file. Returns `null` on any format error.
