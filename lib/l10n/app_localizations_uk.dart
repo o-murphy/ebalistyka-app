@@ -847,6 +847,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get windSpeed => 'Швидкість вітру';
 
   @override
+  String get windSpeedWasReset => 'Швидкість вітру було скинуто до 0';
+
+  @override
   String get windDirection => 'Напрямок вітру';
 
   @override
@@ -952,6 +955,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get lookAngle => 'Кут цілі';
+
+  @override
+  String get lookAngleWasReset => 'Кут цілі було скинуто до 0°';
 
   @override
   String get targetRange => 'Відстань до цілі';

@@ -10,6 +10,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,26 +68,45 @@ class QuickActionsPanel extends ConsumerWidget {
     return IconValueButtonRow(
       height: 104,
       items: [
-        IconValueButton(
-          icon: IconDef.windSpeed,
-          value: windDisplay,
-          label: l10n.windSpeed,
-          heroTag: 'qa-wind',
-          onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
+        GestureDetector(
+          child: IconValueButton(
+            icon: IconDef.windSpeed,
+            value: windDisplay,
+            label: l10n.windSpeed,
+            heroTag: 'qa-wind',
+            onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
+          ),
+          onLongPress: () {
+            if (windSpeedCtx.rawValue != 0.0) {
+              windSpeedCtx.onChanged(0.0);
+              showFeedback(context, l10n.windSpeedWasReset);
+            }
+          },
         ),
-        IconValueButton(
-          icon: IconDef.angle,
-          value: lookDisplay,
-          label: l10n.lookAngle,
-          heroTag: 'qa-angle',
-          onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
+        GestureDetector(
+          child: IconValueButton(
+            icon: IconDef.angle,
+            value: lookDisplay,
+            label: l10n.lookAngle,
+            heroTag: 'qa-angle',
+            onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
+          ),
+          onLongPress: () {
+            if (lookAngleCtx.rawValue != 0.0) {
+              lookAngleCtx.onChanged(0.0);
+              showFeedback(context, l10n.lookAngleWasReset);
+            }
+          },
         ),
-        IconValueButton(
-          icon: IconDef.range,
-          value: distDisplay,
-          label: l10n.targetRange,
-          heroTag: 'qa-range',
-          onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
+        GestureDetector(
+          child: IconValueButton(
+            icon: IconDef.range,
+            value: distDisplay,
+            label: l10n.targetRange,
+            heroTag: 'qa-range',
+            onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
+          ),
+          // onLongPress: () => targetRangeCtx.onChanged(0.0),
         ),
       ],
     );

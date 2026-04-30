@@ -844,6 +844,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get windSpeed => 'Wind speed';
 
   @override
+  String get windSpeedWasReset => 'Wind Speed was reset to 0';
+
+  @override
   String get windDirection => 'Wind direction';
 
   @override
@@ -949,6 +952,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lookAngle => 'Look angle';
+
+  @override
+  String get lookAngleWasReset => 'Look angle was reset to 0°';
 
   @override
   String get targetRange => 'Target range';

@@ -291,6 +291,7 @@
     "latitude": "Широта",
     "azimuth": "Азимут",
     "windSpeed": "Швидкість вітру",
+    "windSpeedWasReset": "Швидкість вітру було скинуто до 0",
     "windDirection": "Напрямок вітру",
     "powderSensitivity": "Температурна чутливість пороху",
     "velocityChangePer15C": "Зміна швидкості на 15°C",
@@ -328,6 +329,7 @@
     "noMeasurementsYet": "Немає вимірювань",
 
     "lookAngle": "Кут цілі",
+    "lookAngleWasReset": "Кут цілі було скинуто до 0°",
     "targetRange": "Відстань до цілі",
     "speedOfSound": "Швидкість звуку",
     "velocityAtTarget": "Швидкість біля цілі",

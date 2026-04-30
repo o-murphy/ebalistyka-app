@@ -1742,6 +1742,12 @@ abstract class AppLocalizations {
   /// **'Wind speed'**
   String get windSpeed;
 
+  /// Feedback message on quick action 'Wind Speed' long press
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Speed was reset to 0'**
+  String get windSpeedWasReset;
+
   /// Field label for wind direction
   ///
   /// In en, this message translates to:
@@ -1951,6 +1957,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look angle'**
   String get lookAngle;
+
+  /// Feedback message on quick action 'Look Angle' long press
+  ///
+  /// In en, this message translates to:
+  /// **'Look angle was reset to 0°'**
+  String get lookAngleWasReset;
 
   /// Field label for the distance to the target
   ///

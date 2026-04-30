@@ -565,6 +565,8 @@
     "@azimuth": {"description": "Field label for shooting azimuth (Coriolis effect)"},
     "windSpeed": "Wind speed",
     "@windSpeed": {"description": "Field label for wind speed"},
+    "windSpeedWasReset": "Wind Speed was reset to 0",
+    "@windSpeedWasReset": {"description": "Feedback message on quick action 'Wind Speed' long press"},
     "windDirection": "Wind direction",
     "@windDirection": {"description": "Field label for wind direction"},
     "powderSensitivity": "Powder temperature sensitivity",
@@ -637,6 +639,8 @@
 
     "lookAngle": "Look angle",
     "@lookAngle": {"description": "Field label for the target look angle (inclination / slope)"},
+    "lookAngleWasReset": "Look angle was reset to 0°",
+    "@lookAngleWasReset": {"description": "Feedback message on quick action 'Look Angle' long press"},
     "targetRange": "Target range",
     "@targetRange": {"description": "Field label for the distance to the target"},
     "speedOfSound": "Speed of sound",
