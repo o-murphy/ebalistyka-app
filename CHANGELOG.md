@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 
+## [0.1.6] - 2026-04-30
+
+### Added
+
+- **Collection update checker** — on startup checks the cached collection SHA against the latest GitHub commit (throttled to once per 24 h); Settings → Collection shows current SHA (7 chars) and a manual "Update collection" button; downloaded collection is cached to disk alongside the ObjectBox files; `builtinCollectionProvider` prefers the cached file, falls back to the bundled asset on load failure
+- **Caliber mismatch action sheet** — when selecting or editing ammo whose caliber differs from the active weapon, an action sheet blocks the operation and offers two choices: update ammo caliber to match the weapon, or update the weapon caliber to match the ammo; dismissing without choosing leaves both unchanged and does not apply the ammo
+
+### Fixed
+
+- **Collection update error propagation** — `_fetchLatestCollectionCommit` now throws on non-200 HTTP status instead of silently returning `null` (previously treated as "up to date"); manual check in Settings now shows the actual network error in a snackbar
+- **Caliber mismatch not triggered on ammo select** — `onSelect` in `MyAmmoScreen` previously had no caliber check at all; mismatch action sheet is now shown before the ammo is applied
+- **Caliber mismatch not triggered on ammo edit** — `onEdit` previously passed the ammo's own caliber as the weapon reference caliber, so the mismatch check always exited early; now correctly passes the weapon's caliber
+
+
 ## [0.1.5] - 2026-04-29
 
 ### Added
