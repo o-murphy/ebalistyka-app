@@ -41,6 +41,7 @@ class ActionSheetDivider extends ActionSheetEntry {
 Future<void> showActionSheet(
   BuildContext context, {
   required String title,
+  String? subtitle,
   required List<ActionSheetEntry> entries,
 }) async {
   Future<void> Function()? pending;
@@ -55,9 +56,19 @@ Future<void> showActionSheet(
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, subtitle != null ? 4 : 8),
             child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
           ),
+          if (subtitle != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                subtitle,
+                style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
           const TileDivider(),
           for (final entry in entries)
             switch (entry) {

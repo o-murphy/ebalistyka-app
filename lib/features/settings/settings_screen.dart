@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/core/services/ebcp_service.dart';
@@ -35,6 +36,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _checkingUpdate = false;
+  bool _checkingCollection = false;
 
   Future<void> _checkForUpdates() async {
     setState(() => _checkingUpdate = true);
@@ -48,6 +50,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     } finally {
       if (mounted) setState(() => _checkingUpdate = false);
+    }
+  }
+
+  Future<void> _checkForCollectionUpdate() async {
+    setState(() => _checkingCollection = true);
+    try {
+      final updated = await checkForCollectionUpdate(ref);
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      showFeedback(
+        context,
+        updated
+            ? l10n.collectionUpdatedMessage
+            : l10n.collectionUpToDateMessage,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showFeedback(context, '$e', isError: true);
+    } finally {
+      if (mounted) setState(() => _checkingCollection = false);
     }
   }
 
@@ -184,6 +206,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const TileDivider(),
 
+          // ── Collection ─────────────────────────────────────────────────
+          ListSectionTile(l10n.sectionCollection),
+          ListTile(
+            leading: const Icon(Icons.dataset_outlined),
+            title: Text(l10n.collectionVersionLabel),
+            trailing: Text(
+              ref
+                  .watch(collectionShaProvider)
+                  .when(
+                    data: (sha) => sha != null
+                        ? sha.substring(0, sha.length.clamp(0, 7))
+                        : '—',
+                    loading: () => '…',
+                    error: (_, _) => '?',
+                  ),
+              style: tt.bodySmall,
+            ),
+            dense: true,
+          ),
+          ListTile(
+            leading: _checkingCollection
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.cloud_download_outlined),
+            title: Text(l10n.checkForCollectionUpdatesLabel),
+            dense: true,
+            onTap: _checkingCollection ? null : _checkForCollectionUpdate,
+          ),
+
+          const TileDivider(),
+
           // ── Links ──────────────────────────────────────────────────────
           ListSectionTile(l10n.sectionLinks),
           ListTile(
@@ -191,26 +247,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('GitHub'),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () =>
-                _launchUrl('https://github.com/o-murphy/ebalistyka-app'),
+            onTap: () => _launchUrl(repoUrl),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: Text(l10n.labelPrivacyPolicy),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/PRIVACY_POLICY.md',
-            ),
+            onTap: () => _launchUrl(privacyPolicyUrl),
           ),
           ListTile(
             leading: const Icon(Icons.gavel_outlined),
             title: Text(l10n.labelTermsOfUse),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/TERMS.md',
-            ),
+            onTap: () => _launchUrl(tosUrl),
           ),
 
           const TileDivider(),
@@ -251,9 +302,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: Text(l10n.labelChangelog),
             trailing: const Icon(IconDef.link, size: 16),
             dense: true,
-            onTap: () => _launchUrl(
-              'https://github.com/o-murphy/ebalistyka-app/blob/main/CHANGELOG.md',
-            ),
+            onTap: () => _launchUrl(changelogUrl),
           ),
 
           const SizedBox(height: 16),

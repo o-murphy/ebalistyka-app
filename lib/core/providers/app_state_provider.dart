@@ -170,22 +170,32 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
   void _seed(Owner owner) {
     _store.runInTransaction(TxMode.write, () {
       final sight = Sight()
-        ..name = 'Generic Long-Range Scope'
-        ..sightHeight = Distance.inch(1.5)
+        ..name = 'Nightforce ATACR 7-35x56 F1 ZeroS 0.1 MIL DigIllum PTL'
+        ..vendor = 'Nightforce'
+        ..sightHeight = Distance.inch(1.575)
+        ..minMagnification = 7
+        ..maxMagnification = 35
+        ..focalPlane = FocalPlane.ffp
+        ..verticalClick = 0.1
+        ..horizontalClick = 0.1
+        ..verticalClickUnitValue = Unit.mil
+        ..horizontalClickUnitValue = Unit.mil
         ..owner.target = owner;
       _store.box<Sight>().put(sight);
 
       final ammos = [
         Ammo()
-          ..name = '.338LM UKROP 250GR SMK'
+          ..name = 'Hornady 285GR ELD-M'
+          ..vendor = 'Hornady'
           ..dragType = DragType.g7
-          ..weight = Weight.grain(250.0)
+          ..weight = Weight.grain(285.0)
           ..caliber = Distance.inch(0.338)
-          ..length = Distance.inch(1.555)
-          ..bcG7 = 0.314
-          ..mv = Velocity.mps(888.0)
-          ..mvTemperature = Temperature.celsius(29.0)
-          ..powderSensitivity = Ratio.fraction(0.02)
+          ..length = Distance.inch(1.746)
+          ..bcG7 = 0.397
+          ..bcG1 = 0.791
+          ..mv = Velocity.mps(827.0)
+          ..mvTemperature = Temperature.celsius(15.0)
+          ..powderSensitivity = Ratio.fraction(0.0144)
           ..zeroDistance = Distance.meter(100.0)
           ..owner.target = owner,
       ];
@@ -193,14 +203,17 @@ class AppStateNotifier extends AsyncNotifier<AppState> {
 
       for (var i = 0; i < ammos.length; i++) {
         final weapon = Weapon()
-          ..name = '.338 Lapua Magnum'
+          ..name = 'Cadex Defence Kraken CDX-MC'
+          ..vendor = 'Cadex'
           ..caliber = Distance.inch(0.338)
-          ..twist = Distance.inch(10.0)
+          ..caliberName = '338 Lapua Magnum'
+          ..twist = Distance.inch(9.5)
+          ..barrelLength = Distance.inch(26.0)
           ..owner.target = owner;
         _store.box<Weapon>().put(weapon);
 
         final profile = Profile()
-          ..name = ammos[i].name
+          ..name = weapon.name
           ..weapon.target = weapon
           ..sight.target = sight
           ..ammo.target = ammos[i]

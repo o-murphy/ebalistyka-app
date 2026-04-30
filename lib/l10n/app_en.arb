@@ -565,6 +565,8 @@
     "@azimuth": {"description": "Field label for shooting azimuth (Coriolis effect)"},
     "windSpeed": "Wind speed",
     "@windSpeed": {"description": "Field label for wind speed"},
+    "windSpeedWasReset": "Wind Speed was reset to 0",
+    "@windSpeedWasReset": {"description": "Feedback message on quick action 'Wind Speed' long press"},
     "windDirection": "Wind direction",
     "@windDirection": {"description": "Field label for wind direction"},
     "powderSensitivity": "Powder temperature sensitivity",
@@ -637,6 +639,8 @@
 
     "lookAngle": "Look angle",
     "@lookAngle": {"description": "Field label for the target look angle (inclination / slope)"},
+    "lookAngleWasReset": "Look angle was reset to 0°",
+    "@lookAngleWasReset": {"description": "Feedback message on quick action 'Look Angle' long press"},
     "targetRange": "Target range",
     "@targetRange": {"description": "Field label for the distance to the target"},
     "speedOfSound": "Speed of sound",
@@ -799,5 +803,42 @@
     "checkForUpdatesLabel": "Check for updates",
     "@checkForUpdatesLabel": {"description": "Settings list tile label for the manual update check button"},
     "upToDateMessage": "You're up to date",
-    "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"}
+    "@upToDateMessage": {"description": "SnackBar message shown when no newer version is available"},
+
+    "filterTitle": "Filter",
+    "@filterTitle": {"description": "Title of the filter bottom sheet"},
+    "filterResetAction": "Reset",
+    "@filterResetAction": {"description": "Button label to reset all active filters"},
+    "filterWeightMin": "Min",
+    "@filterWeightMin": {"description": "Label for the minimum weight filter input"},
+    "filterWeightMax": "Max",
+    "@filterWeightMax": {"description": "Label for the maximum weight filter input"},
+    "filterApplyAction": "Apply",
+    "@filterApplyAction": {"description": "Button label to apply the current filter selection"},
+
+    "sectionCollection": "Collection",
+    "@sectionCollection": {"description": "Settings section header for collection management"},
+    "collectionVersionLabel": "Collection version",
+    "@collectionVersionLabel": {"description": "Settings tile label showing the current collection commit SHA"},
+    "checkForCollectionUpdatesLabel": "Update collection",
+    "@checkForCollectionUpdatesLabel": {"description": "Settings tile label for manual collection update check"},
+    "collectionUpdatedMessage": "Collection updated",
+    "@collectionUpdatedMessage": {"description": "Snackbar shown after a successful collection download"},
+    "collectionUpToDateMessage": "Collection is up to date",
+    "@collectionUpToDateMessage": {"description": "Snackbar shown when no collection update is available"},
+
+    "caliberMismatchTitle": "Caliber mismatch",
+    "@caliberMismatchTitle": {"description": "Title of the caliber mismatch action sheet"},
+    "caliberMismatchWarning": "Ammo: {ammo} · Weapon: {weapon}",
+    "@caliberMismatchWarning": {
+        "description": "Subtitle showing ammo vs weapon caliber values in mismatch sheet",
+        "placeholders": {
+            "ammo": {"type": "String"},
+            "weapon": {"type": "String"}
+        }
+    },
+    "updateAmmoCaliberAction": "Update ammo caliber",
+    "@updateAmmoCaliberAction": {"description": "Action sheet option to set the ammo caliber to match the weapon"},
+    "updateWeaponCaliberAction": "Update weapon caliber",
+    "@updateWeaponCaliberAction": {"description": "Action sheet option to set the weapon caliber to match the ammo"}
 }

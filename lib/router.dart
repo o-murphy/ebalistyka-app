@@ -199,10 +199,11 @@ final appRouter = GoRouter(
                     GoRoute(
                       path: 'ammo-edit',
                       builder: (_, state) {
-                        final extra = state.extra as (Ammo?, double?)?;
+                        final extra = state.extra as (Ammo?, double?, int?)?;
                         return AmmoWizardScreen(
                           initial: extra?.$1,
                           caliberInch: extra?.$2,
+                          weaponId: extra?.$3,
                         );
                       },
                       routes: [

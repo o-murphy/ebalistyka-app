@@ -18,19 +18,35 @@ void showUpdateBottomSheet(BuildContext context, GithubRelease release) {
   );
 }
 
-class UpdateListener extends ConsumerWidget {
+/// Wraps the shell widget tree. On first mount:
+///  - listens for app-update notifications (via [updateCheckerProvider])
+///  - fires a throttled collection-update check in the background
+class UpdateListener extends ConsumerStatefulWidget {
   const UpdateListener({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UpdateListener> createState() => _UpdateListenerState();
+}
+
+class _UpdateListenerState extends ConsumerState<UpdateListener> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(checkForCollectionUpdateThrottled(ref));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.listen<AsyncValue<GithubRelease?>>(updateCheckerProvider, (_, next) {
       final release = next.value;
       if (release == null) return;
       showUpdateBottomSheet(context, release);
     });
-    return child;
+    return widget.child;
   }
 }
 

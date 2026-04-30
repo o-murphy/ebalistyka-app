@@ -1742,6 +1742,12 @@ abstract class AppLocalizations {
   /// **'Wind speed'**
   String get windSpeed;
 
+  /// Feedback message on quick action 'Wind Speed' long press
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Speed was reset to 0'**
+  String get windSpeedWasReset;
+
   /// Field label for wind direction
   ///
   /// In en, this message translates to:
@@ -1951,6 +1957,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look angle'**
   String get lookAngle;
+
+  /// Feedback message on quick action 'Look Angle' long press
+  ///
+  /// In en, this message translates to:
+  /// **'Look angle was reset to 0°'**
+  String get lookAngleWasReset;
 
   /// Field label for the distance to the target
   ///
@@ -2413,6 +2425,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re up to date'**
   String get upToDateMessage;
+
+  /// Title of the filter bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filterTitle;
+
+  /// Button label to reset all active filters
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get filterResetAction;
+
+  /// Label for the minimum weight filter input
+  ///
+  /// In en, this message translates to:
+  /// **'Min'**
+  String get filterWeightMin;
+
+  /// Label for the maximum weight filter input
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get filterWeightMax;
+
+  /// Button label to apply the current filter selection
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get filterApplyAction;
+
+  /// Settings section header for collection management
+  ///
+  /// In en, this message translates to:
+  /// **'Collection'**
+  String get sectionCollection;
+
+  /// Settings tile label showing the current collection commit SHA
+  ///
+  /// In en, this message translates to:
+  /// **'Collection version'**
+  String get collectionVersionLabel;
+
+  /// Settings tile label for manual collection update check
+  ///
+  /// In en, this message translates to:
+  /// **'Update collection'**
+  String get checkForCollectionUpdatesLabel;
+
+  /// Snackbar shown after a successful collection download
+  ///
+  /// In en, this message translates to:
+  /// **'Collection updated'**
+  String get collectionUpdatedMessage;
+
+  /// Snackbar shown when no collection update is available
+  ///
+  /// In en, this message translates to:
+  /// **'Collection is up to date'**
+  String get collectionUpToDateMessage;
+
+  /// Title of the caliber mismatch action sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Caliber mismatch'**
+  String get caliberMismatchTitle;
+
+  /// Subtitle showing ammo vs weapon caliber values in mismatch sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo: {ammo} · Weapon: {weapon}'**
+  String caliberMismatchWarning(String ammo, String weapon);
+
+  /// Action sheet option to set the ammo caliber to match the weapon
+  ///
+  /// In en, this message translates to:
+  /// **'Update ammo caliber'**
+  String get updateAmmoCaliberAction;
+
+  /// Action sheet option to set the weapon caliber to match the ammo
+  ///
+  /// In en, this message translates to:
+  /// **'Update weapon caliber'**
+  String get updateWeaponCaliberAction;
 }
 
 class _AppLocalizationsDelegate

@@ -847,6 +847,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get windSpeed => 'Швидкість вітру';
 
   @override
+  String get windSpeedWasReset => 'Швидкість вітру було скинуто до 0';
+
+  @override
   String get windDirection => 'Напрямок вітру';
 
   @override
@@ -952,6 +955,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get lookAngle => 'Кут цілі';
+
+  @override
+  String get lookAngleWasReset => 'Кут цілі було скинуто до 0°';
 
   @override
   String get targetRange => 'Відстань до цілі';
@@ -1196,4 +1202,48 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get upToDateMessage => 'У вас остання версія';
+
+  @override
+  String get filterTitle => 'Фільтр';
+
+  @override
+  String get filterResetAction => 'Скинути';
+
+  @override
+  String get filterWeightMin => 'Мін';
+
+  @override
+  String get filterWeightMax => 'Макс';
+
+  @override
+  String get filterApplyAction => 'Застосувати';
+
+  @override
+  String get sectionCollection => 'Колекція';
+
+  @override
+  String get collectionVersionLabel => 'Версія колекції';
+
+  @override
+  String get checkForCollectionUpdatesLabel => 'Оновити колекцію';
+
+  @override
+  String get collectionUpdatedMessage => 'Колекцію оновлено';
+
+  @override
+  String get collectionUpToDateMessage => 'Колекція актуальна';
+
+  @override
+  String get caliberMismatchTitle => 'Невідповідність калібру';
+
+  @override
+  String caliberMismatchWarning(String ammo, String weapon) {
+    return 'Патрон: $ammo · Зброя: $weapon';
+  }
+
+  @override
+  String get updateAmmoCaliberAction => 'Оновити калібр патрона';
+
+  @override
+  String get updateWeaponCaliberAction => 'Оновити калібр зброї';
 }

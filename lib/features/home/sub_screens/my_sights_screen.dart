@@ -1,6 +1,9 @@
 import 'package:ebalistyka/core/services/ebcp_service.dart';
+import 'package:ebalistyka/core/extensions/sight_extensions.dart';
 import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/providers/filter_providers.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_sight_tile_body.dart';
+import 'package:ebalistyka/features/home/sub_screens/widgets/filter_sheet.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/router.dart';
@@ -109,9 +112,23 @@ class MySightsCollectionScreen extends ConsumerWidget {
         : appState?.activeProfile;
     final selectedId = profile?.sight.targetId;
 
+    final filter = ref.watch(sightFilterProvider);
+
+    final filtered = sights.where((s) {
+      if (filter.vendors.isNotEmpty &&
+          !filter.vendors.contains(s.vendor ?? '')) {
+        return false;
+      }
+      if (filter.focalPlanes.isNotEmpty &&
+          !filter.focalPlanes.contains(s.focalPlane)) {
+        return false;
+      }
+      return true;
+    });
+
     final sorted = [
-      ...sights.where((s) => s.id == selectedId),
-      ...sights.where((s) => s.id != selectedId),
+      ...filtered.where((s) => s.id == selectedId),
+      ...filtered.where((s) => s.id != selectedId),
     ];
 
     return BaseScreen(
@@ -127,8 +144,11 @@ class MySightsCollectionScreen extends ConsumerWidget {
       ),
       actions: [
         IconButton(
-          onPressed: () => debugPrint('Filter button (will call bottom toast)'),
-          icon: Icon(IconDef.filter),
+          onPressed: () => showSightFilterSheet(context, allItems: sights),
+          icon: Badge(
+            isLabelVisible: filter.isActive,
+            child: Icon(IconDef.filter),
+          ),
         ),
       ],
       body: appStateAsync.when(

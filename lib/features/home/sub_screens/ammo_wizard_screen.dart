@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:ebalistyka/core/providers/app_state_provider.dart';
+import 'package:ebalistyka/core/extensions/weapon_extensions.dart';
 import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:bclibc_ffi/unit.dart';
@@ -30,7 +33,12 @@ import 'package:go_router/go_router.dart';
 /// Reusable ammo form: null = create new, non-null = edit existing.
 /// Returns Ammo? via context.pop(ammo).
 class AmmoWizardScreen extends ConsumerStatefulWidget {
-  const AmmoWizardScreen({this.initial, this.caliberInch, super.key});
+  const AmmoWizardScreen({
+    this.initial,
+    this.caliberInch,
+    this.weaponId,
+    super.key,
+  });
 
   /// Pre-fill the form with an existing ammo (edit mode).
   /// null = new empty ammo.
@@ -40,6 +48,11 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
   /// In edit mode the caliber is taken from [initial].
   /// Displayed readonly — never entered manually.
   final double? caliberInch;
+
+  /// ID of the weapon associated with this ammo session.
+  /// When set and a caliber mismatch exists, the action sheet offers an
+  /// option to update the weapon caliber instead of the ammo.
+  final int? weaponId;
 
   @override
   ConsumerState<AmmoWizardScreen> createState() => _AmmoWizardScreenState();
@@ -80,7 +93,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        _scheduleCaliberMismatchToast(l10n: l10n);
+        _scheduleCaliberMismatchSheet(l10n: l10n);
       }
     });
   }
@@ -92,21 +105,28 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     super.dispose();
   }
 
-  void _scheduleCaliberMismatchToast({required AppLocalizations l10n}) {
+  void _scheduleCaliberMismatchSheet({required AppLocalizations l10n}) {
     final weaponCaliber = widget.caliberInch;
     final ammoCaliber = widget.initial?.caliber.in_(Unit.inch);
     if (weaponCaliber == null || ammoCaliber == null) return;
     if ((weaponCaliber - ammoCaliber).abs() < 0.0001) return;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.caliberMatchingError),
-          duration: const Duration(seconds: 6),
-          action: SnackBarAction(
-            label: l10n.updateAction,
-            onPressed: () => ref
+      final formatter = ref.read(unitFormatterProvider);
+      final ammoStr = formatter.diameter(Distance.inch(ammoCaliber));
+      final weaponStr = formatter.diameter(Distance.inch(weaponCaliber));
+
+      await showActionSheet(
+        context,
+        title: l10n.caliberMismatchTitle,
+        subtitle: l10n.caliberMismatchWarning(ammoStr, weaponStr),
+        entries: [
+          ActionSheetItem(
+            icon: IconDef.ammo,
+            title: l10n.updateAmmoCaliberAction,
+            subtitle: '$ammoStr → $weaponStr',
+            onTap: () async => ref
                 .read(_provider.notifier)
                 .updateCaliberRaw(
                   Distance.inch(
@@ -114,7 +134,24 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                   ).in_(FC.projectileDiameter.rawUnit),
                 ),
           ),
-        ),
+          if (widget.weaponId != null)
+            ActionSheetItem(
+              icon: IconDef.weapon,
+              title: l10n.updateWeaponCaliberAction,
+              subtitle: '$weaponStr → $ammoStr',
+              onTap: () async {
+                final weapon = ref
+                    .read(appStateProvider)
+                    .value
+                    ?.weapons
+                    .where((w) => w.id == widget.weaponId)
+                    .firstOrNull;
+                if (weapon == null) return;
+                weapon.caliber = Distance.inch(ammoCaliber);
+                await ref.read(appStateProvider.notifier).saveWeapon(weapon);
+              },
+            ),
+        ],
       );
     });
   }

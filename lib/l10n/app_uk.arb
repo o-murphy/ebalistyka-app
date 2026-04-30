@@ -291,6 +291,7 @@
     "latitude": "Широта",
     "azimuth": "Азимут",
     "windSpeed": "Швидкість вітру",
+    "windSpeedWasReset": "Швидкість вітру було скинуто до 0",
     "windDirection": "Напрямок вітру",
     "powderSensitivity": "Температурна чутливість пороху",
     "velocityChangePer15C": "Зміна швидкості на 15°C",
@@ -328,6 +329,7 @@
     "noMeasurementsYet": "Немає вимірювань",
 
     "lookAngle": "Кут цілі",
+    "lookAngleWasReset": "Кут цілі було скинуто до 0°",
     "targetRange": "Відстань до цілі",
     "speedOfSound": "Швидкість звуку",
     "velocityAtTarget": "Швидкість біля цілі",
@@ -413,5 +415,22 @@
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
     "checkForUpdatesLabel": "Перевірити оновлення",
-    "upToDateMessage": "У вас остання версія"
+    "upToDateMessage": "У вас остання версія",
+
+    "filterTitle": "Фільтр",
+    "filterResetAction": "Скинути",
+    "filterWeightMin": "Мін",
+    "filterWeightMax": "Макс",
+    "filterApplyAction": "Застосувати",
+
+    "sectionCollection": "Колекція",
+    "collectionVersionLabel": "Версія колекції",
+    "checkForCollectionUpdatesLabel": "Оновити колекцію",
+    "collectionUpdatedMessage": "Колекцію оновлено",
+    "collectionUpToDateMessage": "Колекція актуальна",
+
+    "caliberMismatchTitle": "Невідповідність калібру",
+    "caliberMismatchWarning": "Патрон: {ammo} · Зброя: {weapon}",
+    "updateAmmoCaliberAction": "Оновити калібр патрона",
+    "updateWeaponCaliberAction": "Оновити калібр зброї"
 }

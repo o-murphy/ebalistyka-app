@@ -35,7 +35,8 @@ class ShotConditionsNotifier extends AsyncNotifier<ShootingConditions> {
     if (existing != null) return existing;
     final cond = ShootingConditions()
       ..owner.target = owner
-      ..humidityFrac = 0.5;
+      ..humidityFrac = 0.5
+      ..distanceMeter = 450.0;
     _store.box<ShootingConditions>().put(cond);
     return cond;
   }
