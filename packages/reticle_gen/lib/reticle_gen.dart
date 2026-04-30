@@ -293,8 +293,27 @@ class MilReticleSVGCanvas {
     double x2,
     double y2,
     String stroke,
-    double strokeWidth,
-  ) {
+    double strokeWidth, {
+    String? strokeLineJoin,
+    String? strokeLineCap,
+    double? dashLen,
+    double? gapLen,
+  }) {
+    double? actualDash;
+    double? actualGap;
+
+    if (dashLen != null && gapLen != null) {
+      if (dashLen <= 0 && gapLen <= 0) {
+        _warn('line', 'dashLen and gapLen are both <= 0');
+        // Можна або повернутись, або встановити значення за замовчуванням
+        actualDash = 0.001;
+        actualGap = 0.001;
+      } else {
+        actualDash = dashLen <= 0 ? 0.001 : dashLen;
+        actualGap = gapLen <= 0 ? 0.001 : gapLen;
+      }
+    }
+
     _target.children.add(
       XmlElement(XmlName('line'), [
         XmlAttribute(XmlName('id'), nextId('line')),
@@ -304,6 +323,15 @@ class MilReticleSVGCanvas {
         XmlAttribute(XmlName('y2'), _fmtNum(y2)),
         XmlAttribute(XmlName('stroke'), stroke),
         XmlAttribute(XmlName('stroke-width'), _fmtNum(strokeWidth)),
+        if (strokeLineJoin != null)
+          XmlAttribute(XmlName('stroke-linejoin'), strokeLineJoin),
+        if (strokeLineCap != null)
+          XmlAttribute(XmlName('stroke-linecap'), strokeLineCap),
+        if (actualDash != null && actualGap != null)
+          XmlAttribute(
+            XmlName('stroke-dasharray'),
+            '${_fmtNum(actualDash)} ${_fmtNum(actualGap)}',
+          ),
       ]),
     );
   }
@@ -521,10 +549,21 @@ class MilReticleSVGCanvas {
     double x1,
     double x2,
     String stroke,
-    double strokeWidth,
-  ) {
+    double strokeWidth, {
+    String? strokeLineJoin = 'miter',
+    String? strokeLineCap = 'miter',
+  }) {
     _hint('hline');
-    line(x1, y, x2, y, stroke, strokeWidth);
+    line(
+      x1,
+      y,
+      x2,
+      y,
+      stroke,
+      strokeWidth,
+      strokeLineJoin: strokeLineJoin,
+      strokeLineCap: strokeLineCap,
+    );
   }
 
   void vLine(
@@ -532,10 +571,21 @@ class MilReticleSVGCanvas {
     double y1,
     double y2,
     String stroke,
-    double strokeWidth,
-  ) {
+    double strokeWidth, {
+    String? strokeLineJoin = 'miter',
+    String? strokeLineCap = 'miter',
+  }) {
     _hint('vline');
-    line(x, y1, x, y2, stroke, strokeWidth);
+    line(
+      x,
+      y1,
+      x,
+      y2,
+      stroke,
+      strokeWidth,
+      strokeLineCap: strokeLineCap,
+      strokeLineJoin: strokeLineJoin,
+    );
   }
 
   void dot(
@@ -631,33 +681,17 @@ class MilReticleSVGCanvas {
     String stroke,
     double strokeWidth,
   ) {
-    if (dashLen <= 0 && gapLen <= 0) {
-      _warn('dashLine', 'dashLen and gapLen are both <= 0');
-      return;
-    }
-    final dx = x2 - x1;
-    final dy = y2 - y1;
-    final length = math.sqrt(dx * dx + dy * dy);
-    if (length < 1e-9) return;
-    final ux = dx / length;
-    final uy = dy / length;
-    final pb = PathBuilder();
-    bool drawing = true;
-    double t = 0;
-    while (t < length - 1e-9) {
-      final seg = drawing ? dashLen : gapLen;
-      final endT = math.min(t + seg, length);
-      if (drawing) {
-        pb.moveTo(x1 + ux * t, y1 + uy * t);
-        pb.lineTo(x1 + ux * endT, y1 + uy * endT);
-      }
-      t = endT;
-      drawing = !drawing;
-    }
-    if (!pb.isEmpty) {
-      _hint('dashline');
-      path(pb.d, stroke: stroke, strokeWidth: strokeWidth);
-    }
+    _hint('dashline');
+    return line(
+      x1,
+      y1,
+      x2,
+      y2,
+      stroke,
+      strokeWidth,
+      dashLen: dashLen,
+      gapLen: gapLen,
+    );
   }
 
   void hDashLine(
