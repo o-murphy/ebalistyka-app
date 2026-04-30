@@ -1,7 +1,7 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 
-bool get isDesktop {
-  if (kIsWeb) return false;
-  return Platform.isWindows || Platform.isLinux || Platform.isMacOS;
-}
+bool get isDesktop =>
+    defaultTargetPlatform == TargetPlatform.windows ||
+    defaultTargetPlatform == TargetPlatform.linux ||
+    defaultTargetPlatform == TargetPlatform.macOS;

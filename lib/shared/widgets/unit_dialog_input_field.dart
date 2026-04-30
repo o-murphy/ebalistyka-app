@@ -18,6 +18,7 @@ class UnitDialogInputField extends StatelessWidget {
     this.symbol,
     this.allowNull = false,
     this.onClear,
+    this.autofocus = true,
   });
 
   final TextEditingController controller;
@@ -28,6 +29,7 @@ class UnitDialogInputField extends StatelessWidget {
   final String? symbol;
   final bool allowNull;
   final VoidCallback? onClear;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class UnitDialogInputField extends StatelessWidget {
 
     return TextField(
       controller: controller,
-      autofocus: true,
+      autofocus: autofocus,
       keyboardType: const TextInputType.numberWithOptions(
         decimal: true,
         signed: true,

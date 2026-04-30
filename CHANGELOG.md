@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Wind indicator — tap-to-set animation** — tapping anywhere on the ring animates the marker along the shorter arc to the tapped position (`easeOutCubic`, 380 ms) then commits; drag continues to follow the finger instantly; double-tap resets to North (0°); uses `Listener.onPointerDown` for zero-latency response (avoids GestureDetector disambiguation delay)
+- **`UnitDialogInputField.autofocus` parameter** — exposes autofocus as an optional parameter (default `true`); `UnitHybridPicker` passes `autofocus: isDesktop` so the keyboard does not auto-open on mobile when the hybrid picker dialog is shown
+- **`isDesktop` helper** — migrated from `dart:io` `Platform` checks to `defaultTargetPlatform` (no native-platform dependency, works in tests)
+
+### Fixed
+
 - **Collection update checker** — on startup checks the cached collection SHA against the latest GitHub commit (throttled to once per 24 h); Settings → Collection shows current SHA (7 chars) and a manual "Update collection" button; downloaded collection is cached to disk alongside the ObjectBox files; `builtinCollectionProvider` prefers the cached file, falls back to the bundled asset on load failure
 - **Caliber mismatch action sheet** — when selecting or editing ammo whose caliber differs from the active weapon, an action sheet blocks the operation and offers two choices: update ammo caliber to match the weapon, or update the weapon caliber to match the ammo; dismissing without choosing leaves both unchanged and does not apply the ammo
 

@@ -33,16 +33,18 @@ class _WindIndicatorState extends State<WindIndicator>
   void initState() {
     super.initState();
     angle = widget.initialAngle;
-    _snapController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 380),
-    )..addListener(() {
-        setState(() {
-          angle = _snapStartAngle +
-              _snapDelta *
-                  Curves.easeOutCubic.transform(_snapController.value);
+    _snapController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 380),
+        )..addListener(() {
+          setState(() {
+            angle =
+                _snapStartAngle +
+                _snapDelta *
+                    Curves.easeOutCubic.transform(_snapController.value);
+          });
         });
-      });
   }
 
   @override
@@ -65,15 +67,21 @@ class _WindIndicatorState extends State<WindIndicator>
     _snapStartAngle = angle;
     double delta = targetAngle - angle;
     // Normalize to shorter arc [-π, π]
-    while (delta > pi) { delta -= 2 * pi; }
-    while (delta < -pi) { delta += 2 * pi; }
+    while (delta > pi) {
+      delta -= 2 * pi;
+    }
+    while (delta < -pi) {
+      delta += 2 * pi;
+    }
     _snapDelta = delta;
-    unawaited(_snapController.forward(from: 0).whenComplete(() {
-      if (mounted) {
-        setState(() => angle = targetAngle);
-        _commit();
-      }
-    }));
+    unawaited(
+      _snapController.forward(from: 0).whenComplete(() {
+        if (mounted) {
+          setState(() => angle = targetAngle);
+          _commit();
+        }
+      }),
+    );
   }
 
   double _angleFromPosition(Offset localPosition, Size size) {
@@ -134,7 +142,9 @@ class _WindIndicatorState extends State<WindIndicator>
             onDoubleTap: _reset,
             onPanStart: (details) {
               _snapController.stop();
-              setState(() => angle = _angleFromPosition(details.localPosition, size));
+              setState(
+                () => angle = _angleFromPosition(details.localPosition, size),
+              );
             },
             onPanUpdate: (details) => _updateAngle(details.localPosition, size),
             onPanEnd: (_) => _commit(),
@@ -144,7 +154,9 @@ class _WindIndicatorState extends State<WindIndicator>
                 color: Theme.of(context).colorScheme.onSurface,
                 primaryColor: Theme.of(context).colorScheme.primary,
                 markerFillColor: Theme.of(context).colorScheme.primaryContainer,
-                markerIconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                markerIconColor: Theme.of(
+                  context,
+                ).colorScheme.onPrimaryContainer,
                 l10n: l10n,
               ),
               child: const SizedBox.expand(),

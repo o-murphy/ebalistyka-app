@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bclibc_ffi/unit.dart';
+import 'package:ebalistyka/shared/helpers/is_desktop.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
@@ -189,6 +190,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
             symbol: sym,
             allowNull: ctx.allowNull == true,
             onClear: _clearField,
+            autofocus: isDesktop,
           ),
 
           const SizedBox(height: 4),
