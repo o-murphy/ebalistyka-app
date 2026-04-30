@@ -812,6 +812,17 @@
     "filterApplyAction": "Apply",
     "@filterApplyAction": {"description": "Button label to apply the current filter selection"},
 
+    "sectionCollection": "Collection",
+    "@sectionCollection": {"description": "Settings section header for collection management"},
+    "collectionVersionLabel": "Collection version",
+    "@collectionVersionLabel": {"description": "Settings tile label showing the current collection commit SHA"},
+    "checkForCollectionUpdatesLabel": "Update collection",
+    "@checkForCollectionUpdatesLabel": {"description": "Settings tile label for manual collection update check"},
+    "collectionUpdatedMessage": "Collection updated",
+    "@collectionUpdatedMessage": {"description": "Snackbar shown after a successful collection download"},
+    "collectionUpToDateMessage": "Collection is up to date",
+    "@collectionUpToDateMessage": {"description": "Snackbar shown when no collection update is available"},
+
     "caliberMismatchTitle": "Caliber mismatch",
     "@caliberMismatchTitle": {"description": "Title of the caliber mismatch action sheet"},
     "caliberMismatchWarning": "Ammo: {ammo} · Weapon: {weapon}",

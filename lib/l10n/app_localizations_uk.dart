@@ -1213,6 +1213,21 @@ class AppLocalizationsUk extends AppLocalizations {
   String get filterApplyAction => 'Застосувати';
 
   @override
+  String get sectionCollection => 'Колекція';
+
+  @override
+  String get collectionVersionLabel => 'Версія колекції';
+
+  @override
+  String get checkForCollectionUpdatesLabel => 'Оновити колекцію';
+
+  @override
+  String get collectionUpdatedMessage => 'Колекцію оновлено';
+
+  @override
+  String get collectionUpToDateMessage => 'Колекція актуальна';
+
+  @override
   String get caliberMismatchTitle => 'Невідповідність калібру';
 
   @override

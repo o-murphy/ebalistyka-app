@@ -1209,6 +1209,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterApplyAction => 'Apply';
 
   @override
+  String get sectionCollection => 'Collection';
+
+  @override
+  String get collectionVersionLabel => 'Collection version';
+
+  @override
+  String get checkForCollectionUpdatesLabel => 'Update collection';
+
+  @override
+  String get collectionUpdatedMessage => 'Collection updated';
+
+  @override
+  String get collectionUpToDateMessage => 'Collection is up to date';
+
+  @override
   String get caliberMismatchTitle => 'Caliber mismatch';
 
   @override

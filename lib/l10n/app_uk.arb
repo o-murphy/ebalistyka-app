@@ -421,6 +421,12 @@
     "filterWeightMax": "Макс",
     "filterApplyAction": "Застосувати",
 
+    "sectionCollection": "Колекція",
+    "collectionVersionLabel": "Версія колекції",
+    "checkForCollectionUpdatesLabel": "Оновити колекцію",
+    "collectionUpdatedMessage": "Колекцію оновлено",
+    "collectionUpToDateMessage": "Колекція актуальна",
+
     "caliberMismatchTitle": "Невідповідність калібру",
     "caliberMismatchWarning": "Патрон: {ammo} · Зброя: {weapon}",
     "updateAmmoCaliberAction": "Оновити калібр патрона",

@@ -2444,6 +2444,36 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get filterApplyAction;
 
+  /// Settings section header for collection management
+  ///
+  /// In en, this message translates to:
+  /// **'Collection'**
+  String get sectionCollection;
+
+  /// Settings tile label showing the current collection commit SHA
+  ///
+  /// In en, this message translates to:
+  /// **'Collection version'**
+  String get collectionVersionLabel;
+
+  /// Settings tile label for manual collection update check
+  ///
+  /// In en, this message translates to:
+  /// **'Update collection'**
+  String get checkForCollectionUpdatesLabel;
+
+  /// Snackbar shown after a successful collection download
+  ///
+  /// In en, this message translates to:
+  /// **'Collection updated'**
+  String get collectionUpdatedMessage;
+
+  /// Snackbar shown when no collection update is available
+  ///
+  /// In en, this message translates to:
+  /// **'Collection is up to date'**
+  String get collectionUpToDateMessage;
+
   /// Title of the caliber mismatch action sheet
   ///
   /// In en, this message translates to:

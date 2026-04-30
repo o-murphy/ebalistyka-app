@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ebalistyka/core/collection/collection_parser.dart';
+import 'package:ebalistyka/core/providers/builtin_collection_provider.dart';
 import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+
+// ── App update ────────────────────────────────────────────────────────────────
 
 class GithubRelease {
   final String tagName;
@@ -24,8 +28,6 @@ class GithubRelease {
   });
 }
 
-/// Hits the GitHub API and returns the latest [GithubRelease] if it is newer
-/// than [currentVersion], or null if already up-to-date / on error.
 Future<GithubRelease?> _fetchIfNewer(
   String currentVersion, {
   required bool isPlayStore,
@@ -59,8 +61,7 @@ Future<GithubRelease?> _fetchIfNewer(
   );
 }
 
-/// Hits the GitHub API unconditionally and resets the 24 h throttle timer.
-/// Use this for manual checks.
+/// Manual app update check. Resets the 24 h throttle timer.
 Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
@@ -81,7 +82,7 @@ Future<GithubRelease?> checkForUpdate() async {
   }
 }
 
-/// Auto-check: skips the API call if it was already done within [_checkIntervalHours].
+/// Auto-check: skips the API call if already done within [checkIntervalHours].
 final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
   try {
     final appSupport = await getApplicationSupportDirectory();
@@ -130,17 +131,14 @@ List<int>? _parseSemver(String v) {
   return nums.cast<int>();
 }
 
+// ── Collection update ─────────────────────────────────────────────────────────
+
 class CollectionCommit {
   final String sha;
-
   const CollectionCommit({required this.sha});
 }
 
-Future<CollectionCommit?> _fetchIfNewerCommit(
-  String currentVersion, {
-  required bool isPlayStore,
-  required String packageName,
-}) async {
+Future<CollectionCommit?> _fetchLatestCollectionCommit() async {
   final response = await http
       .get(
         Uri.parse(lastCommitHashUrl),
@@ -148,55 +146,99 @@ Future<CollectionCommit?> _fetchIfNewerCommit(
       )
       .timeout(const Duration(seconds: 10));
 
-  if (response.statusCode != 200) return null;
+  if (response.statusCode != 200) {
+    throw Exception(
+      'Failed to fetch collection commits: ${response.statusCode}',
+    );
+  }
 
   final data = jsonDecode(response.body) as List<dynamic>;
   if (data.isEmpty) return null;
 
-  // Правильний спосіб отримати SHA коміту
-  final firstCommit = data[0] as Map<String, dynamic>;
-  final sha = firstCommit['sha'] as String? ?? '';
-
+  final sha = (data[0] as Map<String, dynamic>)['sha'] as String? ?? '';
+  if (sha.isEmpty) return null;
   return CollectionCommit(sha: sha);
 }
 
 Future<String> _fetchCollection(CollectionCommit commit) async {
-  // Використовуємо константи для формування URL
-  final String rawUrl = rawCollectionUrlPattern.replaceFirst('%s', commit.sha);
-  final String apiUrl = apiCollectionUrlPattern.replaceFirst('%s', commit.sha);
+  final rawUrl = rawCollectionUrlPattern.replaceFirst('%s', commit.sha);
+  final apiUrl = apiCollectionUrlPattern.replaceFirst('%s', commit.sha);
 
-  // Використовуємо raw URL як основний (швидше та простіше)
-  // API URL залишаємо як резервний варіант або для особливих випадків
+  final response = await http
+      .get(Uri.parse(rawUrl), headers: {'Accept': 'application/json'})
+      .timeout(const Duration(seconds: 20));
 
+  if (response.statusCode == 200) return response.body;
+
+  debugPrint('Raw URL failed (${response.statusCode}), trying API…');
+  final apiResponse = await http
+      .get(
+        Uri.parse(apiUrl),
+        headers: {'Accept': 'application/vnd.github.raw+json'},
+      )
+      .timeout(const Duration(seconds: 20));
+
+  if (apiResponse.statusCode != 200) {
+    throw Exception('Failed to fetch collection: ${apiResponse.statusCode}');
+  }
+  return apiResponse.body;
+}
+
+/// Downloads a new collection if the remote SHA differs from the cached one.
+/// Saves to disk and invalidates [builtinCollectionProvider] on success.
+/// Returns true if updated, false if already up to date.
+/// Throws on network / parse errors — caller is responsible for showing UI.
+Future<bool> checkForCollectionUpdate(WidgetRef ref) async {
+  final appSupport = await getApplicationSupportDirectory();
+  final shaFile = File('${appSupport.path}/$lastCollectionSha');
+
+  final savedSha = await shaFile.exists()
+      ? (await shaFile.readAsString()).trim()
+      : null;
+
+  final commit = await _fetchLatestCollectionCommit();
+  if (commit == null) return false;
+  if (commit.sha == savedSha) return false;
+
+  final json = await _fetchCollection(commit);
+  CollectionParser.parse(json); // validate before caching; throws if invalid
+
+  await File('${appSupport.path}/$collectionFile').writeAsString(json);
+  await shaFile.writeAsString(commit.sha);
+  ref.invalidate(builtinCollectionProvider);
+  return true;
+}
+
+/// Throttled collection update: skips if checked within [checkIntervalHours].
+/// Silently swallows errors — use [checkForCollectionUpdate] for manual checks.
+Future<void> checkForCollectionUpdateThrottled(WidgetRef ref) async {
   try {
-    // Спроба 1: Raw content (без авторизації, швидше)
-    final response = await http
-        .get(Uri.parse(rawUrl), headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 10));
+    final appSupport = await getApplicationSupportDirectory();
+    final checkFile = File('${appSupport.path}/$lastCollectionCheckFile');
 
-    if (response.statusCode == 200) {
-      return response.body;
-    }
-
-    // Спроба 2: Якщо raw URL не спрацював, пробуємо API з raw header
-    debugPrint('Raw URL failed with ${response.statusCode}, trying API URL...');
-
-    final apiResponse = await http
-        .get(
-          Uri.parse(apiUrl),
-          headers: {'Accept': 'application/vnd.github.raw+json'},
-        )
-        .timeout(const Duration(seconds: 10));
-
-    if (apiResponse.statusCode != 200) {
-      throw Exception(
-        'Failed to fetch collection via API: ${apiResponse.statusCode}',
+    if (await checkFile.exists()) {
+      final lastCheck = DateTime.tryParse(
+        (await checkFile.readAsString()).trim(),
       );
+      if (lastCheck != null &&
+          DateTime.now().difference(lastCheck).inHours < checkIntervalHours) {
+        return;
+      }
     }
 
-    return apiResponse.body;
+    await checkFile.writeAsString(DateTime.now().toIso8601String());
+    await checkForCollectionUpdate(ref);
   } catch (e) {
-    debugPrint('Error fetching collection: $e');
-    rethrow;
+    debugPrint('Collection auto-check failed: $e');
   }
 }
+
+/// The locally cached collection commit SHA, or null if using the bundled asset.
+/// Re-evaluates whenever the collection is reloaded.
+final collectionShaProvider = FutureProvider<String?>((ref) async {
+  ref.watch(builtinCollectionProvider);
+  final appSupport = await getApplicationSupportDirectory();
+  final shaFile = File('${appSupport.path}/$lastCollectionSha');
+  if (!await shaFile.exists()) return null;
+  return (await shaFile.readAsString()).trim();
+});
