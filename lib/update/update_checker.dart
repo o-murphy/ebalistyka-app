@@ -72,7 +72,7 @@ Future<GithubRelease?> checkForUpdate() async {
     );
     final appSupport = await getApplicationSupportDirectory();
     await File(
-      '${appSupport.path}/$lastCheckFile',
+      '${appSupport.path}/$lastUpdateCheckFile',
     ).writeAsString(DateTime.now().toIso8601String());
     return result;
   } catch (e) {
@@ -85,7 +85,7 @@ Future<GithubRelease?> checkForUpdate() async {
 final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
   try {
     final appSupport = await getApplicationSupportDirectory();
-    final checkFile = File('${appSupport.path}/$lastCheckFile');
+    final checkFile = File('${appSupport.path}/$lastUpdateCheckFile');
 
     if (await checkFile.exists()) {
       final lastCheck = DateTime.tryParse(
@@ -136,8 +136,6 @@ class CollectionCommit {
   const CollectionCommit({required this.sha});
 }
 
-/// Hits the GitHub API and returns the latest [GithubRelease] if it is newer
-/// than [currentVersion], or null if already up-to-date / on error.
 Future<CollectionCommit?> _fetchIfNewerCommit(
   String currentVersion, {
   required bool isPlayStore,
@@ -152,7 +150,53 @@ Future<CollectionCommit?> _fetchIfNewerCommit(
 
   if (response.statusCode != 200) return null;
 
-  final data = jsonDecode(response.body) as List<Map<String, dynamic>>;
-  final sha = (data[0]['tag_name'] as String?) ?? '';
+  final data = jsonDecode(response.body) as List<dynamic>;
+  if (data.isEmpty) return null;
+
+  // Правильний спосіб отримати SHA коміту
+  final firstCommit = data[0] as Map<String, dynamic>;
+  final sha = firstCommit['sha'] as String? ?? '';
+
   return CollectionCommit(sha: sha);
+}
+
+Future<String> _fetchCollection(CollectionCommit commit) async {
+  // Використовуємо константи для формування URL
+  final String rawUrl = rawCollectionUrlPattern.replaceFirst('%s', commit.sha);
+  final String apiUrl = apiCollectionUrlPattern.replaceFirst('%s', commit.sha);
+
+  // Використовуємо raw URL як основний (швидше та простіше)
+  // API URL залишаємо як резервний варіант або для особливих випадків
+
+  try {
+    // Спроба 1: Raw content (без авторизації, швидше)
+    final response = await http
+        .get(Uri.parse(rawUrl), headers: {'Accept': 'application/json'})
+        .timeout(const Duration(seconds: 10));
+
+    if (response.statusCode == 200) {
+      return response.body;
+    }
+
+    // Спроба 2: Якщо raw URL не спрацював, пробуємо API з raw header
+    debugPrint('Raw URL failed with ${response.statusCode}, trying API URL...');
+
+    final apiResponse = await http
+        .get(
+          Uri.parse(apiUrl),
+          headers: {'Accept': 'application/vnd.github.raw+json'},
+        )
+        .timeout(const Duration(seconds: 10));
+
+    if (apiResponse.statusCode != 200) {
+      throw Exception(
+        'Failed to fetch collection via API: ${apiResponse.statusCode}',
+      );
+    }
+
+    return apiResponse.body;
+  } catch (e) {
+    debugPrint('Error fetching collection: $e');
+    rethrow;
+  }
 }
