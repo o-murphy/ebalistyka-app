@@ -238,6 +238,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnEnergy => 'Energy';
 
   @override
+  String get columnElevation => 'Elevation';
+
+  @override
   String get tablesConfigSectionDistance => 'Range';
 
   @override

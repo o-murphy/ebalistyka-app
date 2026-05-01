@@ -81,6 +81,7 @@
     "columnMach": "Мах",
     "columnDrag": "Драг",
     "columnEnergy": "Енергія",
+    "columnElevation": "Перевищення",
 
     "tablesConfigSectionDistance": "Відстань",
     "tablesConfigDistanceStart": "Початкова відстань",

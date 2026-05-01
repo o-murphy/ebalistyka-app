@@ -157,7 +157,8 @@
     "@columnDrag": {"description": "Trajectory table column header for drag coefficient"},
     "columnEnergy": "Energy",
     "@columnEnergy": {"description": "Trajectory table column header for kinetic energy"},
-
+    "columnElevation": "Elevation",
+    "@columnElevation": {"description": "Trajectory table column header for elevation"},
     "tablesConfigSectionDistance": "Range",
     "@tablesConfigSectionDistance": {"description": "Tables config section header for distance/range settings"},
     "tablesConfigDistanceStart": "Start distance",

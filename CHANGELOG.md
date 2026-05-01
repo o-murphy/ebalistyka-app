@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+#### Localization
+- **UnitPickerButton localization** - uses `l10n` via `.localizedSymbol`
+- **buildHomeTable localization** - uses `l10n` via `.localizedSymbol`
+- **HomeScreen localization** - buildHomeTable, FormattedTableData use `l10n` via `.localizedSymbol`
+- **UnitFormatterImpl.time** - uses `l10n`
+
+### Added
+- **New ARB key for localization** - added `columnElevation` key
+- **APMR-FFP-IR-MIL reticle** - Pattern for ARGOS Sight
+
+### Changed
+- **UnitPickerButton** - InkWell replaced with a TextButton
+
 
 ## [0.1.7] - 2026-04-30
 

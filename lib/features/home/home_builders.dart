@@ -236,32 +236,42 @@ FormattedTableData buildHomeTable(
   final trajRowDefs =
       <(String, String, double? Function(bclibc.TrajectoryData), int)>[
         (
-          'Height',
+          l10n.columnHeight,
           dropUnit.localizedSymbol(l10n),
           (p) => p.height.in_(dropUnit),
           FC.drop.accuracyFor(dropUnit),
         ),
-        ('Elev', 'MIL', (p) => p.dropAngle.in_(Unit.mil), milAcc),
-        ('Elev', 'MOA', (p) => p.dropAngle.in_(Unit.moa), moaAcc),
         (
-          'Windage',
+          l10n.columnElevation,
+          Unit.mil.localizedSymbol(l10n),
+          (p) => p.dropAngle.in_(Unit.mil),
+          milAcc,
+        ),
+        (
+          l10n.columnElevation,
+          Unit.moa.localizedSymbol(l10n),
+          (p) => p.dropAngle.in_(Unit.moa),
+          moaAcc,
+        ),
+        (
+          l10n.columnWindAngle,
           dropUnit.localizedSymbol(l10n),
           (p) => p.windage.in_(dropUnit),
           FC.drop.accuracyFor(dropUnit),
         ),
         (
-          'Velocity',
+          l10n.columnVelocity,
           velUnit.localizedSymbol(l10n),
           (p) => p.velocity.in_(velUnit),
           FC.velocity.accuracyFor(velUnit),
         ),
         (
-          'Energy',
+          l10n.labelEnergy,
           energyUnit.localizedSymbol(l10n),
           (p) => p.energy.in_(energyUnit),
           FC.energy.accuracyFor(energyUnit),
         ),
-        ('Time', 's', (p) => p.time, 3),
+        (l10n.columnTime, l10n.unitSecondSym, (p) => p.time, 3),
       ];
 
   // Drop (hold) rows — barrelElevationForTarget(d) - zeroElevRad for each
@@ -313,7 +323,7 @@ FormattedTableData buildHomeTable(
   return FormattedTableData(
     distanceHeaders: distHeaders,
     rows: rows,
-    distanceUnit: distUnit.localizedSymbol(l10n),
+    distanceUnit: '${l10n.columnRange}, ${distUnit.localizedSymbol(l10n)}',
   );
 }
 
