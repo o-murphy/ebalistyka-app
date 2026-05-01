@@ -103,6 +103,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final ctx = widget.pickerContext;
     final l10n = AppLocalizations.of(context)!;
     final sym = ctx.symbol ?? ctx.displayUnit.localizedSymbol(l10n);
@@ -114,7 +115,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       constraints: BoxConstraints(maxWidth: 300),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(
@@ -122,9 +123,7 @@ class _UnitEditDialogContentState extends State<_UnitEditDialogContent> {
         children: [
           Text(
             ctx.label,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: tt.titleMedium?.copyWith(color: cs.onSurfaceVariant),
           ),
 
           const SizedBox(height: 12),

@@ -149,6 +149,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final ctx = widget.pickerContext;
     final sym =
         ctx.symbol ??
@@ -163,7 +164,7 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       constraints: BoxConstraints(maxWidth: 300),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(
@@ -172,8 +173,8 @@ class _UnitHybridPickerState extends State<UnitHybridPicker> {
           // Title
           Text(
             ctx.label,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            style: tt.titleMedium?.copyWith(
+              color: cs.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),

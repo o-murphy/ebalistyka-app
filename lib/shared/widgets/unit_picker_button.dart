@@ -26,6 +26,8 @@ class UnitPickerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     return SizedBox(
       width: width,
       child: InkWell(
@@ -47,8 +49,8 @@ class UnitPickerButton extends StatelessWidget {
               Expanded(
                 child: Text(
                   current.symbol,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+                  style: tt.bodyMedium?.copyWith(
+                    color: cs.primary,
                     fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,

@@ -51,16 +51,16 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
 
     final isActive = widget.profileId == widget.activeProfileId;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
 
     return Card(
-      color: colorScheme.surfaceContainer,
+      color: cs.surfaceContainer,
       clipBehavior: Clip.antiAlias,
       elevation: isActive ? 0 : 3,
       shape: isActive
           ? RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: colorScheme.primaryContainer, width: 3),
+              side: BorderSide(color: cs.primaryContainer, width: 3),
             )
           : null,
       child: Column(
@@ -73,7 +73,7 @@ class _ProfileCardState extends ConsumerState<ProfileCard> {
                   Center(
                     child: Text(
                       data.name,
-                      style: theme.textTheme.titleLarge,
+                      style: tt.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -148,12 +148,12 @@ class _ProfileActionsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     if (isComplete) {
       return ColoredBox(
-        color: colorScheme.primaryContainer,
+        color: cs.primaryContainer,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: FilledButton(
@@ -170,7 +170,7 @@ class _ProfileActionsBar extends StatelessWidget {
     }
 
     return ColoredBox(
-      color: colorScheme.errorContainer,
+      color: cs.errorContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: SizedBox(
@@ -178,7 +178,7 @@ class _ProfileActionsBar extends StatelessWidget {
           child: Text(
             l10n.selectAmmoSightHint,
             textAlign: TextAlign.center,
-            style: TextStyle(color: colorScheme.onErrorContainer),
+            style: TextStyle(color: cs.onErrorContainer),
           ),
         ),
       ),

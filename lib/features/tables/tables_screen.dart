@@ -63,8 +63,8 @@ class TablesScreen extends ConsumerWidget {
     final details = ref.read(detailsTableMvProvider);
 
     // Determine whether the application uses a dark theme
-    final brightness = Theme.of(context).brightness;
-    final isDarkMode = brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     final l10n = ref.read(appLocalizationsProvider);
 

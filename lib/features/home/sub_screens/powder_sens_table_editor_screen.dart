@@ -174,7 +174,9 @@ class _SensitivityPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
+
     final isError = sensitivity == null;
 
     final String label;
@@ -187,9 +189,7 @@ class _SensitivityPreview extends StatelessWidget {
     }
 
     return Card(
-      color: isError
-          ? theme.colorScheme.errorContainer
-          : theme.colorScheme.primaryContainer,
+      color: isError ? cs.errorContainer : cs.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
@@ -200,19 +200,19 @@ class _SensitivityPreview extends StatelessWidget {
                 children: [
                   Text(
                     l10n.calculatedSensitivity,
-                    style: theme.textTheme.labelMedium?.copyWith(
+                    style: tt.labelMedium?.copyWith(
                       color: isError
-                          ? theme.colorScheme.onErrorContainer
-                          : theme.colorScheme.onPrimaryContainer,
+                          ? cs.onErrorContainer
+                          : cs.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     label,
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: tt.titleMedium?.copyWith(
                       color: isError
-                          ? theme.colorScheme.onErrorContainer
-                          : theme.colorScheme.onPrimaryContainer,
+                          ? cs.onErrorContainer
+                          : cs.onPrimaryContainer,
                       fontFamily: isError ? null : 'monospace',
                     ),
                   ),

@@ -28,9 +28,12 @@ class TempControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
+
     final sym = displayUnit.localizedSymbol(l10n);
+
     final inputAcc = _fc.accuracy;
 
     final UnitPickerContext tempCtx = UnitPickerContext(
@@ -60,12 +63,12 @@ class TempControl extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${_display.toStringAsFixed(inputAcc)} $sym',
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: tt.headlineSmall,
                 textAlign: TextAlign.center,
               ),
               Text(
                 l10n.temperature,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: tt.bodySmall?.copyWith(
                   color: cs.onSurface.withValues(alpha: 0.55),
                 ),
               ),

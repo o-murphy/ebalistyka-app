@@ -449,6 +449,8 @@ class _FilterSheetLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -459,7 +461,7 @@ class _FilterSheetLayout extends StatelessWidget {
           width: 36,
           height: 4,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.outlineVariant,
+            color: cs.outlineVariant,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -467,12 +469,7 @@ class _FilterSheetLayout extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 8, 0),
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
+              Expanded(child: Text(title, style: tt.titleMedium)),
               TextButton(
                 onPressed: canReset ? onReset : null,
                 child: Text(l10n.filterResetAction),

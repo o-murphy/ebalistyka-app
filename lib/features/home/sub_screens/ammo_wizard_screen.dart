@@ -502,6 +502,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 class _AmmoPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
@@ -511,18 +512,9 @@ class _AmmoPlaceholder extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  IconDef.ammo,
-                  size: 40,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
+                Icon(IconDef.ammo, size: 40, color: cs.outlineVariant),
                 const SizedBox(height: 8),
-                Text(
-                  'Ammo image',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                  ),
-                ),
+                Text('Ammo image', style: TextStyle(color: cs.outlineVariant)),
               ],
             ),
           ),
@@ -579,23 +571,21 @@ class _BcSection extends StatelessWidget {
         if (useMulti)
           Builder(
             builder: (context) {
-              final theme = Theme.of(context);
+              final cs = Theme.of(context).colorScheme;
               final isEmpty = multiTable == null || multiTable!.isEmpty;
               final count = multiTable?.length ?? 0;
               return ListTile(
-                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                tileColor: isEmpty ? cs.tertiaryContainer : null,
                 leading: Icon(
                   IconDef.dragModel,
-                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                  color: isEmpty ? cs.tertiary : null,
                 ),
                 title: Text(l10n.editMultiBcTableTitle(dtName)),
                 subtitle: Text(
                   isEmpty
                       ? l10n.requiredFieldError
                       : '$count breakpoint${count == 1 ? '' : 's'}',
-                  style: isEmpty
-                      ? TextStyle(color: theme.colorScheme.error)
-                      : null,
+                  style: isEmpty ? TextStyle(color: cs.error) : null,
                 ),
                 trailing: const Icon(IconDef.chevronRight),
                 dense: true,
@@ -674,24 +664,22 @@ class _DragModelSection extends StatelessWidget {
         if (st.dragType == DragType.custom)
           Builder(
             builder: (context) {
-              final theme = Theme.of(context);
+              final cs = Theme.of(context).colorScheme;
               final isEmpty =
                   st.customDragTable == null || st.customDragTable!.isEmpty;
               final count = st.customDragTable?.length ?? 0;
               return ListTile(
-                tileColor: isEmpty ? theme.colorScheme.tertiaryContainer : null,
+                tileColor: isEmpty ? cs.tertiaryContainer : null,
                 leading: Icon(
                   IconDef.dragModel,
-                  color: isEmpty ? theme.colorScheme.tertiary : null,
+                  color: isEmpty ? cs.tertiary : null,
                 ),
                 title: Text(l10n.editCustomDragTableTitle),
                 subtitle: Text(
                   isEmpty
                       ? l10n.requiredFieldError
                       : '$count point${count == 1 ? '' : 's'}',
-                  style: isEmpty
-                      ? TextStyle(color: theme.colorScheme.error)
-                      : null,
+                  style: isEmpty ? TextStyle(color: cs.error) : null,
                 ),
                 trailing: const Icon(IconDef.chevronRight),
                 dense: true,

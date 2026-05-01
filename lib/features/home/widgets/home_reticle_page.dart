@@ -32,8 +32,8 @@ class HomeReticlePage extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final tt = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
 
     final rs = vmState.reticleState;
 

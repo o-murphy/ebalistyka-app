@@ -170,6 +170,8 @@ class _AdjUnitPickerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
     final symbol = current?.localizedSymbol(l10n) ?? l10n.nClicks(1);
     return SizedBox(
@@ -185,8 +187,8 @@ class _AdjUnitPickerButton extends StatelessWidget {
               Expanded(
                 child: Text(
                   symbol,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+                  style: tt.bodyMedium?.copyWith(
+                    color: cs.primary,
                     fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,

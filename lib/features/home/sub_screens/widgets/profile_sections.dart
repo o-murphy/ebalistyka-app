@@ -19,16 +19,16 @@ class ProfileWeaponSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final twistDirIcon = data.rightHanded ? IconDef.twistR : IconDef.twistL;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final twistDirIcon = data.rightHanded ? IconDef.twistR : IconDef.twistL;
 
     return Column(
       children: [
         ListSectionTile(
           l10n.weapon,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
+          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.weapon),
@@ -68,7 +68,7 @@ class ProfileAmmoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -77,7 +77,7 @@ class ProfileAmmoSection extends StatelessWidget {
         ListSectionTile(
           l10n.ammo,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
+          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.grain),
@@ -128,7 +128,7 @@ class ProfileSightSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     final fpIcon = switch (data.focalPlane) {
@@ -143,7 +143,7 @@ class ProfileSightSection extends StatelessWidget {
         ListSectionTile(
           l10n.sight,
           onTap: onEdit,
-          trailing: Icon(IconDef.edit, size: 16, color: colorScheme.primary),
+          trailing: Icon(IconDef.edit, size: 16, color: cs.primary),
         ),
         ListTile(
           leading: const Icon(IconDef.sight),

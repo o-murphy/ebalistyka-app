@@ -97,8 +97,8 @@ class _SvgAssetTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final svgAsync = watchSvg(ref, assetId);
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -152,11 +152,7 @@ class _SvgAssetTile extends ConsumerWidget {
                       color: cs.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.check,
-                      color: cs.onPrimary,
-                      size: 16,
-                    ),
+                    child: Icon(Icons.check, color: cs.onPrimary, size: 16),
                   ),
                 ),
             ],

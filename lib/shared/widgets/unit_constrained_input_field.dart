@@ -137,7 +137,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final tt = Theme.of(context).textTheme;
 
     return TextField(
       controller: _controller,
@@ -149,7 +149,7 @@ class _ConstrainedUnitInputFieldState extends State<ConstrainedUnitInputField> {
         signed: true,
       ),
       textInputAction: TextInputAction.done,
-      style: theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
+      style: tt.bodyMedium?.copyWith(fontFamily: 'monospace'),
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hintText,

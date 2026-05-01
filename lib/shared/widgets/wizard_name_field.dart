@@ -7,13 +7,14 @@ class WizardNameField extends StatelessWidget {
     this.onChanged,
     super.key,
   });
-
   final TextEditingController controller;
   final String label;
   final VoidCallback? onChanged;
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: TextField(
@@ -22,7 +23,7 @@ class WizardNameField extends StatelessWidget {
           labelText: label,
           errorText: controller.text.trim().isEmpty ? 'Name is required' : null,
           labelStyle: controller.text.trim().isEmpty
-              ? TextStyle(color: Theme.of(context).colorScheme.error)
+              ? TextStyle(color: cs.error)
               : null,
         ),
         textCapitalization: TextCapitalization.words,

@@ -42,7 +42,8 @@ class EmptyStatePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final color = type == EmptyStateType.error ? cs.error : cs.outline;
 
     return Center(
@@ -53,9 +54,7 @@ class EmptyStatePlaceholder extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             message ?? type.defaultMessage,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: color),
+            style: tt.bodyMedium?.copyWith(color: color),
             textAlign: TextAlign.center,
           ),
         ],

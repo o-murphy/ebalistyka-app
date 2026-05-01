@@ -198,6 +198,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
 class _SightPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -208,17 +209,11 @@ class _SightPlaceholder extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  IconDef.sight,
-                  size: 40,
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
+                Icon(IconDef.sight, size: 40, color: cs.outlineVariant),
                 const SizedBox(height: 8),
                 Text(
                   l10n.sightImage,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                  ),
+                  style: TextStyle(color: cs.outlineVariant),
                 ),
               ],
             ),
