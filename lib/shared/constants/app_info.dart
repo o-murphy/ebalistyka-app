@@ -16,6 +16,7 @@ const String privacyPolicyUrl = '$repoBlobUrl/PRIVACY_POLICY.md';
 const String tosUrl = '$repoBlobUrl/TERMS.md';
 const String changelogUrl = '$repoBlobUrl/CHANGELOG.md';
 const String releasesUrl = '$remoteApiUrl/repos/$repoSlug/releases/latest';
+const String allReleasesUrl = '$remoteApiUrl/repos/$repoSlug/releases';
 const String googlePlayinstallerSource = 'com.android.vending';
 const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';

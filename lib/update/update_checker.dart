@@ -28,6 +28,20 @@ class GithubRelease {
   });
 }
 
+class _ParsedRelease {
+  final String tagName;
+  final String htmlUrl;
+  final bool prerelease;
+  final List<int> versionNumbers;
+
+  _ParsedRelease({
+    required this.tagName,
+    required this.htmlUrl,
+    required this.prerelease,
+    required this.versionNumbers,
+  });
+}
+
 Future<GithubRelease?> _fetchIfNewer(
   String currentVersion, {
   required bool isPlayStore,
@@ -35,27 +49,58 @@ Future<GithubRelease?> _fetchIfNewer(
 }) async {
   final response = await http
       .get(
-        Uri.parse(releasesUrl),
+        Uri.parse(allReleasesUrl),
         headers: {'Accept': 'application/vnd.github+json'},
       )
       .timeout(const Duration(seconds: 10));
 
   if (response.statusCode != 200) return null;
 
-  final data = jsonDecode(response.body) as Map<String, dynamic>;
-  final tagName = (data['tag_name'] as String?) ?? '';
-  final htmlUrl = (data['html_url'] as String?) ?? '';
-  final prerelease = (data['prerelease'] as bool?) ?? false;
+  final List<dynamic> releases = jsonDecode(response.body);
 
-  final latestVersion = tagName.startsWith('v')
-      ? tagName.substring(1)
-      : tagName;
+  final parsedReleases = <_ParsedRelease>[];
+  for (final release in releases) {
+    final isPrerelease = release['prerelease'] as bool? ?? false;
+
+    if (!kDebugMode && isPrerelease) continue;
+
+    final tagName = release['tag_name'] as String? ?? '';
+    final versionStr = tagName.startsWith('v') ? tagName.substring(1) : tagName;
+    final versionNumbers = _parseSemver(versionStr);
+
+    if (versionNumbers != null) {
+      parsedReleases.add(
+        _ParsedRelease(
+          tagName: tagName,
+          htmlUrl: release['html_url'] as String? ?? '',
+          prerelease: isPrerelease,
+          versionNumbers: versionNumbers,
+        ),
+      );
+    }
+  }
+
+  parsedReleases.sort((a, b) {
+    for (var i = 0; i < 3; i++) {
+      if (a.versionNumbers[i] != b.versionNumbers[i]) {
+        return b.versionNumbers[i].compareTo(a.versionNumbers[i]);
+      }
+    }
+    return 0;
+  });
+
+  if (parsedReleases.isEmpty) return null;
+
+  final latestRelease = parsedReleases.first;
+  final latestVersion =
+      '${latestRelease.versionNumbers[0]}.${latestRelease.versionNumbers[1]}.${latestRelease.versionNumbers[2]}';
+
   if (!_isNewer(latestVersion, currentVersion)) return null;
 
   return GithubRelease(
-    tagName: tagName,
-    htmlUrl: htmlUrl,
-    prerelease: prerelease,
+    tagName: latestRelease.tagName,
+    htmlUrl: latestRelease.htmlUrl,
+    prerelease: latestRelease.prerelease,
     isPlayStore: isPlayStore,
     packageName: packageName,
   );
