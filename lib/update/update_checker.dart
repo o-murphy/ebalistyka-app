@@ -12,6 +12,84 @@ import 'package:path_provider/path_provider.dart';
 
 // ── App update ────────────────────────────────────────────────────────────────
 
+class IsFirstRun {
+  final bool isFirstRun;
+  final bool isNewVersion;
+  const IsFirstRun(this.isFirstRun, this.isNewVersion);
+}
+
+Future<IsFirstRun> checkIsFirstRun() async {
+  return IsFirstRun(await _checkIsFirstRun(), await _checkIsNewVersion());
+}
+
+Future<bool> _checkIsFirstRun() async {
+  final appSupport = await getApplicationSupportDirectory();
+  final file = File('${appSupport.path}/$isFirstRunFile');
+
+  debugPrint('===== CHECK IS FIRST RUN =====');
+  debugPrint('Path: ${file.path}');
+
+  final exists = await file.exists();
+  debugPrint('Exists: $exists');
+
+  if (exists) {
+    final contents = await file.readAsString();
+    debugPrint('Raw contents: "$contents"');
+    debugPrint('Contents trimmed: "${contents.trim()}"');
+    debugPrint('Is equal to "1"? ${contents.trim() == "1"}');
+
+    if (contents.trim() == '1') {
+      debugPrint('→ RETURN false (NOT first run)');
+      return false;
+    } else {
+      debugPrint('→ Content is not "1", writing "1" and RETURN true');
+      await file.writeAsString('1');
+      return true;
+    }
+  } else {
+    debugPrint('→ File not exists, creating with "1" and RETURN true');
+    await file.writeAsString('1');
+    return true;
+  }
+}
+
+Future<bool> _checkIsNewVersion() async {
+  final info = await PackageInfo.fromPlatform();
+  final currentVersion = info.version;
+
+  final appSupport = await getApplicationSupportDirectory();
+  final file = File('${appSupport.path}/$versionFile');
+
+  debugPrint('===== CHECK IS NEW VERSION =====');
+  debugPrint('Path: ${file.path}');
+  debugPrint('Current version: $currentVersion');
+
+  final exists = await file.exists();
+  debugPrint('Exists: $exists');
+
+  if (exists) {
+    final savedVersion = await file.readAsString();
+    debugPrint('Saved version: "$savedVersion"');
+
+    if (savedVersion.trim() == currentVersion) {
+      debugPrint('→ Version matches, NOT first run');
+      return false; // версія співпадає -> не перший запуск
+    } else {
+      debugPrint(
+        '→ Version mismatch (saved: "$savedVersion", current: "$currentVersion"), updating and RETURN true',
+      );
+      await file.writeAsString(currentVersion);
+      return true;
+    }
+  } else {
+    debugPrint(
+      '→ File not exists, creating with version "$currentVersion" and RETURN true',
+    );
+    await file.writeAsString(currentVersion);
+    return true;
+  }
+}
+
 class GithubRelease {
   final String tagName;
   final String htmlUrl;

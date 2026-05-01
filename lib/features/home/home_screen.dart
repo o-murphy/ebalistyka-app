@@ -25,6 +25,7 @@ import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
 import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
 import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/update/update_checker.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +50,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     TweenSequenceItem(tween: ConstantTween(1.0), weight: 30),
     TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 60),
   ]).animate(_calcDoneCtrl);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkIsFirstRun());
+  }
+
+  Future<void> _checkIsFirstRun() async {
+    final isFirstRun = await checkIsFirstRun();
+    if (!mounted) return;
+    if (isFirstRun.isFirstRun) {
+      await _showFirstStartDialog();
+    } else {}
+    if (isFirstRun.isNewVersion) {
+      await _showNewVersionDialog();
+    } else {}
+  }
+
+  Future<void> _showFirstStartDialog() async {
+    debugPrint('help dialog yet not implemented');
+  }
+
+  Future<void> _showNewVersionDialog() async {
+    debugPrint('changelog dialog yet not implemented');
+  }
 
   @override
   void dispose() {
