@@ -120,7 +120,7 @@ class _SvgAssetTile extends ConsumerWidget {
                 child: svgAsync.when(
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
-                  error: (_, __) => const SizedBox.shrink(),
+                  error: (_, _) => const SizedBox.shrink(),
                   data: (svg) => _buildPreview(svg, cs),
                 ),
               ),

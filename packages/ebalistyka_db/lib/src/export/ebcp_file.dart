@@ -31,7 +31,7 @@ class EbcpFile {
     final archive = Archive()
       ..addFile(ArchiveFile(_kEntryName, bytes.length, bytes));
     final encoded = ZipEncoder().encode(archive);
-    if (encoded == null || encoded.isEmpty) {
+    if (encoded.isEmpty) {
       throw StateError('Failed to encode EBCP archive');
     }
     return Uint8List.fromList(encoded);

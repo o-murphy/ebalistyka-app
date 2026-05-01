@@ -248,7 +248,7 @@ void main() {
     });
 
     test('contains Elev row', () {
-      expect(state.tableData.rows.any((r) => r.label == 'Elev'), isTrue);
+      expect(state.tableData.rows.any((r) => r.label == 'Elevation'), isTrue);
     });
 
     test('contains Drop row', () {
@@ -256,7 +256,7 @@ void main() {
     });
 
     test('contains Windage row', () {
-      expect(state.tableData.rows.any((r) => r.label == 'Windage'), isTrue);
+      expect(state.tableData.rows.any((r) => r.label == 'Wind°'), isTrue);
     });
 
     test('contains Velocity row', () {

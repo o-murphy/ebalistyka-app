@@ -14,7 +14,6 @@ class UnitPickerButton extends StatelessWidget {
     this.onChanged,
     this.options,
     this.label = 'Select Unit',
-    this.width = 80,
     super.key,
   });
 
@@ -22,7 +21,6 @@ class UnitPickerButton extends StatelessWidget {
   final ValueChanged<Unit>? onChanged;
   final List<Unit>? options;
   final String label;
-  final double width;
 
   @override
   Widget build(BuildContext context) {

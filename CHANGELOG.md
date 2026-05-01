@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - **UnitPickerButton** - Replaced `InkWell` with `TextButton` for better accessibility and Material Design compliance
-
+- **Updated `_buildHomeTable` tests** - to match new behaviour 
 
 ## v0.1.7 (2026-04-30)
 [![GitHub release][GitHubReleaseBadge]][v0.1.7]
