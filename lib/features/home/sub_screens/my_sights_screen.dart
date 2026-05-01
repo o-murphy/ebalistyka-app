@@ -102,8 +102,11 @@ class MySightsCollectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appStateAsync = ref.watch(appStateProvider);
-    final appState = ref.watch(appStateProvider).value;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
+
+    final appState = appStateAsync.value;
+
     final sights = appState?.sights ?? [];
     final profile = profileId != null
         ? appState?.profiles
@@ -137,8 +140,8 @@ class MySightsCollectionScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: () => _showAddSightSheet(context, ref),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: cs.primary,
+        foregroundColor: cs.onPrimary,
         elevation: 6,
         child: const Icon(IconDef.add),
       ),

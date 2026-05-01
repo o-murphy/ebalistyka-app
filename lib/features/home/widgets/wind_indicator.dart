@@ -119,6 +119,7 @@ class _WindIndicatorState extends State<WindIndicator>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -151,12 +152,10 @@ class _WindIndicatorState extends State<WindIndicator>
             child: CustomPaint(
               painter: WindPainter(
                 angle: angle,
-                color: Theme.of(context).colorScheme.onSurface,
-                primaryColor: Theme.of(context).colorScheme.primary,
-                markerFillColor: Theme.of(context).colorScheme.primaryContainer,
-                markerIconColor: Theme.of(
-                  context,
-                ).colorScheme.onPrimaryContainer,
+                color: cs.onSurface,
+                primaryColor: cs.primary,
+                markerFillColor: cs.primaryContainer,
+                markerIconColor: cs.onPrimaryContainer,
                 l10n: l10n,
               ),
               child: const SizedBox.expand(),

@@ -14,6 +14,7 @@ class CollectionSightTileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     final verticalClick = formatter.click(
@@ -34,11 +35,7 @@ class CollectionSightTileBody extends ConsumerWidget {
             width: double.infinity,
             height: double.infinity,
             child: Center(
-              child: Icon(
-                IconDef.sight,
-                size: 50,
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
+              child: Icon(IconDef.sight, size: 50, color: cs.outlineVariant),
             ),
           ),
           // Content

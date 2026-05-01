@@ -59,6 +59,8 @@ class _UpdateSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
     final version = release.tagName.startsWith('v')
         ? release.tagName.substring(1)
@@ -75,7 +77,7 @@ class _UpdateSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: cs.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -83,7 +85,7 @@ class _UpdateSheet extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               l10n.updateAvailable(version),
-              style: Theme.of(context).textTheme.titleMedium,
+              style: tt.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

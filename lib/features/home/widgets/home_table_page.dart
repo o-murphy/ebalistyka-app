@@ -34,25 +34,22 @@ class HomeTablePage extends ConsumerWidget {
     }
 
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final hdrStyle = theme.textTheme.bodyMedium?.copyWith(
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+
+    final hdrStyle = tt.bodyMedium?.copyWith(
       fontWeight: FontWeight.w600,
       color: cs.onSurface,
     );
-    final cellStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontFamily: 'monospace',
-    );
+    final cellStyle = tt.bodyMedium?.copyWith(fontFamily: 'monospace');
     final targetCellStyle = cellStyle?.copyWith(
       color: cs.primary,
       fontWeight: FontWeight.w700,
     );
-    final labelStyle = theme.textTheme.bodySmall?.copyWith(
+    final labelStyle = tt.bodySmall?.copyWith(
       fontWeight: FontWeight.w600,
       color: cs.onSurface,
     );
-    final labelSubStyle = theme.textTheme.labelSmall?.copyWith(
-      color: cs.onSurfaceVariant,
-    );
+    final labelSubStyle = tt.labelSmall?.copyWith(color: cs.onSurfaceVariant);
 
     Widget cell(String text, TextStyle? style, {Color? bg}) => TableCell(
       verticalAlignment: TableCellVerticalAlignment.fill,

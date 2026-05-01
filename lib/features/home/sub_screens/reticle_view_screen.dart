@@ -317,13 +317,14 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     HomeUiReady vmState,
     double targetSizeMil,
   ) {
+    final cs = Theme.of(context).colorScheme;
     return SizedBox(
       width: double.infinity,
       height: size,
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: cs.surfaceContainer,
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(32),
             bottomRight: Radius.circular(32),

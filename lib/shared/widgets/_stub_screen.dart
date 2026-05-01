@@ -9,13 +9,14 @@ class StubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return BaseScreen(
       title: title,
       isSubscreen: true,
       body: Center(
         child: Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: tt.titleMedium?.copyWith(
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.4),

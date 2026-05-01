@@ -159,7 +159,7 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     return SizedBox(
       height: 240,
       child: Stack(
@@ -168,9 +168,7 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
             child: Container(
               height: 44,
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(
-                  alpha: 0.3,
-                ),
+                color: cs.primaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
@@ -189,10 +187,10 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
                 return Center(
                   child: Text(
                     _helper.formatDisplayValue(_displayValues[index]),
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: tt.titleLarge?.copyWith(
                       color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                          ? cs.primary
+                          : cs.onSurface.withValues(alpha: 0.4),
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,

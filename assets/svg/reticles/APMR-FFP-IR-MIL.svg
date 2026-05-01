@@ -1,0 +1,270 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="-15 -15 30 30" shape-rendering="geometricPrecision">
+  <clipPath id="clip0">
+    <circle id="circle-0" cx="0" cy="0" r="18" fill="transparent"/>
+  </clipPath>
+  <g id="clipgroup-0" clip-path="url(#clip0)">
+    <rect id="fill-0" x="-15" y="-15" width="30" height="30" fill="transparent"/>
+    <line id="hline-0" x1="-9" y1="0" x2="9" y2="0" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <line id="vline-0" x1="0" y1="-9" x2="0" y2="9" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="vruler-0" d="M -0.2 -9 L 0.2 -9 M -0.2 -8 L 0.2 -8 M -0.2 -7 L 0.2 -7 M -0.2 -6 L 0.2 -6 M -0.2 -5 L 0.2 -5 M -0.2 -4 L 0.2 -4 M -0.2 -3 L 0.2 -3 M -0.2 -2 L 0.2 -2 M -0.2 -1 L 0.2 -1 M -0.2 0 L 0.2 0 M -0.2 1 L 0.2 1 M -0.2 2 L 0.2 2 M -0.2 3 L 0.2 3 M -0.2 4 L 0.2 4 M -0.2 5 L 0.2 5 M -0.2 6 L 0.2 6 M -0.2 7 L 0.2 7 M -0.2 8 L 0.2 8 M -0.2 9 L 0.2 9" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="vruler-1" d="M 0 -9 L 0.2 -9 M 0 -8.5 L 0.2 -8.5 M 0 -8 L 0.2 -8 M 0 -7.5 L 0.2 -7.5 M 0 -7 L 0.2 -7 M 0 -6.5 L 0.2 -6.5 M 0 -6 L 0.2 -6 M 0 -5.5 L 0.2 -5.5 M 0 -5 L 0.2 -5 M 0 -4.5 L 0.2 -4.5 M 0 -4 L 0.2 -4 M 0 -3.5 L 0.2 -3.5 M 0 -3 L 0.2 -3 M 0 -2.5 L 0.2 -2.5 M 0 -2 L 0.2 -2 M 0 -1.5 L 0.2 -1.5 M 0 -1 L 0.2 -1 M 0 -0.5 L 0.2 -0.5 M 0 0 L 0.2 0 M 0 0.5 L 0.2 0.5 M 0 1 L 0.2 1 M 0 1.5 L 0.2 1.5 M 0 2 L 0.2 2 M 0 2.5 L 0.2 2.5 M 0 3 L 0.2 3 M 0 3.5 L 0.2 3.5 M 0 4 L 0.2 4 M 0 4.5 L 0.2 4.5 M 0 5 L 0.2 5 M 0 5.5 L 0.2 5.5 M 0 6 L 0.2 6 M 0 6.5 L 0.2 6.5 M 0 7 L 0.2 7" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="vruler-2" d="M -0.15 7 L 0.15 7 M -0.15 7.2 L 0.15 7.2 M -0.15 7.4 L 0.15 7.4 M -0.15 7.6 L 0.15 7.6 M -0.15 7.8 L 0.15 7.8 M -0.15 8 L 0.15 8 M -0.15 8.2 L 0.15 8.2 M -0.15 8.4 L 0.15 8.4 M -0.15 8.6 L 0.15 8.6 M -0.15 8.8 L 0.15 8.8 M -0.15 9 L 0.15 9" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="hruler-0" d="M -9 -0.2 L -9 0.2 M -8 -0.2 L -8 0.2 M -7 -0.2 L -7 0.2 M -6 -0.2 L -6 0.2 M -5 -0.2 L -5 0.2 M -4 -0.2 L -4 0.2 M -3 -0.2 L -3 0.2 M -2 -0.2 L -2 0.2 M -1 -0.2 L -1 0.2 M 0 -0.2 L 0 0.2 M 1 -0.2 L 1 0.2 M 2 -0.2 L 2 0.2 M 3 -0.2 L 3 0.2 M 4 -0.2 L 4 0.2 M 5 -0.2 L 5 0.2 M 6 -0.2 L 6 0.2 M 7 -0.2 L 7 0.2 M 8 -0.2 L 8 0.2 M 9 -0.2 L 9 0.2" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="hruler-1" d="M -7 -0.2 L -7 0 M -6.5 -0.2 L -6.5 0 M -6 -0.2 L -6 0 M -5.5 -0.2 L -5.5 0 M -5 -0.2 L -5 0 M -4.5 -0.2 L -4.5 0 M -4 -0.2 L -4 0 M -3.5 -0.2 L -3.5 0 M -3 -0.2 L -3 0 M -2.5 -0.2 L -2.5 0 M -2 -0.2 L -2 0 M -1.5 -0.2 L -1.5 0 M -1 -0.2 L -1 0 M -0.5 -0.2 L -0.5 0 M 0 -0.2 L 0 0 M 0.5 -0.2 L 0.5 0 M 1 -0.2 L 1 0 M 1.5 -0.2 L 1.5 0 M 2 -0.2 L 2 0 M 2.5 -0.2 L 2.5 0 M 3 -0.2 L 3 0 M 3.5 -0.2 L 3.5 0 M 4 -0.2 L 4 0 M 4.5 -0.2 L 4.5 0 M 5 -0.2 L 5 0 M 5.5 -0.2 L 5.5 0 M 6 -0.2 L 6 0 M 6.5 -0.2 L 6.5 0 M 7 -0.2 L 7 0" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="hruler-2" d="M 7 -0.15 L 7 0.15 M 7.2 -0.15 L 7.2 0.15 M 7.4 -0.15 L 7.4 0.15 M 7.6 -0.15 L 7.6 0.15 M 7.8 -0.15 L 7.8 0.15 M 8 -0.15 L 8 0.15 M 8.2 -0.15 L 8.2 0.15 M 8.4 -0.15 L 8.4 0.15 M 8.6 -0.15 L 8.6 0.15 M 8.8 -0.15 L 8.8 0.15 M 9 -0.15 L 9 0.15" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="hruler-3" d="M -9 -0.15 L -9 0.15 M -8.8 -0.15 L -8.8 0.15 M -8.6 -0.15 L -8.6 0.15 M -8.4 -0.15 L -8.4 0.15 M -8.2 -0.15 L -8.2 0.15 M -8 -0.15 L -8 0.15 M -7.8 -0.15 L -7.8 0.15 M -7.6 -0.15 L -7.6 0.15 M -7.4 -0.15 L -7.4 0.15 M -7.2 -0.15 L -7.2 0.15 M -7 -0.15 L -7 0.15" fill="none" stroke="red" stroke-width="0.02" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="label-0" d="M 1.89 0.55 L 2.11 0.55 M 2.11 0.55 L 2.11 0.75 M 1.89 0.75 L 2.11 0.75 M 1.89 0.75 L 1.89 0.95 M 1.89 0.95 L 2.11 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-1" d="M -2.11 0.55 L -1.89 0.55 M -1.89 0.55 L -1.89 0.75 M -2.11 0.75 L -1.89 0.75 M -2.11 0.75 L -2.11 0.95 M -2.11 0.95 L -1.89 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-2" d="M 0.89 -2.2 L 1.11 -2.2 M 1.11 -2.2 L 1.11 -2 M 0.89 -2 L 1.11 -2 M 0.89 -2 L 0.89 -1.8 M 0.89 -1.8 L 1.11 -1.8" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-3" d="M 3.89 0.55 L 3.89 0.75 M 4.11 0.55 L 4.11 0.75 M 3.89 0.75 L 4.11 0.75 M 4.11 0.75 L 4.11 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-4" d="M -4.11 0.55 L -4.11 0.75 M -3.89 0.55 L -3.89 0.75 M -4.11 0.75 L -3.89 0.75 M -3.89 0.75 L -3.89 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-5" d="M 0.89 -4.2 L 0.89 -4 M 1.11 -4.2 L 1.11 -4 M 0.89 -4 L 1.11 -4 M 1.11 -4 L 1.11 -3.8" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-6" d="M 5.89 0.55 L 6.11 0.55 M 5.89 0.55 L 5.89 0.75 M 5.89 0.75 L 6.11 0.75 M 5.89 0.75 L 5.89 0.95 M 6.11 0.75 L 6.11 0.95 M 5.89 0.95 L 6.11 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-7" d="M -6.11 0.55 L -5.89 0.55 M -6.11 0.55 L -6.11 0.75 M -6.11 0.75 L -5.89 0.75 M -6.11 0.75 L -6.11 0.95 M -5.89 0.75 L -5.89 0.95 M -6.11 0.95 L -5.89 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-8" d="M 0.89 -6.2 L 1.11 -6.2 M 0.89 -6.2 L 0.89 -6 M 0.89 -6 L 1.11 -6 M 0.89 -6 L 0.89 -5.8 M 1.11 -6 L 1.11 -5.8 M 0.89 -5.8 L 1.11 -5.8" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-9" d="M 7.89 0.55 L 8.11 0.55 M 7.89 0.55 L 7.89 0.75 M 8.11 0.55 L 8.11 0.75 M 7.89 0.75 L 8.11 0.75 M 7.89 0.75 L 7.89 0.95 M 8.11 0.75 L 8.11 0.95 M 7.89 0.95 L 8.11 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-10" d="M -8.11 0.55 L -7.89 0.55 M -8.11 0.55 L -8.11 0.75 M -7.89 0.55 L -7.89 0.75 M -8.11 0.75 L -7.89 0.75 M -8.11 0.75 L -8.11 0.95 M -7.89 0.75 L -7.89 0.95 M -8.11 0.95 L -7.89 0.95" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-11" d="M 0.89 -8.2 L 1.11 -8.2 M 0.89 -8.2 L 0.89 -8 M 1.11 -8.2 L 1.11 -8 M 0.89 -8 L 1.11 -8 M 0.89 -8 L 0.89 -7.8 M 1.11 -8 L 1.11 -7.8 M 0.89 -7.8 L 1.11 -7.8" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-12" d="M -2.61 3.8 L -2.61 4 M -2.39 3.8 L -2.39 4 M -2.61 4 L -2.39 4 M -2.39 4 L -2.39 4.2" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-13" d="M -3.61 5.8 L -3.39 5.8 M -3.61 5.8 L -3.61 6 M -3.61 6 L -3.39 6 M -3.61 6 L -3.61 6.2 M -3.39 6 L -3.39 6.2 M -3.61 6.2 L -3.39 6.2" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <path id="label-14" d="M -4.61 7.8 L -4.39 7.8 M -4.61 7.8 L -4.61 8 M -4.39 7.8 L -4.39 8 M -4.61 8 L -4.39 8 M -4.61 8 L -4.61 8.2 M -4.39 8 L -4.39 8.2 M -4.61 8.2 L -4.39 8.2" fill="none" stroke="red" stroke-width="0.036" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle id="dotline-0" cx="-1" cy="1" r="0.05" fill="red"/>
+    <circle id="dotline-1" cx="1" cy="1" r="0.05" fill="red"/>
+    <circle id="dotline-2" cx="-1" cy="2" r="0.05" fill="red"/>
+    <circle id="dotline-3" cx="1" cy="2" r="0.05" fill="red"/>
+    <circle id="dotline-4" cx="-1" cy="3" r="0.05" fill="red"/>
+    <circle id="dotline-5" cx="1" cy="3" r="0.05" fill="red"/>
+    <circle id="dotline-6" cx="-1" cy="4" r="0.05" fill="red"/>
+    <circle id="circle-1" cx="-2" cy="4" r="0.05" fill="red"/>
+    <circle id="dotline-7" cx="1" cy="4" r="0.05" fill="red"/>
+    <circle id="circle-2" cx="2" cy="4" r="0.05" fill="red"/>
+    <circle id="dotline-8" cx="-2" cy="5" r="0.05" fill="red"/>
+    <circle id="circle-3" cx="-1" cy="5" r="0.05" fill="red"/>
+    <circle id="dotline-9" cx="1" cy="5" r="0.05" fill="red"/>
+    <circle id="circle-4" cx="2" cy="5" r="0.05" fill="red"/>
+    <circle id="dotline-10" cx="-3" cy="6" r="0.05" fill="red"/>
+    <circle id="circle-5" cx="-2" cy="6" r="0.05" fill="red"/>
+    <circle id="circle-6" cx="-1" cy="6" r="0.05" fill="red"/>
+    <circle id="dotline-11" cx="1" cy="6" r="0.05" fill="red"/>
+    <circle id="circle-7" cx="2" cy="6" r="0.05" fill="red"/>
+    <circle id="circle-8" cx="3" cy="6" r="0.05" fill="red"/>
+    <circle id="dotline-12" cx="-3" cy="7" r="0.05" fill="red"/>
+    <circle id="circle-9" cx="-2" cy="7" r="0.05" fill="red"/>
+    <circle id="circle-10" cx="-1" cy="7" r="0.05" fill="red"/>
+    <circle id="dotline-13" cx="1" cy="7" r="0.05" fill="red"/>
+    <circle id="circle-11" cx="2" cy="7" r="0.05" fill="red"/>
+    <circle id="circle-12" cx="3" cy="7" r="0.05" fill="red"/>
+    <circle id="dotline-14" cx="-4" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-13" cx="-3" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-14" cx="-2" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-15" cx="-1" cy="8" r="0.05" fill="red"/>
+    <circle id="dotline-15" cx="1" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-16" cx="2" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-17" cx="3" cy="8" r="0.05" fill="red"/>
+    <circle id="circle-18" cx="4" cy="8" r="0.05" fill="red"/>
+    <circle id="dotline-16" cx="-4" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-19" cx="-3" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-20" cx="-2" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-21" cx="-1" cy="9" r="0.05" fill="red"/>
+    <circle id="dotline-17" cx="1" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-22" cx="2" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-23" cx="3" cy="9" r="0.05" fill="red"/>
+    <circle id="circle-24" cx="4" cy="9" r="0.05" fill="red"/>
+    <circle id="dotline-18" cx="-1" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-25" cx="-0.8" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-26" cx="-0.6" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-27" cx="-0.4" cy="1" r="0.025" fill="red"/>
+    <circle id="dotline-19" cx="0.4" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-28" cx="0.6" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-29" cx="0.8" cy="1" r="0.025" fill="red"/>
+    <circle id="circle-30" cx="1" cy="1" r="0.025" fill="red"/>
+    <circle id="dotline-20" cx="-1" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-31" cx="-0.8" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-32" cx="-0.6" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-33" cx="-0.4" cy="2" r="0.025" fill="red"/>
+    <circle id="dotline-21" cx="0.4" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-34" cx="0.6" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-35" cx="0.8" cy="2" r="0.025" fill="red"/>
+    <circle id="circle-36" cx="1" cy="2" r="0.025" fill="red"/>
+    <circle id="dotline-22" cx="-1" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-37" cx="-0.8" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-38" cx="-0.6" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-39" cx="-0.4" cy="3" r="0.025" fill="red"/>
+    <circle id="dotline-23" cx="0.4" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-40" cx="0.6" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-41" cx="0.8" cy="3" r="0.025" fill="red"/>
+    <circle id="circle-42" cx="1" cy="3" r="0.025" fill="red"/>
+    <circle id="dotline-24" cx="-2" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-43" cx="-1.8" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-44" cx="-1.6" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-45" cx="-1.4" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-46" cx="-1.2" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-47" cx="-1" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-48" cx="-0.8" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-49" cx="-0.6" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-50" cx="-0.4" cy="4" r="0.025" fill="red"/>
+    <circle id="dotline-25" cx="0.4" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-51" cx="0.6" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-52" cx="0.8" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-53" cx="1" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-54" cx="1.2" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-55" cx="1.4" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-56" cx="1.6" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-57" cx="1.8" cy="4" r="0.025" fill="red"/>
+    <circle id="circle-58" cx="2" cy="4" r="0.025" fill="red"/>
+    <circle id="dotline-26" cx="-2" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-59" cx="-1.8" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-60" cx="-1.6" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-61" cx="-1.4" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-62" cx="-1.2" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-63" cx="-1" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-64" cx="-0.8" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-65" cx="-0.6" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-66" cx="-0.4" cy="5" r="0.025" fill="red"/>
+    <circle id="dotline-27" cx="0.4" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-67" cx="0.6" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-68" cx="0.8" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-69" cx="1" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-70" cx="1.2" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-71" cx="1.4" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-72" cx="1.6" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-73" cx="1.8" cy="5" r="0.025" fill="red"/>
+    <circle id="circle-74" cx="2" cy="5" r="0.025" fill="red"/>
+    <circle id="dotline-28" cx="-3" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-75" cx="-2.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-76" cx="-2.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-77" cx="-2.4" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-78" cx="-2.2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-79" cx="-2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-80" cx="-1.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-81" cx="-1.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-82" cx="-1.4" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-83" cx="-1.2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-84" cx="-1" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-85" cx="-0.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-86" cx="-0.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-87" cx="-0.4" cy="6" r="0.025" fill="red"/>
+    <circle id="dotline-29" cx="0.4" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-88" cx="0.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-89" cx="0.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-90" cx="1" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-91" cx="1.2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-92" cx="1.4" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-93" cx="1.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-94" cx="1.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-95" cx="2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-96" cx="2.2" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-97" cx="2.4" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-98" cx="2.6" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-99" cx="2.8" cy="6" r="0.025" fill="red"/>
+    <circle id="circle-100" cx="3" cy="6" r="0.025" fill="red"/>
+    <circle id="dotline-30" cx="-3" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-101" cx="-2.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-102" cx="-2.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-103" cx="-2.4" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-104" cx="-2.2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-105" cx="-2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-106" cx="-1.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-107" cx="-1.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-108" cx="-1.4" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-109" cx="-1.2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-110" cx="-1" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-111" cx="-0.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-112" cx="-0.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-113" cx="-0.4" cy="7" r="0.025" fill="red"/>
+    <circle id="dotline-31" cx="0.4" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-114" cx="0.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-115" cx="0.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-116" cx="1" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-117" cx="1.2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-118" cx="1.4" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-119" cx="1.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-120" cx="1.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-121" cx="2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-122" cx="2.2" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-123" cx="2.4" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-124" cx="2.6" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-125" cx="2.8" cy="7" r="0.025" fill="red"/>
+    <circle id="circle-126" cx="3" cy="7" r="0.025" fill="red"/>
+    <circle id="dotline-32" cx="-4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-127" cx="-3.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-128" cx="-3.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-129" cx="-3.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-130" cx="-3.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-131" cx="-3" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-132" cx="-2.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-133" cx="-2.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-134" cx="-2.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-135" cx="-2.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-136" cx="-2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-137" cx="-1.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-138" cx="-1.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-139" cx="-1.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-140" cx="-1.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-141" cx="-1" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-142" cx="-0.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-143" cx="-0.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-144" cx="-0.4" cy="8" r="0.025" fill="red"/>
+    <circle id="dotline-33" cx="0.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-145" cx="0.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-146" cx="0.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-147" cx="1" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-148" cx="1.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-149" cx="1.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-150" cx="1.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-151" cx="1.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-152" cx="2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-153" cx="2.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-154" cx="2.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-155" cx="2.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-156" cx="2.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-157" cx="3" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-158" cx="3.2" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-159" cx="3.4" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-160" cx="3.6" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-161" cx="3.8" cy="8" r="0.025" fill="red"/>
+    <circle id="circle-162" cx="4" cy="8" r="0.025" fill="red"/>
+    <circle id="dotline-34" cx="-4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-163" cx="-3.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-164" cx="-3.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-165" cx="-3.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-166" cx="-3.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-167" cx="-3" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-168" cx="-2.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-169" cx="-2.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-170" cx="-2.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-171" cx="-2.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-172" cx="-2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-173" cx="-1.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-174" cx="-1.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-175" cx="-1.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-176" cx="-1.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-177" cx="-1" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-178" cx="-0.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-179" cx="-0.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-180" cx="-0.4" cy="9" r="0.025" fill="red"/>
+    <circle id="dotline-35" cx="0.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-181" cx="0.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-182" cx="0.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-183" cx="1" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-184" cx="1.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-185" cx="1.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-186" cx="1.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-187" cx="1.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-188" cx="2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-189" cx="2.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-190" cx="2.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-191" cx="2.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-192" cx="2.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-193" cx="3" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-194" cx="3.2" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-195" cx="3.4" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-196" cx="3.6" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-197" cx="3.8" cy="9" r="0.025" fill="red"/>
+    <circle id="circle-198" cx="4" cy="9" r="0.025" fill="red"/>
+    <path id="path-0" d="M -11 0 L -12 -0.2 L -15 -0.2 L -15 0.2 L -12 0.2 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-1" d="M 11 0 L 12 -0.2 L 15 -0.2 L 15 0.2 L 12 0.2 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-2" d="M 0 -11 L -0.2 -12 L -0.2 -15 L 0.2 -15 L 0.2 -12 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-3" d="M 0 11 L -0.2 12 L -0.2 15 L 0.2 15 L 0.2 12 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+  </g>
+</svg>

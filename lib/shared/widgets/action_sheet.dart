@@ -125,16 +125,16 @@ class _ActionSheetItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
 
     return ListTile(
       leading: icon != null
           ? Icon(
               icon,
               color: isDisabled
-                  ? colorScheme.onSurface.withValues(alpha: 0.38)
+                  ? cs.onSurface.withValues(alpha: 0.38)
                   : isDestructive
-                  ? colorScheme.error
+                  ? cs.error
                   : null,
             )
           : null,
@@ -142,9 +142,9 @@ class _ActionSheetItem extends StatelessWidget {
         title,
         style: TextStyle(
           color: isDisabled
-              ? colorScheme.onSurface.withValues(alpha: 0.38)
+              ? cs.onSurface.withValues(alpha: 0.38)
               : isDestructive
-              ? colorScheme.error
+              ? cs.error
               : null,
         ),
       ),
@@ -153,8 +153,8 @@ class _ActionSheetItem extends StatelessWidget {
               subtitle!,
               style: TextStyle(
                 color: isDisabled
-                    ? colorScheme.onSurface.withValues(alpha: 0.38)
-                    : colorScheme.onSurfaceVariant,
+                    ? cs.onSurface.withValues(alpha: 0.38)
+                    : cs.onSurfaceVariant,
               ),
             )
           : null,

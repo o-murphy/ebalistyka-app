@@ -74,7 +74,7 @@ class CollectionItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
 
     return SizedBox(
       height: 200,
@@ -82,7 +82,7 @@ class CollectionItemTile extends StatelessWidget {
         shape: isSelected
             ? RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: colorScheme.primaryContainer, width: 3),
+                side: BorderSide(color: cs.primaryContainer, width: 3),
               )
             : null,
         child: Stack(
@@ -109,8 +109,8 @@ class CollectionItemTile extends StatelessWidget {
                   mini: true,
                   heroTag: 'actions_btn_${item.id}',
                   onPressed: () => _showActionsSheet(context),
-                  backgroundColor: colorScheme.secondaryContainer,
-                  foregroundColor: colorScheme.onSecondaryContainer,
+                  backgroundColor: cs.secondaryContainer,
+                  foregroundColor: cs.onSecondaryContainer,
                   child: const Icon(IconDef.more, size: 20),
                 ),
               ),
@@ -124,8 +124,8 @@ class CollectionItemTile extends StatelessWidget {
                 mini: true,
                 heroTag: 'select_btn_${item.id}',
                 onPressed: onSelect,
-                backgroundColor: colorScheme.primaryContainer,
-                foregroundColor: colorScheme.onPrimaryContainer,
+                backgroundColor: cs.primaryContainer,
+                foregroundColor: cs.onPrimaryContainer,
                 child: const Icon(IconDef.apply, size: 20),
               ),
             ),

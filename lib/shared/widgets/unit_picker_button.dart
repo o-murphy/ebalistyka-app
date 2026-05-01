@@ -14,7 +14,6 @@ class UnitPickerButton extends StatelessWidget {
     this.onChanged,
     this.options,
     this.label = 'Select Unit',
-    this.width = 60,
     super.key,
   });
 
@@ -22,42 +21,41 @@ class UnitPickerButton extends StatelessWidget {
   final ValueChanged<Unit>? onChanged;
   final List<Unit>? options;
   final String label;
-  final double width;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: InkWell(
-        onTap: onChanged == null || options == null
-            ? null
-            : () => showUnitPicker(
-                context,
-                label: label,
-                current: current,
-                options: options!,
-                onChanged: onChanged!,
-              ),
-        borderRadius: BorderRadius.circular(4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: Text(
-                  current.symbol,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const Icon(IconDef.dropDown, size: 20),
-            ],
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+    final l10n = AppLocalizations.of(context)!;
+    return TextButton(
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      onPressed: onChanged == null || options == null
+          ? null
+          : () => showUnitPicker(
+              context,
+              label: label,
+              current: current,
+              options: options!,
+              onChanged: onChanged!,
+            ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            current.localizedSymbol(l10n),
+            style: tt.bodyMedium?.copyWith(
+              color: cs.primary,
+              fontWeight: FontWeight.w600,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
+          Icon(IconDef.dropDown, size: 20, color: cs.primary),
+        ],
       ),
     );
   }

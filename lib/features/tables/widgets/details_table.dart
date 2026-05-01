@@ -30,7 +30,7 @@ class DetailsTableContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
 
     Widget row(String label, String value) => ListTile(
@@ -38,7 +38,7 @@ class DetailsTableContent extends StatelessWidget {
       title: Text(label),
       trailing: Text(
         value,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: tt.bodyMedium?.copyWith(
           fontFamily: 'monospace',
           color: cs.onSurface,
         ),

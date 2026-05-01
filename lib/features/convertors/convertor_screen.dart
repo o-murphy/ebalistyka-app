@@ -107,8 +107,8 @@ class _ConvertorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
 
     return Card.filled(
       margin: EdgeInsets.zero,
@@ -124,7 +124,7 @@ class _ConvertorTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 label,
-                style: textTheme.bodyMedium,
+                style: tt.bodyMedium,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

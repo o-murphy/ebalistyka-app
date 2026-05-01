@@ -154,6 +154,8 @@ class _TwoColumnTableEditorScreenState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     return BaseScreen(
       title: widget.title,
       isSubscreen: true,
@@ -188,9 +190,7 @@ class _TwoColumnTableEditorScreenState
             const SizedBox(height: 16),
             Text(
               widget.footerText!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
         ],
@@ -209,7 +209,8 @@ class _TableHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelLarge;
+    final tt = Theme.of(context).textTheme;
+    final style = tt.labelLarge;
     return Row(
       children: [
         const SizedBox(width: 32), // aligns with row-number gutter
@@ -246,6 +247,8 @@ class _TableRowEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -253,9 +256,7 @@ class _TableRowEditor extends StatelessWidget {
           width: 28,
           child: Text(
             '${index + 1}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
         ),
@@ -308,10 +309,11 @@ class _TableActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return ColoredBox(
-      color: Theme.of(context).colorScheme.surface,
+      color: cs.surface,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: Row(

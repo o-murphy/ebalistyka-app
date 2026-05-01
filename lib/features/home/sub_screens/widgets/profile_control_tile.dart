@@ -77,7 +77,7 @@ class ProfileControlTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return SizedBox(
@@ -94,8 +94,8 @@ class ProfileControlTile extends StatelessWidget {
                 mini: true,
                 heroTag: 'edit_btn_$profileId',
                 onPressed: () async => _showEditActionsSheet(context),
-                backgroundColor: colorScheme.secondaryContainer,
-                foregroundColor: colorScheme.onSecondaryContainer,
+                backgroundColor: cs.secondaryContainer,
+                foregroundColor: cs.onSecondaryContainer,
                 child: const Icon(IconDef.more, size: 20),
               ),
             ),
@@ -110,14 +110,14 @@ class ProfileControlTile extends StatelessWidget {
                     context.push(Routes.sightSelect, extra: profileId),
                 buttonIcon: IconDef.sight,
                 buttonColor: hasSight
-                    ? colorScheme.secondaryContainer
-                    : colorScheme.tertiaryContainer,
+                    ? cs.secondaryContainer
+                    : cs.tertiaryContainer,
                 buttonForegroundColor: hasSight
-                    ? colorScheme.onSecondaryContainer
-                    : colorScheme.onTertiaryContainer,
+                    ? cs.onSecondaryContainer
+                    : cs.onTertiaryContainer,
                 hintText: l10n.selectSightHint,
                 hintIcon: Icons.arrow_back,
-                hintColor: colorScheme.tertiary,
+                hintColor: cs.tertiary,
                 hintPosition: _HintPosition.right,
               ),
             ),
@@ -132,14 +132,14 @@ class ProfileControlTile extends StatelessWidget {
                     context.push(Routes.ammoSelect, extra: profileId),
                 buttonIcon: IconDef.ammo,
                 buttonColor: hasAmmo
-                    ? colorScheme.primaryContainer
-                    : colorScheme.tertiaryContainer,
+                    ? cs.primaryContainer
+                    : cs.tertiaryContainer,
                 buttonForegroundColor: hasAmmo
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onTertiaryContainer,
+                    ? cs.onPrimaryContainer
+                    : cs.onTertiaryContainer,
                 hintText: l10n.selectAmmoHint,
                 hintIcon: Icons.arrow_forward,
-                hintColor: colorScheme.tertiary,
+                hintColor: cs.tertiary,
                 hintPosition: _HintPosition.left,
               ),
             ),

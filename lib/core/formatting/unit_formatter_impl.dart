@@ -84,7 +84,8 @@ class UnitFormatterImpl implements UnitFormatter {
   String mach(double m) => '${m.toFixedSafe(2)} ${_l10n.unitMachSym}';
 
   @override
-  String time(double seconds) => '${seconds.toFixedSafe(3)} s';
+  String time(double seconds) =>
+      '${seconds.toFixedSafe(3)} ${_l10n.unitSecondSym}';
 
   @override
   String powderSensitivity(Ratio dim) {

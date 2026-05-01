@@ -153,6 +153,7 @@ class MyAmmoScreen extends ConsumerWidget {
     final appStateAsync = ref.watch(appStateProvider);
     final appState = ref.watch(appStateProvider).value;
     final l10n = AppLocalizations.of(context)!;
+    final cs = Theme.of(context).colorScheme;
     final formatter = ref.watch(unitFormatterProvider);
 
     final cartridges = appState?.ammo ?? [];
@@ -204,8 +205,8 @@ class MyAmmoScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: () => _showAddAmmoSheet(context, ref, weapon),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: cs.primary,
+        foregroundColor: cs.onPrimary,
         elevation: 6,
         child: const Icon(IconDef.add),
       ),

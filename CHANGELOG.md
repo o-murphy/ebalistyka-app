@@ -8,10 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ---
 
 
-## [Unreleased]
+## Unreleased
+[![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Fixed
+- **Update checker** - Fixed version comparison logic that prevented users from seeing stable updates when a pre‑release existed
+  - Now correctly identifies the latest stable version instead of just the newest release by date
+  - Pre‑release versions are ignored in release builds (only shown in debug mode)
+  - Improved semantic version parsing and comparison
 
-## [0.1.7] - 2026-04-30
+### Added
+- **APMR-FFP-IR-MIL reticle** - New pattern for ARGOS Sight
+- **Localization** - Added `l10n` support for unit symbols across multiple components
+  - New ARB key: `columnElevation`
+  - `UnitPickerButton` - Now uses `.localizedSymbol` for localized unit display
+  - `buildHomeTable` - Unit symbols are properly localized via `.localizedSymbol`
+  - `HomeScreen` - `FormattedTableData` displays localized unit symbols
+  - `UnitFormatterImpl.time` - Time units now respect the current locale
+
+### Changed
+- **UnitPickerButton** - Replaced `InkWell` with `TextButton` for better accessibility and Material Design compliance
+- **Updated `_buildHomeTable` tests** - to match new behaviour 
+
+## v0.1.7 (2026-04-30)
+[![GitHub release][GitHubReleaseBadge]][v0.1.7]
 
 ### Fixed
 - **AmmoWizardScreen Hotfix** - AmmoWizardScreen arguments and it's `state.extra` atributes
@@ -22,7 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Reticle/Target picker screen layout** — uses grid layout with wrap for high-dpi devices
 
 
-## [0.1.6] - 2026-04-30
+## v0.1.6 (2026-04-30)
+[![GitHub release][GitHubReleaseBadge]][v0.1.6]
 
 ### Added
 
@@ -47,7 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Seed profile data** — default profile updated: weapon → Cadex Defence Kraken CDX-MC (.338 LM, 9.5″ twist, 26″ barrel), ammo → Hornady 285 GR ELD-M (G7 BC 0.397, MV 827 m/s), sight → Nightforce ATACR 7-35×56 F1 (0.1 MIL clicks)
 
 
-## [0.1.5] - 2026-04-29
+## v0.1.5 (2026-04-29)
+[![GitHub release][GitHubReleaseBadge]][v0.1.5]
 
 ### Added
 
@@ -64,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.1.4] - 2026-04-28
+## v0.1.4 (2026-04-28)
+[![GitHub release][GitHubReleaseBadge]][v0.1.4]
 
 ### Fixed
 
@@ -76,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Desktop window size** — removed erroneous `* devicePixelRatio` multiplication; `window_manager` takes logical pixels, not physical; window now opens at correct `375×812` logical size
 
 
-## [0.1.3] - 2026-04-28
+## v0.1.3 (2026-04-28)
+[![GitHub release][GitHubReleaseBadge]][v0.1.3]
 
 ### Added
 
@@ -113,7 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Unit picker** — `UnitPickerTile` and `UnitPickerButton` share reusable `showUnitPicker`
 
 
-## [0.1.2] - 2026-04-26
+## v0.1.2 (2026-04-26)
+[![GitHub release][GitHubReleaseBadge]][v0.1.2]
 
 ### Added
 
@@ -199,7 +224,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - documented file import limitations on Android
 
 
-## [0.1.1] - 2026-04-23
+## v0.1.1 (2026-04-23)
+[![GitHub release][GitHubReleaseBadge]][v0.1.1]
 
 ### CI / Build
 - **Release workflow** — single `release.yml` triggers on `v*.*.*` tags; builds all platforms in parallel, publishes GitHub Release with all assets; manual dispatch supported for dry-run asset listing
@@ -212,7 +238,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Portable archives** — Linux bundle → `artifacts/portable/*.tar.gz`; Windows bundle → `artifacts/portable/*.zip`; AppImage → `artifacts/appimage/`; MSIX → `artifacts/msix/`
 
 
-## [0.1.0+9] - 2026-04-23
+## v0.1.0+9 (2026-04-23)
+[![GitHub release][GitHubReleaseBadge]][v0.1.0+9]
 
 ### Fixed
 - **Settings notifier** now works immediatelly
@@ -229,13 +256,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Display adjustments in current clicks** on home screen, tables screen, html report and reticle view screen
 
 
-## [0.1.0+8] - 2026-04-23
+## v0.1.0+8 (2026-04-23)
+[![GitHub release][GitHubReleaseBadge]][v0.1.0+8]
 
 ### Fixed
 - **Hotfix:** corrected twist rate validation — the field now accepts `0` as a valid value.
 
 
-## [0.1.0+7] - 2026-04-22
+## v0.1.0+7 (2026-04-22)
+[![GitHub release][GitHubReleaseBadge]][v0.1.0+7]
 
 ### Architecture
 - **Removed `recalc_coordinator`:** widgets now listen directly to ObjectBox streams via providers
@@ -261,7 +290,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Timeline docs:** updated with time-based versioning
 
 
-## [0.1.0-alpha] - 2026-04-12
+## v0.1.0-alpha (2026-04-12)
+[![GitHub release][GitHubReleaseBadge]][v0.1.0-alpha]
 
 Initial alpha release — first functional build of the ballistic trajectory calculator.
 
@@ -304,3 +334,22 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `README.md`: badges, screenshots, feature overview, build instructions, dependencies
 - `LICENSE`: GPL-3.0
 - `OBJECTBOX_MIGRATION.md`: migration details
+
+
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.7..HEAD
+[v0.1.7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.7
+[v0.1.6]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.6
+[v0.1.5]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.5
+[v0.1.4]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.4
+[v0.1.3]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.3
+[v0.1.2]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.2
+[v0.1.1]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.1
+[v0.1.0+9]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+9
+[v0.1.0+8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+8
+[v0.1.0+7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0+7
+[v0.1.0-alpha]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.0-alpha
+
+[GitHubFav]: https://github.githubassets.com/favicons/favicon-dark.svg
+[GitHubBadge]: https://img.shields.io/badge/GitHub-grey?logo=github
+[GitHubCompareBadge]: https://img.shields.io/badge/GitHub-compare-grey?logo=github&color=orange
+[GitHubReleaseBadge]: https://img.shields.io/badge/GitHub-release-grey?logo=github&color=green

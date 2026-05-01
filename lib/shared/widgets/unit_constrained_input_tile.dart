@@ -44,12 +44,13 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
     throw UnimplementedError();
   }
 
-  TextStyle? _getDisplayTextStyle(ThemeData theme) =>
-      theme.textTheme.bodyMedium?.copyWith(fontFamily: 'monospace');
+  TextStyle? _getDisplayTextStyle(ColorScheme cs, TextTheme tt) =>
+      tt.bodyMedium?.copyWith(fontFamily: 'monospace');
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
 
     return ListTile(
       leading: icon != null ? Icon(icon) : null,
@@ -58,9 +59,9 @@ abstract class UnitValueFieldTileBase<T> extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_getDisplayText(context), style: _getDisplayTextStyle(theme)),
+          Text(_getDisplayText(context), style: _getDisplayTextStyle(cs, tt)),
           const SizedBox(width: 8),
-          Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
+          Icon(IconDef.edit, size: 16, color: cs.primary),
         ],
       ),
       onTap: () => _showDialog(context),
@@ -143,36 +144,35 @@ class NullableUnitValueFieldTile extends UnitValueFieldTileBase<double?> {
   }
 
   @override
-  TextStyle? _getDisplayTextStyle(ThemeData theme) {
+  TextStyle? _getDisplayTextStyle(ColorScheme cs, TextTheme tt) {
     if (_isEmpty) {
-      return theme.textTheme.bodyMedium?.copyWith(
+      return tt.bodyMedium?.copyWith(
         fontFamily: 'monospace',
-        color: isRequired
-            ? theme.colorScheme.error
-            : theme.colorScheme.onSurfaceVariant,
+        color: isRequired ? cs.error : cs.onSurfaceVariant,
       );
     }
-    return super._getDisplayTextStyle(theme);
+    return super._getDisplayTextStyle(cs, tt);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final showError = isRequired && _isEmpty;
 
     return ListTile(
-      tileColor: showError ? theme.colorScheme.tertiaryContainer : null,
+      tileColor: showError ? cs.tertiaryContainer : null,
       leading: icon != null
-          ? Icon(icon, color: showError ? theme.colorScheme.tertiary : null)
+          ? Icon(icon, color: showError ? cs.tertiary : null)
           : null,
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle!) : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_getDisplayText(context), style: _getDisplayTextStyle(theme)),
+          Text(_getDisplayText(context), style: _getDisplayTextStyle(cs, tt)),
           const SizedBox(width: 8),
-          Icon(IconDef.edit, size: 16, color: theme.colorScheme.primary),
+          Icon(IconDef.edit, size: 16, color: cs.primary),
         ],
       ),
       onTap: () => _showDialog(context),

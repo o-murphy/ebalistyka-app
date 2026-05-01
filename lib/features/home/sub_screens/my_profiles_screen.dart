@@ -348,6 +348,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     // ── Paging listener ───────────────────────────────────────────────────────
     // Fires ONLY when profiles are added/removed or the active profile changes.
@@ -390,8 +391,8 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         floatingActionButton: FloatingActionButton(
           heroTag: 'generalFab',
           onPressed: _showAddSheet,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          backgroundColor: cs.primary,
+          foregroundColor: cs.onPrimary,
           elevation: 6,
           child: const Icon(IconDef.add),
         ),
@@ -404,8 +405,8 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: _showAddSheet,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: cs.primary,
+        foregroundColor: cs.onPrimary,
         elevation: 6,
         child: const Icon(IconDef.add),
       ),

@@ -554,6 +554,12 @@ abstract class AppLocalizations {
   /// **'Energy'**
   String get columnEnergy;
 
+  /// Trajectory table column header for elevation
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation'**
+  String get columnElevation;
+
   /// Tables config section header for distance/range settings
   ///
   /// In en, this message translates to:

@@ -238,6 +238,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get columnEnergy => 'Енергія';
 
   @override
+  String get columnElevation => 'Перевищення';
+
+  @override
   String get tablesConfigSectionDistance => 'Відстань';
 
   @override

@@ -65,18 +65,18 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cs = theme.colorScheme;
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
 
-    final hdrStyle = theme.textTheme.labelSmall?.copyWith(
+    final hdrStyle = tt.labelSmall?.copyWith(
       fontWeight: FontWeight.bold,
       color: cs.onSurface,
     );
-    final subStyle = theme.textTheme.labelSmall?.copyWith(
+    final subStyle = tt.labelSmall?.copyWith(
       color: cs.onSurfaceVariant,
       fontSize: 10,
     );
-    final cellStyle = theme.textTheme.bodySmall?.copyWith(
+    final cellStyle = tt.bodySmall?.copyWith(
       fontFamily: 'monospace',
       fontSize: 13,
     );
@@ -403,14 +403,15 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     return Container(
       width: double.infinity,
       color: theme.colorScheme.surfaceContainerHigh,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Text(
         text.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.primary,
+        style: tt.labelSmall?.copyWith(
+          color: cs.primary,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
         ),

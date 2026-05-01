@@ -34,6 +34,7 @@ class UnitDialogInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final sym =
         symbol ?? displayUnit.localizedSymbol(AppLocalizations.of(context)!);
 
@@ -45,26 +46,22 @@ class UnitDialogInputField extends StatelessWidget {
         signed: true,
       ),
       textAlign: TextAlign.center,
-      style: theme.textTheme.titleMedium?.copyWith(
+      style: tt.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
-        color: errorText != null
-            ? theme.colorScheme.error
-            : theme.colorScheme.primary,
+        color: errorText != null ? cs.error : cs.primary,
       ),
       decoration: InputDecoration(
         errorText: errorText,
         errorMaxLines: 1,
         hintText: allowNull ? nullStr : null,
         filled: true,
-        fillColor: theme.colorScheme.surfaceContainerLow,
+        fillColor: cs.surfaceContainerLow,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         suffixText: sym,
-        suffixStyle: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
+        suffixStyle: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
         suffixIcon: allowNull && controller.text.isNotEmpty
             ? IconButton(
                 icon: const Icon(IconDef.clear, size: 18),
