@@ -28,6 +28,7 @@ class ApmrFfpIrMilReticleDrawer implements SVGDrawerInterface {
   void draw(MilReticleSVGCanvas canvas) {
     // const A = ApmrFfpIrMilSizes.A;
     const A1 = ApmrFfpIrMilSizes.A1;
+    const A2 = ApmrFfpIrMilSizes.A2;
     const A3 = ApmrFfpIrMilSizes.A3;
     const A4 = ApmrFfpIrMilSizes.A4;
     const B1 = ApmrFfpIrMilSizes.B1;
@@ -106,6 +107,48 @@ class ApmrFfpIrMilReticleDrawer implements SVGDrawerInterface {
         c.hDotLine(8, 0.4, 4, D5, A3 / 2, accentColor);
         c.hDotLine(9, -4, -0.4, D5, A3 / 2, accentColor);
         c.hDotLine(9, 0.4, 4, D5, A3 / 2, accentColor);
+
+        PathBuilder pb;
+
+        pb = PathBuilder();
+        pb
+          ..moveTo(-L - C1, 0)
+          ..lineTo(-L - C1 - D2, -A2 / 2)
+          ..lineTo(-15, -A2 / 2)
+          ..lineTo(-15, A2 / 2)
+          ..lineTo(-L - C1 - D2, A2 / 2)
+          ..close();
+        c.path(pb.d, fill: color);
+
+        pb = PathBuilder();
+        pb
+          ..moveTo(L + C1, 0)
+          ..lineTo(L + C1 + D2, -A2 / 2)
+          ..lineTo(15, -A2 / 2)
+          ..lineTo(15, A2 / 2)
+          ..lineTo(L + C1 + D2, A2 / 2)
+          ..close();
+        c.path(pb.d, fill: color);
+
+        pb = PathBuilder();
+        pb
+          ..moveTo(0, -(L + C1))
+          ..lineTo(-A2 / 2, -(L + C1 + D2))
+          ..lineTo(-A2 / 2, -15)
+          ..lineTo(A2 / 2, -15)
+          ..lineTo(A2 / 2, -(L + C1 + D2))
+          ..close();
+        c.path(pb.d, fill: color);
+
+        pb = PathBuilder();
+        pb
+          ..moveTo(0, L + C1)
+          ..lineTo(-A2 / 2, L + C1 + D2)
+          ..lineTo(-A2 / 2, 15)
+          ..lineTo(A2 / 2, 15)
+          ..lineTo(A2 / 2, L + C1 + D2)
+          ..close();
+        c.path(pb.d, fill: color);
       },
     );
   }

@@ -262,5 +262,9 @@
     <circle id="circle-196" cx="3.6" cy="9" r="0.025" fill="red"/>
     <circle id="circle-197" cx="3.8" cy="9" r="0.025" fill="red"/>
     <circle id="circle-198" cx="4" cy="9" r="0.025" fill="red"/>
+    <path id="path-0" d="M -11 0 L -12 -0.2 L -15 -0.2 L -15 0.2 L -12 0.2 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-1" d="M 11 0 L 12 -0.2 L 15 -0.2 L 15 0.2 L 12 0.2 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-2" d="M 0 -11 L -0.2 -12 L -0.2 -15 L 0.2 -15 L 0.2 -12 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
+    <path id="path-3" d="M 0 11 L -0.2 12 L -0.2 15 L 0.2 15 L 0.2 12 Z" fill="onSurface" stroke-linejoin="miter" stroke-linecap="miter"/>
   </g>
 </svg>
