@@ -8,7 +8,6 @@ const String defaultBranch = 'main';
 const int checkIntervalHours = 24;
 const String lastUpdateCheckFile = 'last_update_check';
 const String lastCollectionCheckFile = 'last_collection_check';
-const String isFirstRunFile = '.initialized';
 const String versionFile = '.version';
 const String lastCollectionSha = 'last_collection_sha';
 const String collectionFile = 'collection.json';

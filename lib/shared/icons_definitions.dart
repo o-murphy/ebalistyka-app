@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class IconDef {
+  static const IconData help = Icons.question_mark_outlined;
   static const IconData time = Icons.timer_outlined;
   static const IconData range = Icons.flag_outlined;
   static const IconData image = Icons.image_outlined;

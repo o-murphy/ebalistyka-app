@@ -567,6 +567,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpButton => 'Help';
 
   @override
+  String get helpTitle => 'Help';
+
+  @override
   String get selectButton => 'Select';
 
   @override

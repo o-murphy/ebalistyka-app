@@ -5,6 +5,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
@@ -58,21 +59,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _checkIsFirstRun() async {
-    final isFirstRun = await checkIsFirstRun();
+    final isNewVersion = await checkIsNewVersion();
     if (!mounted) return;
-    if (isFirstRun.isFirstRun) {
-      await _showFirstStartDialog();
-    } else {}
-    if (isFirstRun.isNewVersion) {
-      await _showNewVersionDialog();
+    if (isNewVersion) {
+      await _onNewVersion();
     } else {}
   }
 
-  Future<void> _showFirstStartDialog() async {
-    debugPrint('help dialog yet not implemented');
-  }
-
-  Future<void> _showNewVersionDialog() async {
+  Future<void> _onNewVersion() async {
     debugPrint('changelog dialog yet not implemented');
   }
 
@@ -309,7 +303,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     Expanded(
                                       flex: 1,
                                       child: SideControlBlock(
-                                        topIcon: Icons.question_mark_outlined,
+                                        topIcon: IconDef.help,
                                         bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
                                           (
@@ -331,11 +325,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                             pressStr,
                                           ),
                                         ],
-                                        onTopPressed: () =>
-                                            showNotAvailableSnackBar(
-                                              context,
-                                              l10n.helpButton,
-                                            ),
+                                        onTopPressed: () => showHelpDialog(
+                                          context,
+                                          title: l10n.helpTitle,
+                                          helpId: HelpData.homeScreen,
+                                        ),
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

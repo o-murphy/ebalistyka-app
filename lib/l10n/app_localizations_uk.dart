@@ -571,6 +571,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get helpButton => 'Допомога';
 
   @override
+  String get helpTitle => 'Допомога';
+
+  @override
   String get selectButton => 'Вибрати';
 
   @override
