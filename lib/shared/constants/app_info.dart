@@ -25,6 +25,12 @@ const String tosUrl = '$repoBlobUrl/TERMS.md';
 const String changelogUrl = '$repoBlobUrl/CHANGELOG.md';
 const String allReleasesUrl = '$remoteApiUrl/releases';
 const String googlePlayInstallerSource = 'com.android.vending';
+const String appleAppStoreInstallerSource = 'com.apple.appstore';
+
+// Set to the numeric App Store app ID when the app is published on the App Store.
+const String appleAppStoreAppId = '';
+const String appleAppStoreUrl =
+    'https://apps.apple.com/app/id$appleAppStoreAppId';
 const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';
 const String apiCollectionUrlPattern =

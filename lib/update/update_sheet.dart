@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/constants/app_info.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,6 +53,22 @@ class _UpdateListenerState extends ConsumerState<UpdateListener> {
 
 // ── Widgets ───────────────────────────────────────────────────────────────────
 
+String _buttonLabel(AppLocalizations l10n, GithubRelease release) {
+  if (release.isPlayStore) return l10n.openInPlayStoreAction;
+  if (release.isAppStore) return l10n.openInAppStoreAction;
+  return l10n.viewReleaseAction;
+}
+
+Uri _buttonUri(GithubRelease release) {
+  if (release.isPlayStore) {
+    return Uri.parse(
+      'https://play.google.com/store/apps/details?id=${release.packageName}',
+    );
+  }
+  if (release.isAppStore) return Uri.parse(appleAppStoreUrl);
+  return Uri.parse(release.htmlUrl);
+}
+
 class _UpdateSheet extends StatelessWidget {
   const _UpdateSheet({required this.release});
 
@@ -93,20 +110,14 @@ class _UpdateSheet extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 icon: const Icon(Icons.open_in_new_outlined),
-                label: Text(
-                  release.isPlayStore
-                      ? l10n.openInPlayStoreAction
-                      : l10n.viewReleaseAction,
-                ),
+                label: Text(_buttonLabel(l10n, release)),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  final url = release.isPlayStore
-                      ? Uri.parse(
-                          'https://play.google.com/store/apps/details?id=${release.packageName}',
-                        )
-                      : Uri.parse(release.htmlUrl);
                   unawaited(
-                    launchUrl(url, mode: LaunchMode.externalApplication),
+                    launchUrl(
+                      _buttonUri(release),
+                      mode: LaunchMode.externalApplication,
+                    ),
                   );
                 },
               ),

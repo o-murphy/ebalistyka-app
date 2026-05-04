@@ -416,6 +416,7 @@
     "updateAvailable": "Доступна нова версія {version}",
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
+    "openInAppStoreAction": "Відкрити в App Store",
     "checkForUpdatesLabel": "Перевірити оновлення",
     "upToDateMessage": "У вас остання версія",
 

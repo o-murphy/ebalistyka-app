@@ -1,0 +1,187 @@
+name: Build Apple (macOS + iOS)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "ios/**"
+      - "macos/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - ".github/workflows/build-apple.yml"
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: true
+        default: "macos"
+        type: choice
+        options: [ macos, ios ]
+      build_type:
+        description: "Build type"
+        required: true
+        default: "release"
+        type: choice
+        options: [ release, debug ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+  workflow_call:
+    inputs:
+      platform:
+        description: "Target platform: macos | ios"
+        required: true
+        type: string
+      build_type:
+        required: false
+        type: string
+        default: "release"
+      build_name:
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        required: false
+        type: number
+        default: 30
+    outputs:
+      artifact_name:
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        value: ${{ jobs.build.outputs.artifact_url }}
+
+concurrency:
+  group: build-apple-${{ inputs.platform || 'all' }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.41.6"
+
+jobs:
+  prepare-version:
+    if: github.event_name != 'workflow_call'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        uses: ./.github/actions/version
+
+  build:
+    name: ${{ inputs.platform || 'macos' }} (${{ inputs.build_type || 'release' }})
+    runs-on: macos-latest
+    needs: [ prepare-version ]
+    if: always() && !failure() && !cancelled()
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # required: compiles bclibc from external/bclibc
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: ./.github/actions/flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Set build metadata
+        id: meta
+        shell: bash
+        run: |
+          PLATFORM="${{ inputs.platform || 'macos' }}"
+          BUILD_TYPE="${{ inputs.build_type || 'release' }}"
+
+          BCLIBC_HASH=$(git -C external/bclibc rev-parse HEAD)
+          echo "bclibc_hash=$BCLIBC_HASH" >> $GITHUB_OUTPUT
+
+          BCLIBC_FFI_HASH=$(git log -1 --format='%H' -- packages/bclibc_ffi 2>/dev/null || echo "unknown")
+          echo "bclibc_ffi_hash=$BCLIBC_FFI_HASH" >> $GITHUB_OUTPUT
+
+          BUILD_NAME="${{ inputs.build_name }}"
+          if [ -z "$BUILD_NAME" ]; then
+            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          fi
+          BUILD_NAME="${BUILD_NAME#v}"
+          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
+          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-${PLATFORM}-${BUILD_TYPE}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Cache pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-macos-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-macos-
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            macos/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ inputs.platform || 'macos' }}-${{ steps.meta.outputs.bclibc_hash }}-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ inputs.platform || 'macos' }}-${{ steps.meta.outputs.bclibc_hash }}-
+            pods-${{ inputs.platform || 'macos' }}-
+
+      - name: Set pubspec version
+        shell: bash
+        run: |
+          BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
+          NUM=${{ steps.meta.outputs.build_number }}
+          sed -i '' "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
+          echo "pubspec version → ${BASE}+${NUM}"
+
+      - name: Get Flutter dependencies
+        shell: bash
+        run: flutter pub get
+
+      - name: Build macOS
+        if: ${{ inputs.platform == 'macos' || inputs.platform == '' }}
+        shell: bash
+        run: |
+          bash scripts/build-macos.sh \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Build iOS
+        if: ${{ inputs.platform == 'ios' }}
+        shell: bash
+        run: |
+          bash scripts/build-ios.sh \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/
+          retention-days: ${{ inputs.retention_days || 30 }}
+          if-no-files-found: error
+
+  pr-summary:
+    needs: [ build ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: ${{ inputs.platform || 'macos' }}
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}

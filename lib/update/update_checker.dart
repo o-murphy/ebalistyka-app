@@ -56,6 +56,7 @@ class GithubRelease {
   final String htmlUrl;
   final bool prerelease;
   final bool isPlayStore;
+  final bool isAppStore;
   final String packageName;
 
   const GithubRelease({
@@ -63,6 +64,7 @@ class GithubRelease {
     required this.htmlUrl,
     required this.prerelease,
     required this.isPlayStore,
+    required this.isAppStore,
     required this.packageName,
   });
 }
@@ -84,6 +86,7 @@ class _ParsedRelease {
 Future<GithubRelease?> _fetchIfNewer(
   String currentVersion, {
   required bool isPlayStore,
+  required bool isAppStore,
   required String packageName,
 }) async {
   final response = await http
@@ -141,6 +144,7 @@ Future<GithubRelease?> _fetchIfNewer(
     htmlUrl: latestRelease.htmlUrl,
     prerelease: latestRelease.prerelease,
     isPlayStore: isPlayStore,
+    isAppStore: isAppStore,
     packageName: packageName,
   );
 }
@@ -150,9 +154,11 @@ Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
     final isPlayStore = info.installerStore == googlePlayInstallerSource;
+    final isAppStore = info.installerStore == appleAppStoreInstallerSource;
     final result = await _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
+      isAppStore: isAppStore,
       packageName: info.packageName,
     );
     final appSupport = await getApplicationSupportDirectory();
@@ -184,10 +190,12 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
 
     final info = await PackageInfo.fromPlatform();
     final isPlayStore = info.installerStore == googlePlayInstallerSource;
+    final isAppStore = info.installerStore == appleAppStoreInstallerSource;
     await checkFile.writeAsString(DateTime.now().toIso8601String());
     return _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
+      isAppStore: isAppStore,
       packageName: info.packageName,
     );
   } catch (e) {

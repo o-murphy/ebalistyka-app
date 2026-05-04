@@ -32,9 +32,9 @@ ffi.DynamicLibrary _openLibrary() {
   if (Platform.isLinux) return ffi.DynamicLibrary.open(lib('libbclibc_ffi.so'));
   if (Platform.isAndroid) return ffi.DynamicLibrary.open('libbclibc_ffi.so');
   if (Platform.isWindows) return ffi.DynamicLibrary.open(lib('bclibc_ffi.dll'));
-  if (Platform.isMacOS) {
-    return ffi.DynamicLibrary.open(lib('libbclibc_ffi.dylib'));
-  }
+  if (Platform.isMacOS) return ffi.DynamicLibrary.open(lib('libbclibc_ffi.dylib'));
+  // On iOS the library is statically linked into the app process via CocoaPods.
+  if (Platform.isIOS) return ffi.DynamicLibrary.process();
   throw UnsupportedError(
     'bclibc_ffi: unsupported platform ${Platform.operatingSystem}',
   );
