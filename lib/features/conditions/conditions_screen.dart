@@ -1,5 +1,6 @@
 import 'package:ebalistyka/core/extensions/num_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/helpers/debugHighLight.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
@@ -67,71 +68,79 @@ class ConditionsScreen extends ConsumerWidget {
           // ── Temperature — big centred control ──────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: TempControl(
-              rawValue: state.temperature.rawValue,
-              displayUnit: state.temperature.displayUnit,
-              onChanged: (v) => notifier.updateTemperature(v),
+            child: ht(
+              TempControl(
+                rawValue: state.temperature.rawValue,
+                displayUnit: state.temperature.displayUnit,
+                onChanged: (v) => notifier.updateTemperature(v),
+              ),
             ),
           ),
           const TileDivider(),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-            child: IconValueButtonRow(
-              items: [
-                IconValueButton(
-                  icon: IconDef.altitude,
-                  label: l10n.altitude,
-                  heroTag: 'cond-alt',
-                  value:
-                      '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
-                  onTap: () => showUnitHybridPickerDialog(altCtx),
-                ),
-                IconValueButton(
-                  icon: IconDef.humidity,
-                  label: l10n.humidity,
-                  heroTag: 'cond-hum',
-                  value:
-                      '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
-                  onTap: () => showUnitHybridPickerDialog(humCtx),
-                ),
+          ht(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: IconValueButtonRow(
+                items: [
+                  IconValueButton(
+                    icon: IconDef.altitude,
+                    label: l10n.altitude,
+                    heroTag: 'cond-alt',
+                    value:
+                        '${state.altitude.displayValue.toFixedSafe(state.altitude.decimals)} ${state.altitude.symbol}',
+                    onTap: () => showUnitHybridPickerDialog(altCtx),
+                  ),
+                  IconValueButton(
+                    icon: IconDef.humidity,
+                    label: l10n.humidity,
+                    heroTag: 'cond-hum',
+                    value:
+                        '${state.humidity.displayValue.toFixedSafe(state.humidity.decimals)} ${state.humidity.symbol}',
+                    onTap: () => showUnitHybridPickerDialog(humCtx),
+                  ),
 
-                IconValueButton(
-                  icon: IconDef.velocity,
-                  label: l10n.pressure,
-                  heroTag: 'cond-press',
-                  value:
-                      '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
-                  onTap: () => showUnitHybridPickerDialog(pressCtx),
-                ),
-              ],
+                  IconValueButton(
+                    icon: IconDef.velocity,
+                    label: l10n.pressure,
+                    heroTag: 'cond-press',
+                    value:
+                        '${state.pressure.displayValue.toFixedSafe(state.pressure.decimals)} ${state.pressure.symbol}',
+                    onTap: () => showUnitHybridPickerDialog(pressCtx),
+                  ),
+                ],
+              ),
             ),
           ),
           const TileDivider(),
 
           // ── Powder sensitivity ─────────────────────────────────────────
-          PowderSensSection(
-            usePowderSensitivity: state.powderSensOn,
-            useDiffPowderTemp: state.useDiffPowderTemp,
-            temperatureUnit: state.temperature.displayUnit,
-            powderTempRaw: state.powderTemperature?.rawValue,
-            mvValue: state.mvAtPowderTemp,
-            sensitivityValue: state.powderSensitivity,
-            onSensitivityToggled: notifier.setPowderSensitivity,
-            onDiffTempToggled: notifier.setDiffPowderTemp,
-            onPowderTempChanged: notifier.updatePowderTemp,
+          ht(
+            PowderSensSection(
+              usePowderSensitivity: state.powderSensOn,
+              useDiffPowderTemp: state.useDiffPowderTemp,
+              temperatureUnit: state.temperature.displayUnit,
+              powderTempRaw: state.powderTemperature?.rawValue,
+              mvValue: state.mvAtPowderTemp,
+              sensitivityValue: state.powderSensitivity,
+              onSensitivityToggled: notifier.setPowderSensitivity,
+              onDiffTempToggled: notifier.setDiffPowderTemp,
+              onPowderTempChanged: notifier.updatePowderTemp,
+            ),
           ),
           const TileDivider(),
           // ── Coriolis ───────────────────────────────────────────────────
-          CoriolisSection(
-            useCoriolis: state.coriolisOn,
-            latitudeRaw: state.latitude.rawValue,
-            azimuthRaw: state.azimuth.rawValue,
-            angularUnit: state.latitude.displayUnit,
-            onCoriolisToggled: notifier.setCoriolis,
-            onLatitudeChanged: notifier.updateLatitude,
-            onAzimuthChanged: notifier.updateAzimuth,
+          ht(
+            CoriolisSection(
+              useCoriolis: state.coriolisOn,
+              latitudeRaw: state.latitude.rawValue,
+              azimuthRaw: state.azimuth.rawValue,
+              angularUnit: state.latitude.displayUnit,
+              onCoriolisToggled: notifier.setCoriolis,
+              onLatitudeChanged: notifier.updateLatitude,
+              onAzimuthChanged: notifier.updateAzimuth,
+            ),
           ),
           const SizedBox(height: 16),
         ],

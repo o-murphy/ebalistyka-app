@@ -177,16 +177,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     onPressed: () async {
                       final file = EbcpService.buildFullExport(ref);
                       final messenger = ScaffoldMessenger.of(context);
-                      final errorColor =
-                          Theme.of(context).colorScheme.error;
+                      final errorColor = Theme.of(context).colorScheme.error;
                       try {
                         await EbcpService.shareFile(file, 'ebalistyka_backup');
                       } catch (e) {
-                        messenger.showSnackBar(SnackBar(
-                          content: Text(e.toString()),
-                          backgroundColor: errorColor,
-                          duration: const Duration(seconds: 2),
-                        ));
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
                       }
                     },
                   ),

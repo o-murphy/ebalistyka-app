@@ -217,11 +217,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                 EbcpService.sanitizeName(profile.name),
               );
             } catch (e) {
-              messenger.showSnackBar(SnackBar(
-                content: Text(e.toString()),
-                backgroundColor: errorColor,
-                duration: const Duration(seconds: 2),
-              ));
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(e.toString()),
+                  backgroundColor: errorColor,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
             }
           },
         ),
