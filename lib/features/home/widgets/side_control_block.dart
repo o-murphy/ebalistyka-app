@@ -49,7 +49,7 @@ class SideControlBlock extends StatelessWidget {
                       infoRows[i].$3,
                       style: TextStyle(
                         fontSize: 9,
-                        color: cs.onSurface.withValues(alpha: 0.85),
+                        color: cs.onSurface.withAlpha(216),
                       ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
@@ -59,7 +59,7 @@ class SideControlBlock extends StatelessWidget {
                       infoRows[i].$4,
                       style: TextStyle(
                         fontSize: 11,
-                        color: cs.onSurface.withValues(alpha: 0.85),
+                        color: cs.onSurface.withAlpha(216),
                       ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,

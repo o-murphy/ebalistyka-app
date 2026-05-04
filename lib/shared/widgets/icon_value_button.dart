@@ -55,7 +55,7 @@ class IconValueButton extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: cs.onSurface.withValues(alpha: 0.7),
+            color: cs.onSurface.withAlpha(216),
             overflow: TextOverflow.ellipsis,
           ),
         ),

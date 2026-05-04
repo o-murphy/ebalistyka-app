@@ -260,18 +260,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           (
                                             IconDef.temperature,
                                             // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.temperature,
                                             tempStr,
                                           ),
                                           (
                                             IconDef.altitude,
                                             // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.altitude,
                                             altStr,
                                           ),
@@ -311,18 +307,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           (
                                             IconDef.humidity,
                                             // Colors.blue,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.humidity,
                                             humidStr,
                                           ),
                                           (
                                             IconDef.velocity,
                                             // Colors.red,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.pressure,
                                             pressStr,
                                           ),

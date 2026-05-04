@@ -370,7 +370,7 @@ class _TrajectoryTableContentState extends State<TrajectoryTableContent> {
         else if (widget.zeroCrossingEnabled)
           Container(
             width: double.infinity,
-            color: Colors.redAccent.withValues(alpha: 0.2),
+            color: Colors.redAccent.withAlpha(51),
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
