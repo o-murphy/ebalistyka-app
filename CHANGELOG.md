@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 
-## v0.1.8 (2026-04-30)
+## v0.1.8 (2026-05-04)
 [![GitHub release][GitHubReleaseBadge]][v0.1.8]
 
 ### Fixed
@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **UnitPickerButton** - Replaced `InkWell` with `TextButton` for better accessibility and Material Design compliance
 - **Updated `_buildHomeTable` tests** - To match new behaviour
 - **Adjustment messages helpers** - For HomeScreen ReticlePage and ReticleViewScreen
+
 
 ## v0.1.7 (2026-04-30)
 [![GitHub release][GitHubReleaseBadge]][v0.1.7]
