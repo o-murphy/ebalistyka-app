@@ -10,6 +10,7 @@ import 'package:ebalistyka/features/home/profiles_vm.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/profile_card.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/confirm_dialog.dart';
@@ -400,6 +401,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     if (paging.orderedIds.isEmpty) {
       return BaseScreen(
         title: l10n.selectProfile,
+        actions: [helpAction(context, helpId: HelpData.profilesScreen)],
         floatingActionButton: FloatingActionButton(
           heroTag: 'generalFab',
           onPressed: _showAddSheet,
@@ -414,6 +416,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
     return BaseScreen(
       title: l10n.myProfiles,
+      actions: [helpAction(context, helpId: HelpData.profilesScreen)],
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
         onPressed: _showAddSheet,

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Added
+- **Help dialogs** - reusable markdown based help dialog
+  - Added help dalogs for screens: shot info, my profiles
+
 
 ## v0.1.8 (2026-05-04)
 [![GitHub release][GitHubReleaseBadge]][v0.1.8]
