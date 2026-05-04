@@ -149,7 +149,7 @@ Future<GithubRelease?> _fetchIfNewer(
 Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == googlePlayinstallerSource;
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
     final result = await _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
@@ -183,7 +183,7 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     }
 
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == googlePlayinstallerSource;
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
     await checkFile.writeAsString(DateTime.now().toIso8601String());
     return _fetchIfNewer(
       info.version,
