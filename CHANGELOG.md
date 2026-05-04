@@ -11,11 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.8 (2026-04-30)
+[![GitHub release][GitHubReleaseBadge]][v0.1.8]
+
 ### Fixed
 - **Update checker** - Fixed version comparison logic that prevented users from seeing stable updates when a pre‑release existed
   - Now correctly identifies the latest stable version instead of just the newest release by date
   - Pre‑release versions are ignored in release builds (only shown in debug mode)
   - Improved semantic version parsing and comparison
+  - Check and save app version to detect first app run and app update events
+- **toEbcp** - unhandled error if state is unmounted
 
 ### Added
 - **APMR-FFP-IR-MIL reticle** - New pattern for ARGOS Sight
@@ -25,10 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - `buildHomeTable` - Unit symbols are properly localized via `.localizedSymbol`
   - `HomeScreen` - `FormattedTableData` displays localized unit symbols
   - `UnitFormatterImpl.time` - Time units now respect the current locale
+- **Help dialogs** - reusable markdown based help dialog
+  - Added help dalogs for screens: home, conditions, tables, convertors, settings, retilcle view
 
 ### Changed
 - **UnitPickerButton** - Replaced `InkWell` with `TextButton` for better accessibility and Material Design compliance
-- **Updated `_buildHomeTable` tests** - to match new behaviour 
+- **Updated `_buildHomeTable` tests** - To match new behaviour
+- **Adjustment messages helpers** - For HomeScreen ReticlePage and ReticleViewScreen
 
 ## v0.1.7 (2026-04-30)
 [![GitHub release][GitHubReleaseBadge]][v0.1.7]
@@ -336,7 +345,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.7..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.8..HEAD
+[v0.1.8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.8
 [v0.1.7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.7
 [v0.1.6]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.6
 [v0.1.5]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.5
