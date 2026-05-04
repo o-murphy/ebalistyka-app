@@ -19,15 +19,13 @@ class SideControlBlock extends StatelessWidget {
 
   Widget _fab(BuildContext context, IconData icon, VoidCallback onPressed) {
     final cs = Theme.of(context).colorScheme;
-    return ht(
-      FloatingActionButton.small(
-        elevation: 1,
-        heroTag: null,
-        backgroundColor: cs.primaryContainer,
-        foregroundColor: cs.onPrimaryContainer,
-        onPressed: onPressed,
-        child: Icon(icon, size: 20),
-      ),
+    return FloatingActionButton.small(
+      elevation: 1,
+      heroTag: null,
+      backgroundColor: cs.primaryContainer,
+      foregroundColor: cs.onPrimaryContainer,
+      onPressed: onPressed,
+      child: Icon(icon, size: 20),
     );
   }
 
