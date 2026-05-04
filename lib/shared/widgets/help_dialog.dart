@@ -20,6 +20,8 @@ class HelpData {
   static const String weaponCollectionScreen = 'weaponCollectionScreen';
   static const String ammoCollectionScreen = 'ammoCollectionScreen';
   static const String sightCollectionScreen = 'sightCollectionScreen';
+  static const String mySightsScreen = 'mySightsScreen';
+  static const String myAmmoScreen = 'myAmmoScreen';
 
   final String title;
   final String body;

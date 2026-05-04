@@ -19,6 +19,7 @@ import 'package:ebalistyka/core/models/collection_item.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_body.dart';
 import 'package:ebalistyka/features/home/sub_screens/widgets/collection_item_tile.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -157,6 +158,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
             child: Icon(IconDef.filter),
           ),
         ),
+        helpAction(context, helpId: HelpData.mySightsScreen),
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

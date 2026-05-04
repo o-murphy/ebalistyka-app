@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Help dialogs** - reusable markdown based help dialog
-  - Added help dalogs for screens: shot info, my profiles
+  - Added help dalogs for screens: `shot info`, `my profiles`
+  - Added help dalogs for collection screens: `ammo`, `weapon` and `sights` collections
+  - Added help dalogs for user's data screens: `my ammo`, `my sights` screens
 
 
 ## v0.1.8 (2026-05-04)
