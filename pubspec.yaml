@@ -96,6 +96,7 @@ flutter:
   assets:
     - assets/
     - assets/json/
+    - assets/markdown/
     - assets/markdown/en/
     - assets/markdown/uk/
     - assets/svg/logo/

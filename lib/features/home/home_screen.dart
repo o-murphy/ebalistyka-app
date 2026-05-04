@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
+import 'package:ebalistyka/shared/helpers/debugHighLight.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
@@ -59,15 +60,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Future<void> _checkIsFirstRun() async {
-    final isNewVersion = await checkIsNewVersion();
+    final versionState = await checkVersionState();
     if (!mounted) return;
-    if (isNewVersion) {
-      await _onNewVersion();
-    } else {}
-  }
-
-  Future<void> _onNewVersion() async {
-    debugPrint('changelog dialog yet not implemented');
+    if (versionState == NewVersionState.firstRun) {
+      await showHelpDialog(context, helpId: HelpData.firstRun);
+    }
   }
 
   @override
@@ -159,194 +156,197 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               child: Column(
                 children: [
                   // ── Top block ───────────────────────────────────────────────
-                  Container(
-                    width: double.infinity,
-                    height: topBlockHeight,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: cs.surfaceContainer,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(32),
-                        bottomRight: Radius.circular(32),
+                  ht(
+                    Container(
+                      width: double.infinity,
+                      height: topBlockHeight,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: cs.surfaceContainer,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(32),
+                          bottomRight: Radius.circular(32),
+                        ),
                       ),
-                    ),
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                        child: Column(
-                          children: [
-                            // Rifle / cartridge selector row
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: FilledButton.tonal(
-                                    onPressed: () =>
-                                        context.push(Routes.profiles),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            profileName,
-                                            overflow: TextOverflow.ellipsis,
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                          child: Column(
+                            children: [
+                              // Rifle / cartridge selector row
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.tonal(
+                                      onPressed: () =>
+                                          context.push(Routes.profiles),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              profileName,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
-                                        ),
-                                        const Icon(IconDef.moreHoriz),
-                                      ],
+                                          const Icon(IconDef.moreHoriz),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                if (vmState is HomeUiReady)
-                                  IconButton.filledTonal(
-                                    onPressed: () async {
-                                      final appState = ref
-                                          .read(appStateProvider)
-                                          .value;
-                                      final profile = appState?.activeProfile;
-                                      final ammo = appState?.ammo
-                                          .where(
-                                            (a) =>
-                                                a.id == profile?.ammo.targetId,
-                                          )
-                                          .firstOrNull;
-                                      final weapon = appState?.weapons
-                                          .where(
-                                            (w) =>
-                                                w.id ==
-                                                profile?.weapon.targetId,
-                                          )
-                                          .firstOrNull;
-                                      if (ammo == null) return;
-                                      final result = await context.push<Ammo?>(
-                                        Routes.profileEditAmmo,
-                                        extra: (
-                                          ammo,
-                                          weapon?.caliberInch,
-                                          weapon?.id,
-                                        ),
-                                      );
-                                      if (result != null && context.mounted) {
-                                        await ref
-                                            .read(appStateProvider.notifier)
-                                            .saveAmmo(result);
-                                      }
-                                    },
-                                    icon: const Icon(IconDef.ammo),
-                                  ),
-                              ],
-                            ),
+                                  const SizedBox(width: 8),
+                                  if (vmState is HomeUiReady)
+                                    IconButton.filledTonal(
+                                      onPressed: () async {
+                                        final appState = ref
+                                            .read(appStateProvider)
+                                            .value;
+                                        final profile = appState?.activeProfile;
+                                        final ammo = appState?.ammo
+                                            .where(
+                                              (a) =>
+                                                  a.id ==
+                                                  profile?.ammo.targetId,
+                                            )
+                                            .firstOrNull;
+                                        final weapon = appState?.weapons
+                                            .where(
+                                              (w) =>
+                                                  w.id ==
+                                                  profile?.weapon.targetId,
+                                            )
+                                            .firstOrNull;
+                                        if (ammo == null) return;
+                                        final result = await context
+                                            .push<Ammo?>(
+                                              Routes.profileEditAmmo,
+                                              extra: (
+                                                ammo,
+                                                weapon?.caliberInch,
+                                                weapon?.id,
+                                              ),
+                                            );
+                                        if (result != null && context.mounted) {
+                                          await ref
+                                              .read(appStateProvider.notifier)
+                                              .saveAmmo(result);
+                                        }
+                                      },
+                                      icon: const Icon(IconDef.ammo),
+                                    ),
+                                ],
+                              ),
 
-                            // Wind indicator + side controls
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.fromLTRB(
-                                  0,
-                                  12,
-                                  0,
-                                  12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: SideControlBlock(
-                                        topIcon: Icons.info_outline,
-                                        bottomIcon: Icons.note_add_outlined,
-                                        infoRows: [
-                                          (
-                                            IconDef.temperature,
-                                            // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
+                              // Wind indicator + side controls
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    12,
+                                    0,
+                                    12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: SideControlBlock(
+                                          topIcon: Icons.info_outline,
+                                          bottomIcon: Icons.note_add_outlined,
+                                          infoRows: [
+                                            (
+                                              IconDef.temperature,
+                                              // Colors.green,
+                                              cs.onSurface.withValues(
+                                                alpha: 0.65,
+                                              ),
+                                              l10n.temperature,
+                                              tempStr,
                                             ),
-                                            l10n.temperature,
-                                            tempStr,
-                                          ),
-                                          (
-                                            IconDef.altitude,
-                                            // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
+                                            (
+                                              IconDef.altitude,
+                                              // Colors.green,
+                                              cs.onSurface.withValues(
+                                                alpha: 0.65,
+                                              ),
+                                              l10n.altitude,
+                                              altStr,
                                             ),
-                                            l10n.altitude,
-                                            altStr,
-                                          ),
-                                        ],
-                                        onTopPressed: () =>
-                                            context.push(Routes.shotInfo),
-                                        onBottomPressed: () =>
-                                            showNotAvailableSnackBar(
-                                              context,
-                                              l10n.notesScreenTitle,
-                                            ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: WindIndicator(
-                                        initialAngle: windInitialAngle,
-                                        onAngleChanged: (degrees, _) {
-                                          unawaited(
-                                            ref
-                                                .read(homeVmProvider.notifier)
-                                                .updateWindDirection(degrees),
-                                          );
-                                        },
-                                        onDirectionTap: (deg) =>
-                                            showUnitEditDialog(
-                                              getWindDirCtx(deg),
-                                            ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: SideControlBlock(
-                                        topIcon: IconDef.help,
-                                        bottomIcon: IconDef.moreHoriz,
-                                        infoRows: [
-                                          (
-                                            IconDef.humidity,
-                                            // Colors.blue,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
-                                            l10n.humidity,
-                                            humidStr,
-                                          ),
-                                          (
-                                            IconDef.velocity,
-                                            // Colors.red,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
-                                            l10n.pressure,
-                                            pressStr,
-                                          ),
-                                        ],
-                                        onTopPressed: () => showHelpDialog(
-                                          context,
-                                          title: l10n.helpTitle,
-                                          helpId: HelpData.homeScreen,
+                                          ],
+                                          onTopPressed: () =>
+                                              context.push(Routes.shotInfo),
+                                          onBottomPressed: () =>
+                                              showNotAvailableSnackBar(
+                                                context,
+                                                l10n.notesScreenTitle,
+                                              ),
                                         ),
-                                        onBottomPressed: () =>
-                                            showNotAvailableSnackBar(
-                                              context,
-                                              l10n.toolsScreenTitle,
-                                            ),
                                       ),
-                                    ),
-                                  ],
+                                      Expanded(
+                                        flex: 3,
+                                        child: WindIndicator(
+                                          initialAngle: windInitialAngle,
+                                          onAngleChanged: (degrees, _) {
+                                            unawaited(
+                                              ref
+                                                  .read(homeVmProvider.notifier)
+                                                  .updateWindDirection(degrees),
+                                            );
+                                          },
+                                          onDirectionTap: (deg) =>
+                                              showUnitEditDialog(
+                                                getWindDirCtx(deg),
+                                              ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: SideControlBlock(
+                                          topIcon: IconDef.help,
+                                          bottomIcon: IconDef.moreHoriz,
+                                          infoRows: [
+                                            (
+                                              IconDef.humidity,
+                                              // Colors.blue,
+                                              cs.onSurface.withValues(
+                                                alpha: 0.65,
+                                              ),
+                                              l10n.humidity,
+                                              humidStr,
+                                            ),
+                                            (
+                                              IconDef.velocity,
+                                              // Colors.red,
+                                              cs.onSurface.withValues(
+                                                alpha: 0.65,
+                                              ),
+                                              l10n.pressure,
+                                              pressStr,
+                                            ),
+                                          ],
+                                          onTopPressed: () => showHelpDialog(
+                                            context,
+                                            helpId: HelpData.homeScreen,
+                                          ),
+                                          onBottomPressed: () =>
+                                              showNotAvailableSnackBar(
+                                                context,
+                                                l10n.toolsScreenTitle,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
 
-                            SizedBox(
-                              height: 80,
-                              child: const QuickActionsPanel(),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 80,
+                                child: const QuickActionsPanel(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

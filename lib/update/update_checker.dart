@@ -12,7 +12,9 @@ import 'package:path_provider/path_provider.dart';
 
 // ── App update ────────────────────────────────────────────────────────────────
 
-Future<bool> checkIsNewVersion() async {
+enum NewVersionState { firstRun, updated, none }
+
+Future<NewVersionState> checkVersionState() async {
   final info = await PackageInfo.fromPlatform();
   final currentVersion = info.version;
 
@@ -32,20 +34,20 @@ Future<bool> checkIsNewVersion() async {
 
     if (savedVersion.trim() == currentVersion) {
       debugPrint('→ Version matches, NOT first run');
-      return false; // версія співпадає -> не перший запуск
+      return NewVersionState.none;
     } else {
       debugPrint(
         '→ Version mismatch (saved: "$savedVersion", current: "$currentVersion"), updating and RETURN true',
       );
       await file.writeAsString(currentVersion);
-      return true;
+      return NewVersionState.updated;
     }
   } else {
     debugPrint(
       '→ File not exists, creating with version "$currentVersion" and RETURN true',
     );
     await file.writeAsString(currentVersion);
-    return true;
+    return NewVersionState.firstRun;
   }
 }
 

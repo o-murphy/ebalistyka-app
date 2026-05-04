@@ -81,8 +81,8 @@ class HomeReticlePage extends ConsumerWidget {
                   child: Center(
                     child: AspectRatio(
                       aspectRatio: 1.0,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
                         onTap: () => context.push(Routes.reticleView),
                         child: ReticleView(
                           reticleImageId: rs.reticleId,

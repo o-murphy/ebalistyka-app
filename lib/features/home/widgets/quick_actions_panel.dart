@@ -6,6 +6,7 @@ import 'package:ebalistyka/core/providers/formatter_provider.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/providers/shot_conditions_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/helpers/debugHighLight.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
@@ -65,50 +66,58 @@ class QuickActionsPanel extends ConsumerWidget {
       onChanged: (v) => notifier.updateDistance(v!),
     );
 
-    return IconValueButtonRow(
-      height: 104,
-      items: [
-        GestureDetector(
-          child: IconValueButton(
-            icon: IconDef.windSpeed,
-            value: windDisplay,
-            label: l10n.windSpeed,
-            heroTag: 'qa-wind',
-            onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
+    return ht(
+      IconValueButtonRow(
+        height: 104,
+        items: [
+          ht(
+            GestureDetector(
+              child: IconValueButton(
+                icon: IconDef.windSpeed,
+                value: windDisplay,
+                label: l10n.windSpeed,
+                heroTag: 'qa-wind',
+                onTap: () => showUnitHybridPickerDialog(windSpeedCtx),
+              ),
+              onLongPress: () {
+                if (windSpeedCtx.rawValue != 0.0) {
+                  windSpeedCtx.onChanged(0.0);
+                  showFeedback(context, l10n.windSpeedWasReset);
+                }
+              },
+            ),
           ),
-          onLongPress: () {
-            if (windSpeedCtx.rawValue != 0.0) {
-              windSpeedCtx.onChanged(0.0);
-              showFeedback(context, l10n.windSpeedWasReset);
-            }
-          },
-        ),
-        GestureDetector(
-          child: IconValueButton(
-            icon: IconDef.angle,
-            value: lookDisplay,
-            label: l10n.lookAngle,
-            heroTag: 'qa-angle',
-            onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
+          ht(
+            GestureDetector(
+              child: IconValueButton(
+                icon: IconDef.angle,
+                value: lookDisplay,
+                label: l10n.lookAngle,
+                heroTag: 'qa-angle',
+                onTap: () => showUnitHybridPickerDialog(lookAngleCtx),
+              ),
+              onLongPress: () {
+                if (lookAngleCtx.rawValue != 0.0) {
+                  lookAngleCtx.onChanged(0.0);
+                  showFeedback(context, l10n.lookAngleWasReset);
+                }
+              },
+            ),
           ),
-          onLongPress: () {
-            if (lookAngleCtx.rawValue != 0.0) {
-              lookAngleCtx.onChanged(0.0);
-              showFeedback(context, l10n.lookAngleWasReset);
-            }
-          },
-        ),
-        GestureDetector(
-          child: IconValueButton(
-            icon: IconDef.range,
-            value: distDisplay,
-            label: l10n.targetRange,
-            heroTag: 'qa-range',
-            onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
+          ht(
+            GestureDetector(
+              child: IconValueButton(
+                icon: IconDef.range,
+                value: distDisplay,
+                label: l10n.targetRange,
+                heroTag: 'qa-range',
+                onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
+              ),
+              // onLongPress: () => targetRangeCtx.onChanged(0.0),
+            ),
           ),
-          // onLongPress: () => targetRangeCtx.onChanged(0.0),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

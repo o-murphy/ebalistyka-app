@@ -61,13 +61,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     return BaseScreen(
       title: l10n.conditionsScreenTitle,
-      actions: [
-        helpAction(
-          context,
-          title: l10n.helpTitle,
-          helpId: HelpData.conditionsScreen,
-        ),
-      ],
+      actions: [helpAction(context, helpId: HelpData.conditionsScreen)],
       body: ListView(
         children: [
           // ── Temperature — big centred control ──────────────────────────

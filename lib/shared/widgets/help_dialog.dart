@@ -2,79 +2,80 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class HelpData {
+  static const String firstRun = 'firstRun';
   static const String homeScreen = 'homeScreen';
   static const String conditionsScreen = 'conditionsScreen';
+
+  final String title;
+  final String body;
+
+  const HelpData._({required this.title, required this.body});
+
+  static Future<HelpData?> load(String id, AppLocalizations l10n) async {
+    try {
+      final markdown = await rootBundle.loadString(
+        'assets/markdown/${l10n.localeName}/$id.md',
+      );
+      return _parse(markdown, l10n.helpTitle);
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
+  static HelpData _parse(String markdown, String fallbackTitle) {
+    final re = RegExp(r'^#{1,6}\s+(.+)$', multiLine: true);
+    final match = re.firstMatch(markdown);
+    if (match == null) return HelpData._(title: fallbackTitle, body: markdown);
+    return HelpData._(
+      title: match.group(1)!.trim(),
+      body: markdown.replaceFirst(match.group(0)!, '').trimLeft(),
+    );
+  }
 }
 
-Widget helpAction(BuildContext context, {String? title, String? helpId}) {
+Widget helpAction(BuildContext context, {String? helpId}) {
   return IconButton(
-    onPressed: () => showHelpDialog(context, title: title, helpId: helpId),
+    onPressed: () => showHelpDialog(context, helpId: helpId),
     icon: Icon(IconDef.help),
   );
 }
 
-Future<void> showHelpDialog(
-  BuildContext context, {
-  String? title,
-  String? helpId,
-}) async {
+Future<void> showHelpDialog(BuildContext context, {String? helpId}) async {
   final l10n = AppLocalizations.of(context)!;
 
   if (helpId == null) {
     return showNotAvailableSnackBar(context, l10n.helpButton);
   }
 
-  final String markdownContent;
-  try {
-    markdownContent = await rootBundle.loadString(
-      'assets/markdown/${l10n.localeName}/$helpId.md',
-    );
-  } catch (e) {
-    debugPrint(e.toString());
-    return showNotAvailableSnackBar(context, l10n.helpButton);
-  }
+  final data = await HelpData.load(helpId, l10n);
 
   if (!context.mounted) return;
 
-  final actualTitle = (title ?? l10n.helpTitle);
+  if (data == null) {
+    return showNotAvailableSnackBar(context, l10n.helpButton);
+  }
 
   await showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  actualTitle,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 300,
-                  width: double.maxFinite,
-                  child: Markdown(data: markdownContent, selectable: true),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.closeButton),
-                ),
-              ],
-            ),
-          ),
+    builder: (context) {
+      return AlertDialog(
+        insetPadding: const EdgeInsets.all(24),
+        title: Text(data.title),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: SingleChildScrollView(child: MarkdownBody(data: data.body)),
         ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.closeButton),
+          ),
+        ],
       );
     },
   );
