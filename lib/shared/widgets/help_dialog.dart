@@ -9,6 +9,7 @@ class HelpData {
   static const String firstRun = 'firstRun';
   static const String homeScreen = 'homeScreen';
   static const String conditionsScreen = 'conditionsScreen';
+  static const String tablesScreen = 'tablesScreen';
 
   final String title;
   final String body;
@@ -16,15 +17,16 @@ class HelpData {
   const HelpData._({required this.title, required this.body});
 
   static Future<HelpData?> load(String id, AppLocalizations l10n) async {
-    try {
-      final markdown = await rootBundle.loadString(
-        'assets/markdown/${l10n.localeName}/$id.md',
-      );
-      return _parse(markdown, l10n.helpTitle);
-    } catch (e) {
-      debugPrint(e.toString());
-      return null;
+    for (final locale in [l10n.localeName, 'en']) {
+      try {
+        final markdown = await rootBundle.loadString(
+          'assets/markdown/$locale/$id.md',
+        );
+        return _parse(markdown, l10n.helpTitle);
+      } catch (_) {}
     }
+    debugPrint('HelpData: no markdown found for "$id"');
+    return null;
   }
 
   static HelpData _parse(String markdown, String fallbackTitle) {

@@ -5,6 +5,7 @@ import 'package:ebalistyka/features/tables/widgets/details_table.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +42,7 @@ class TablesScreen extends ConsumerWidget {
                   onPressed: () => _onShare(context, ref),
                   tooltip: l10n.tooltipShare,
                 ),
+                helpAction(context, helpId: HelpData.tablesScreen),
               ],
               withTabs: [
                 Tab(text: l10n.tabTrajectory),
