@@ -22,6 +22,9 @@ class HelpData {
   static const String sightCollectionScreen = 'sightCollectionScreen';
   static const String mySightsScreen = 'mySightsScreen';
   static const String myAmmoScreen = 'myAmmoScreen';
+  static const String multiBcEditor = 'multiBcEditor';
+  static const String customDragEditor = 'customDragEditor';
+  static const String powderSensEditor = 'powderSensEditor';
 
   final String title;
   final String body;

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Added help dalogs for screens: `shot info`, `my profiles`
   - Added help dalogs for collection screens: `ammo`, `weapon` and `sights` collections
   - Added help dalogs for user's data screens: `my ammo`, `my sights` screens
+  - Added help dalogs for data table editors screens: `multi bc`, `custom drag` and `powder sensitivity` screens
 
 
 ## v0.1.8 (2026-05-04)

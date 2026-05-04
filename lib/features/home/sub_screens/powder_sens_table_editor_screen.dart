@@ -4,6 +4,7 @@ import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,6 +125,7 @@ class _PowderSensTableEditorScreenState
       headerChild: _SensitivityPreview(sensitivity: _preview),
       onRowsParsed: _onRowsChanged,
       footerText: l10n.nonPositiveRowsHint,
+      actions: [helpAction(context, helpId: HelpData.powderSensEditor)],
       onSave: (rawRows) {
         final table = rawRows
             .map(

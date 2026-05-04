@@ -36,6 +36,7 @@ class TwoColumnTableEditorScreen extends StatefulWidget {
     this.headerChild,
     this.onRowsParsed,
     this.footerText,
+    this.actions,
     super.key,
   });
 
@@ -71,6 +72,8 @@ class TwoColumnTableEditorScreen extends StatefulWidget {
 
   /// Footer note shown below the rows when `!readOnly`.
   final String? footerText;
+
+  final List<Widget>? actions;
 
   final void Function(List<(double, double)>) onSave;
   final VoidCallback onDiscard;
@@ -160,6 +163,7 @@ class _TwoColumnTableEditorScreenState
       title: widget.title,
       isSubscreen: true,
       showBack: false,
+      actions: widget.actions,
       bottomBar: _TableActionBar(
         readOnly: widget.readOnly,
         onDiscard: widget.onDiscard,

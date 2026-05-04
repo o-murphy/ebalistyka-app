@@ -6,6 +6,7 @@ import 'package:ebalistyka/core/providers/settings_provider.dart';
 import 'package:ebalistyka/core/extensions/unit_label_extensions.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/ui_dimensions.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/two_column_table_editor.dart';
 import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,6 +74,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
       initialRows: initialRows,
       sortAscending: false,
       footerText: l10n.twoColumnEditorFooter,
+      actions: [helpAction(context, helpId: HelpData.multiBcEditor)],
       onSave: (rows) {
         final result = rows
             .map(
@@ -126,6 +128,7 @@ class CustomDragTableEditorScreen extends StatelessWidget {
       initialRows: initialRows,
       sortAscending: true,
       readOnly: readOnly,
+      actions: [helpAction(context, helpId: HelpData.customDragEditor)],
       onSave: (rows) {
         final result = rows.map((r) => (mach: r.$1, cd: r.$2)).toList();
         context.pop<List<({double mach, double cd})>>(result);
