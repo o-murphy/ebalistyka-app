@@ -11,6 +11,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,6 +42,7 @@ class WeaponCollectionScreen extends ConsumerWidget {
             ),
           ),
         ),
+        helpAction(context, helpId: HelpData.weaponCollectionScreen),
       ],
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

@@ -17,6 +17,9 @@ class HelpData {
   static const String angularConvertor = 'angularConvertor';
   static const String reticleScreen = 'reticleScreen';
   static const String profilesScreen = 'profilesScreen';
+  static const String weaponCollectionScreen = 'weaponCollectionScreen';
+  static const String ammoCollectionScreen = 'ammoCollectionScreen';
+  static const String sightCollectionScreen = 'sightCollectionScreen';
 
   final String title;
   final String body;
