@@ -10,6 +10,7 @@ class HelpData {
   static const String homeScreen = 'homeScreen';
   static const String conditionsScreen = 'conditionsScreen';
   static const String tablesScreen = 'tablesScreen';
+  static const String settingsScreen = 'settingsScreen';
 
   final String title;
   final String body;
