@@ -1,6 +1,7 @@
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/router.dart';
@@ -67,6 +68,7 @@ class ConvertorScreen extends StatelessWidget {
 
     return BaseScreen(
       title: l10n.convertorsScreenTitle,
+      actions: [helpAction(context, helpId: HelpData.convertorsScreen)],
       body: Align(
         alignment: Alignment.topCenter,
         child: GridView.builder(

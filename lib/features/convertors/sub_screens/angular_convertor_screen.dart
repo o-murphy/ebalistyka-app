@@ -3,6 +3,7 @@ import 'package:ebalistyka/features/convertors/angular_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/unit_picker_tile.dart';
@@ -23,6 +24,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.anglesConvertorTitle,
       isSubscreen: true,
+      actions: [helpAction(context, helpId: HelpData.angularConvertor)],
       body: ListView(
         children: [
           ValueInputWithUnitPicker(

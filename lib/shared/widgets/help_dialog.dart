@@ -11,6 +11,10 @@ class HelpData {
   static const String conditionsScreen = 'conditionsScreen';
   static const String tablesScreen = 'tablesScreen';
   static const String settingsScreen = 'settingsScreen';
+  static const String convertorsScreen = 'convertorsScreen';
+  static const String velocityConvertor = 'velocityConvertor';
+  static const String targetDistanceConvertor = 'targetDistanceConvertor';
+  static const String angularConvertor = 'angularConvertor';
 
   final String title;
   final String body;
