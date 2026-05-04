@@ -176,7 +176,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     label: Text(l10n.actionExportBackup),
                     onPressed: () async {
                       final file = EbcpService.buildFullExport(ref);
-                      await EbcpService.shareFile(file, 'ebalistyka_backup');
+                      final messenger = ScaffoldMessenger.of(context);
+                      final errorColor =
+                          Theme.of(context).colorScheme.error;
+                      try {
+                        await EbcpService.shareFile(file, 'ebalistyka_backup');
+                      } catch (e) {
+                        messenger.showSnackBar(SnackBar(
+                          content: Text(e.toString()),
+                          backgroundColor: errorColor,
+                          duration: const Duration(seconds: 2),
+                        ));
+                      }
                     },
                   ),
                 ),

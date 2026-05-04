@@ -96,7 +96,11 @@ class MySightsCollectionScreen extends ConsumerWidget {
       items: [EbcpItem.fromSight(SightExport.fromEntity(item))],
     );
     if (!context.mounted) return;
-    await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(item.name));
+    try {
+      await EbcpService.shareFile(ebcp, EbcpService.sanitizeName(item.name));
+    } catch (e) {
+      if (context.mounted) showFeedback(context, e.toString(), isError: true);
+    }
   }
 
   @override

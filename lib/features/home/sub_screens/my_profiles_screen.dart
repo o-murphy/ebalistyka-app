@@ -209,10 +209,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
           title: '.ebcp (eBalistyka)',
           onTap: () async {
             final ebcp = EbcpFile(items: [EbcpItem.fromProfile(profileExport)]);
-            await EbcpService.shareFile(
-              ebcp,
-              EbcpService.sanitizeName(profile.name),
-            );
+            final messenger = ScaffoldMessenger.of(context);
+            final errorColor = Theme.of(context).colorScheme.error;
+            try {
+              await EbcpService.shareFile(
+                ebcp,
+                EbcpService.sanitizeName(profile.name),
+              );
+            } catch (e) {
+              messenger.showSnackBar(SnackBar(
+                content: Text(e.toString()),
+                backgroundColor: errorColor,
+                duration: const Duration(seconds: 2),
+              ));
+            }
           },
         ),
         ActionSheetItem(

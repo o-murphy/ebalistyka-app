@@ -17,7 +17,7 @@
 
 ### Умови середовища
 
-![Умови середовища](resource:assets/markdown/uk/homeScreen_side_controls.png)
+![Умови середовища](resource:assets/markdown/uk/homeScreen_sideControls.png)
 
 По боках від індикатора вітру відображаються поточні атмосферні умови:
 
@@ -43,7 +43,7 @@
 
 ### Швидкі дії
 
-![Швидкі дії](resource:assets/markdown/uk/homeScreen_quick_actions.png)
+![Швидкі дії](resource:assets/markdown/uk/homeScreen_quickActions.png)
 
 Три кнопки під індикатором вітру для найчастіших змін:
 
