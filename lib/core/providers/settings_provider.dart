@@ -40,8 +40,14 @@ class SettingsNotifier extends AsyncNotifier<GeneralSettings> {
         .build()
         .findFirst();
     if (existing != null) return existing;
+    final systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+    final resolvedLocale = AppLocalizations.supportedLocales.firstWhere(
+      (l) => l.languageCode == systemLocale.languageCode,
+      orElse: () => const Locale('en'),
+    );
     final s = GeneralSettings()
       ..owner.target = owner
+      ..languageCode = resolvedLocale.languageCode
       ..homeShowMil = true
       ..homeShowMoa = true
       ..homeShowCmPer100m = true
