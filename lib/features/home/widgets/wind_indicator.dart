@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:ebalistyka/l10n/app_localizations.dart';
-import 'package:ebalistyka/shared/helpers/debugHighLight.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:flutter/material.dart';
 
@@ -125,44 +124,41 @@ class _WindIndicatorState extends State<WindIndicator>
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
-        return ht(
-          Listener(
-            onPointerDown: (event) {
-              final center = Offset(size.width / 2, size.height / 2);
-              final dist = (event.localPosition - center).distance;
-              final innerR = min(size.width, size.height) * 0.5 * 0.8;
-              if (dist < innerR * 0.4) {
-                if (widget.onDirectionTap != null) {
-                  double deg = (angle * 180 / pi + 90) % 360;
-                  if (deg < 0) deg += 360;
-                  widget.onDirectionTap!(deg.roundToDouble());
-                }
-              } else {
-                _snapToAngle(_angleFromPosition(event.localPosition, size));
+        return Listener(
+          onPointerDown: (event) {
+            final center = Offset(size.width / 2, size.height / 2);
+            final dist = (event.localPosition - center).distance;
+            final innerR = min(size.width, size.height) * 0.5 * 0.8;
+            if (dist < innerR * 0.4) {
+              if (widget.onDirectionTap != null) {
+                double deg = (angle * 180 / pi + 90) % 360;
+                if (deg < 0) deg += 360;
+                widget.onDirectionTap!(deg.roundToDouble());
               }
+            } else {
+              _snapToAngle(_angleFromPosition(event.localPosition, size));
+            }
+          },
+          child: GestureDetector(
+            onDoubleTap: _reset,
+            onPanStart: (details) {
+              _snapController.stop();
+              setState(
+                () => angle = _angleFromPosition(details.localPosition, size),
+              );
             },
-            child: GestureDetector(
-              onDoubleTap: _reset,
-              onPanStart: (details) {
-                _snapController.stop();
-                setState(
-                  () => angle = _angleFromPosition(details.localPosition, size),
-                );
-              },
-              onPanUpdate: (details) =>
-                  _updateAngle(details.localPosition, size),
-              onPanEnd: (_) => _commit(),
-              child: CustomPaint(
-                painter: WindPainter(
-                  angle: angle,
-                  color: cs.onSurface,
-                  primaryColor: cs.primary,
-                  markerFillColor: cs.primaryContainer,
-                  markerIconColor: cs.onPrimaryContainer,
-                  l10n: l10n,
-                ),
-                child: const SizedBox.expand(),
+            onPanUpdate: (details) => _updateAngle(details.localPosition, size),
+            onPanEnd: (_) => _commit(),
+            child: CustomPaint(
+              painter: WindPainter(
+                angle: angle,
+                color: cs.onSurface,
+                primaryColor: cs.primary,
+                markerFillColor: cs.primaryContainer,
+                markerIconColor: cs.onPrimaryContainer,
+                l10n: l10n,
               ),
+              child: const SizedBox.expand(),
             ),
           ),
         );

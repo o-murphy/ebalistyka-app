@@ -157,6 +157,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }
 
   void _rebuild() {
+    if (!ref.mounted) {
+      return;
+    }
     final result = _lastResult;
     final profile = _lastProfile;
     if (result == null || profile == null) return;

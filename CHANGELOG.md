@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Improved semantic version parsing and comparison
   - Check and save app version to detect first app run and app update events
 - **toEbcp** - unhandled error if state is unmounted
+- **TrajectoryTablesViewModel._rebuild** - is `ref.mounted` protector
 
 ### Added
 - **APMR-FFP-IR-MIL reticle** - New pattern for ARGOS Sight

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
-import 'package:ebalistyka/shared/helpers/debugHighLight.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/help_dialog.dart';
@@ -156,7 +155,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               child: Column(
                 children: [
                   // ── Top block ───────────────────────────────────────────────
-                  // ht(
                   Container(
                     width: double.infinity,
                     height: topBlockHeight,
@@ -174,70 +172,66 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         child: Column(
                           children: [
                             // Rifle / cartridge selector row
-                            ht(
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: FilledButton.tonal(
-                                      onPressed: () =>
-                                          context.push(Routes.profiles),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              profileName,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton.tonal(
+                                    onPressed: () =>
+                                        context.push(Routes.profiles),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            profileName,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Icon(IconDef.moreHoriz),
-                                        ],
-                                      ),
+                                        ),
+                                        const Icon(IconDef.moreHoriz),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  if (vmState is HomeUiReady)
-                                    IconButton.filledTonal(
-                                      onPressed: () async {
-                                        final appState = ref
-                                            .read(appStateProvider)
-                                            .value;
-                                        final profile = appState?.activeProfile;
-                                        final ammo = appState?.ammo
-                                            .where(
-                                              (a) =>
-                                                  a.id ==
-                                                  profile?.ammo.targetId,
-                                            )
-                                            .firstOrNull;
-                                        final weapon = appState?.weapons
-                                            .where(
-                                              (w) =>
-                                                  w.id ==
-                                                  profile?.weapon.targetId,
-                                            )
-                                            .firstOrNull;
-                                        if (ammo == null) return;
-                                        final result = await context
-                                            .push<Ammo?>(
-                                              Routes.profileEditAmmo,
-                                              extra: (
-                                                ammo,
-                                                weapon?.caliberInch,
-                                                weapon?.id,
-                                              ),
-                                            );
-                                        if (result != null && context.mounted) {
-                                          await ref
-                                              .read(appStateProvider.notifier)
-                                              .saveAmmo(result);
-                                        }
-                                      },
-                                      icon: const Icon(IconDef.ammo),
-                                    ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (vmState is HomeUiReady)
+                                  IconButton.filledTonal(
+                                    onPressed: () async {
+                                      final appState = ref
+                                          .read(appStateProvider)
+                                          .value;
+                                      final profile = appState?.activeProfile;
+                                      final ammo = appState?.ammo
+                                          .where(
+                                            (a) =>
+                                                a.id == profile?.ammo.targetId,
+                                          )
+                                          .firstOrNull;
+                                      final weapon = appState?.weapons
+                                          .where(
+                                            (w) =>
+                                                w.id ==
+                                                profile?.weapon.targetId,
+                                          )
+                                          .firstOrNull;
+                                      if (ammo == null) return;
+                                      final result = await context.push<Ammo?>(
+                                        Routes.profileEditAmmo,
+                                        extra: (
+                                          ammo,
+                                          weapon?.caliberInch,
+                                          weapon?.id,
+                                        ),
+                                      );
+                                      if (result != null && context.mounted) {
+                                        await ref
+                                            .read(appStateProvider.notifier)
+                                            .saveAmmo(result);
+                                      }
+                                    },
+                                    icon: const Icon(IconDef.ammo),
+                                  ),
+                              ],
                             ),
 
                             // Wind indicator + side controls
@@ -344,7 +338,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       ),
                     ),
                   ),
-                  // ),
 
                   // ── Central block — 3 pages ───────────────────────────────────
                   SizedBox(
