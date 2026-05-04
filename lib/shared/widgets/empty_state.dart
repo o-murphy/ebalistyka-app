@@ -50,7 +50,7 @@ class EmptyStatePlaceholder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(type.icon, size: 40, color: color.withValues(alpha: 0.5)),
+          Icon(type.icon, size: 40, color: color.withAlpha(127)),
           const SizedBox(height: 12),
           Text(
             message ?? type.defaultMessage,

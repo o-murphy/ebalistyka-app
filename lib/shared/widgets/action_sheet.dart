@@ -132,7 +132,7 @@ class _ActionSheetItem extends StatelessWidget {
           ? Icon(
               icon,
               color: isDisabled
-                  ? cs.onSurface.withValues(alpha: 0.38)
+                  ? cs.onSurface.withAlpha(96)
                   : isDestructive
                   ? cs.error
                   : null,
@@ -142,7 +142,7 @@ class _ActionSheetItem extends StatelessWidget {
         title,
         style: TextStyle(
           color: isDisabled
-              ? cs.onSurface.withValues(alpha: 0.38)
+              ? cs.onSurface.withAlpha(96)
               : isDestructive
               ? cs.error
               : null,
@@ -153,7 +153,7 @@ class _ActionSheetItem extends StatelessWidget {
               subtitle!,
               style: TextStyle(
                 color: isDisabled
-                    ? cs.onSurface.withValues(alpha: 0.38)
+                    ? cs.onSurface.withAlpha(96)
                     : cs.onSurfaceVariant,
               ),
             )

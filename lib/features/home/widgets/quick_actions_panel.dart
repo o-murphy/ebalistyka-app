@@ -83,6 +83,7 @@ class QuickActionsPanel extends ConsumerWidget {
             }
           },
         ),
+
         GestureDetector(
           child: IconValueButton(
             icon: IconDef.angle,
@@ -98,6 +99,7 @@ class QuickActionsPanel extends ConsumerWidget {
             }
           },
         ),
+
         GestureDetector(
           child: IconValueButton(
             icon: IconDef.range,
@@ -106,7 +108,6 @@ class QuickActionsPanel extends ConsumerWidget {
             heroTag: 'qa-range',
             onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
           ),
-          // onLongPress: () => targetRangeCtx.onChanged(0.0),
         ),
       ],
     );

@@ -376,6 +376,8 @@
     "@printButton": {"description": "Button label to print / export as PDF"},
     "helpButton": "Help",
     "@helpButton": {"description": "Button label / tooltip for the help action"},
+    "helpTitle": "Help",
+    "@helpTitle": {"description": "Help dialog title"},
     "selectButton": "Select",
     "@selectButton": {"description": "Button label to confirm a selection"},
     "backTooltip": "Back",

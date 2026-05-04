@@ -21,6 +21,7 @@ import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka_db/ebalistyka_db.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _packageInfoProvider = FutureProvider<PackageInfo>(
@@ -85,6 +86,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return BaseScreen(
       title: l10n.settingsScreenTitle,
+      actions: [helpAction(context, helpId: HelpData.settingsScreen)],
       body: ListView(
         children: [
           // ── Language ───────────────────────────────────────────────────
@@ -176,7 +178,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     label: Text(l10n.actionExportBackup),
                     onPressed: () async {
                       final file = EbcpService.buildFullExport(ref);
-                      await EbcpService.shareFile(file, 'ebalistyka_backup');
+                      final messenger = ScaffoldMessenger.of(context);
+                      final errorColor = Theme.of(context).colorScheme.error;
+                      try {
+                        await EbcpService.shareFile(file, 'ebalistyka_backup');
+                      } catch (e) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),

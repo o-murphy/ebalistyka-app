@@ -1196,6 +1196,12 @@ abstract class AppLocalizations {
   /// **'Help'**
   String get helpButton;
 
+  /// Help dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get helpTitle;
+
   /// Button label to confirm a selection
   ///
   /// In en, this message translates to:

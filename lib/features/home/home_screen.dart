@@ -5,6 +5,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/constants/null_string.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/snackbars.dart';
 import 'package:ebalistyka/shared/widgets/pages_dots_indicator.dart';
 import 'package:ebalistyka/shared/widgets/unit_constrained_input_dialog.dart';
@@ -25,6 +26,7 @@ import 'package:ebalistyka/features/home/widgets/quick_actions_panel.dart';
 import 'package:ebalistyka/features/home/widgets/side_control_block.dart';
 import 'package:ebalistyka/features/home/widgets/wind_indicator.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
+import 'package:ebalistyka/update/update_checker.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +51,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     TweenSequenceItem(tween: ConstantTween(1.0), weight: 30),
     TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 60),
   ]).animate(_calcDoneCtrl);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkIsFirstRun());
+  }
+
+  Future<void> _checkIsFirstRun() async {
+    final versionState = await checkVersionState();
+    if (!mounted) return;
+    if (versionState == NewVersionState.firstRun) {
+      await showHelpDialog(context, helpId: HelpData.firstRun);
+    }
+  }
 
   @override
   void dispose() {
@@ -238,18 +254,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                           (
                                             IconDef.temperature,
                                             // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.temperature,
                                             tempStr,
                                           ),
                                           (
                                             IconDef.altitude,
                                             // Colors.green,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.altitude,
                                             altStr,
                                           ),
@@ -283,33 +295,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     Expanded(
                                       flex: 1,
                                       child: SideControlBlock(
-                                        topIcon: Icons.question_mark_outlined,
+                                        topIcon: IconDef.help,
                                         bottomIcon: IconDef.moreHoriz,
                                         infoRows: [
                                           (
                                             IconDef.humidity,
                                             // Colors.blue,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.humidity,
                                             humidStr,
                                           ),
                                           (
                                             IconDef.velocity,
                                             // Colors.red,
-                                            cs.onSurface.withValues(
-                                              alpha: 0.65,
-                                            ),
+                                            cs.onSurface.withAlpha(166),
                                             l10n.pressure,
                                             pressStr,
                                           ),
                                         ],
-                                        onTopPressed: () =>
-                                            showNotAvailableSnackBar(
-                                              context,
-                                              l10n.helpButton,
-                                            ),
+                                        onTopPressed: () => showHelpDialog(
+                                          context,
+                                          helpId: HelpData.homeScreen,
+                                        ),
                                         onBottomPressed: () =>
                                             showNotAvailableSnackBar(
                                               context,

@@ -168,7 +168,7 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
             child: Container(
               height: 44,
               decoration: BoxDecoration(
-                color: cs.primaryContainer.withValues(alpha: 0.3),
+                color: cs.primaryContainer.withAlpha(76),
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
@@ -190,7 +190,7 @@ class _UnitWheelPickerWidgetState extends State<UnitWheelPickerWidget> {
                     style: tt.titleLarge?.copyWith(
                       color: isSelected
                           ? cs.primary
-                          : cs.onSurface.withValues(alpha: 0.4),
+                          : cs.onSurface.withAlpha(100),
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,

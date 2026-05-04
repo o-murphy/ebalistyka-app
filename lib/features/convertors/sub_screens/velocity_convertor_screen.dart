@@ -11,6 +11,7 @@ import 'package:flutter/material.dart' hide Velocity;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
@@ -28,6 +29,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.velocityConvertorTitle,
       isSubscreen: true,
+      actions: [helpAction(context, helpId: HelpData.velocityConvertor)],
       body: ListView(
         children: [
           UnitInputWithPicker(

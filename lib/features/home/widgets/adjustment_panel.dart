@@ -224,13 +224,19 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
                 ],
               );
 
-        return Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Container(
-              padding: EdgeInsets.all(padding),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: content,
+        return InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onLongPress: () => context.push(Routes.settingsAdjustment),
+          child: Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Container(
+                padding: EdgeInsets.all(padding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: content,
+              ),
             ),
           ),
         );

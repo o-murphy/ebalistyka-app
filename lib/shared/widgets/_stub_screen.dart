@@ -17,9 +17,7 @@ class StubScreen extends StatelessWidget {
         child: Text(
           title,
           style: tt.titleMedium?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.4),
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
           ),
         ),
       ),

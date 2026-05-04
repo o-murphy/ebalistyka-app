@@ -4,6 +4,7 @@ import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/models/unit_picker_context.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/coriolis_section.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/icon_value_button.dart';
 import 'package:ebalistyka/shared/widgets/powder_sens_section.dart';
 import 'package:ebalistyka/shared/widgets/unit_hybrid_picker_dialog.dart';
@@ -60,6 +61,7 @@ class ConditionsScreen extends ConsumerWidget {
 
     return BaseScreen(
       title: l10n.conditionsScreenTitle,
+      actions: [helpAction(context, helpId: HelpData.conditionsScreen)],
       body: ListView(
         children: [
           // ── Temperature — big centred control ──────────────────────────
@@ -71,6 +73,7 @@ class ConditionsScreen extends ConsumerWidget {
               onChanged: (v) => notifier.updateTemperature(v),
             ),
           ),
+
           const TileDivider(),
 
           // ── Altitude / Humidity / Pressure ────────────────────────────
@@ -106,6 +109,7 @@ class ConditionsScreen extends ConsumerWidget {
               ],
             ),
           ),
+
           const TileDivider(),
 
           // ── Powder sensitivity ─────────────────────────────────────────
@@ -120,7 +124,9 @@ class ConditionsScreen extends ConsumerWidget {
             onDiffTempToggled: notifier.setDiffPowderTemp,
             onPowderTempChanged: notifier.updatePowderTemp,
           ),
+
           const TileDivider(),
+
           // ── Coriolis ───────────────────────────────────────────────────
           CoriolisSection(
             useCoriolis: state.coriolisOn,
@@ -131,6 +137,7 @@ class ConditionsScreen extends ConsumerWidget {
             onLatitudeChanged: notifier.updateLatitude,
             onAzimuthChanged: notifier.updateAzimuth,
           ),
+
           const SizedBox(height: 16),
         ],
       ),

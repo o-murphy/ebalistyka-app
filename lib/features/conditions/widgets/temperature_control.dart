@@ -69,7 +69,7 @@ class TempControl extends StatelessWidget {
               Text(
                 l10n.temperature,
                 style: tt.bodySmall?.copyWith(
-                  color: cs.onSurface.withValues(alpha: 0.55),
+                  color: cs.onSurface.withAlpha(140),
                 ),
               ),
             ],

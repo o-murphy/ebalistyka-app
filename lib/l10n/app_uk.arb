@@ -64,7 +64,7 @@
     "sectionReticle": "Сітка прицілу",
     "sectionMounting": "Кріплення",
     "sectionManualAdjustments": "Ручні поправки",
-    "sectionHoldovers": "Виноси",
+    "sectionHoldovers": "Поправки",
     "sectionTarget": "Мішень",
     "sectionMagnification": "Кратність",
 
@@ -194,6 +194,7 @@
     "dismissButton": "Закрити",
     "printButton": "Друкувати",
     "helpButton": "Допомога",
+    "helpTitle": "Допомога",
     "selectButton": "Вибрати",
     "backTooltip": "Назад",
     "tooltipConfigure": "Налаштування",

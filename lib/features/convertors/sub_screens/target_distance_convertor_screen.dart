@@ -3,6 +3,7 @@ import 'package:ebalistyka/features/convertors/target_distance_convertor_vm.dart
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/info_tile.dart';
 import 'package:ebalistyka/shared/widgets/list_section_tile.dart';
 import 'package:ebalistyka/shared/widgets/reticle_view.dart';
@@ -23,6 +24,7 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.targetDistanceConvertorTitle,
       isSubscreen: true,
+      actions: [helpAction(context, helpId: HelpData.targetDistanceConvertor)],
       body: ListView(
         children: [
           ValueInputWithUnitPicker(

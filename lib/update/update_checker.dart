@@ -12,6 +12,45 @@ import 'package:path_provider/path_provider.dart';
 
 // ── App update ────────────────────────────────────────────────────────────────
 
+enum NewVersionState { firstRun, updated, none }
+
+Future<NewVersionState> checkVersionState() async {
+  final info = await PackageInfo.fromPlatform();
+  final currentVersion = info.version;
+
+  final appSupport = await getApplicationSupportDirectory();
+  final file = File('${appSupport.path}/$versionFile');
+
+  debugPrint('===== CHECK IS NEW VERSION =====');
+  debugPrint('Path: ${file.path}');
+  debugPrint('Current version: $currentVersion');
+
+  final exists = await file.exists();
+  debugPrint('Exists: $exists');
+
+  if (exists) {
+    final savedVersion = await file.readAsString();
+    debugPrint('Saved version: "$savedVersion"');
+
+    if (savedVersion.trim() == currentVersion) {
+      debugPrint('→ Version matches, NOT first run');
+      return NewVersionState.none;
+    } else {
+      debugPrint(
+        '→ Version mismatch (saved: "$savedVersion", current: "$currentVersion"), updating and RETURN true',
+      );
+      await file.writeAsString(currentVersion);
+      return NewVersionState.updated;
+    }
+  } else {
+    debugPrint(
+      '→ File not exists, creating with version "$currentVersion" and RETURN true',
+    );
+    await file.writeAsString(currentVersion);
+    return NewVersionState.firstRun;
+  }
+}
+
 class GithubRelease {
   final String tagName;
   final String htmlUrl;
@@ -110,7 +149,7 @@ Future<GithubRelease?> _fetchIfNewer(
 Future<GithubRelease?> checkForUpdate() async {
   try {
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == googlePlayinstallerSource;
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
     final result = await _fetchIfNewer(
       info.version,
       isPlayStore: isPlayStore,
@@ -144,7 +183,7 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     }
 
     final info = await PackageInfo.fromPlatform();
-    final isPlayStore = info.installerStore == googlePlayinstallerSource;
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
     await checkFile.writeAsString(DateTime.now().toIso8601String());
     return _fetchIfNewer(
       info.version,

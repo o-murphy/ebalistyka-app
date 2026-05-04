@@ -1,4 +1,5 @@
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
+import 'package:ebalistyka/features/home/widgets/helpers.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,28 +48,8 @@ class HomeReticlePage extends ConsumerWidget {
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
           ),
         ),
-        if (rs.zeroOffsetMessageLine != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              rs.zeroOffsetMessageLine!,
-              textAlign: TextAlign.center,
-              softWrap: true,
-              overflow: TextOverflow.visible,
-              style: tt.labelMedium?.copyWith(color: cs.tertiary),
-            ),
-          ),
-        if (rs.adjustedMessageLine != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              rs.adjustedMessageLine!,
-              textAlign: TextAlign.center,
-              softWrap: true,
-              overflow: TextOverflow.visible,
-              style: tt.labelMedium?.copyWith(color: cs.tertiary),
-            ),
-          ),
+        if (rs.zeroOffsetMessageLine != null) zeroOffsetMessageLine(rs, cs, tt),
+        if (rs.adjustedMessageLine != null) adjustedMessageLine(rs, cs, tt),
 
         Expanded(
           child: Row(
@@ -81,8 +62,8 @@ class HomeReticlePage extends ConsumerWidget {
                   child: Center(
                     child: AspectRatio(
                       aspectRatio: 1.0,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
                         onTap: () => context.push(Routes.reticleView),
                         child: ReticleView(
                           reticleImageId: rs.reticleId,

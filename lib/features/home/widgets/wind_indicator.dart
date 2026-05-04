@@ -191,14 +191,14 @@ class WindPainter extends CustomPainter {
     final innerRadius = radius * 0.8;
 
     final ringPaint = Paint()
-      ..color = color.withValues(alpha: 0.1)
+      ..color = color.withAlpha(25)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius, ringPaint);
     canvas.drawCircle(
       center,
       innerRadius,
-      Paint()..color = color.withValues(alpha: 0.05),
+      Paint()..color = color.withAlpha(12),
     );
 
     for (int i = 1; i <= 12; i++) {
@@ -216,7 +216,7 @@ class WindPainter extends CustomPainter {
         tickStart,
         tickEnd,
         Paint()
-          ..color = color.withValues(alpha: 0.5)
+          ..color = color.withAlpha(127)
           ..strokeWidth = 2,
       );
 
@@ -225,7 +225,7 @@ class WindPainter extends CustomPainter {
         text: TextSpan(
           text: '$i',
           style: TextStyle(
-            color: color.withValues(alpha: 0.8),
+            color: color.withAlpha(216),
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
@@ -295,7 +295,7 @@ class WindPainter extends CustomPainter {
       markerCenter,
       markerR + 1,
       Paint()
-        ..color = Colors.black.withValues(alpha: 0.25)
+        ..color = Colors.black.withAlpha(64)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
 
@@ -344,7 +344,7 @@ class WindPainter extends CustomPainter {
     final directionTextPainter = TextPainter(
       text: TextSpan(
         text: l10n.windDirection,
-        style: TextStyle(color: color.withValues(alpha: 0.55), fontSize: 11),
+        style: TextStyle(color: color.withAlpha(140), fontSize: 11),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -378,7 +378,7 @@ class WindPainter extends CustomPainter {
     final clockTextPainter = TextPainter(
       text: TextSpan(
         text: clockStr,
-        style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 13),
+        style: TextStyle(color: color.withAlpha(216), fontSize: 13),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

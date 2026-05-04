@@ -83,6 +83,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
     ref.listen<UnitSettings>(unitSettingsProvider, (prev, next) {
       if (prev != null) _rebuild();
     }, fireImmediately: true);
+    ref.listen<AppLocalizations>(appLocalizationsProvider, (prev, next) {
+      if (prev != null) unawaited(Future(_rebuild));
+    });
     return const TrajectoryTablesUiLoading();
   }
 
@@ -154,6 +157,9 @@ class TrajectoryTablesViewModel extends AsyncNotifier<TrajectoryTablesUiState> {
   }
 
   void _rebuild() {
+    if (!ref.mounted) {
+      return;
+    }
     final result = _lastResult;
     final profile = _lastProfile;
     if (result == null || profile == null) return;

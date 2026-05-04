@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:ebalistyka/features/home/widgets/helpers.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
@@ -16,6 +17,7 @@ import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
@@ -129,6 +131,9 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+
     final targetSvgAsync = ref.watch(targetSvgProvider(_targetImage));
     final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
     final targetSizeMilAtDistance =
@@ -150,6 +155,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
         return BaseScreen(
           title: l10n.reticleScreenTitle,
           isSubscreen: true,
+          actions: [helpAction(context, helpId: HelpData.reticleScreen)],
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -165,6 +171,10 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                   child: ListView(
                     children: [
                       ListSectionTile(l10n.sectionHoldovers),
+                      if (vmState.reticleState.zeroOffsetMessageLine != null)
+                        zeroOffsetMessageLine(vmState.reticleState, cs, tt),
+                      if (vmState.reticleState.adjustedMessageLine != null)
+                        adjustedMessageLine(vmState.reticleState, cs, tt),
                       Center(
                         child: AdjustmentsDisplayPanel(
                           adjustment: vmState.reticleState.adjustment,
