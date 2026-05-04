@@ -12,11 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Added
-- **Help dialogs** - reusable markdown based help dialog
-  - Added help dalogs for screens: `shot info`, `my profiles`
-  - Added help dalogs for collection screens: `ammo`, `weapon` and `sights` collections
-  - Added help dalogs for user's data screens: `my ammo`, `my sights` screens
-  - Added help dalogs for data table editors screens: `multi bc`, `custom drag` and `powder sensitivity` screens
+- **Help dialogs** - reusable markdown-based help dialogs
+  - Added help dialogs for screens: `shot info`, `my profiles`
+  - Added help dialogs for collection screens: `ammo`, `weapon` and `sights` collections
+  - Added help dialogs for user's data screens: `my ammo`, `my sights` screens
+  - Added help dialogs for data table editor screens: `multi bc`, `custom drag` and `powder sensitivity`
+  - Added help dialogs for wizard screens: `sight`, `weapon`
 
 
 ## v0.1.8 (2026-05-04)

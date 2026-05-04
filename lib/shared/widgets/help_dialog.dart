@@ -25,6 +25,9 @@ class HelpData {
   static const String multiBcEditor = 'multiBcEditor';
   static const String customDragEditor = 'customDragEditor';
   static const String powderSensEditor = 'powderSensEditor';
+  static const String sightWizard = 'sightWizard';
+  static const String weaponWizard = 'weaponWizard';
+  static const String ammoWizard = 'ammoWizard';
 
   final String title;
   final String body;

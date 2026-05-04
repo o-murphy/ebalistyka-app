@@ -20,6 +20,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
 import 'package:ebalistyka/router.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
 class SightWizardScreen extends ConsumerStatefulWidget {
   const SightWizardScreen({this.initial, super.key});
@@ -65,6 +66,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
       title: wizardTitle(l10n.newSight),
       isSubscreen: true,
       showBack: false,
+      actions: [helpAction(context, helpId: HelpData.sightWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,

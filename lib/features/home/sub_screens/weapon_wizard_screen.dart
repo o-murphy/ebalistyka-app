@@ -19,6 +19,7 @@ import 'package:ebalistyka_db/ebalistyka_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
 class WeaponWizardScreen extends ConsumerStatefulWidget {
   const WeaponWizardScreen({this.initial, this.caliberEditable, super.key});
@@ -89,6 +90,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
       title: wizardTitle(l10n.newWeaponScreenTitle),
       isSubscreen: true,
       showBack: false,
+      actions: [helpAction(context, helpId: HelpData.weaponWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,
