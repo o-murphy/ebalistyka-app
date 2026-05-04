@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Added help dialogs for data table editor screens: `multi bc`, `custom drag` and `powder sensitivity`
   - Added help dialogs for wizard screens: `sight`, `weapon`
 
+### Changed
+- **Help button icon** - changed help button icon
+
 
 ## v0.1.8 (2026-05-04)
 [![GitHub release][GitHubReleaseBadge]][v0.1.8]
