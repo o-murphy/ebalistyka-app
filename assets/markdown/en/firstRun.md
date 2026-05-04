@@ -1,5 +1,7 @@
 ## Welcome to eBalistyka!
 
+![icon](resource:assets/markdown/icon64.png)
+
 eBalistyka is a ballistic calculator for precision shooting. It calculates scope adjustments based on your weapon, cartridge, and current conditions.
 
 **To get started:**

@@ -16,6 +16,7 @@ import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
 import 'package:ebalistyka/router.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:ebalistyka/shared/widgets/click_label.dart';
 import 'package:ebalistyka/shared/widgets/empty_state.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
@@ -150,6 +151,7 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
         return BaseScreen(
           title: l10n.reticleScreenTitle,
           isSubscreen: true,
+          actions: [helpAction(context, helpId: HelpData.reticleScreen)],
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -15,6 +15,7 @@ class HelpData {
   static const String velocityConvertor = 'velocityConvertor';
   static const String targetDistanceConvertor = 'targetDistanceConvertor';
   static const String angularConvertor = 'angularConvertor';
+  static const String reticleScreen = 'reticleScreen';
 
   final String title;
   final String body;

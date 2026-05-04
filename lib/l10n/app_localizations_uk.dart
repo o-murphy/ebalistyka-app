@@ -190,7 +190,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sectionManualAdjustments => 'Ручні поправки';
 
   @override
-  String get sectionHoldovers => 'Виноси';
+  String get sectionHoldovers => 'Поправки';
 
   @override
   String get sectionTarget => 'Мішень';
