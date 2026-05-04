@@ -113,7 +113,6 @@ class QuickActionsPanel extends ConsumerWidget {
                 heroTag: 'qa-range',
                 onTap: () => showUnitHybridPickerDialog(targetRangeCtx),
               ),
-              // onLongPress: () => targetRangeCtx.onChanged(0.0),
             ),
           ),
         ],
