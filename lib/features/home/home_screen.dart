@@ -156,24 +156,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               child: Column(
                 children: [
                   // ── Top block ───────────────────────────────────────────────
-                  ht(
-                    Container(
-                      width: double.infinity,
-                      height: topBlockHeight,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration(
-                        color: cs.surfaceContainer,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(32),
-                          bottomRight: Radius.circular(32),
-                        ),
+                  // ht(
+                  Container(
+                    width: double.infinity,
+                    height: topBlockHeight,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainer,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(32),
+                        bottomRight: Radius.circular(32),
                       ),
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                          child: Column(
-                            children: [
-                              // Rifle / cartridge selector row
+                    ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                        child: Column(
+                          children: [
+                            // Rifle / cartridge selector row
+                            ht(
                               Row(
                                 children: [
                                   Expanded(
@@ -237,120 +238,121 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                     ),
                                 ],
                               ),
+                            ),
 
-                              // Wind indicator + side controls
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    0,
-                                    12,
-                                    0,
-                                    12,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: SideControlBlock(
-                                          topIcon: Icons.info_outline,
-                                          bottomIcon: Icons.note_add_outlined,
-                                          infoRows: [
-                                            (
-                                              IconDef.temperature,
-                                              // Colors.green,
-                                              cs.onSurface.withValues(
-                                                alpha: 0.65,
-                                              ),
-                                              l10n.temperature,
-                                              tempStr,
+                            // Wind indicator + side controls
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  0,
+                                  12,
+                                  0,
+                                  12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: SideControlBlock(
+                                        topIcon: Icons.info_outline,
+                                        bottomIcon: Icons.note_add_outlined,
+                                        infoRows: [
+                                          (
+                                            IconDef.temperature,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
                                             ),
-                                            (
-                                              IconDef.altitude,
-                                              // Colors.green,
-                                              cs.onSurface.withValues(
-                                                alpha: 0.65,
-                                              ),
-                                              l10n.altitude,
-                                              altStr,
-                                            ),
-                                          ],
-                                          onTopPressed: () =>
-                                              context.push(Routes.shotInfo),
-                                          onBottomPressed: () =>
-                                              showNotAvailableSnackBar(
-                                                context,
-                                                l10n.notesScreenTitle,
-                                              ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: WindIndicator(
-                                          initialAngle: windInitialAngle,
-                                          onAngleChanged: (degrees, _) {
-                                            unawaited(
-                                              ref
-                                                  .read(homeVmProvider.notifier)
-                                                  .updateWindDirection(degrees),
-                                            );
-                                          },
-                                          onDirectionTap: (deg) =>
-                                              showUnitEditDialog(
-                                                getWindDirCtx(deg),
-                                              ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: SideControlBlock(
-                                          topIcon: IconDef.help,
-                                          bottomIcon: IconDef.moreHoriz,
-                                          infoRows: [
-                                            (
-                                              IconDef.humidity,
-                                              // Colors.blue,
-                                              cs.onSurface.withValues(
-                                                alpha: 0.65,
-                                              ),
-                                              l10n.humidity,
-                                              humidStr,
-                                            ),
-                                            (
-                                              IconDef.velocity,
-                                              // Colors.red,
-                                              cs.onSurface.withValues(
-                                                alpha: 0.65,
-                                              ),
-                                              l10n.pressure,
-                                              pressStr,
-                                            ),
-                                          ],
-                                          onTopPressed: () => showHelpDialog(
-                                            context,
-                                            helpId: HelpData.homeScreen,
+                                            l10n.temperature,
+                                            tempStr,
                                           ),
-                                          onBottomPressed: () =>
-                                              showNotAvailableSnackBar(
-                                                context,
-                                                l10n.toolsScreenTitle,
-                                              ),
-                                        ),
+                                          (
+                                            IconDef.altitude,
+                                            // Colors.green,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            l10n.altitude,
+                                            altStr,
+                                          ),
+                                        ],
+                                        onTopPressed: () =>
+                                            context.push(Routes.shotInfo),
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              l10n.notesScreenTitle,
+                                            ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: WindIndicator(
+                                        initialAngle: windInitialAngle,
+                                        onAngleChanged: (degrees, _) {
+                                          unawaited(
+                                            ref
+                                                .read(homeVmProvider.notifier)
+                                                .updateWindDirection(degrees),
+                                          );
+                                        },
+                                        onDirectionTap: (deg) =>
+                                            showUnitEditDialog(
+                                              getWindDirCtx(deg),
+                                            ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: SideControlBlock(
+                                        topIcon: IconDef.help,
+                                        bottomIcon: IconDef.moreHoriz,
+                                        infoRows: [
+                                          (
+                                            IconDef.humidity,
+                                            // Colors.blue,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            l10n.humidity,
+                                            humidStr,
+                                          ),
+                                          (
+                                            IconDef.velocity,
+                                            // Colors.red,
+                                            cs.onSurface.withValues(
+                                              alpha: 0.65,
+                                            ),
+                                            l10n.pressure,
+                                            pressStr,
+                                          ),
+                                        ],
+                                        onTopPressed: () => showHelpDialog(
+                                          context,
+                                          helpId: HelpData.homeScreen,
+                                        ),
+                                        onBottomPressed: () =>
+                                            showNotAvailableSnackBar(
+                                              context,
+                                              l10n.toolsScreenTitle,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                            ),
 
-                              SizedBox(
-                                height: 80,
-                                child: const QuickActionsPanel(),
-                              ),
-                            ],
-                          ),
+                            SizedBox(
+                              height: 80,
+                              child: const QuickActionsPanel(),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                  // ),
 
                   // ── Central block — 3 pages ───────────────────────────────────
                   SizedBox(

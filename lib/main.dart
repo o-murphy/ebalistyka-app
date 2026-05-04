@@ -153,6 +153,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'eBalistyka',
+      debugShowCheckedModeBanner: false,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

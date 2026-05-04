@@ -2,6 +2,6 @@
 
 Якщо в тебе виникнуть питання, шукай таку кнопку на екрані
 
-![helpButton](assets/markdown/helpButton.png)
+![helpButton](resource:assets/markdown/helpButton.png)
 
 Приємного користування!
