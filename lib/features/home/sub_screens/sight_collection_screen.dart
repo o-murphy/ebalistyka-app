@@ -13,6 +13,7 @@ import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
 import 'package:ebalistyka/shared/widgets/base_screen.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +49,7 @@ class SightCollectionScreen extends ConsumerWidget {
             ),
           ),
         ),
+        helpAction(context, helpId: HelpData.sightCollectionScreen),
       ],
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

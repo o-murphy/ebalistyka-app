@@ -1,3 +1,4 @@
+import 'package:ebalistyka/shared/helpers/debug_highlight.dart';
 import 'package:flutter/material.dart';
 
 class SideControlBlock extends StatelessWidget {

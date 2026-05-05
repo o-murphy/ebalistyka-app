@@ -5,6 +5,7 @@ import 'package:ebalistyka/features/home/sub_screens/ammo_wizard_notifier.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/action_sheet.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
+import 'package:ebalistyka/shared/widgets/help_dialog.dart';
 
 import 'package:bclibc_ffi/unit.dart';
 import 'package:ebalistyka/core/extensions/ammo_extensions.dart';
@@ -256,6 +257,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
       title: wizardTitle(l10n.newAmmo),
       isSubscreen: true,
       showBack: false,
+      actions: [helpAction(context, helpId: HelpData.ammoWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,

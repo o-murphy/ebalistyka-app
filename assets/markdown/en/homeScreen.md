@@ -81,3 +81,30 @@ A detailed ballistic data table by distance: velocity, energy, wind drift, time 
 ![Trajectory chart](resource:assets/markdown/en/homeScreen_pageChart.png)
 
 A visual chart of the bullet's trajectory. Lets you quickly assess the cartridge's behaviour at different distances.
+
+---
+
+### Shot Details
+
+![Shot details](resource:assets/markdown/en/homeScreen_shotInfo.png)
+
+Opened via the ℹ️ button on the left side of the home screen. Shows computed ballistic values for the current conditions and target range.
+
+**Velocity**
+- **Current MV** — muzzle velocity at the current powder temperature
+- **Zero MV** — muzzle velocity at zeroing conditions
+- **Speed of sound** — for the current atmosphere
+- **Velocity at target** — remaining bullet speed at the set distance
+
+**Energy**
+- **At muzzle** — kinetic energy at the muzzle
+- **At target** — kinetic energy at the set distance
+
+**Gyroscopic stability (Sg)** — stability factor for the current conditions. Values below 1.0 indicate the bullet may not stabilise.
+
+**Trajectory**
+- **Target range** — the distance used for all calculations
+- **Apex height** — maximum bullet rise above the line of sight
+- **Apex distance** — distance at which the apex occurs
+- **Windage** — horizontal wind drift at the target
+- **Time to target** — bullet flight time to the set distance
