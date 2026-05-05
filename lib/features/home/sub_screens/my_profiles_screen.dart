@@ -241,36 +241,107 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                     ActionSheetItem(
                       title: l10n.rangeSubsonic,
                       subtitle: '25-400m',
-                      onTap: () => A7pService.shareFile(
-                        profileExport,
-                        A7pRange.subsonic,
-                      ),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final errorColor =
+                            Theme.of(context).colorScheme.error;
+                        try {
+                          await A7pService.shareFile(
+                            profileExport,
+                            A7pRange.subsonic,
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ));
+                        }
+                      },
                     ),
                     ActionSheetItem(
                       title: l10n.rangeLow,
                       subtitle: '100-700m',
-                      onTap: () => A7pService.shareFile(
-                        profileExport,
-                        A7pRange.subsonic,
-                      ),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final errorColor =
+                            Theme.of(context).colorScheme.error;
+                        try {
+                          await A7pService.shareFile(
+                            profileExport,
+                            A7pRange.low,
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ));
+                        }
+                      },
                     ),
                     ActionSheetItem(
                       title: l10n.rangeMiddle,
                       subtitle: '100-1000m',
-                      onTap: () =>
-                          A7pService.shareFile(profileExport, A7pRange.medium),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final errorColor =
+                            Theme.of(context).colorScheme.error;
+                        try {
+                          await A7pService.shareFile(
+                            profileExport,
+                            A7pRange.medium,
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ));
+                        }
+                      },
                     ),
                     ActionSheetItem(
                       title: l10n.rangeLong,
                       subtitle: '100-1700m',
-                      onTap: () =>
-                          A7pService.shareFile(profileExport, A7pRange.long),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final errorColor =
+                            Theme.of(context).colorScheme.error;
+                        try {
+                          await A7pService.shareFile(
+                            profileExport,
+                            A7pRange.long,
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ));
+                        }
+                      },
                     ),
                     ActionSheetItem(
                       title: l10n.rangeUltraLong,
                       subtitle: '100-2000m',
-                      onTap: () =>
-                          A7pService.shareFile(profileExport, A7pRange.ultra),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final errorColor =
+                            Theme.of(context).colorScheme.error;
+                        try {
+                          await A7pService.shareFile(
+                            profileExport,
+                            A7pRange.ultra,
+                          );
+                        } catch (e) {
+                          messenger.showSnackBar(SnackBar(
+                            content: Text(e.toString()),
+                            backgroundColor: errorColor,
+                            duration: const Duration(seconds: 2),
+                          ));
+                        }
+                      },
                     ),
                   ],
                 ),

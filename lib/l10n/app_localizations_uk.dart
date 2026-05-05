@@ -1102,7 +1102,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get error => 'Помилка';
 
   @override
-  String get sectionZeroing => 'Нульовка';
+  String get sectionZeroing => 'Пристрілка';
 
   @override
   String get calculateFromMeasurementsAction => 'Розрахувати з вимірювань';
