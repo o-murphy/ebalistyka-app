@@ -69,6 +69,7 @@ class _UpdateSheet extends StatefulWidget {
 class _UpdateSheetState extends State<_UpdateSheet> {
   _DownloadStatus _status = _DownloadStatus.idle;
   int _progress = 0;
+  OtaUpdate? _ota;
   StreamSubscription<OtaEvent>? _sub;
 
   bool get _canSideload =>
@@ -79,6 +80,7 @@ class _UpdateSheetState extends State<_UpdateSheet> {
   @override
   void dispose() {
     unawaited(_sub?.cancel());
+    unawaited(_ota?.cancel());
     super.dispose();
   }
 
@@ -87,27 +89,27 @@ class _UpdateSheetState extends State<_UpdateSheet> {
       _status = _DownloadStatus.downloading;
       _progress = 0;
     });
-    _sub = OtaUpdate()
-        .execute(
-          widget.release.apkUrl!,
-          destinationFilename: 'ebalistyka.apk',
-          androidProviderAuthority:
-              '${widget.release.packageName}.fileprovider',
-        )
+    _ota = OtaUpdate();
+    _sub = _ota!
+        .execute(widget.release.apkUrl!, destinationFilename: 'ebalistyka.apk')
         .listen(
           (OtaEvent event) {
             if (!mounted) return;
-            setState(() {
-              switch (event.status) {
-                case OtaStatus.DOWNLOADING:
+            switch (event.status) {
+              case OtaStatus.DOWNLOADING:
+                setState(() {
                   _status = _DownloadStatus.downloading;
                   _progress = int.tryParse(event.value ?? '0') ?? 0;
-                case OtaStatus.INSTALLING:
-                  _status = _DownloadStatus.installing;
-                default:
-                  _status = _DownloadStatus.error;
-              }
-            });
+                });
+              case OtaStatus.INSTALLING:
+                setState(() => _status = _DownloadStatus.installing);
+              case OtaStatus.INSTALLATION_DONE:
+                Navigator.of(context).pop();
+              case OtaStatus.CANCELED:
+                break;
+              default:
+                setState(() => _status = _DownloadStatus.error);
+            }
           },
           onError: (_) {
             if (!mounted) return;
@@ -185,11 +187,7 @@ class _UpdateSheetState extends State<_UpdateSheet> {
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed:
-                    _status == _DownloadStatus.downloading ||
-                        _status == _DownloadStatus.installing
-                    ? null
-                    : () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).pop(),
                 child: Text(
                   MaterialLocalizations.of(context).cancelButtonLabel,
                 ),
