@@ -464,9 +464,9 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
           // ── Zeroing offset ────────────────────────────────────────
           OffsetsTiles(
-            yLabel: 'Vertical offset',
-            xLabel: 'Horizontal offset',
-            unitLabel: 'Click unit',
+            yLabel: l10n.verticalOffset,
+            xLabel: l10n.horizontalOffset,
+            unitLabel: l10n.clickUnit,
             yRaw: st.offsetYRaw,
             xRaw: st.offsetXRaw,
             yUnits: st.offsetYUnit,

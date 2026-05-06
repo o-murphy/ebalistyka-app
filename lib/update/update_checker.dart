@@ -262,7 +262,10 @@ bool _isNewer(String latest, String current) {
     if (l[i] > c[i]) return true;
     if (l[i] < c[i]) return false;
   }
-  return false;
+  // Numeric parts equal: stable > prerelease of the same version (semver spec)
+  final latestIsPrerelease = latest.split('+').first.contains('-');
+  final currentIsPrerelease = current.split('+').first.contains('-');
+  return currentIsPrerelease && !latestIsPrerelease;
 }
 
 List<int>? _parseSemver(String v) {

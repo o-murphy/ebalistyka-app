@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class OffsetsMessage extends StatelessWidget {
-  const OffsetsMessage(this.mesage, {super.key});
+  const OffsetsMessage(this.message, {super.key});
 
-  final String mesage;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class OffsetsMessage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
-        mesage,
+        message,
         textAlign: TextAlign.center,
         softWrap: true,
         overflow: TextOverflow.visible,
