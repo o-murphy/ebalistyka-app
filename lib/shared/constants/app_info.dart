@@ -35,7 +35,7 @@ void debugAppInfoConstants() {
   debugPrint('=== DEBUG CONSTANTS ===');
   debugPrint('remoteUrl: $remoteUrl');
   debugPrint('remoteApiUrl: $remoteApiUrl');
-  debugPrint('repoSlug: $repoSlug');
+  debugPrint('allReleasesUrl: $allReleasesUrl');
   debugPrint('defaultBranch: $defaultBranch');
   debugPrint('checkIntervalHours: $checkIntervalHours');
   debugPrint('lastCheckFile: $lastUpdateCheckFile');

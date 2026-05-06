@@ -416,6 +416,10 @@
     "updateAvailable": "Доступна нова версія {version}",
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
+    "downloadAndInstallAction": "Завантажити та встановити",
+    "downloadingUpdate": "Завантаження… {progress}%",
+    "installingUpdate": "Встановлення…",
+    "downloadFailed": "Помилка завантаження. Натисніть, щоб повторити.",
     "checkForUpdatesLabel": "Перевірити оновлення",
     "upToDateMessage": "У вас остання версія",
 

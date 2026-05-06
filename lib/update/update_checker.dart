@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ebalistyka/core/collection/collection_parser.dart';
@@ -57,6 +58,7 @@ class GithubRelease {
   final bool prerelease;
   final bool isPlayStore;
   final String packageName;
+  final String? apkUrl;
 
   const GithubRelease({
     required this.tagName,
@@ -64,6 +66,7 @@ class GithubRelease {
     required this.prerelease,
     required this.isPlayStore,
     required this.packageName,
+    this.apkUrl,
   });
 }
 
@@ -136,12 +139,37 @@ Future<GithubRelease?> _fetchIfNewer(
 
   if (!_isNewer(latestVersion, currentVersion)) return null;
 
+  // Find the ABI-specific APK asset URL in the matched release entry.
+  // Priority: exact ABI match → universal → first .apk found.
+  String? apkUrl;
+  final matchedEntry = releases.firstWhere(
+    (r) => r['tag_name'] == latestRelease.tagName,
+    orElse: () => <String, dynamic>{},
+  );
+  final assets = matchedEntry['assets'] as List<dynamic>? ?? [];
+  if (assets.isNotEmpty) {
+    final preferredSuffix = _apkSuffixForCurrentAbi();
+    String? abiMatch;
+    String? universalMatch;
+    String? anyApk;
+    for (final asset in assets) {
+      final name = asset['name'] as String? ?? '';
+      final url = asset['browser_download_url'] as String? ?? '';
+      if (!name.endsWith('.apk')) continue;
+      anyApk ??= url;
+      if (name.contains('universal')) universalMatch ??= url;
+      if (name.endsWith(preferredSuffix)) abiMatch = url;
+    }
+    apkUrl = abiMatch ?? universalMatch ?? anyApk;
+  }
+
   return GithubRelease(
     tagName: latestRelease.tagName,
     htmlUrl: latestRelease.htmlUrl,
     prerelease: latestRelease.prerelease,
     isPlayStore: isPlayStore,
     packageName: packageName,
+    apkUrl: apkUrl,
   );
 }
 
@@ -195,6 +223,18 @@ final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
     return null;
   }
 });
+
+/// Returns the filename suffix that matches the current device ABI.
+/// Corresponds to the naming used in build-android.sh:
+///   arm64-v8a  → _arm64.apk
+///   armeabi-v7a → _armeabi_v7a.apk
+///   x86_64     → _x86_64.apk
+String _apkSuffixForCurrentAbi() => switch (Abi.current()) {
+  Abi.androidArm64 => '_arm64.apk',
+  Abi.androidArm => '_armeabi_v7a.apk',
+  Abi.androidX64 => '_x86_64.apk',
+  _ => '_universal.apk',
+};
 
 bool _isNewer(String latest, String current) {
   final l = _parseSemver(latest);

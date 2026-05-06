@@ -1204,6 +1204,21 @@ class AppLocalizationsUk extends AppLocalizations {
   String get openInPlayStoreAction => 'Відкрити в Google Play';
 
   @override
+  String get downloadAndInstallAction => 'Завантажити та встановити';
+
+  @override
+  String downloadingUpdate(int progress) {
+    return 'Завантаження… $progress%';
+  }
+
+  @override
+  String get installingUpdate => 'Встановлення…';
+
+  @override
+  String get downloadFailed =>
+      'Помилка завантаження. Натисніть, щоб повторити.';
+
+  @override
   String get checkForUpdatesLabel => 'Перевірити оновлення';
 
   @override

@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/update/update_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ota_update/ota_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void showUpdateBottomSheet(BuildContext context, GithubRelease release) {
   unawaited(
     showModalBottomSheet<void>(
       context: context,
+      isDismissible: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -52,19 +55,75 @@ class _UpdateListenerState extends ConsumerState<UpdateListener> {
 
 // ── Widgets ───────────────────────────────────────────────────────────────────
 
-class _UpdateSheet extends StatelessWidget {
+enum _DownloadStatus { idle, downloading, installing, error }
+
+class _UpdateSheet extends StatefulWidget {
   const _UpdateSheet({required this.release});
 
   final GithubRelease release;
+
+  @override
+  State<_UpdateSheet> createState() => _UpdateSheetState();
+}
+
+class _UpdateSheetState extends State<_UpdateSheet> {
+  _DownloadStatus _status = _DownloadStatus.idle;
+  int _progress = 0;
+  StreamSubscription<OtaEvent>? _sub;
+
+  bool get _canSideload =>
+      Platform.isAndroid &&
+      !widget.release.isPlayStore &&
+      widget.release.apkUrl != null;
+
+  @override
+  void dispose() {
+    unawaited(_sub?.cancel());
+    super.dispose();
+  }
+
+  void _startDownload() {
+    setState(() {
+      _status = _DownloadStatus.downloading;
+      _progress = 0;
+    });
+    _sub = OtaUpdate()
+        .execute(
+          widget.release.apkUrl!,
+          destinationFilename: 'ebalistyka.apk',
+          androidProviderAuthority:
+              '${widget.release.packageName}.fileprovider',
+        )
+        .listen(
+          (OtaEvent event) {
+            if (!mounted) return;
+            setState(() {
+              switch (event.status) {
+                case OtaStatus.DOWNLOADING:
+                  _status = _DownloadStatus.downloading;
+                  _progress = int.tryParse(event.value ?? '0') ?? 0;
+                case OtaStatus.INSTALLING:
+                  _status = _DownloadStatus.installing;
+                default:
+                  _status = _DownloadStatus.error;
+              }
+            });
+          },
+          onError: (_) {
+            if (!mounted) return;
+            setState(() => _status = _DownloadStatus.error);
+          },
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (cs, tt) = (theme.colorScheme, theme.textTheme);
     final l10n = AppLocalizations.of(context)!;
-    final version = release.tagName.startsWith('v')
-        ? release.tagName.substring(1)
-        : release.tagName;
+    final version = widget.release.tagName.startsWith('v')
+        ? widget.release.tagName.substring(1)
+        : widget.release.tagName;
 
     return SafeArea(
       child: Padding(
@@ -91,31 +150,46 @@ class _UpdateSheet extends StatelessWidget {
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: FilledButton.icon(
-                icon: const Icon(Icons.open_in_new_outlined),
-                label: Text(
-                  release.isPlayStore
-                      ? l10n.openInPlayStoreAction
-                      : l10n.viewReleaseAction,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  final url = release.isPlayStore
-                      ? Uri.parse(
-                          'https://play.google.com/store/apps/details?id=${release.packageName}',
-                        )
-                      : Uri.parse(release.htmlUrl);
-                  unawaited(
-                    launchUrl(url, mode: LaunchMode.externalApplication),
-                  );
-                },
-              ),
+              child: _canSideload
+                  ? _SideloadButton(
+                      status: _status,
+                      progress: _progress,
+                      l10n: l10n,
+                      onTap:
+                          _status == _DownloadStatus.idle ||
+                              _status == _DownloadStatus.error
+                          ? _startDownload
+                          : null,
+                    )
+                  : FilledButton.icon(
+                      icon: const Icon(Icons.open_in_new_outlined),
+                      label: Text(
+                        widget.release.isPlayStore
+                            ? l10n.openInPlayStoreAction
+                            : l10n.viewReleaseAction,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        final url = widget.release.isPlayStore
+                            ? Uri.parse(
+                                'https://play.google.com/store/apps/details?id=${widget.release.packageName}',
+                              )
+                            : Uri.parse(widget.release.htmlUrl);
+                        unawaited(
+                          launchUrl(url, mode: LaunchMode.externalApplication),
+                        );
+                      },
+                    ),
             ),
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed:
+                    _status == _DownloadStatus.downloading ||
+                        _status == _DownloadStatus.installing
+                    ? null
+                    : () => Navigator.of(context).pop(),
                 child: Text(
                   MaterialLocalizations.of(context).cancelButtonLabel,
                 ),
@@ -125,5 +199,58 @@ class _UpdateSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SideloadButton extends StatelessWidget {
+  const _SideloadButton({
+    required this.status,
+    required this.progress,
+    required this.l10n,
+    required this.onTap,
+  });
+
+  final _DownloadStatus status;
+  final int progress;
+  final AppLocalizations l10n;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (status) {
+      _DownloadStatus.idle => FilledButton.icon(
+        icon: const Icon(Icons.download_outlined),
+        label: Text(l10n.downloadAndInstallAction),
+        onPressed: onTap,
+      ),
+      _DownloadStatus.downloading => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.downloadingUpdate(progress),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 6),
+          LinearProgressIndicator(value: progress / 100),
+        ],
+      ),
+      _DownloadStatus.installing => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(width: 12),
+          Text(l10n.installingUpdate),
+        ],
+      ),
+      _DownloadStatus.error => FilledButton.icon(
+        icon: const Icon(Icons.refresh_outlined),
+        label: Text(l10n.downloadFailed),
+        onPressed: onTap,
+      ),
+    };
   }
 }
