@@ -88,6 +88,7 @@ Future<GithubRelease?> _fetchIfNewer(
   String currentVersion, {
   required bool isPlayStore,
   required String packageName,
+  bool includePrerelease = false,
 }) async {
   final response = await http
       .get(
@@ -104,7 +105,7 @@ Future<GithubRelease?> _fetchIfNewer(
   for (final release in releases) {
     final isPrerelease = release['prerelease'] as bool? ?? false;
 
-    if (!kDebugMode && isPrerelease) continue;
+    if (!kDebugMode && !includePrerelease && isPrerelease) continue;
 
     final tagName = release['tag_name'] as String? ?? '';
     final versionStr = tagName.startsWith('v') ? tagName.substring(1) : tagName;
@@ -194,6 +195,23 @@ Future<GithubRelease?> checkForUpdate() async {
   }
 }
 
+/// Like [checkForUpdate] but also considers prerelease versions.
+Future<GithubRelease?> checkForUpdateIncludingPrerelease() async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
+    return await _fetchIfNewer(
+      info.version,
+      isPlayStore: isPlayStore,
+      packageName: info.packageName,
+      includePrerelease: true,
+    );
+  } catch (e) {
+    debugPrint('Prerelease update check failed: $e');
+    return null;
+  }
+}
+
 /// Auto-check: skips the API call if already done within [checkIntervalHours].
 final updateCheckerProvider = FutureProvider<GithubRelease?>((ref) async {
   try {
@@ -244,11 +262,14 @@ bool _isNewer(String latest, String current) {
     if (l[i] > c[i]) return true;
     if (l[i] < c[i]) return false;
   }
-  return false;
+  // Numeric parts equal: stable > prerelease of the same version (semver spec)
+  final latestIsPrerelease = latest.split('+').first.contains('-');
+  final currentIsPrerelease = current.split('+').first.contains('-');
+  return currentIsPrerelease && !latestIsPrerelease;
 }
 
 List<int>? _parseSemver(String v) {
-  final parts = v.split('+').first.split('.');
+  final parts = v.split('+').first.split('-').first.split('.');
   if (parts.length < 3) return null;
   final nums = parts.take(3).map(int.tryParse).toList();
   if (nums.any((n) => n == null)) return null;

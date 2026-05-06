@@ -8,6 +8,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ota_update/ota_update.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+void showPrereleaseWarningSheet(
+  BuildContext context, {
+  required VoidCallback onConfirm,
+}) {
+  unawaited(
+    showModalBottomSheet<void>(
+      context: context,
+      isDismissible: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _PrereleaseWarningSheet(onConfirm: onConfirm),
+    ),
+  );
+}
+
 void showUpdateBottomSheet(BuildContext context, GithubRelease release) {
   unawaited(
     showModalBottomSheet<void>(
@@ -247,5 +263,72 @@ class _SideloadButton extends StatelessWidget {
         onPressed: onTap,
       ),
     };
+  }
+}
+
+class _PrereleaseWarningSheet extends StatelessWidget {
+  const _PrereleaseWarningSheet({required this.onConfirm});
+
+  final VoidCallback onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+    final l10n = AppLocalizations.of(context)!;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: cs.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Icon(Icons.warning_amber_rounded, size: 48, color: cs.error),
+            const SizedBox(height: 12),
+            Text(
+              l10n.prereleaseWarningTitle,
+              style: tt.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.prereleaseWarningBody,
+              style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonal(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onConfirm();
+                },
+                child: Text(l10n.prereleaseConfirmAction),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  MaterialLocalizations.of(context).cancelButtonLabel,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

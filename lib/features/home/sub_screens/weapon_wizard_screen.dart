@@ -38,7 +38,7 @@ class WeaponWizardScreen extends ConsumerStatefulWidget {
 
 class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
     with WizardFormMixin<WeaponWizardScreen> {
-  late final TextEditingController _caliberNameCtrl;
+  late final TextEditingController _caliberNameController;
 
   @override
   String get initialName => widget.initial?.name ?? '';
@@ -52,27 +52,27 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
   @override
   void initState() {
     super.initState();
-    _caliberNameCtrl = TextEditingController(
+    _caliberNameController = TextEditingController(
       text: widget.initial?.caliberName ?? '',
     );
   }
 
   @override
   void dispose() {
-    _caliberNameCtrl.dispose();
+    _caliberNameController.dispose();
     super.dispose();
   }
 
   @override
   void onNameChanged() {
-    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    ref.read(_provider.notifier).updateName(nameController.text);
     super.onNameChanged();
   }
 
   void _onSave() {
     final notifier = ref.read(_provider.notifier);
-    notifier.updateVendor(vendorCtrl.text);
-    notifier.updateCaliberName(_caliberNameCtrl.text);
+    notifier.updateVendor(vendorController.text);
+    notifier.updateCaliberName(_caliberNameController.text);
     commitSave(ref.read(_provider).buildWeapon);
   }
 
@@ -90,7 +90,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
       title: wizardTitle(l10n.newWeaponScreenTitle),
       isSubscreen: true,
       showBack: false,
-      actions: [helpAction(context, helpId: HelpData.weaponWizard)],
+      actions: [HelpAction(HelpData.weaponWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,
@@ -100,14 +100,14 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           _RiflePlaceholder(imageId: widget.initial?.image),
           // ── Name ────────────────────────────────────────────────────
           WizardNameField(
-            controller: nameCtrl,
+            controller: nameController,
             label: l10n.weaponName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: vendorCtrl,
+              controller: vendorController,
               decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
@@ -115,7 +115,7 @@ class _WeaponWizardScreenState extends ConsumerState<WeaponWizardScreen>
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
-              controller: _caliberNameCtrl,
+              controller: _caliberNameController,
               decoration: InputDecoration(labelText: l10n.caliberName),
               textCapitalization: TextCapitalization.words,
             ),

@@ -5,7 +5,8 @@
 #   build-android-aab.sh <build_name> <build_number>
 #
 # Arguments:
-#   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
+#   build_name    Version string, e.g. "1.2.3" or "1.2.3-beta.1".  "v" prefix is stripped.
+#                 Pre-release suffix is preserved as Android versionName.
 #   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
 #
 # Signing (optional — falls back to debug key if not set):
@@ -24,8 +25,6 @@ BUILD_NUMBER="${2:-0}"
 
 # Strip leading 'v'
 BUILD_NAME="${BUILD_NAME#v}"
-# Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
-BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
 # ── Cleanup trap ─────────────────────────────────────────────────────────────
 cleanup() {
@@ -50,7 +49,7 @@ fi
 
 # ── Build AAB ────────────────────────────────────────────────────────────────
 flutter build appbundle --release \
-  --build-name="$BASE" \
+  --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
 # ── Package ──────────────────────────────────────────────────────────────────

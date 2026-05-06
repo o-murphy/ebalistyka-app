@@ -1832,6 +1832,12 @@ abstract class AppLocalizations {
   /// **'Sight Image'**
   String get sightImage;
 
+  /// Label for the ammo image placeholder field
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo Image'**
+  String get ammoImage;
+
   /// Field label for the reticle assigned to a sight
   ///
   /// In en, this message translates to:
@@ -2461,6 +2467,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re up to date'**
   String get upToDateMessage;
+
+  /// Title of the prerelease warning bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Prerelease Version'**
+  String get prereleaseWarningTitle;
+
+  /// Warning text in the prerelease confirmation sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Prerelease builds may be unstable or incomplete. Use only if you understand the risks.'**
+  String get prereleaseWarningBody;
+
+  /// Button to confirm checking for prerelease updates
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get prereleaseConfirmAction;
 
   /// Title of the filter bottom sheet
   ///

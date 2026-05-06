@@ -25,7 +25,6 @@ class CollectionAmmoTileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formatter = ref.watch(unitFormatterProvider);
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return ClipRRect(
@@ -86,19 +85,15 @@ class CollectionAmmoTileBody extends ConsumerWidget {
                       spacing: 12,
                       runSpacing: 4,
                       children: [
-                        _buildBcRow(
+                        _BcText(
                           'G1 ${l10n.bcShort}',
                           ammo.bcG1,
-                          DragType.g1,
                           ammo.dragType == DragType.g1,
-                          cs,
                         ),
-                        _buildBcRow(
+                        _BcText(
                           'G7 ${l10n.bcShort}',
                           ammo.bcG7,
-                          DragType.g7,
                           ammo.dragType == DragType.g7,
-                          cs,
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -171,22 +166,34 @@ class CollectionAmmoTileBody extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildBcRow(String label, double bc, DragType dt, bool isPrimary, cs) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '$label = ${bc > 0 ? bc.toFixedSafe(3) : nullStr}',
-          style: TextStyle(
-            fontSize: 12,
-            color: isPrimary ? cs.primary : null,
-            fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
-          ),
-          overflow: TextOverflow.visible,
-          softWrap: true,
-        ),
-      ],
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _BcText extends StatelessWidget {
+  const _BcText(this.label, this.bc, this.isPrimary);
+
+  final String label;
+  final double bc;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Text(
+      _formatBc(label, bc),
+      style: TextStyle(
+        fontSize: 12,
+        color: isPrimary ? cs.primary : null,
+        fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
+      ),
+      overflow: TextOverflow.visible,
+      softWrap: true,
     );
+  }
+
+  String _formatBc(String label, double bc) {
+    return '$label = ${bc > 0 ? bc.toFixedSafe(3) : nullStr}';
   }
 }

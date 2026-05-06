@@ -22,92 +22,92 @@ class ShotInfoScreen extends ConsumerWidget {
       title: l10n.shotInfoScreenTitle,
       isSubscreen: true,
       body: state.when(
-        data: (uiState) => _buildContent(l10n, uiState),
+        data: (uiState) {
+          if (uiState is! ShotInfoReady) {
+            if (uiState is ShotInfoError) {
+              return EmptyStatePlaceholder(
+                type: uiState.type,
+                message: uiState.message,
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ListView(
+            children: [
+              ListSectionTile(l10n.labelVelocity),
+              InfoListTile(
+                icon: IconDef.velocity,
+                label: l10n.currentMv,
+                value: uiState.currentMv,
+              ),
+              InfoListTile(
+                icon: IconDef.velocity,
+                label: l10n.zeroMv,
+                value: uiState.zeroMv,
+              ),
+              InfoListTile(
+                icon: IconDef.speedOfSound,
+                label: l10n.speedOfSound,
+                value: uiState.speedOfSound,
+              ),
+              InfoListTile(
+                icon: IconDef.velocity,
+                label: l10n.velocityAtTarget,
+                value: uiState.velocityAtTarget,
+              ),
+              const TileDivider(),
+              ListSectionTile(l10n.sectionEnergy),
+              InfoListTile(
+                icon: IconDef.energy,
+                label: l10n.energyAtMuzzle,
+                value: uiState.energyAtMuzzle,
+              ),
+              InfoListTile(
+                icon: IconDef.energy,
+                label: l10n.energyAtTarget,
+                value: uiState.energyAtTarget,
+              ),
+              const TileDivider(),
+              ListSectionTile(l10n.sectionGyrostabilitySg),
+              InfoListTile(
+                icon: IconDef.gyrostability,
+                label: l10n.gyrostabilitySg,
+                value: uiState.gyroscopicStability,
+              ),
+              const TileDivider(),
+              ListSectionTile(l10n.sectionTrajectory),
+              InfoListTile(
+                icon: IconDef.range,
+                label: l10n.targetRange,
+                value: uiState.shotDistance,
+              ),
+              InfoListTile(
+                icon: IconDef.height,
+                label: l10n.apexHeight,
+                value: uiState.apexHeight,
+              ),
+              InfoListTile(
+                icon: IconDef.apex,
+                label: l10n.apexDistance,
+                value: uiState.maxHeightDistance,
+              ),
+              InfoListTile(
+                icon: IconDef.windage,
+                label: l10n.windage,
+                value: uiState.windage,
+              ),
+              InfoListTile(
+                icon: IconDef.time,
+                label: l10n.timeToTarget,
+                value: uiState.timeToTarget,
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text(e.toString())),
       ),
-    );
-  }
-
-  Widget _buildContent(AppLocalizations l10n, ShotInfoUiState state) {
-    if (state is! ShotInfoReady) {
-      if (state is ShotInfoError) {
-        return EmptyStatePlaceholder(type: state.type, message: state.message);
-      }
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return ListView(
-      children: [
-        ListSectionTile(l10n.labelVelocity),
-        InfoListTile(
-          icon: IconDef.velocity,
-          label: l10n.currentMv,
-          value: state.currentMv,
-        ),
-        InfoListTile(
-          icon: IconDef.velocity,
-          label: l10n.zeroMv,
-          value: state.zeroMv,
-        ),
-        InfoListTile(
-          icon: IconDef.speedOfSound,
-          label: l10n.speedOfSound,
-          value: state.speedOfSound,
-        ),
-        InfoListTile(
-          icon: IconDef.velocity,
-          label: l10n.velocityAtTarget,
-          value: state.velocityAtTarget,
-        ),
-        const TileDivider(),
-        ListSectionTile(l10n.sectionEnergy),
-        InfoListTile(
-          icon: IconDef.energy,
-          label: l10n.energyAtMuzzle,
-          value: state.energyAtMuzzle,
-        ),
-        InfoListTile(
-          icon: IconDef.energy,
-          label: l10n.energyAtTarget,
-          value: state.energyAtTarget,
-        ),
-        const TileDivider(),
-        ListSectionTile(l10n.sectionGyrostabilitySg),
-        InfoListTile(
-          icon: IconDef.gyrostability,
-          label: l10n.gyrostabilitySg,
-          value: state.gyroscopicStability,
-        ),
-        const TileDivider(),
-        ListSectionTile(l10n.sectionTrajectory),
-        InfoListTile(
-          icon: IconDef.range,
-          label: l10n.targetRange,
-          value: state.shotDistance,
-        ),
-        InfoListTile(
-          icon: IconDef.height,
-          label: l10n.apexHeight,
-          value: state.apexHeight,
-        ),
-        InfoListTile(
-          icon: IconDef.apex,
-          label: l10n.apexDistance,
-          value: state.maxHeightDistance,
-        ),
-        InfoListTile(
-          icon: IconDef.windage,
-          label: l10n.windage,
-          value: state.windage,
-        ),
-        InfoListTile(
-          icon: IconDef.time,
-          label: l10n.timeToTarget,
-          value: state.timeToTarget,
-        ),
-        const SizedBox(height: 16),
-      ],
     );
   }
 }

@@ -891,6 +891,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sightImage => 'Sight Image';
 
   @override
+  String get ammoImage => 'Ammo Image';
+
+  @override
   String get reticle => 'Reticle';
 
   @override
@@ -1218,6 +1221,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upToDateMessage => 'You\'re up to date';
+
+  @override
+  String get prereleaseWarningTitle => 'Prerelease Version';
+
+  @override
+  String get prereleaseWarningBody =>
+      'Prerelease builds may be unstable or incomplete. Use only if you understand the risks.';
+
+  @override
+  String get prereleaseConfirmAction => 'Continue';
 
   @override
   String get filterTitle => 'Filter';

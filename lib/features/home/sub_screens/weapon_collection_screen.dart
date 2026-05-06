@@ -42,7 +42,7 @@ class WeaponCollectionScreen extends ConsumerWidget {
             ),
           ),
         ),
-        helpAction(context, helpId: HelpData.weaponCollectionScreen),
+        HelpAction(HelpData.weaponCollectionScreen),
       ],
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

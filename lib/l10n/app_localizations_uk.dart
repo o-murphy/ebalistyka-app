@@ -894,6 +894,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sightImage => 'Зображення прицілу';
 
   @override
+  String get ammoImage => 'Зображення набою';
+
+  @override
   String get reticle => 'Сітка прицілу';
 
   @override
@@ -1223,6 +1226,16 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get upToDateMessage => 'У вас остання версія';
+
+  @override
+  String get prereleaseWarningTitle => 'Попередній реліз';
+
+  @override
+  String get prereleaseWarningBody =>
+      'Попередні релізи можуть бути нестабільними або неповними. Продовжуйте лише якщо розумієте ризики.';
+
+  @override
+  String get prereleaseConfirmAction => 'Продовжити';
 
   @override
   String get filterTitle => 'Фільтр';

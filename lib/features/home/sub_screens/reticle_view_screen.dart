@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:ebalistyka/features/home/widgets/helpers.dart';
+import 'package:ebalistyka/features/home/widgets/offsets_message.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/widgets/dividers.dart';
 
@@ -131,9 +131,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final theme = Theme.of(context);
-    final (cs, tt) = (theme.colorScheme, theme.textTheme);
-
     final targetSvgAsync = ref.watch(targetSvgProvider(_targetImage));
     final targetSizeMil = targetSvgAsync.whenData(_parseMilWidth).value ?? 0.0;
     final targetSizeMilAtDistance =
@@ -155,15 +152,17 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
         return BaseScreen(
           title: l10n.reticleScreenTitle,
           isSubscreen: true,
-          actions: [helpAction(context, helpId: HelpData.reticleScreen)],
+          actions: [HelpAction(HelpData.reticleScreen)],
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTopBlock(
-                context,
-                topBlockSize,
-                vmState,
-                targetSizeMilAtDistance,
+              _TopBlock(
+                size: topBlockSize,
+                vmState: vmState,
+                targetSizeMil: targetSizeMilAtDistance,
+                reticleImage: _reticleImage,
+                targetImage: _targetImage,
+                zoomKey: _zoomKey,
               ),
               Expanded(
                 child: Padding(
@@ -172,9 +171,13 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
                     children: [
                       ListSectionTile(l10n.sectionHoldovers),
                       if (vmState.reticleState.zeroOffsetMessageLine != null)
-                        zeroOffsetMessageLine(vmState.reticleState, cs, tt),
+                        OffsetsMessage(
+                          vmState.reticleState.zeroOffsetMessageLine!,
+                        ),
                       if (vmState.reticleState.adjustedMessageLine != null)
-                        adjustedMessageLine(vmState.reticleState, cs, tt),
+                        OffsetsMessage(
+                          vmState.reticleState.adjustedMessageLine!,
+                        ),
                       Center(
                         child: AdjustmentsDisplayPanel(
                           adjustment: vmState.reticleState.adjustment,
@@ -321,63 +324,6 @@ class _ReticleViewScreenState extends ConsumerState<ReticleViewScreen> {
     );
   }
 
-  Widget _buildTopBlock(
-    BuildContext context,
-    double size,
-    HomeUiReady vmState,
-    double targetSizeMil,
-  ) {
-    final cs = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: double.infinity,
-      height: size,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(32),
-            bottomRight: Radius.circular(32),
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: ZoomableView(
-                    key: _zoomKey,
-                    minScale: 1.0,
-                    maxScale: 10.0,
-                    child: ReticleView(
-                      reticleImageId: _reticleImage,
-                      targetImageId: _targetImage,
-                      targetSizeMil: targetSizeMil,
-                      offsetXMil: vmState.reticleState.adjustmentWindMil,
-                      offsetYMil: vmState.reticleState.adjustmentElevMil,
-                      clipRadius: 20,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 24,
-                right: 24,
-                child: FloatingActionButton(
-                  onPressed: () => _zoomKey.currentState?.resetZoom(),
-                  mini: true,
-                  heroTag: null,
-                  child: const Icon(IconDef.magnificationMin),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   static double _parseMilWidth(String svg) {
     final m = RegExp(
       r'viewBox="[^"]*?\s+[^"]*?\s+([^"]*?)\s+[^"]*?"',
@@ -491,6 +437,79 @@ class _ZoomableViewState extends State<ZoomableView>
         boundaryMargin: EdgeInsets.zero,
         onInteractionStart: (_) => _animationController.stop(),
         child: widget.child,
+      ),
+    );
+  }
+}
+
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _TopBlock extends StatelessWidget {
+  const _TopBlock({
+    required this.size,
+    required this.vmState,
+    required this.targetSizeMil,
+    required this.reticleImage,
+    required this.targetImage,
+    required this.zoomKey,
+  });
+
+  final double size;
+  final HomeUiReady vmState;
+  final double targetSizeMil;
+  final String? reticleImage;
+  final String? targetImage;
+  final GlobalKey<_ZoomableViewState> zoomKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: size,
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(32),
+            bottomRight: Radius.circular(32),
+          ),
+        ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: ZoomableView(
+                    key: zoomKey,
+                    minScale: 1.0,
+                    maxScale: 10.0,
+                    child: ReticleView(
+                      reticleImageId: reticleImage,
+                      targetImageId: targetImage,
+                      targetSizeMil: targetSizeMil,
+                      offsetXMil: vmState.reticleState.adjustmentWindMil,
+                      offsetYMil: vmState.reticleState.adjustmentElevMil,
+                      clipRadius: 20,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 24,
+                right: 24,
+                child: FloatingActionButton(
+                  onPressed: () => zoomKey.currentState?.resetZoom(),
+                  mini: true,
+                  heroTag: null,
+                  child: const Icon(IconDef.magnificationMin),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

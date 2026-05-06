@@ -24,7 +24,7 @@ class TargetDistanceConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.targetDistanceConvertorTitle,
       isSubscreen: true,
-      actions: [helpAction(context, helpId: HelpData.targetDistanceConvertor)],
+      actions: [HelpAction(HelpData.targetDistanceConvertor)],
       body: ListView(
         children: [
           ValueInputWithUnitPicker(

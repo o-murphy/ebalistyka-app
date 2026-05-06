@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+
+## v0.1.9-dev (2026-05-06)
+[![GitHub release][GitHubReleaseBadge]][v0.1.9-dev]
+
 ### Added
 - **Android OTA update** — sideload APK updates directly from GitHub Releases without opening the browser
   - Detects the correct ABI-specific APK (`arm64`, `armeabi-v7a`, `x86_64`) via `Abi.current()`; falls back to universal APK, then "View Release" if no APK asset is found
@@ -24,7 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Added help dialogs for wizard screens: `sight`, `weapon`, `ammo`
 
 ### Changed
+- **Prerelease updates** — long-press "Check for updates" tile to search for prerelease builds; a warning sheet is shown before proceeding so the user acknowledges the risk
 - **Help button icon** - changed help button icon
+- **ReticleView refactor** — extracted `_ReticleGeometry`, `_ReticleComposer`, `_ReticleStack` as standalone classes; `showAdjLines` is now non-nullable (`bool`, default `true`); `geometry.targetScale()` used for target scaling
+- **Code Quality #15 — naming convention sweep** across 14 screen/widget files:
+  - `_buildXxx()` builder methods extracted as standalone `_PascalCase` widget classes (`_ReticleStack`, `_TopBlock`, `_AnglesInfoTile`, `_SideControlFab`, `_AdjustmentsDisplayEmpty`, `_BcText` etc.)
+  - `nameCtrl`/`vendorCtrl` → `nameController`/`vendorController` in `WizardFormMixin` and all wizard screens
+  - Event handler callbacks renamed to `_onXxx` pattern (`_onDragTableTap`, `_onPowderSensTableTap`, `_onImportFromFile`, `_onAddTap`)
+  - `// ── Widgets ──` section separator added to 5 files missing it
+  - Hard-coded `'Ammo image'` → `l10n.ammoImage` (new l10n key EN/UK)
 
 
 ## v0.1.8 (2026-05-04)
@@ -363,7 +375,8 @@ Initial alpha release — first functional build of the ballistic trajectory cal
 - `OBJECTBOX_MIGRATION.md`: migration details
 
 
-[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.8..HEAD
+[Unreleased]: https://github.com/o-murphy/ebalistyka-app/compare/v0.1.9..HEAD
+[v0.1.9-dev]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.9-dev
 [v0.1.8]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.8
 [v0.1.7]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.7
 [v0.1.6]: https://github.com/o-murphy/ebalistyka-app/releases/tag/v0.1.6

@@ -20,24 +20,29 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
   final bool isEmpty;
   final bool displayVertical;
 
-  String _elevDir() {
-    if (adjustment.elevation.isEmpty) return '';
-    final pos = adjustment.elevation.first.isPositive;
-    return fmt.elevDir(pos);
+  @override
+  Widget build(BuildContext context) {
+    return isEmpty
+        ? _AdjustmentsDisplayEmpty()
+        : _AdjustmentDisplayData(
+            fmt: fmt,
+            adjustment: adjustment,
+            displayVertical: displayVertical,
+          );
   }
+}
 
-  String _windDir() {
-    if (adjustment.windage.isEmpty) return '';
-    final pos = adjustment.windage.first.isPositive;
-    return fmt.windDir(pos);
-  }
+// ── Widgets ───────────────────────────────────────────────────────────────────
 
-  Widget _buildEmpty(
-    BuildContext context,
-    TextTheme tt,
-    ColorScheme cs,
-    AppLocalizations l10n,
-  ) {
+class _AdjustmentsDisplayEmpty extends StatelessWidget {
+  const _AdjustmentsDisplayEmpty();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -81,13 +86,36 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildDisplay(
-    BuildContext context,
-    TextTheme tt,
-    ColorScheme cs,
-    AppLocalizations l10n,
-  ) {
+class _AdjustmentDisplayData extends StatelessWidget {
+  const _AdjustmentDisplayData({
+    required this.fmt,
+    required this.displayVertical,
+    required this.adjustment,
+  });
+
+  final AdjustmentDisplayFormat fmt;
+  final bool displayVertical;
+  final AdjustmentData adjustment;
+
+  String _elevDir() {
+    if (adjustment.elevation.isEmpty) return '';
+    final pos = adjustment.elevation.first.isPositive;
+    return fmt.elevDir(pos);
+  }
+
+  String _windDir() {
+    if (adjustment.windage.isEmpty) return '';
+    final pos = adjustment.windage.first.isPositive;
+    return fmt.windDir(pos);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+    final l10n = AppLocalizations.of(context)!;
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
@@ -242,16 +270,5 @@ class AdjustmentsDisplayPanel extends StatelessWidget {
         );
       },
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final (cs, tt) = (theme.colorScheme, theme.textTheme);
-    final l10n = AppLocalizations.of(context)!;
-
-    return isEmpty
-        ? _buildEmpty(context, tt, cs, l10n)
-        : _buildDisplay(context, tt, cs, l10n);
   }
 }

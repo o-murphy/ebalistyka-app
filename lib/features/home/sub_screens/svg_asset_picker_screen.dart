@@ -78,91 +78,19 @@ class SvgAssetPickerScreen extends ConsumerWidget {
   }
 }
 
-class _SvgAssetTile extends ConsumerWidget {
-  const _SvgAssetTile({
-    required this.assetId,
-    required this.isSelected,
-    required this.watchSvg,
-    required this.onTap,
+class _TilePreview extends StatelessWidget {
+  const _TilePreview({
+    required this.svg,
+    required this.cs,
+    required this.clipRadius,
   });
 
-  final String assetId;
-  final bool isSelected;
-  final AsyncValue<String> Function(WidgetRef, String) watchSvg;
-  final VoidCallback onTap;
-
-  static const double clipRadius = 12.0;
+  final String svg;
+  final ColorScheme cs;
+  final double clipRadius;
 
   @override
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final svgAsync = watchSvg(ref, assetId);
-    final theme = Theme.of(context);
-    final (cs, tt) = (theme.colorScheme, theme.textTheme);
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      shape: isSelected
-          ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: cs.primary, width: 2),
-            )
-          : null,
-      child: InkWell(
-        onTap: onTap,
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: svgAsync.when(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (_, _) => const SizedBox.shrink(),
-                  data: (svg) => _buildPreview(svg, cs),
-                ),
-              ),
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Text(
-                  assetId,
-                  style: tt.bodyLarge?.copyWith(
-                    color: isSelected ? cs.primary : Colors.white,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    shadows: [
-                      Shadow(
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                        color: Colors.black.withAlpha(100),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (isSelected)
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: cs.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.check, color: cs.onPrimary, size: 16),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreview(String svg, ColorScheme cs) {
+  Widget build(BuildContext context) {
     final preparedSvg = _prepareSvg(svg, cs);
 
     return Stack(
@@ -238,6 +166,92 @@ class _SvgAssetTile extends ConsumerWidget {
     return svg.replaceFirst(
       RegExp(r'viewBox="[^"]+"'),
       'viewBox="$newViewBox"',
+    );
+  }
+}
+
+class _SvgAssetTile extends ConsumerWidget {
+  const _SvgAssetTile({
+    required this.assetId,
+    required this.isSelected,
+    required this.watchSvg,
+    required this.onTap,
+  });
+
+  final String assetId;
+  final bool isSelected;
+  final AsyncValue<String> Function(WidgetRef, String) watchSvg;
+  final VoidCallback onTap;
+
+  static const double clipRadius = 12.0;
+
+  @override
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final svgAsync = watchSvg(ref, assetId);
+    final theme = Theme.of(context);
+    final (cs, tt) = (theme.colorScheme, theme.textTheme);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: isSelected
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: cs.primary, width: 2),
+            )
+          : null,
+      child: InkWell(
+        onTap: onTap,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: svgAsync.when(
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (_, _) => const SizedBox.shrink(),
+                  data: (svg) =>
+                      _TilePreview(svg: svg, cs: cs, clipRadius: clipRadius),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Text(
+                  assetId,
+                  style: tt.bodyLarge?.copyWith(
+                    color: isSelected ? cs.primary : Colors.white,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(0, 1),
+                        blurRadius: 2,
+                        color: Colors.black.withAlpha(100),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (isSelected)
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.check, color: cs.onPrimary, size: 16),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

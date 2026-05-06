@@ -68,7 +68,7 @@ class ConvertorScreen extends StatelessWidget {
 
     return BaseScreen(
       title: l10n.convertorsScreenTitle,
-      actions: [helpAction(context, helpId: HelpData.convertorsScreen)],
+      actions: [HelpAction(HelpData.convertorsScreen)],
       body: Align(
         alignment: Alignment.topCenter,
         child: GridView.builder(

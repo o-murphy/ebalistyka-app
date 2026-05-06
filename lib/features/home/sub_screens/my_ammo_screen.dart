@@ -227,7 +227,7 @@ class MyAmmoScreen extends ConsumerWidget {
             child: Icon(IconDef.filter),
           ),
         ),
-        helpAction(context, helpId: HelpData.myAmmoScreen),
+        HelpAction(HelpData.myAmmoScreen),
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

@@ -168,10 +168,10 @@ jobs:
       - name: Set pubspec version
         shell: bash
         run: |
-          BASE=$(echo "${{ steps.meta.outputs.build_name }}" | sed 's/-.*//')
-          NUM=${{ steps.meta.outputs.build_number }}
-          sed -i "s/^version:.*/version: ${BASE}+${NUM}/" pubspec.yaml
-          echo "pubspec version → ${BASE}+${NUM}"
+          BUILD_NAME="${{ steps.meta.outputs.build_name }}"
+          NUM="${{ steps.meta.outputs.build_number }}"
+          sed -i "s/^version:.*/version: ${BUILD_NAME}+${NUM}/" pubspec.yaml
+          echo "pubspec version → ${BUILD_NAME}+${NUM}"
 
       - name: Get Flutter dependencies
         shell: bash
@@ -237,7 +237,7 @@ jobs:
           }
           $buildName = "${{ steps.meta.outputs.build_name }}"
           if ($buildName -match '^(\d+\.\d+\.\d+)') { $base = $Matches[1] } else { $base = "0.1.0" }
-          $revision = if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v\d+\.\d+\.\d+') { '0' } else { '${{ steps.meta.outputs.build_number }}' }
+          $revision = if ('${{ github.ref_type }}' -eq 'tag' -and '${{ github.ref_name }}' -match '^v\d+\.\d+\.\d+$') { '0' } else { '${{ steps.meta.outputs.build_number }}' }
           $msixVersion = "$base.$revision"
 
           .\scripts\package-msix.ps1 `

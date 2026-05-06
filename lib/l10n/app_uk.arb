@@ -307,6 +307,7 @@
     "sight": "Приціл",
     "sightName": "Назва прицілу",
     "sightImage": "Зображення прицілу",
+    "ammoImage": "Зображення набою",
     "reticle": "Сітка прицілу",
     "reticlePattern": "Зображення сітки прицілу",
     "targetPattern": "Зображення мішені",
@@ -422,6 +423,9 @@
     "downloadFailed": "Помилка завантаження. Натисніть, щоб повторити.",
     "checkForUpdatesLabel": "Перевірити оновлення",
     "upToDateMessage": "У вас остання версія",
+    "prereleaseWarningTitle": "Попередній реліз",
+    "prereleaseWarningBody": "Попередні релізи можуть бути нестабільними або неповними. Продовжуйте лише якщо розумієте ризики.",
+    "prereleaseConfirmAction": "Продовжити",
 
     "filterTitle": "Фільтр",
     "filterResetAction": "Скинути",
