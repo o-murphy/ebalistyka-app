@@ -11,6 +11,14 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
+enum LinuxInstallerType { snap, appImage, portable }
+
+LinuxInstallerType _detectLinuxInstallerType() {
+  if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
+  if (Platform.environment.containsKey('APPIMAGE')) return LinuxInstallerType.appImage;
+  return LinuxInstallerType.portable;
+}
+
 // ── App update ────────────────────────────────────────────────────────────────
 
 enum NewVersionState { firstRun, updated, none }
@@ -59,6 +67,7 @@ class GithubRelease {
   final bool isPlayStore;
   final String packageName;
   final String? apkUrl;
+  final LinuxInstallerType? linuxInstallerType;
 
   const GithubRelease({
     required this.tagName,
@@ -67,7 +76,10 @@ class GithubRelease {
     required this.isPlayStore,
     required this.packageName,
     this.apkUrl,
+    this.linuxInstallerType,
   });
+
+  bool get isSnap => linuxInstallerType == LinuxInstallerType.snap;
 }
 
 class _ParsedRelease {
@@ -171,6 +183,7 @@ Future<GithubRelease?> _fetchIfNewer(
     isPlayStore: isPlayStore,
     packageName: packageName,
     apkUrl: apkUrl,
+    linuxInstallerType: Platform.isLinux ? _detectLinuxInstallerType() : null,
   );
 }
 

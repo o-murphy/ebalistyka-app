@@ -1203,6 +1203,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInPlayStoreAction => 'Open in Google Play';
 
   @override
+  String get openInSnapStoreAction => 'Open in Snap Store';
+
+  @override
   String get downloadAndInstallAction => 'Download & Install';
 
   @override

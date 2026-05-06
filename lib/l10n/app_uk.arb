@@ -417,6 +417,7 @@
     "updateAvailable": "Доступна нова версія {version}",
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
+    "openInSnapStoreAction": "Відкрити в Snap Store",
     "downloadAndInstallAction": "Завантажити та встановити",
     "downloadingUpdate": "Завантаження… {progress}%",
     "installingUpdate": "Встановлення…",

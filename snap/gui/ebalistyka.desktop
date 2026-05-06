@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=eBalistyka
+Comment=Ballistic calculator
+Exec=ebalistyka
+Icon=${SNAP}/meta/gui/ebalistyka.png
+Terminal=false
+Type=Application
+Categories=Utility;Science;
+StartupWMClass=ebalistyka
