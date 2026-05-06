@@ -91,6 +91,9 @@ jobs:
 
   build-snap-amd64:
     needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-snap.yml
     with:
       arch: amd64
@@ -99,6 +102,9 @@ jobs:
 
   build-snap-arm64:
     needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/build-snap.yml
     with:
       arch: arm64
