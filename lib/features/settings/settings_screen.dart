@@ -54,6 +54,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  void _onCheckForUpdatesLongPress() {
+    showPrereleaseWarningSheet(
+      context,
+      onConfirm: () async {
+        setState(() => _checkingUpdate = true);
+        try {
+          final release = await checkForUpdateIncludingPrerelease();
+          if (!mounted) return;
+          if (release != null) {
+            showUpdateBottomSheet(context, release);
+          } else {
+            showFeedback(
+              context,
+              AppLocalizations.of(context)!.upToDateMessage,
+            );
+          }
+        } finally {
+          if (mounted) setState(() => _checkingUpdate = false);
+        }
+      },
+    );
+  }
+
   Future<void> _checkForCollectionUpdate() async {
     setState(() => _checkingCollection = true);
     try {
@@ -310,6 +333,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: Text(l10n.checkForUpdatesLabel),
             dense: true,
             onTap: _checkingUpdate ? null : _checkForUpdates,
+            onLongPress: _checkingUpdate ? null : _onCheckForUpdatesLongPress,
           ),
           ListTile(
             leading: const Icon(Icons.history_outlined),

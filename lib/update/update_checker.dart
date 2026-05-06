@@ -88,6 +88,7 @@ Future<GithubRelease?> _fetchIfNewer(
   String currentVersion, {
   required bool isPlayStore,
   required String packageName,
+  bool includePrerelease = false,
 }) async {
   final response = await http
       .get(
@@ -104,7 +105,7 @@ Future<GithubRelease?> _fetchIfNewer(
   for (final release in releases) {
     final isPrerelease = release['prerelease'] as bool? ?? false;
 
-    if (!kDebugMode && isPrerelease) continue;
+    if (!kDebugMode && !includePrerelease && isPrerelease) continue;
 
     final tagName = release['tag_name'] as String? ?? '';
     final versionStr = tagName.startsWith('v') ? tagName.substring(1) : tagName;
@@ -190,6 +191,23 @@ Future<GithubRelease?> checkForUpdate() async {
     return result;
   } catch (e) {
     debugPrint('Manual update check failed: $e');
+    return null;
+  }
+}
+
+/// Like [checkForUpdate] but also considers prerelease versions.
+Future<GithubRelease?> checkForUpdateIncludingPrerelease() async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    final isPlayStore = info.installerStore == googlePlayInstallerSource;
+    return await _fetchIfNewer(
+      info.version,
+      isPlayStore: isPlayStore,
+      packageName: info.packageName,
+      includePrerelease: true,
+    );
+  } catch (e) {
+    debugPrint('Prerelease update check failed: $e');
     return null;
   }
 }

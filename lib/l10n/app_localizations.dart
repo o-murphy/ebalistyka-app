@@ -2468,6 +2468,24 @@ abstract class AppLocalizations {
   /// **'You\'re up to date'**
   String get upToDateMessage;
 
+  /// Title of the prerelease warning bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Prerelease Version'**
+  String get prereleaseWarningTitle;
+
+  /// Warning text in the prerelease confirmation sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Prerelease builds may be unstable or incomplete. Use only if you understand the risks.'**
+  String get prereleaseWarningBody;
+
+  /// Button to confirm checking for prerelease updates
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get prereleaseConfirmAction;
+
   /// Title of the filter bottom sheet
   ///
   /// In en, this message translates to:

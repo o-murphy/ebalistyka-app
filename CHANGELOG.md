@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   - Added help dialogs for wizard screens: `sight`, `weapon`, `ammo`
 
 ### Changed
+- **Prerelease updates** — long-press "Check for updates" tile to search for prerelease builds; a warning sheet is shown before proceeding so the user acknowledges the risk
 - **Help button icon** - changed help button icon
 - **ReticleView refactor** — extracted `_ReticleGeometry`, `_ReticleComposer`, `_ReticleStack` as standalone classes; `showAdjLines` is now non-nullable (`bool`, default `true`); `geometry.targetScale()` used for target scaling
 - **Code Quality #15 — naming convention sweep** across 14 screen/widget files:
