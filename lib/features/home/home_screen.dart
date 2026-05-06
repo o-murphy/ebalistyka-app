@@ -40,7 +40,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   final _pageController = PageController();
   int _currentPage = 0;
 
-  late final _calcDoneCtrl = AnimationController(
+  late final _calcDoneController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1000),
   );
@@ -50,7 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 10),
     TweenSequenceItem(tween: ConstantTween(1.0), weight: 30),
     TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 60),
-  ]).animate(_calcDoneCtrl);
+  ]).animate(_calcDoneController);
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   void dispose() {
     _pageController.dispose();
-    _calcDoneCtrl.dispose();
+    _calcDoneController.dispose();
     super.dispose();
   }
 
@@ -79,7 +79,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     ref.listen<AsyncValue<HomeUiState>>(homeVmProvider, (prev, next) {
       final wasLoading = prev?.isLoading == true;
       final isReady = next.value is HomeUiReady;
-      if (wasLoading && isReady) unawaited(_calcDoneCtrl.forward(from: 0));
+      if (wasLoading && isReady) {
+        unawaited(_calcDoneController.forward(from: 0));
+      }
     });
 
     final vmAsync = ref.watch(homeVmProvider);

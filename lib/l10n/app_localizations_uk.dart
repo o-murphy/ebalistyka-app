@@ -894,6 +894,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sightImage => 'Зображення прицілу';
 
   @override
+  String get ammoImage => 'Зображення набою';
+
+  @override
   String get reticle => 'Сітка прицілу';
 
   @override

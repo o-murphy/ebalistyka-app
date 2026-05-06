@@ -61,7 +61,7 @@ class AmmoWizardScreen extends ConsumerStatefulWidget {
 
 class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
     with WizardFormMixin<AmmoWizardScreen> {
-  late final TextEditingController _projectileNameCtrl;
+  late final TextEditingController _projectileNameController;
 
   final _scrollController = ScrollController();
   final _powderSensKey = GlobalKey();
@@ -81,14 +81,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   @override
   void onNameChanged() {
-    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    ref.read(_provider.notifier).updateName(nameController.text);
     super.onNameChanged();
   }
 
   @override
   void initState() {
     super.initState();
-    _projectileNameCtrl = TextEditingController(
+    _projectileNameController = TextEditingController(
       text: widget.initial?.projectileName ?? '',
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -101,7 +101,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   @override
   void dispose() {
-    _projectileNameCtrl.dispose();
+    _projectileNameController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -174,14 +174,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
 
   void _onSave() {
     final notifier = ref.read(_provider.notifier);
-    notifier.updateVendor(vendorCtrl.text);
-    notifier.updateProjectileName(_projectileNameCtrl.text);
+    notifier.updateVendor(vendorController.text);
+    notifier.updateProjectileName(_projectileNameController.text);
     commitSave(ref.read(_provider).buildAmmo);
   }
 
   // ── Navigation ────────────────────────────────────────────────────────────
 
-  Future<void> _navigateToDragTableEditor() async {
+  Future<void> _onDragTableTap() async {
     final result = await context.push<List<({double mach, double cd})>>(
       Routes.ammoEditDragTable,
       extra: ref.read(_provider).customDragTable,
@@ -192,7 +192,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
         .updateCustomDragTable(result.isEmpty ? null : result);
   }
 
-  Future<void> _navigateToPowderSensTable() async {
+  Future<void> _onPowderSensTableTap() async {
     final st = ref.read(_provider);
     final mvMps = st.mvRaw == null
         ? null
@@ -257,7 +257,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
       title: wizardTitle(l10n.newAmmo),
       isSubscreen: true,
       showBack: false,
-      actions: [helpAction(context, helpId: HelpData.ammoWizard)],
+      actions: [HelpAction(HelpData.ammoWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,
@@ -268,14 +268,14 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           _AmmoPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
           WizardNameField(
-            controller: nameCtrl,
+            controller: nameController,
             label: l10n.ammoName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: vendorCtrl,
+              controller: vendorController,
               decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
@@ -286,7 +286,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: TextField(
-              controller: _projectileNameCtrl,
+              controller: _projectileNameController,
               decoration: InputDecoration(labelText: l10n.projectileName),
               textCapitalization: TextCapitalization.words,
             ),
@@ -327,7 +327,7 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
                 unawaited(_navigateToMultiBcEditor(DragType.g1)),
             onNavigateToMultiBcG7: () =>
                 unawaited(_navigateToMultiBcEditor(DragType.g7)),
-            onNavigateToDragTable: _navigateToDragTableEditor,
+            onNavigateToDragTable: _onDragTableTap,
           ),
 
           // ── Cartridge ──────────────────────────────────────────────
@@ -458,13 +458,12 @@ class _AmmoWizardScreenState extends ConsumerState<AmmoWizardScreen>
               ),
               trailing: const Icon(IconDef.chevronRight),
               dense: true,
-              onTap: _navigateToPowderSensTable,
+              onTap: _onPowderSensTableTap,
             ),
           ],
 
           // ── Zeroing offset ────────────────────────────────────────
-          offsetsTile(
-            context: context,
+          OffsetsTiles(
             yLabel: 'Vertical offset',
             xLabel: 'Horizontal offset',
             unitLabel: 'Click unit',
@@ -505,6 +504,7 @@ class _AmmoPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: SizedBox(
@@ -516,7 +516,10 @@ class _AmmoPlaceholder extends StatelessWidget {
               children: [
                 Icon(IconDef.ammo, size: 40, color: cs.outlineVariant),
                 const SizedBox(height: 8),
-                Text('Ammo image', style: TextStyle(color: cs.outlineVariant)),
+                Text(
+                  l10n.ammoImage,
+                  style: TextStyle(color: cs.outlineVariant),
+                ),
               ],
             ),
           ),

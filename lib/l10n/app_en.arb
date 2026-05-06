@@ -595,6 +595,8 @@
     "@sightName": {"description": "Input field label for the sight name"},
     "sightImage": "Sight Image",
     "@sightImage": {"description": "Label for the sight image / photo field"},
+    "ammoImage": "Ammo Image",
+    "@ammoImage": {"description": "Label for the ammo image placeholder field"},
     "reticle": "Reticle",
     "@reticle": {"description": "Field label for the reticle assigned to a sight"},
     "reticlePattern": "Reticle pattern",

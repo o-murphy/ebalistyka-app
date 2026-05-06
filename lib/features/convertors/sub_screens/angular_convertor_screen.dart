@@ -24,7 +24,7 @@ class AnglesConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.anglesConvertorTitle,
       isSubscreen: true,
-      actions: [helpAction(context, helpId: HelpData.angularConvertor)],
+      actions: [HelpAction(HelpData.angularConvertor)],
       body: ListView(
         children: [
           ValueInputWithUnitPicker(
@@ -76,12 +76,12 @@ class AnglesConvertorScreen extends ConsumerWidget {
           const SectionDivider(),
 
           ListSectionTile(l10n.sectionAngles),
-          _buildInfoTile(state.mil),
-          _buildInfoTile(state.moa),
-          _buildInfoTile(state.mrad),
-          _buildInfoTile(state.cmPer100m),
-          _buildInfoTile(state.inchPer100Yd),
-          _buildInfoTile(state.degrees),
+          _AnglesInfoTile(state.mil),
+          _AnglesInfoTile(state.moa),
+          _AnglesInfoTile(state.mrad),
+          _AnglesInfoTile(state.cmPer100m),
+          _AnglesInfoTile(state.inchPer100Yd),
+          _AnglesInfoTile(state.degrees),
 
           const SectionDivider(),
 
@@ -108,8 +108,17 @@ class AnglesConvertorScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildInfoTile(AnglesConvertorField field) {
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _AnglesInfoTile extends StatelessWidget {
+  const _AnglesInfoTile(this.field);
+
+  final AnglesConvertorField field;
+
+  @override
+  Widget build(BuildContext context) {
     return InfoListTile(label: field.label, value: field.formattedValue);
   }
 }

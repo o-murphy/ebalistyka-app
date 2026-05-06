@@ -1832,6 +1832,12 @@ abstract class AppLocalizations {
   /// **'Sight Image'**
   String get sightImage;
 
+  /// Label for the ammo image placeholder field
+  ///
+  /// In en, this message translates to:
+  /// **'Ammo Image'**
+  String get ammoImage;
+
   /// Field label for the reticle assigned to a sight
   ///
   /// In en, this message translates to:

@@ -86,7 +86,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return BaseScreen(
       title: l10n.settingsScreenTitle,
-      actions: [helpAction(context, helpId: HelpData.settingsScreen)],
+      actions: [HelpAction(HelpData.settingsScreen)],
       body: ListView(
         children: [
           // ── Language ───────────────────────────────────────────────────

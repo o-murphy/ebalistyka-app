@@ -891,6 +891,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sightImage => 'Sight Image';
 
   @override
+  String get ammoImage => 'Ammo Image';
+
+  @override
   String get reticle => 'Reticle';
 
   @override

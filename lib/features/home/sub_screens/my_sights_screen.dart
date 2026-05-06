@@ -158,7 +158,7 @@ class MySightsCollectionScreen extends ConsumerWidget {
             child: Icon(IconDef.filter),
           ),
         ),
-        helpAction(context, helpId: HelpData.mySightsScreen),
+        HelpAction(HelpData.mySightsScreen),
       ],
       body: appStateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

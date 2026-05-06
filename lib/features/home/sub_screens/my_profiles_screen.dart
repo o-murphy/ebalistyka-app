@@ -84,7 +84,7 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     );
   }
 
-  Future<void> _showAddSheet() {
+  Future<void> _onAddTap() {
     final l10n = AppLocalizations.of(context)!;
     return showActionSheet(
       context,
@@ -125,13 +125,13 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
         ActionSheetItem(
           icon: IconDef.import,
           title: l10n.actionImportFromFile,
-          onTap: _importFromFile,
+          onTap: _onImportFromFile,
         ),
       ],
     );
   }
 
-  Future<void> _importFromFile() async {
+  Future<void> _onImportFromFile() async {
     try {
       final profiles = await A7pService.pickAndParseProfiles();
       if (profiles == null || !mounted) return;
@@ -477,10 +477,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
     if (paging.orderedIds.isEmpty) {
       return BaseScreen(
         title: l10n.selectProfile,
-        actions: [helpAction(context, helpId: HelpData.profilesScreen)],
+        actions: [HelpAction(HelpData.profilesScreen)],
         floatingActionButton: FloatingActionButton(
           heroTag: 'generalFab',
-          onPressed: _showAddSheet,
+          onPressed: _onAddTap,
           backgroundColor: cs.primary,
           foregroundColor: cs.onPrimary,
           elevation: 6,
@@ -492,10 +492,10 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
 
     return BaseScreen(
       title: l10n.myProfiles,
-      actions: [helpAction(context, helpId: HelpData.profilesScreen)],
+      actions: [HelpAction(HelpData.profilesScreen)],
       floatingActionButton: FloatingActionButton(
         heroTag: 'generalFab',
-        onPressed: _showAddSheet,
+        onPressed: _onAddTap,
         backgroundColor: cs.primary,
         foregroundColor: cs.onPrimary,
         elevation: 6,

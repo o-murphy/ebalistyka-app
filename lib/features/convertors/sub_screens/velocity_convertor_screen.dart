@@ -1,7 +1,6 @@
 import 'package:ebalistyka/core/extensions/settings_extensions.dart';
 import 'package:ebalistyka/core/models/field_constraints.dart';
 import 'package:ebalistyka/core/providers/settings_provider.dart';
-import 'package:ebalistyka/features/convertors/generic_convertor_vm_field.dart';
 import 'package:ebalistyka/features/convertors/velocity_convertor_vm.dart';
 import 'package:ebalistyka/l10n/app_localizations.dart';
 import 'package:ebalistyka/shared/icons_definitions.dart';
@@ -29,7 +28,7 @@ class VelocityConvertorScreen extends ConsumerWidget {
     return BaseScreen(
       title: l10n.velocityConvertorTitle,
       isSubscreen: true,
-      actions: [helpAction(context, helpId: HelpData.velocityConvertor)],
+      actions: [HelpAction(HelpData.velocityConvertor)],
       body: ListView(
         children: [
           UnitInputWithPicker(
@@ -44,12 +43,26 @@ class VelocityConvertorScreen extends ConsumerWidget {
           const SectionDivider(),
 
           ListSectionTile(l10n.sectionMetric),
-          _buildInfoTile(state.mps, l10n),
-          _buildInfoTile(state.kmh, l10n),
+
+          InfoListTile(
+            label: state.mps.labelBuilder(l10n),
+            value: state.mps.formattedValue,
+          ),
+          InfoListTile(
+            label: state.kmh.labelBuilder(l10n),
+            value: state.kmh.formattedValue,
+          ),
 
           ListSectionTile(l10n.sectionImperial),
-          _buildInfoTile(state.fps, l10n),
-          _buildInfoTile(state.mph, l10n),
+
+          InfoListTile(
+            label: state.fps.labelBuilder(l10n),
+            value: state.fps.formattedValue,
+          ),
+          InfoListTile(
+            label: state.mph.labelBuilder(l10n),
+            value: state.mph.formattedValue,
+          ),
 
           SwitchListTile(
             title: Text(l10n.customAtmosphere),
@@ -63,7 +76,11 @@ class VelocityConvertorScreen extends ConsumerWidget {
           ),
 
           ListSectionTile(l10n.sectionOther),
-          _buildInfoTile(state.mach, l10n),
+
+          InfoListTile(
+            label: state.mach.labelBuilder(l10n),
+            value: state.mach.formattedValue,
+          ),
 
           if (state.useCustomAtmo) ...[
             const TileDivider(),
@@ -105,13 +122,6 @@ class VelocityConvertorScreen extends ConsumerWidget {
           const SizedBox(height: 16),
         ],
       ),
-    );
-  }
-
-  Widget _buildInfoTile(GenericConvertorField field, AppLocalizations l10n) {
-    return InfoListTile(
-      label: field.labelBuilder(l10n),
-      value: field.formattedValue,
     );
   }
 }

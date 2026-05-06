@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - **Help button icon** - changed help button icon
+- **ReticleView refactor** — extracted `_ReticleGeometry`, `_ReticleComposer`, `_ReticleStack` as standalone classes; `showAdjLines` is now non-nullable (`bool`, default `true`); `geometry.targetScale()` used for target scaling
+- **Code Quality #15 — naming convention sweep** across 14 screen/widget files:
+  - `_buildXxx()` builder methods extracted as standalone `_PascalCase` widget classes (`_ReticleStack`, `_TopBlock`, `_AnglesInfoTile`, `_SideControlFab`, `_AdjustmentsDisplayEmpty`, `_BcText` etc.)
+  - `nameCtrl`/`vendorCtrl` → `nameController`/`vendorController` in `WizardFormMixin` and all wizard screens
+  - Event handler callbacks renamed to `_onXxx` pattern (`_onDragTableTap`, `_onPowderSensTableTap`, `_onImportFromFile`, `_onAddTap`)
+  - `// ── Widgets ──` section separator added to 5 files missing it
+  - Hard-coded `'Ammo image'` → `l10n.ammoImage` (new l10n key EN/UK)
 
 
 ## v0.1.8 (2026-05-04)

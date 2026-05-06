@@ -46,12 +46,12 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
 
   @override
   void onNameChanged() {
-    ref.read(_provider.notifier).updateName(nameCtrl.text);
+    ref.read(_provider.notifier).updateName(nameController.text);
     super.onNameChanged();
   }
 
   void _onSave() {
-    ref.read(_provider.notifier).updateVendor(vendorCtrl.text);
+    ref.read(_provider.notifier).updateVendor(vendorController.text);
     commitSave(ref.read(_provider).buildSight);
   }
 
@@ -66,7 +66,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
       title: wizardTitle(l10n.newSight),
       isSubscreen: true,
       showBack: false,
-      actions: [helpAction(context, helpId: HelpData.sightWizard)],
+      actions: [HelpAction(HelpData.sightWizard)],
       bottomBar: WizardActionBar(
         onDiscard: onDiscard,
         onSave: st.isValid ? _onSave : null,
@@ -76,14 +76,14 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           _SightPlaceholder(),
           // ── Name ──────────────────────────────────────────────────
           WizardNameField(
-            controller: nameCtrl,
+            controller: nameController,
             label: l10n.sightName,
             onChanged: onNameChanged,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
-              controller: vendorCtrl,
+              controller: vendorController,
               decoration: InputDecoration(labelText: l10n.vendor),
               textCapitalization: TextCapitalization.words,
             ),
@@ -175,8 +175,7 @@ class _SightWizardScreenState extends ConsumerState<SightWizardScreen>
           // ── Clicks ────────────────────────────────────────────────
           const TileDivider(),
           ListSectionTile(l10n.sectionClicks),
-          offsetsTile(
-            context: context,
+          OffsetsTiles(
             yLabel: l10n.verticalClick,
             xLabel: l10n.horizontalClick,
             unitLabel: l10n.clickUnit,

@@ -69,7 +69,7 @@ class AmmoCollectionScreen extends ConsumerWidget {
             ),
           ),
         ),
-        helpAction(context, helpId: HelpData.ammoCollectionScreen),
+        HelpAction(HelpData.ammoCollectionScreen),
       ],
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

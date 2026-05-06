@@ -49,7 +49,7 @@ class SightCollectionScreen extends ConsumerWidget {
             ),
           ),
         ),
-        helpAction(context, helpId: HelpData.sightCollectionScreen),
+        HelpAction(HelpData.sightCollectionScreen),
       ],
       body: collectionAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

@@ -74,7 +74,7 @@ class MultiBcEditorScreen extends ConsumerWidget {
       initialRows: initialRows,
       sortAscending: false,
       footerText: l10n.twoColumnEditorFooter,
-      actions: [helpAction(context, helpId: HelpData.multiBcEditor)],
+      actions: [HelpAction(HelpData.multiBcEditor)],
       onSave: (rows) {
         final result = rows
             .map(
@@ -128,7 +128,7 @@ class CustomDragTableEditorScreen extends StatelessWidget {
       initialRows: initialRows,
       sortAscending: true,
       readOnly: readOnly,
-      actions: [helpAction(context, helpId: HelpData.customDragEditor)],
+      actions: [HelpAction(HelpData.customDragEditor)],
       onSave: (rows) {
         final result = rows.map((r) => (mach: r.$1, cd: r.$2)).toList();
         context.pop<List<({double mach, double cd})>>(result);

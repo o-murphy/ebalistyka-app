@@ -42,7 +42,7 @@ class TablesScreen extends ConsumerWidget {
                   onPressed: () => _onShare(context, ref),
                   tooltip: l10n.tooltipShare,
                 ),
-                helpAction(context, helpId: HelpData.tablesScreen),
+                HelpAction(HelpData.tablesScreen),
               ],
               withTabs: [
                 Tab(text: l10n.tabTrajectory),

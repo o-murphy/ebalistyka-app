@@ -1,5 +1,5 @@
 import 'package:ebalistyka/features/home/widgets/adjustment_panel.dart';
-import 'package:ebalistyka/features/home/widgets/helpers.dart';
+import 'package:ebalistyka/features/home/widgets/offsets_message.dart';
 import 'package:ebalistyka/shared/widgets/error_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,8 +48,10 @@ class HomeReticlePage extends ConsumerWidget {
             style: tt.labelMedium?.copyWith(color: cs.onSurface.withAlpha(160)),
           ),
         ),
-        if (rs.zeroOffsetMessageLine != null) zeroOffsetMessageLine(rs, cs, tt),
-        if (rs.adjustedMessageLine != null) adjustedMessageLine(rs, cs, tt),
+        if (rs.zeroOffsetMessageLine != null)
+          OffsetsMessage(rs.zeroOffsetMessageLine!),
+        if (rs.adjustedMessageLine != null)
+          OffsetsMessage(rs.adjustedMessageLine!),
 
         Expanded(
           child: Row(

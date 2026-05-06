@@ -85,26 +85,32 @@ class TwoColumnTableEditorScreen extends StatefulWidget {
 
 class _TwoColumnTableEditorScreenState
     extends State<TwoColumnTableEditorScreen> {
-  late final List<TextEditingController> _col1Ctrls;
-  late final List<TextEditingController> _col2Ctrls;
+  late final List<TextEditingController> _col1Controllers;
+  late final List<TextEditingController> _col2Controllers;
 
   @override
   void initState() {
     super.initState();
-    _col1Ctrls = List.generate(widget.rowCount, (_) => TextEditingController());
-    _col2Ctrls = List.generate(widget.rowCount, (_) => TextEditingController());
+    _col1Controllers = List.generate(
+      widget.rowCount,
+      (_) => TextEditingController(),
+    );
+    _col2Controllers = List.generate(
+      widget.rowCount,
+      (_) => TextEditingController(),
+    );
 
     final rows = widget.initialRows;
     if (rows != null) {
       final count = rows.length.clamp(0, widget.rowCount);
       for (var i = 0; i < count; i++) {
-        _col1Ctrls[i].text = rows[i].$1;
-        _col2Ctrls[i].text = rows[i].$2;
+        _col1Controllers[i].text = rows[i].$1;
+        _col2Controllers[i].text = rows[i].$2;
       }
     }
 
     if (widget.onRowsParsed != null) {
-      for (final c in [..._col1Ctrls, ..._col2Ctrls]) {
+      for (final c in [..._col1Controllers, ..._col2Controllers]) {
         c.addListener(_notifyRows);
       }
       // Notify after first frame so parent setState is safe during initial build.
@@ -117,14 +123,14 @@ class _TwoColumnTableEditorScreenState
   @override
   void dispose() {
     if (widget.onRowsParsed != null) {
-      for (final c in [..._col1Ctrls, ..._col2Ctrls]) {
+      for (final c in [..._col1Controllers, ..._col2Controllers]) {
         c.removeListener(_notifyRows);
       }
     }
-    for (final c in _col1Ctrls) {
+    for (final c in _col1Controllers) {
       c.dispose();
     }
-    for (final c in _col2Ctrls) {
+    for (final c in _col2Controllers) {
       c.dispose();
     }
     super.dispose();
@@ -133,8 +139,8 @@ class _TwoColumnTableEditorScreenState
   List<(double, double)> _parseRows() {
     final rows = <(double, double)>[];
     for (var i = 0; i < widget.rowCount; i++) {
-      final v1 = double.tryParse(_col1Ctrls[i].text.trim());
-      final v2 = double.tryParse(_col2Ctrls[i].text.trim()) ?? 0.0;
+      final v1 = double.tryParse(_col1Controllers[i].text.trim());
+      final v2 = double.tryParse(_col2Controllers[i].text.trim()) ?? 0.0;
       if (v1 == null) continue;
       if (widget.col1RequirePositive && v1 <= 0) continue;
       if (v2 <= 0) continue;
@@ -181,8 +187,8 @@ class _TwoColumnTableEditorScreenState
           for (var i = 0; i < widget.rowCount; i++) ...[
             _TableRowEditor(
               index: i,
-              col1Ctrl: _col1Ctrls[i],
-              col2Ctrl: _col2Ctrls[i],
+              col1Ctrl: _col1Controllers[i],
+              col2Ctrl: _col2Controllers[i],
               col1Hint: widget.col1Hint,
               col2Hint: widget.col2Hint,
               readOnly: widget.readOnly,

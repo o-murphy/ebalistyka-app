@@ -58,11 +58,18 @@ class HelpData {
   }
 }
 
-Widget helpAction(BuildContext context, {String? helpId}) {
-  return IconButton(
-    onPressed: () => showHelpDialog(context, helpId: helpId),
-    icon: Icon(IconDef.help),
-  );
+class HelpAction extends StatelessWidget {
+  const HelpAction(this.helpId, {super.key});
+
+  final String? helpId;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () => showHelpDialog(context, helpId: helpId),
+      icon: Icon(IconDef.help),
+    );
+  }
 }
 
 Future<void> showHelpDialog(BuildContext context, {String? helpId}) async {

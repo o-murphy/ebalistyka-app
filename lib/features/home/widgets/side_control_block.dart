@@ -16,24 +16,12 @@ class SideControlBlock extends StatelessWidget {
     required this.onBottomPressed,
   });
 
-  Widget _fab(BuildContext context, IconData icon, VoidCallback onPressed) {
-    final cs = Theme.of(context).colorScheme;
-    return FloatingActionButton.small(
-      elevation: 1,
-      heroTag: null,
-      backgroundColor: cs.primaryContainer,
-      foregroundColor: cs.onPrimaryContainer,
-      onPressed: onPressed,
-      child: Icon(icon, size: 20),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
-        _fab(context, topIcon, onTopPressed),
+        _SideControlFab(topIcon, onTopPressed),
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -65,8 +53,30 @@ class SideControlBlock extends StatelessWidget {
             ],
           ),
         ),
-        _fab(context, bottomIcon, onBottomPressed),
+        _SideControlFab(bottomIcon, onBottomPressed),
       ],
+    );
+  }
+}
+
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _SideControlFab extends StatelessWidget {
+  const _SideControlFab(this.icon, this.onPressed);
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return FloatingActionButton.small(
+      elevation: 1,
+      heroTag: null,
+      backgroundColor: cs.primaryContainer,
+      foregroundColor: cs.onPrimaryContainer,
+      onPressed: onPressed,
+      child: Icon(icon, size: 20),
     );
   }
 }

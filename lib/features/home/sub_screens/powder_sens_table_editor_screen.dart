@@ -125,7 +125,7 @@ class _PowderSensTableEditorScreenState
       headerChild: _SensitivityPreview(sensitivity: _preview),
       onRowsParsed: _onRowsChanged,
       footerText: l10n.nonPositiveRowsHint,
-      actions: [helpAction(context, helpId: HelpData.powderSensEditor)],
+      actions: [HelpAction(HelpData.powderSensEditor)],
       onSave: (rawRows) {
         final table = rawRows
             .map(
