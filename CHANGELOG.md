@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
+### Added
+- **Linux Snap package** — `.snap` builds for x86_64 and arm64; auto-updates via Snap Store; in-app update sheet links to Snap Store for snap installs
+
 
 ## v0.1.9-dev (2026-05-06)
 [![GitHub release][GitHubReleaseBadge]][v0.1.9-dev]
