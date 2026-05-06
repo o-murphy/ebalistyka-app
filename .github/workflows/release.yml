@@ -96,6 +96,10 @@ jobs:
       contents: write
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -120,13 +124,39 @@ jobs:
           echo "=== Release assets ==="
           ls -lh release/
 
+      - name: Extract changelog
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION="${{ needs.prepare-version.outputs.version }}"
+          V_RE="${VERSION//./\\.}"
+
+          # Try version-specific section first (e.g. "## v1.2.3-beta.1" or "## v1.2.3 (date)")
+          awk "/^## v?${V_RE}([[:space:]]|\$)/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}" \
+            CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
+
+          # Fall back to Unreleased if section not found or empty
+          if [ ! -s /tmp/release_notes.md ]; then
+            awk '/^## Unreleased/{found=1;next} /^\[!\[/{next} /^---$/{next} /^## /{if(found)exit} found{print}' \
+              CHANGELOG.md | sed -e '/./,$!d' -e 's/[[:space:]]*$//' > /tmp/release_notes.md
+          fi
+
+          # Append compare link (previous tag → current tag)
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            echo "" >> /tmp/release_notes.md
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${{ github.ref_name }}" >> /tmp/release_notes.md
+          fi
+
+          echo "--- release notes ---"
+          cat /tmp/release_notes.md
+
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: eBalistyka ${{ needs.prepare-version.outputs.version }}
-          generate_release_notes: true
+          body_path: /tmp/release_notes.md
           prerelease: ${{ contains(github.ref_name, '-') }}
           fail_on_unmatched_files: true
           files: release/*
