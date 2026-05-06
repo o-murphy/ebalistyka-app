@@ -3,7 +3,7 @@
 [![Made in Ukraine](https://img.shields.io/badge/made_in-Ukraine-ffd700.svg?labelColor=0057b7&style=flat-square)](https://stand-with-ukraine.pp.ua)
 [![Flutter](https://img.shields.io/badge/Flutter-3.41.7-02569B?logo=flutter)](https://flutter.dev)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.1.3-orange)
+[![GitHub Release](https://img.shields.io/github/v/release/o-murphy/ebalistyka-app?cacheSeconds=0)](https://github.com/o-murphy/ebalistyka-app/releases/latest)
 ![Status: Alpha](https://img.shields.io/badge/status-alpha-orange)
 ![Linux](https://img.shields.io/badge/Linux-x86__64%20%7C%20arm64-grey?logo=linux&logoColor=black&labelColor=FCC624)
 ![Windows](https://img.shields.io/badge/x86__64-grey?logo=windows&logoColor=black&label=Windows&labelColor=0078D4)
@@ -139,6 +139,7 @@ ebalistyka-app/
 │   │   ├── helpers/           # Formatting helpers, drag model info
 │   │   ├── mixins/            # WizardFormMixin
 │   │   └── constants/         # UI dimensions, null string sentinel
+│   ├── update/                # Update checker and utilities
 │   └── l10n/                  # Generated AppLocalizations (EN + UA)
 ├── packages/
 │   ├── bclibc_ffi/            # Dart FFI bindings for the C++ solver
@@ -257,6 +258,8 @@ On Android, `file_picker` cannot filter by custom extensions (`.ebcp`, `.a7p`) b
 | [share_plus](https://pub.dev/packages/share_plus) | Export / share files |
 | [url_launcher](https://pub.dev/packages/url_launcher) | External links |
 | [package_info_plus](https://pub.dev/packages/package_info_plus) | App version info |
+| [flutter_markdown_plus](https://pub.dev/packages/flutter_markdown_plus) | App help widgets |
+| [ota_update](https://pub.dev/packages/ota_update) | autoupdate for Android sideloadinstallations |
 
 ### `packages/bclibc_ffi`
 
