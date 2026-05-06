@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   build:
-    name: snap-${{ inputs.arch }}
+    name: snap-${{ inputs.arch || 'amd64' }}
     runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
     outputs:
@@ -82,22 +82,24 @@ jobs:
           echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
           echo "artifact_name=ebalistyka-snap-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
-      - name: Install snapcraft
-        run: sudo snap install snapcraft --classic
-
-      - name: Install snap build dependencies
+      - name: Prepare snap sources
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y \
-            clang cmake curl gcc git \
-            libgtk-3-dev lld llvm make \
-            ninja-build pkg-config unzip
+          VERSION="${{ steps.meta.outputs.build_name }}"
+          if [[ "$VERSION" == *-* ]]; then GRADE="devel"; else GRADE="stable"; fi
+          sed -i "s/^version: .*/version: '${VERSION}'/" snap/snapcraft.yaml
+          sed -i "s/^grade: .*/grade: ${GRADE}/" snap/snapcraft.yaml
+          [ -f "assets/icon.png" ] && cp "assets/icon.png" "snap/gui/ebalistyka.png"
+          echo "✓ snap version: ${VERSION} (grade: ${GRADE})"
 
       - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Collect snap artifact
         run: |
-          bash scripts/package-snap.sh \
-            "${{ steps.meta.outputs.build_name }}" \
-            "${{ steps.meta.outputs.build_number }}"
+          mkdir -p artifacts/snap
+          cp "${{ steps.snapcraft.outputs.snap }}" \
+             "artifacts/snap/ebalistyka_linux_${{ steps.meta.outputs.arch_suffix }}.snap"
 
       - name: Upload artifact
         id: upload
