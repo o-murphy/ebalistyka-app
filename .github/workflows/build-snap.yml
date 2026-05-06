@@ -1,0 +1,83 @@
+name: Build Snap
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  build:
+    name: snap-${{ inputs.arch }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        run: |
+          BUILD_NAME="${{ inputs.build_name }}"
+          if [ -z "$BUILD_NAME" ]; then
+            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          fi
+          BUILD_NAME="${BUILD_NAME#v}"
+          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
+          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+          echo "build_name=$BUILD_NAME"   >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "arch_suffix=$ARCH_SUFFIX" >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-snap-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Install snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Build snap
+        run: |
+          bash scripts/package-snap.sh \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/snap/
+          retention-days: ${{ inputs.retention_days || 30 }}
+          if-no-files-found: error

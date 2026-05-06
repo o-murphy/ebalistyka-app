@@ -89,8 +89,24 @@ jobs:
       ANDROID_KEY_ALIAS:         ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KEY_PASSWORD:      ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+  build-snap-amd64:
+    needs: prepare-version
+    uses: ./.github/workflows/build-snap.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
+  build-snap-arm64:
+    needs: prepare-version
+    uses: ./.github/workflows/build-snap.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
   release:
-    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab]
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -118,7 +134,8 @@ jobs:
             -name "*.appinstaller" -o \
             -name "*.cer"         -o \
             -name "*.apk"         -o \
-            -name "*.aab" \
+            -name "*.aab"         -o \
+            -name "*.snap" \
           \) -exec cp {} release/ \;
 
           echo "=== Release assets ==="
