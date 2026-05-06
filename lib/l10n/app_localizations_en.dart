@@ -1200,6 +1200,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openInPlayStoreAction => 'Open in Google Play';
 
   @override
+  String get downloadAndInstallAction => 'Download & Install';
+
+  @override
+  String downloadingUpdate(int progress) {
+    return 'Downloading… $progress%';
+  }
+
+  @override
+  String get installingUpdate => 'Installing…';
+
+  @override
+  String get downloadFailed => 'Download failed. Tap to retry.';
+
+  @override
   String get checkForUpdatesLabel => 'Check for updates';
 
   @override

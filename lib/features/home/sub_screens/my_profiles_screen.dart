@@ -243,19 +243,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       subtitle: '25-400m',
                       onTap: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final errorColor =
-                            Theme.of(context).colorScheme.error;
+                        final errorColor = Theme.of(context).colorScheme.error;
                         try {
                           await A7pService.shareFile(
                             profileExport,
                             A7pRange.subsonic,
                           );
                         } catch (e) {
-                          messenger.showSnackBar(SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: errorColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -264,19 +265,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       subtitle: '100-700m',
                       onTap: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final errorColor =
-                            Theme.of(context).colorScheme.error;
+                        final errorColor = Theme.of(context).colorScheme.error;
                         try {
                           await A7pService.shareFile(
                             profileExport,
                             A7pRange.low,
                           );
                         } catch (e) {
-                          messenger.showSnackBar(SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: errorColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -285,19 +287,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       subtitle: '100-1000m',
                       onTap: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final errorColor =
-                            Theme.of(context).colorScheme.error;
+                        final errorColor = Theme.of(context).colorScheme.error;
                         try {
                           await A7pService.shareFile(
                             profileExport,
                             A7pRange.medium,
                           );
                         } catch (e) {
-                          messenger.showSnackBar(SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: errorColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -306,19 +309,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       subtitle: '100-1700m',
                       onTap: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final errorColor =
-                            Theme.of(context).colorScheme.error;
+                        final errorColor = Theme.of(context).colorScheme.error;
                         try {
                           await A7pService.shareFile(
                             profileExport,
                             A7pRange.long,
                           );
                         } catch (e) {
-                          messenger.showSnackBar(SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: errorColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -327,19 +331,20 @@ class _ProfilesScreenState extends ConsumerState<ProfilesScreen> {
                       subtitle: '100-2000m',
                       onTap: () async {
                         final messenger = ScaffoldMessenger.of(context);
-                        final errorColor =
-                            Theme.of(context).colorScheme.error;
+                        final errorColor = Theme.of(context).colorScheme.error;
                         try {
                           await A7pService.shareFile(
                             profileExport,
                             A7pRange.ultra,
                           );
                         } catch (e) {
-                          messenger.showSnackBar(SnackBar(
-                            content: Text(e.toString()),
-                            backgroundColor: errorColor,
-                            duration: const Duration(seconds: 2),
-                          ));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: errorColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
                     ),

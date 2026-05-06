@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 [![GitHub release][GitHubCompareBadge]][Unreleased]
 
 ### Added
+- **Android OTA update** — sideload APK updates directly from GitHub Releases without opening the browser
+  - Detects the correct ABI-specific APK (`arm64`, `armeabi-v7a`, `x86_64`) via `Abi.current()`; falls back to universal APK, then "View Release" if no APK asset is found
+  - Download progress bar and installing state shown in the update bottom sheet
+  - Cancel always available — dismissing the sheet cancels the download
 - **Help dialogs** - reusable markdown-based help dialogs
   - Added help dialogs for screens: `shot info`, `my profiles`
   - Added help dialogs for collection screens: `ammo`, `weapon` and `sights` collections

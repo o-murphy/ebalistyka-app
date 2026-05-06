@@ -2426,6 +2426,30 @@ abstract class AppLocalizations {
   /// **'Open in Google Play'**
   String get openInPlayStoreAction;
 
+  /// Button label to download and sideload the APK update
+  ///
+  /// In en, this message translates to:
+  /// **'Download & Install'**
+  String get downloadAndInstallAction;
+
+  /// Progress label shown while downloading the APK
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading… {progress}%'**
+  String downloadingUpdate(int progress);
+
+  /// Label shown while the APK installer is running
+  ///
+  /// In en, this message translates to:
+  /// **'Installing…'**
+  String get installingUpdate;
+
+  /// Error message shown when APK download fails
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed. Tap to retry.'**
+  String get downloadFailed;
+
   /// Settings list tile label for the manual update check button
   ///
   /// In en, this message translates to:
