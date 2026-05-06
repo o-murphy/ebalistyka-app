@@ -69,7 +69,6 @@ class _UpdateSheet extends StatefulWidget {
 class _UpdateSheetState extends State<_UpdateSheet> {
   _DownloadStatus _status = _DownloadStatus.idle;
   int _progress = 0;
-  OtaUpdate? _ota;
   StreamSubscription<OtaEvent>? _sub;
 
   bool get _canSideload =>
@@ -80,7 +79,6 @@ class _UpdateSheetState extends State<_UpdateSheet> {
   @override
   void dispose() {
     unawaited(_sub?.cancel());
-    unawaited(_ota?.cancel());
     super.dispose();
   }
 
@@ -89,8 +87,7 @@ class _UpdateSheetState extends State<_UpdateSheet> {
       _status = _DownloadStatus.downloading;
       _progress = 0;
     });
-    _ota = OtaUpdate();
-    _sub = _ota!
+    _sub = OtaUpdate()
         .execute(widget.release.apkUrl!, destinationFilename: 'ebalistyka.apk')
         .listen(
           (OtaEvent event) {
@@ -106,7 +103,7 @@ class _UpdateSheetState extends State<_UpdateSheet> {
               case OtaStatus.INSTALLATION_DONE:
                 Navigator.of(context).pop();
               case OtaStatus.CANCELED:
-                break;
+                setState(() => _status = _DownloadStatus.idle);
               default:
                 setState(() => _status = _DownloadStatus.error);
             }
