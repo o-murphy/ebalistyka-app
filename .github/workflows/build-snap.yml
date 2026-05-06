@@ -49,7 +49,7 @@ on:
         type: string
 
 concurrency:
-  group: build-snap-${{ github.ref }}
+  group: build-snap-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
   cancel-in-progress: true
 
 jobs:
