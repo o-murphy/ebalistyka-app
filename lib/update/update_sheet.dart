@@ -179,22 +179,24 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                     )
                   : FilledButton.icon(
                       icon: const Icon(Icons.open_in_new_outlined),
-                      label: Text(
-                        widget.release.isSnap
-                            ? l10n.openInSnapStoreAction
-                            : widget.release.isPlayStore
-                                ? l10n.openInPlayStoreAction
-                                : l10n.viewReleaseAction,
-                      ),
+                      label: Text(switch (widget.release) {
+                        _ when widget.release.isSnap =>
+                          l10n.openInSnapStoreAction,
+                        _ when widget.release.isPlayStore =>
+                          l10n.openInPlayStoreAction,
+                        _ => l10n.viewReleaseAction,
+                      }),
                       onPressed: () {
                         Navigator.of(context).pop();
-                        final url = widget.release.isSnap
-                            ? Uri.parse(snapStoreUrl)
-                            : widget.release.isPlayStore
-                                ? Uri.parse(
-                                    'https://play.google.com/store/apps/details?id=${widget.release.packageName}',
-                                  )
-                                : Uri.parse(widget.release.htmlUrl);
+                        final url = switch (widget.release) {
+                          _ when widget.release.isSnap => Uri.parse(
+                            snapStoreUrl,
+                          ),
+                          _ when widget.release.isPlayStore => Uri.parse(
+                            'https://play.google.com/store/apps/details?id=${widget.release.packageName}',
+                          ),
+                          _ => Uri.parse(widget.release.htmlUrl),
+                        };
                         unawaited(
                           launchUrl(url, mode: LaunchMode.externalApplication),
                         );

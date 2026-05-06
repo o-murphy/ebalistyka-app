@@ -46,9 +46,15 @@ if [ -f "assets/icon.png" ]; then
 elif [ -f "assets/icon.svg" ] && command -v convert &>/dev/null; then
   convert "assets/icon.svg" -resize 256x256 "snap/gui/ebalistyka.png"
   echo "✓ Icon converted from SVG"
+else
+  echo "❌ No icon found (assets/icon.png or assets/icon.svg with ImageMagick)" >&2
+  exit 1
 fi
 
 mkdir -p artifacts/snap
+
+# Remove stale snap files so we pick up only the freshly built one
+rm -f ebalistyka_*.snap
 
 # Use destructive mode in CI; LXD locally
 if [ "${CI:-}" = "true" ] || [ "${SNAPCRAFT_BUILD_ENVIRONMENT:-}" = "host" ]; then
@@ -60,7 +66,6 @@ fi
 echo "Building snap (${BUILD_FLAGS})..."
 snapcraft pack $BUILD_FLAGS
 
-# snapcraft outputs <name>_<version>_<arch>.snap in the current directory
 SNAP_FILE=$(ls ebalistyka_*.snap 2>/dev/null | head -1)
 if [ -z "$SNAP_FILE" ]; then
   echo "❌ No snap file produced after build" >&2

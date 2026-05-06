@@ -15,7 +15,8 @@ enum LinuxInstallerType { snap, appImage, portable }
 
 LinuxInstallerType _detectLinuxInstallerType() {
   if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
-  if (Platform.environment.containsKey('APPIMAGE')) return LinuxInstallerType.appImage;
+  if (Platform.environment.containsKey('APPIMAGE'))
+    return LinuxInstallerType.appImage;
   return LinuxInstallerType.portable;
 }
 
