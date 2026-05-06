@@ -76,7 +76,7 @@ jobs:
           fi
           BUILD_NAME="${BUILD_NAME#v}"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BUILD_NAME="${BUILD_NAME}-pr.${{ github.event.number }}"
+            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
           fi
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
           ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
