@@ -266,7 +266,7 @@ bool _isNewer(String latest, String current) {
 }
 
 List<int>? _parseSemver(String v) {
-  final parts = v.split('+').first.split('.');
+  final parts = v.split('+').first.split('-').first.split('.');
   if (parts.length < 3) return null;
   final nums = parts.take(3).map(int.tryParse).toList();
   if (nums.any((n) => n == null)) return null;

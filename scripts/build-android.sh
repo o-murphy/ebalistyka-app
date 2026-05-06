@@ -5,7 +5,8 @@
 #   build-android.sh <build_name> <build_number>
 #
 # Arguments:
-#   build_name    Version string, e.g. "1.2.3" or "v1.2.3-beta".  "v" prefix is stripped.
+#   build_name    Version string, e.g. "1.2.3" or "1.2.3-beta.1".  "v" prefix is stripped.
+#                 Pre-release suffix is preserved as Android versionName.
 #   build_number  Integer build number (git rev-list --count --first-parent HEAD — monotonically increasing).
 #
 # Signing (optional — falls back to debug key if not set):
@@ -27,8 +28,6 @@ BUILD_NUMBER="${2:-0}"
 
 # Strip leading 'v'
 BUILD_NAME="${BUILD_NAME#v}"
-# Strip pre-release suffix for versionCode compatibility: "1.2.3-beta" → "1.2.3"
-BASE=$(echo "$BUILD_NAME" | sed 's/-.*//')
 
 # ── Cleanup trap ─────────────────────────────────────────────────────────────
 cleanup() {
@@ -53,7 +52,7 @@ fi
 
 # ── Build per-ABI split APKs ─────────────────────────────────────────────────
 flutter build apk --release --split-per-abi \
-  --build-name="$BASE" \
+  --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
 # Copy split APKs immediately — Gradle stale-output cleanup in the next build
@@ -65,7 +64,7 @@ cp build/app/outputs/flutter-apk/app-x86_64-release.apk      artifacts/ebalistyk
 
 # ── Build universal (fat) APK ────────────────────────────────────────────────
 flutter build apk --release \
-  --build-name="$BASE" \
+  --build-name="$BUILD_NAME" \
   --build-number="$BUILD_NUMBER"
 
 cp build/app/outputs/flutter-apk/app-release.apk artifacts/ebalistyka_android_universal.apk
