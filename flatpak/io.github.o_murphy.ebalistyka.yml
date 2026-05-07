@@ -1,6 +1,6 @@
 app-id: io.github.o_murphy.ebalistyka
 runtime: org.gnome.Platform
-runtime-version: '46'
+runtime-version: '48'
 sdk: org.gnome.Sdk
 command: ebalistyka
 
@@ -16,9 +16,11 @@ modules:
   - name: ebalistyka
     buildsystem: simple
     build-commands:
-      - install -Dm755 ebalistyka /app/bin/ebalistyka
-      - cp -r lib /app/lib
-      - cp -r data /app/data
+      - mkdir -p /app/ebalistyka
+      - cp ebalistyka /app/ebalistyka/
+      - cp -r lib /app/ebalistyka/lib
+      - cp -r data /app/ebalistyka/data
+      - install -Dm755 ebalistyka-wrapper.sh /app/bin/ebalistyka
       - install -Dm644 io.github.o_murphy.ebalistyka.desktop
           /app/share/applications/io.github.o_murphy.ebalistyka.desktop
       - install -Dm644 ebalistyka.png

@@ -40,9 +40,10 @@ else
   exit 1
 fi
 
-# Copy desktop + metainfo into bundle so flatpak-builder can find them
-cp "flatpak/${APP_ID}.desktop"     "flatpak/bundle/${APP_ID}.desktop"
+# Copy desktop, metainfo and wrapper into bundle so flatpak-builder can find them
+cp "flatpak/${APP_ID}.desktop"      "flatpak/bundle/${APP_ID}.desktop"
 cp "flatpak/${APP_ID}.metainfo.xml" "flatpak/bundle/${APP_ID}.metainfo.xml"
+cp "flatpak/ebalistyka-wrapper.sh"  "flatpak/bundle/ebalistyka-wrapper.sh"
 
 # Stamp version in metainfo
 TODAY=$(date +%Y-%m-%d)
@@ -70,7 +71,8 @@ flatpak build-bundle \
   --arch="${ARCH_SUFFIX}" \
   "$REPO_DIR" \
   "$OUT" \
-  "$APP_ID"
+  "$APP_ID" \
+  stable
 
 echo "✓ Flatpak: $OUT"
 

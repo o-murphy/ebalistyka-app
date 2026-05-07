@@ -11,12 +11,12 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-enum LinuxInstallerType { snap, appImage, portable }
+enum LinuxInstallerType { snap, flatpak, appImage, portable }
 
 LinuxInstallerType _detectLinuxInstallerType() {
   if (Platform.environment.containsKey('SNAP')) return LinuxInstallerType.snap;
-  if (Platform.environment.containsKey('APPIMAGE'))
-    return LinuxInstallerType.appImage;
+  if (Platform.environment.containsKey('FLATPAK_ID')) return LinuxInstallerType.flatpak;
+  if (Platform.environment.containsKey('APPIMAGE')) return LinuxInstallerType.appImage;
   return LinuxInstallerType.portable;
 }
 
@@ -81,6 +81,7 @@ class GithubRelease {
   });
 
   bool get isSnap => linuxInstallerType == LinuxInstallerType.snap;
+  bool get isFlatpak => linuxInstallerType == LinuxInstallerType.flatpak;
 }
 
 class _ParsedRelease {
