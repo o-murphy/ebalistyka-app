@@ -1207,6 +1207,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get openInPlayStoreAction => 'Відкрити в Google Play';
 
   @override
+  String get openInSnapStoreAction => 'Відкрити в Snap Store';
+
+  @override
   String get downloadAndInstallAction => 'Завантажити та встановити';
 
   @override

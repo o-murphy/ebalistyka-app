@@ -25,6 +25,7 @@ const String tosUrl = '$repoBlobUrl/TERMS.md';
 const String changelogUrl = '$repoBlobUrl/CHANGELOG.md';
 const String allReleasesUrl = '$remoteApiUrl/releases';
 const String googlePlayInstallerSource = 'com.android.vending';
+const String snapStoreUrl = 'https://snapcraft.io/ebalistyka';
 const String rawCollectionUrlPattern =
     '$remoteRawContent/$repoSlug/%s/assets/json/collection.json';
 const String apiCollectionUrlPattern =

@@ -805,6 +805,8 @@
     "@viewReleaseAction": {"description": "SnackBar action button label to open the GitHub release page"},
     "openInPlayStoreAction": "Open in Google Play",
     "@openInPlayStoreAction": {"description": "Button label to open the Google Play Store page for the update"},
+    "openInSnapStoreAction": "Open in Snap Store",
+    "@openInSnapStoreAction": {"description": "Button label to open the Snap Store page for the update"},
     "downloadAndInstallAction": "Download & Install",
     "@downloadAndInstallAction": {"description": "Button label to download and sideload the APK update"},
     "downloadingUpdate": "Downloading… {progress}%",

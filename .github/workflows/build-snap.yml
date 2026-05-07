@@ -1,0 +1,134 @@
+name: Build Snap
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "snap/**"
+      - ".github/workflows/build-snap.yml"
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.build.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-snap-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: snap-${{ inputs.arch || 'amd64' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set build metadata
+        id: meta
+        run: |
+          BUILD_NAME="${{ inputs.build_name }}"
+          if [ -z "$BUILD_NAME" ]; then
+            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          fi
+          BUILD_NAME="${BUILD_NAME#v}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
+          fi
+          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
+          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-snap-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Cache LXD base image
+        uses: actions/cache@v4
+        with:
+          path: /var/snap/lxd/common/lxd/storage-pools/default/images
+          key: lxd-core22-${{ runner.arch }}
+          restore-keys: lxd-core22-
+
+      - name: Prepare snap sources
+        run: |
+          VERSION="${{ steps.meta.outputs.build_name }}"
+          if [[ "$VERSION" == *-* ]]; then GRADE="devel"; else GRADE="stable"; fi
+          sed -i "s/^version: .*/version: '${VERSION}'/" snap/snapcraft.yaml
+          sed -i "s/^grade: .*/grade: ${GRADE}/" snap/snapcraft.yaml
+          [ -f "assets/icon.png" ] && cp "assets/icon.png" "snap/gui/ebalistyka.png"
+          echo "✓ snap version: ${VERSION} (grade: ${GRADE})"
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Collect snap artifact
+        run: |
+          mkdir -p artifacts/snap
+          cp "${{ steps.snapcraft.outputs.snap }}" \
+             "artifacts/snap/ebalistyka_linux_${{ steps.meta.outputs.arch_suffix }}.snap"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/snap/
+          retention-days: ${{ inputs.retention_days || 30 }}
+          if-no-files-found: error
+
+  pr-summary:
+    needs: [ build ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Linux Snap (${{ inputs.arch || 'amd64' }})
+      build_result: ${{ needs.build.result }}
+      artifact_name: ${{ needs.build.outputs.artifact_name }}
+      artifact_url: ${{ needs.build.outputs.artifact_url }}

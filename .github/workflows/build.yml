@@ -119,6 +119,9 @@ jobs:
             BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
           fi
           BUILD_NAME="${BUILD_NAME#v}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
+          fi
           BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
           echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
