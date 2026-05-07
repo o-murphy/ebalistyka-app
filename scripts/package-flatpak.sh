@@ -59,9 +59,10 @@ BUILD_DIR=".flatpak-build"
 flatpak-builder \
   --force-clean \
   --disable-rofiles-fuse \
-  --repo="$REPO_DIR" \
   "$BUILD_DIR" \
   "$MANIFEST"
+
+flatpak build-export "$REPO_DIR" "$BUILD_DIR" stable
 
 # ── Export .flatpak bundle ────────────────────────────────────────────────────
 mkdir -p artifacts/flatpak
