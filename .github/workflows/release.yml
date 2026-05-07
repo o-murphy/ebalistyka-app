@@ -111,8 +111,30 @@ jobs:
       build_name: ${{ needs.prepare-version.outputs.version }}
       retention_days: 1
 
+  build-flatpak-amd64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      arch: amd64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
+  build-flatpak-arm64:
+    needs: prepare-version
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/build-flatpak.yml
+    with:
+      arch: arm64
+      build_name: ${{ needs.prepare-version.outputs.version }}
+      retention_days: 1
+
   release:
-    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64]
+    needs: [prepare-version, build-linux-amd64, build-linux-arm64, build-windows-amd64, build-android, build-android-aab, build-snap-amd64, build-snap-arm64, build-flatpak-amd64, build-flatpak-arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -141,7 +163,8 @@ jobs:
             -name "*.cer"         -o \
             -name "*.apk"         -o \
             -name "*.aab"         -o \
-            -name "*.snap" \
+            -name "*.snap"        -o \
+            -name "*.flatpak" \
           \) -exec cp {} release/ \;
 
           echo "=== Release assets ==="

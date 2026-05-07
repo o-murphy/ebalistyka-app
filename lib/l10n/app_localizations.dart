@@ -2438,6 +2438,12 @@ abstract class AppLocalizations {
   /// **'Open in Snap Store'**
   String get openInSnapStoreAction;
 
+  /// Button label to open the Flathub page for the update
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Flathub'**
+  String get openInFlathubAction;
+
   /// Button label to download and sideload the APK update
   ///
   /// In en, this message translates to:

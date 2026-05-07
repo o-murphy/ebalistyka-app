@@ -182,6 +182,8 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                       label: Text(switch (widget.release) {
                         _ when widget.release.isSnap =>
                           l10n.openInSnapStoreAction,
+                        _ when widget.release.isFlatpak =>
+                          l10n.openInFlathubAction,
                         _ when widget.release.isPlayStore =>
                           l10n.openInPlayStoreAction,
                         _ => l10n.viewReleaseAction,
@@ -191,6 +193,9 @@ class _UpdateSheetState extends State<_UpdateSheet> {
                         final url = switch (widget.release) {
                           _ when widget.release.isSnap => Uri.parse(
                             snapStoreUrl,
+                          ),
+                          _ when widget.release.isFlatpak => Uri.parse(
+                            flathubUrl,
                           ),
                           _ when widget.release.isPlayStore => Uri.parse(
                             'https://play.google.com/store/apps/details?id=${widget.release.packageName}',

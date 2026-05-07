@@ -1,0 +1,145 @@
+name: Build Flatpak
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "external/**"
+      - "packages/bclibc_ffi/**"
+      - "pubspec.yaml"
+      - "flatpak/**"
+      - ".github/workflows/build-flatpak.yml"
+      - ".github/workflows/build.yml"
+  workflow_call:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        type: string   # amd64 | arm64
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        type: string
+        default: ""
+      retention_days:
+        description: "Artifact retention in days"
+        required: false
+        type: number
+        default: 30
+    outputs:
+      artifact_name:
+        description: "Name of the uploaded artifact"
+        value: ${{ jobs.package.outputs.artifact_name }}
+      artifact_url:
+        description: "URL to download the artifact"
+        value: ${{ jobs.package.outputs.artifact_url }}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Target architecture"
+        required: true
+        default: "amd64"
+        type: choice
+        options: [ amd64, arm64 ]
+      build_name:
+        description: "Version name override (leave empty to use pubspec.yaml)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: build-flatpak-${{ github.ref }}-${{ inputs.arch || 'amd64' }}
+  cancel-in-progress: true
+
+jobs:
+  build-bundle:
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: linux
+      arch: ${{ inputs.arch || 'amd64' }}
+      build_type: release
+      build_name: ${{ inputs.build_name || '' }}
+      retention_days: ${{ inputs.retention_days || 30 }}
+
+  package:
+    needs: build-bundle
+    name: flatpak-${{ inputs.arch || 'amd64' }}
+    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      artifact_url:  ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set build metadata
+        id: meta
+        run: |
+          BUILD_NAME="${{ inputs.build_name }}"
+          if [ -z "$BUILD_NAME" ]; then
+            BUILD_NAME=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | sed 's/+.*//')
+          fi
+          BUILD_NAME="${BUILD_NAME#v}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILD_NAME="${BUILD_NAME%%-*}-pr.${{ github.event.number }}"
+          fi
+          BUILD_NUMBER=$(git rev-list --count --first-parent HEAD)
+          ARCH_SUFFIX=${{ inputs.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+          echo "build_name=$BUILD_NAME"     >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "arch_suffix=$ARCH_SUFFIX"   >> $GITHUB_OUTPUT
+          echo "artifact_name=ebalistyka-flatpak-${ARCH_SUFFIX}-${BUILD_NAME}-${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+
+      - name: Download bundle artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build-bundle.outputs.artifact_name }}
+          path: dl
+
+      - name: Extract bundle
+        run: |
+          ARCH_SUFFIX="${{ steps.meta.outputs.arch_suffix }}"
+          mkdir -p bundle
+          tar -xzf "dl/portable/ebalistyka_linux_${ARCH_SUFFIX}.tar.gz" -C bundle/
+
+      - name: Install flatpak tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y flatpak flatpak-builder
+          sudo flatpak remote-add --system --if-not-exists flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install --system -y --noninteractive flathub \
+            org.gnome.Platform//48 org.gnome.Sdk//48
+
+      - name: Package Flatpak
+        run: |
+          bash scripts/package-flatpak.sh \
+            bundle \
+            "${{ steps.meta.outputs.arch_suffix }}" \
+            "${{ steps.meta.outputs.build_name }}" \
+            "${{ steps.meta.outputs.build_number }}"
+
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: artifacts/flatpak/
+          retention-days: ${{ inputs.retention_days || 30 }}
+          if-no-files-found: error
+
+  pr-summary:
+    needs: [ package ]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/pr-summary.yml
+    with:
+      platform: Linux Flatpak (${{ inputs.arch || 'amd64' }})
+      build_result: ${{ needs.package.result }}
+      artifact_name: ${{ needs.package.outputs.artifact_name }}
+      artifact_url: ${{ needs.package.outputs.artifact_url }}

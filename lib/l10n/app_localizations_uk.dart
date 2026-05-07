@@ -1210,6 +1210,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get openInSnapStoreAction => 'Відкрити в Snap Store';
 
   @override
+  String get openInFlathubAction => 'Відкрити у Flathub';
+
+  @override
   String get downloadAndInstallAction => 'Завантажити та встановити';
 
   @override

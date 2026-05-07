@@ -418,6 +418,7 @@
     "viewReleaseAction": "Переглянути",
     "openInPlayStoreAction": "Відкрити в Google Play",
     "openInSnapStoreAction": "Відкрити в Snap Store",
+    "openInFlathubAction": "Відкрити у Flathub",
     "downloadAndInstallAction": "Завантажити та встановити",
     "downloadingUpdate": "Завантаження… {progress}%",
     "installingUpdate": "Встановлення…",
