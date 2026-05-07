@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  snap:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runs-on: ubuntu-latest
+            snap: ebalistyka_linux_x86_64.snap
+          - arch: arm64
+            runs-on: ubuntu-24.04-arm
+            snap: ebalistyka_linux_aarch64.snap
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Download snap from release
+        run: |
+          gh release download "${{ github.event.release.tag_name }}" \
+            --pattern "${{ matrix.snap }}" \
+            --dir snap
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Snap Store
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: snap/${{ matrix.snap }}
+          release: ${{ github.event.release.prerelease && 'beta' || 'stable' }}
